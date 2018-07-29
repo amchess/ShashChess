@@ -567,6 +567,10 @@ void Thread::search() {
                       Threads.stop = true;
               }
           }
+      //from Stefano80 playoutSimpleAlways
+      if (mainThread && !Threads.stop)
+		   playout(lastBestMove, ss, bestValue);
+      //end from Stefano80 playoutSimpleAlways
   }
 
   if (!mainThread)
@@ -580,6 +584,46 @@ void Thread::search() {
                 skill.best ? skill.best : skill.pick_best(multiPV)));
 }
 
+//from Stefano80 playoutSimpleAlways
+// Playout a game, in the hope of meaningfully filling the TT beyond the horizon
+Value Thread::playout(Move playMove, Stack* ss, Value playoutValue) {
+    StateInfo st;
+    bool ttHit;
+    TTEntry* tte ;
+
+    if (!MoveList<LEGAL>(rootPos).size())
+         return rootPos.checkers()? mated_in(ss->ply): VALUE_DRAW;
+
+    if (     Threads.stop
+        ||  !rootPos.pseudo_legal(playMove)
+        ||  !rootPos.legal(playMove))
+        return playoutValue;
+
+    if (rootPos.is_draw(ss->ply))
+        return VALUE_DRAW;
+
+    ss->currentMove         = playMove;
+    ss->continuationHistory = continuationHistory[rootPos.moved_piece(playMove)][to_sq(playMove)].get();
+    (ss+1)->ply = ss->ply + 1;
+
+    rootPos.do_move(playMove, st);
+
+    int d = int(rootDepth) * int(rootDepth) / (rootDepth + 4 * ONE_PLY) - ss->ply/2;
+	Depth newDepth  = d * ONE_PLY;
+	playoutValue = - ::search<NonPV>(rootPos, ss+1, - playoutValue,  - playoutValue + 1, newDepth, false);
+
+    tte    = TT.probe(rootPos.key(), ttHit);
+    Move ttMove  = ttHit ? tte->move() : MOVE_NONE;
+    if(  ttHit
+      && ttMove != MOVE_NONE
+      && ss->ply < MAX_PLY - 2
+      && abs(playoutValue) < VALUE_KNOWN_WIN)
+        playoutValue = - playout(ttMove, ss+1, - playoutValue);
+
+    rootPos.undo_move(playMove);
+	return playoutValue;
+}
+//end from Stefano80 playoutSimpleAlways
 
 namespace {
 
