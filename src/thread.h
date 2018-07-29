@@ -53,10 +53,6 @@ public:
   virtual ~Thread();
   virtual void search();
   void clear();
-  //from Stefano80 playout
-  virtual Value playout(Move, Search::Stack*);
-  Value bestValue;
-  //end from Stefano80 playout
   void idle_loop();
   void start_searching();
   void wait_for_search_finished();

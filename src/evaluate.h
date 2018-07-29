@@ -21,7 +21,6 @@
 #ifndef EVALUATE_H_INCLUDED
 #define EVALUATE_H_INCLUDED
 
-#include <atomic>
 #include <string>
 
 #include "types.h"
@@ -32,9 +31,9 @@ namespace Eval {
 
 constexpr Value Tempo = Value(20); // Must be visible to search
 
-std::string trace(Position& pos);
+std::string trace(Position& pos);//from Shashin
 
-Value evaluate(Position& pos);
+Value evaluate(Position& pos);//from Shashin
 }
 
 #endif // #ifndef EVALUATE_H_INCLUDED

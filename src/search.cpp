@@ -87,7 +87,7 @@ namespace {
   // History and stats update bonus, based on depth
   int stat_bonus(Depth depth) {
     int d = depth / ONE_PLY;
-    return d > 17 ? 0 : 32 * d * d + 64 * d - 64;
+    return d > 17 ? 0 : 33 * d * d + 66 * d - 66;
   }
 
   // Skill structure is used to implement strength limit
@@ -358,7 +358,7 @@ uint8_t getShashinKingSafe(Value score) {
 void Thread::search() {
 
   Stack stack[MAX_PLY+7], *ss = stack+4; // To reference from (ss-4) to (ss+2)
-  Value alpha, beta, delta; //from Stefano80 playout
+  Value bestValue, alpha, beta, delta;
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
@@ -567,10 +567,6 @@ void Thread::search() {
                       Threads.stop = true;
               }
           }
-      //Playout Montecarlo by Stefano80
-      if (mainThread && !Threads.stop && !rootPos.isShashinQuiescentCapablancaMC())
-	playout(lastBestMove, ss);
-      //End Playout Montecarlo by Stefano80
   }
 
   if (!mainThread)
@@ -584,45 +580,6 @@ void Thread::search() {
                 skill.best ? skill.best : skill.pick_best(multiPV)));
 }
 
-//Playout Montecarlo by Stefano80
-// Playout a game, in the hope of meaningfully filling the TT beyond the horizon
-Value Thread::playout(Move playMove, Stack* ss) {
-    StateInfo st;
-    bool ttHit;
-
-    if (     Threads.stop
-        ||  (Limits.use_time_management() && Time.elapsed() >= Time.optimum()*3/4)
-        ||  !rootPos.legal(playMove))
-        return VALUE_NONE;
-
-    if (rootPos.is_draw(ss->ply))
-        return VALUE_DRAW;
-
-    Value playoutValue = ::search<NonPV>(rootPos, ss, -VALUE_INFINITE, VALUE_INFINITE, ONE_PLY, false);
-
-    rootPos.do_move(playMove, st);
-    ss->currentMove = playMove;
-    ss->continuationHistory = continuationHistory[rootPos.moved_piece(playMove)][to_sq(playMove)].get();
-    (ss+1)->ply = ss->ply + 1;
-	Depth newDepth  = std::min(rootDepth - 8 * ONE_PLY, (MAX_PLY - ss->ply) * ONE_PLY);
-    TTEntry* tte    = TT.probe(rootPos.key(), ttHit);
-	if ((!ttHit || tte->depth() < newDepth) && MoveList<LEGAL>(rootPos).size() && newDepth > ONE_PLY)
-	   {
-	    playoutValue = ::search<NonPV>(rootPos, ss+1, - playoutValue,  - playoutValue + 1, newDepth, true);
-	    tte    = TT.probe(rootPos.key(), ttHit);
-	   }
-
-    Move ttMove  = ttHit ? tte->move() : MOVE_NONE;
-    if(  ttHit
-      && ttMove != MOVE_NONE
-      && ss->ply < MAX_PLY - 2
-      && abs(playoutValue) < VALUE_KNOWN_WIN)
-        playoutValue = playout(ttMove, ss+1);
-
-    rootPos.undo_move(playMove);
-	return playoutValue;
-}
-//End Montecarlo By Stefano80
 
 namespace {
 
@@ -1085,7 +1042,7 @@ moves_loop: // When in check, search starts from here
               int lmrDepth = std::max(newDepth - reduction<PvNode>(improving, depth, moveCount), DEPTH_ZERO) / ONE_PLY;
 
               // Countermoves based pruning (~20 Elo)
-              if (   lmrDepth < 3
+              if (   lmrDepth <= ((ss-1)->statScore > 0 ? 3 : 2)
                   && (*contHist[0])[movedPiece][to_sq(move)] < CounterMovePruneThreshold
                   && (*contHist[1])[movedPiece][to_sq(move)] < CounterMovePruneThreshold)
                   continue;
@@ -1140,11 +1097,9 @@ moves_loop: // When in check, search starts from here
 
           if (captureOrPromotion) // (~5 Elo)
           {
-              // Increase reduction by comparing opponent's stat score
-              if ((ss-1)->statScore >= 0)
-                  r += ONE_PLY;
-
-              r -= r ? ONE_PLY : DEPTH_ZERO;
+              // Decrease reduction by comparing opponent's stat score
+              if ((ss-1)->statScore < 0)
+                  r -= ONE_PLY;
           }
           else
           {
@@ -1185,12 +1140,12 @@ moves_loop: // When in check, search starts from here
                   r += ONE_PLY;
 
               // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-              r = std::max(DEPTH_ZERO, (r / ONE_PLY - ss->statScore / 20000) * ONE_PLY);
+              r -= ss->statScore / 20000 * ONE_PLY;
           }
           /*((newDepth - r + 8 * ONE_PLY < thisThread->rootDepth) && !pos.isShashinQuiescentCapablanca()) //from JEllis MateFinder
             r = std::min(r, 3 * ONE_PLY);*/
 
-          Depth d = std::max(newDepth - r, ONE_PLY);
+          Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
