@@ -49,14 +49,22 @@ public:
   Option(OnChange = nullptr);
   Option(bool v, OnChange = nullptr);
   Option(const char* v, OnChange = nullptr);
+  Option(const char* v, const char* cur, OnChange = nullptr);
   //from Sugar
   template<class T> Option(T v, T minv, T maxv, OnChange f = nullptr) : type("spin"), min(minv), max(maxv), on_change(f)
-  { defaultValue = currentValue = std::to_string(v); } //end from Sugar
-  Option(const char* v, const char* cur, OnChange = nullptr);
-
+  {
+	  defaultValue = currentValue = std::to_string(v);
+  }
+  //end from Sugar
   Option& operator=(const std::string&);
   void operator<<(const Option&);
-  operator int() const; //from Sugar
+  //from Sugar
+  template<class T> operator T() const
+  {
+	  assert(type == "spin" || type == "check");
+	  return (type == "spin" ? T(stof(currentValue)): type == "check" ? (currentValue == "true") : T(0));
+  }
+  //end from Sugar
   operator std::string() const;
   bool operator==(const char*) const;
 
@@ -72,14 +80,12 @@ private:
 void init(OptionsMap&);
 void loop(int argc, char* argv[]);
 std::string value(Value v);
-std::string value(Value v,Position& pos); //Shashin
 std::string square(Square s);
 std::string move(Move m, bool chess960);
 std::string pv(Position& pos, Depth depth, Value alpha, Value beta); //Shashin
 Move to_move(const Position& pos, std::string& str);
 
 } // namespace UCI
-extern bool pawnsPiecesSpace, passedPawns,initiativeToCalculate,eloLevel; //Shashin
 extern UCI::OptionsMap Options;
 //from Shashin
 enum {

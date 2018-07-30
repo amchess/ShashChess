@@ -499,9 +499,9 @@ clang-profile-make:
 	all
 
 clang-profile-use:
-	llvm-profdata merge -output=shashchess.profdata *.profraw
+	llvm-profdata merge -output=stockfish.profdata *.profraw
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-fprofile-instr-use=shashchess.profdata' \
+	EXTRACXXFLAGS='-fprofile-instr-use=stockfish.profdata' \
 	EXTRALDFLAGS='-fprofile-use ' \
 	all
 

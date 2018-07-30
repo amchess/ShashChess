@@ -1242,101 +1242,101 @@ void Position::flip() {
 }
 //from Shashin
 uint8_t getInitialShashinValue() {
-	if (!Options["TAL"] && !Options["CAPABLANCA"]
-			&& !Options["PETROSIAN"])
+	if (!Options["Tal"] && !Options["Capablanca"]
+			&& !Options["Petrosian"])
 		return SHASHIN_POSITION_DEFAULT;
 
-	if (Options["TAL"] && Options["CAPABLANCA"]
-			&& !Options["PETROSIAN"])
+	if (Options["Tal"] && Options["Capablanca"]
+			&& !Options["Petrosian"])
 		return SHASHIN_POSITION_TAL_CAPABLANCA;
 
-	if (Options["TAL"] && !Options["CAPABLANCA"]
-			&& !Options["PETROSIAN"])
+	if (Options["Tal"] && !Options["Capablanca"]
+			&& !Options["Petrosian"])
 		return SHASHIN_POSITION_TAL;
 
-	if (!Options["TAL"] && Options["CAPABLANCA"]
-			&& !Options["PETROSIAN"])
+	if (!Options["Tal"] && Options["Capablanca"]
+			&& !Options["Petrosian"])
 		return SHASHIN_POSITION_CAPABLANCA;
 
-	if (!Options["TAL"] && Options["CAPABLANCA"]
-			&& Options["PETROSIAN"])
+	if (!Options["Tal"] && Options["Capablanca"]
+			&& Options["Petrosian"])
 		return SHASHIN_POSITION_CAPABLANCA_PETROSIAN;
 
-	if (!Options["TAL"] && !Options["CAPABLANCA"]
-			&& Options["PETROSIAN"])
+	if (!Options["Tal"] && !Options["Capablanca"]
+			&& Options["Petrosian"])
 		return SHASHIN_POSITION_PETROSIAN;
 
-	if (Options["TAL"] && Options["CAPABLANCA"]
-			&& Options["PETROSIAN"])
+	if (Options["Tal"] && Options["Capablanca"]
+			&& Options["Petrosian"])
 		return SHASHIN_POSITION_TAL_CAPABLANCA_PETROSIAN;
 
 	return SHASHIN_POSITION_TAL_PETROSIAN;
 }
 
 uint8_t getInitialContemptByShashin() {
-	if (!Options["TAL"] && !Options["CAPABLANCA"]
-			&& !Options["PETROSIAN"])
+	if (!Options["Tal"] && !Options["Capablanca"]
+			&& !Options["Petrosian"])
 		return SHASHIN_DEFAULT_CONTEMPT;
 
-	if (Options["TAL"] && Options["CAPABLANCA"]
-			&& !Options["PETROSIAN"])
+	if (Options["Tal"] && Options["Capablanca"]
+			&& !Options["Petrosian"])
 		return SHASHIN_TAL_CAPABLANCA_CONTEMPT;
 
-	if (Options["TAL"] && !Options["CAPABLANCA"]
-			&& !Options["PETROSIAN"])
+	if (Options["Tal"] && !Options["Capablanca"]
+			&& !Options["Petrosian"])
 		return SHASHIN_TAL_CONTEMPT;
 
-	if (!Options["TAL"] && Options["CAPABLANCA"]
-			&& !Options["PETROSIAN"])
+	if (!Options["Tal"] && Options["Capablanca"]
+			&& !Options["Petrosian"])
 		return SHASHIN_CAPABLANCA_CONTEMPT;
 
-	if (!Options["TAL"] && Options["CAPABLANCA"]
-			&& Options["PETROSIAN"])
+	if (!Options["Tal"] && Options["Capablanca"]
+			&& Options["Petrosian"])
 		return SHASHIN_CAPABLANCA_PETROSIAN_CONTEMPT;
 
-	if (!Options["TAL"] && !Options["CAPABLANCA"]
-			&& Options["PETROSIAN"])
+	if (!Options["Tal"] && !Options["Capablanca"]
+			&& Options["Petrosian"])
 		return SHASHIN_PETROSIAN_CONTEMPT;
 
-	if (Options["TAL"] && Options["CAPABLANCA"]
-			&& Options["PETROSIAN"])
+	if (Options["Tal"] && Options["Capablanca"]
+			&& Options["Petrosian"])
 		return SHASHIN_TAL_CAPABLANCA_PETROSIAN_CONTEMPT;
 
 	return SHASHIN_TAL_PETROSIAN_CONTEMPT;
 }
 int getInitialShashinKingSafe(){
-    if ((!Options["TAL"] && !Options["CAPABLANCA"]
-		    && !Options["PETROSIAN"])
+    if ((!Options["Tal"] && !Options["Capablanca"]
+		    && !Options["Petrosian"])
 	||
-	(!Options["TAL"] && Options["CAPABLANCA"]
-			    && !Options["PETROSIAN"]))
+	(!Options["Tal"] && Options["Capablanca"]
+			    && !Options["Petrosian"]))
 	    return SHASHIN_KING_SAFE_DEFAULT;
 
-    if ((Options["TAL"] && Options["CAPABLANCA"]
-		    && !Options["PETROSIAN"])
+    if ((Options["Tal"] && Options["Capablanca"]
+		    && !Options["Petrosian"])
 	||
-	(!Options["TAL"] && Options["CAPABLANCA"]
-			    && Options["PETROSIAN"]))
+	(!Options["Tal"] && Options["Capablanca"]
+			    && Options["Petrosian"]))
 	    return SHASHIN_KING_SAFE_MIDDLE;
 
-    if ((Options["TAL"] && !Options["CAPABLANCA"]
-		    && !Options["PETROSIAN"])
+    if ((Options["Tal"] && !Options["Capablanca"]
+		    && !Options["Petrosian"])
 	||
-	(Options["TAL"] && Options["CAPABLANCA"]
-			    && Options["PETROSIAN"])
+	(Options["Tal"] && Options["Capablanca"]
+			    && Options["Petrosian"])
 	||
-	(!Options["TAL"] && !Options["CAPABLANCA"]
-			    && Options["PETROSIAN"]))
+	(!Options["Tal"] && !Options["Capablanca"]
+			    && Options["Petrosian"]))
 	    return SHASHIN_KING_SAFE_MAX;
     return SHASHIN_KING_SAFE_DEFAULT;
 }
 
 int getInitialShashinQuiescent(){
-    if ((!Options["TAL"] && !Options["CAPABLANCA"]
-		    && !Options["PETROSIAN"])
+    if ((!Options["Tal"] && !Options["Capablanca"]
+		    && !Options["Petrosian"])
 	||
-	(!Options["TAL"] && Options["CAPABLANCA"]
-			    && !Options["PETROSIAN"]))
+	(!Options["Tal"] && Options["Capablanca"]
+			    && !Options["Petrosian"]))
 	    return 1;
       return 0;
 }

@@ -109,7 +109,7 @@ public:
   bool save();
   void load();
   void load_epd_to_hash();
-  std::string hashfilename = "ShashChess_hash.hsh";
+  std::string hashfilename = "hash.hsh";
 
   // The 32 lowest order bits of the key are used to get the index of the cluster
   TTEntry* first_entry(const Key key) const {

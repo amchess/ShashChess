@@ -31,8 +31,8 @@
 #include "misc.h"
 #include "movegen.h"
 #include "movepick.h"
-#include "polybook.h" 
 #include "position.h"
+#include "polybook.h"
 #include "search.h"
 #include "thread.h"
 #include "timeman.h"
@@ -40,7 +40,11 @@
 #include "uci.h"
 #include "syzygy/tbprobe.h"
 
-bool pawnsPiecesSpace, passedPawns,initiativeToCalculate,eloLevel;
+//from Shashin
+bool pawnsPiecesSpace, passedPawns,initiativeToCalculate;
+int uciElo;
+//end from Shashin
+
 namespace Search {
 
   LimitsType Limits;
@@ -101,7 +105,7 @@ namespace {
     Move best = MOVE_NONE;
   };
   bool cleanSearch,bookEnabled, limitStrength ;
-  int correspondenceMode,variety;
+  int deepAnalysisMode,variety;
   template <NodeType NT>
   Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, bool cutNode);
 
@@ -153,13 +157,8 @@ namespace {
 
 /// Search::init() is called at startup to initialize various lookup tables
 
-void Search::init(bool OptioncleanSearch) {
-  pawnsPiecesSpace = !Options["Limit strength"] || (Options["Limit strength"] && Options["ELO Level"] >= 2000);
-  passedPawns =!Options["Limit strength"] || (Options["Limit strength"] && Options["ELO Level"]>=2200);
-  initiativeToCalculate=!Options["Limit strength"] || (Options["Limit strength"] && Options["ELO Level"]>=2400);
-  skillLevel=Options["Limit strength"] ? ((int)((Options["ELO Level"]-1500)/65)):20;
-  eloLevel = (Options["ELO Level"]);
-  cleanSearch = OptioncleanSearch;
+void Search::init(bool optionCleanSearch) {
+  cleanSearch = optionCleanSearch;
   for (int imp = 0; imp <= 1; ++imp)
       for (int d = 1; d < 64; ++d)
           for (int mc = 1; mc < 64; ++mc)
@@ -207,7 +206,7 @@ void MainThread::search() {
       return;
   }
   bookEnabled       = Options["Book enabled"];
-  limitStrength	    = Options["Limit strenght"];
+  limitStrength	    = Options["UCI_LimitStrength"];
 
   Color us = rootPos.side_to_move();
   Time.init(Limits, us, rootPos.game_ply());
@@ -215,8 +214,15 @@ void MainThread::search() {
   TT.new_search();
   else
   TT.infinite_search();
-  correspondenceMode = Options["Analysis Mode"];
+  deepAnalysisMode = Options["Deep Analysis Mode"];
   variety = Options["Variety"];
+  //from Shashin
+  uciElo=Options["UCI_Elo"];
+  pawnsPiecesSpace = !Options["UCI_LimitStrength"] || (Options["UCI_LimitStrength"] && uciElo >= 2000);
+  passedPawns =!Options["UCI_LimitStrength"] || (Options["UCI_LimitStrength"] && uciElo>=2200);
+  initiativeToCalculate=!Options["UCI_LimitStrength"] || (Options["UCI_LimitStrength"] && uciElo>=2400);
+  skillLevel=Options["UCI_LimitStrength"] ? ((int)((uciElo-1500)/65)):20;
+  //end from Shashin
   if (rootMoves.empty())
   {
       rootMoves.emplace_back(MOVE_NONE);
@@ -243,9 +249,9 @@ void MainThread::search() {
 			    std::mt19937 gen(now());
 			    std::uniform_int_distribution<int> dis(-33, 33);
 			    int rand = dis(gen);
-			    eloLevel += rand;
-			    int NodesToSearch   = pow(1.005958946,(((eloLevel)/1500) - 1 )
-										  + (eloLevel - 1500)) * 32 ;
+			    uciElo += rand;
+			    int NodesToSearch   = pow(1.005958946,(((uciElo)/1500) - 1 )
+										  + (uciElo - 1500)) * 32 ;
 			    Limits.nodes = NodesToSearch;
 
 			    Limits.nodes *= std::max(1,((int)(Time.optimum()))/1000 );
@@ -285,7 +291,7 @@ void MainThread::search() {
 
   // Check if there are threads with a better score than main thread
   Thread* bestThread = this;
-  if (    Options["MultiPV"] == 1
+  if (    int(Options["MultiPV"]) == 1
       && !Limits.depth
       && !limitStrength
       &&  rootMoves[0].pv[0] != MOVE_NONE)
@@ -381,7 +387,7 @@ void Thread::search() {
 
   size_t multiPV = Options["MultiPV"];
   Skill skill(skillLevel);
-  if (correspondenceMode) multiPV = pow(2, correspondenceMode);
+  if (deepAnalysisMode) multiPV = pow(2, deepAnalysisMode);
   // When playing with strength handicap enable MultiPV search that we will
   // use behind the scenes to retrieve a set of possible moves.
   if (skill.enabled())
@@ -568,7 +574,7 @@ void Thread::search() {
               }
           }
       //from Stefano80 playoutSimpleAlways
-      if (mainThread && !Threads.stop)
+      if (mainThread && !Threads.stop && !rootPos.isShashinQuiescentCapablancaMC())
 		   playout(lastBestMove, ss, bestValue);
       //end from Stefano80 playoutSimpleAlways
   }
@@ -594,7 +600,7 @@ Value Thread::playout(Move playMove, Stack* ss, Value playoutValue) {
     if (!MoveList<LEGAL>(rootPos).size())
          return rootPos.checkers()? mated_in(ss->ply): VALUE_DRAW;
 
-    if (     Threads.stop
+    if (     Threads.stop 
         ||  !rootPos.pseudo_legal(playMove)
         ||  !rootPos.legal(playMove))
         return playoutValue;
@@ -1543,6 +1549,7 @@ moves_loop: // When in check, search starts from here
           }
        }
     }
+	
     if (variety && (bestValue + (variety * PawnValueEg / 100) >= 0 ))
 	  bestValue += rand() % (variety + 1);
     // All legal moves have been searched. A special case: If we're in check

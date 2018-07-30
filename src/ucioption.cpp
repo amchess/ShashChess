@@ -21,7 +21,10 @@
 #include <algorithm>
 #include <cassert>
 #include <ostream>
+//Hash		
 #include <iostream>
+//end_Hash
+#include <thread>
 
 #include "misc.h"
 #include "search.h"
@@ -46,8 +49,8 @@ void on_threads(const Option& o) { Threads.set(o); }
 void on_tb_path(const Option& o) { Tablebases::init(o); }
 //Hash	
 void on_HashFile(const Option& o) { TT.set_hash_file_name(o); }
-void SaveHashtoFile(const Option&) { TT.save(); }
-void LoadHashfromFile(const Option&) { TT.load(); }
+void SaveHashToFile(const Option&) { TT.save(); }
+void LoadHashFromFile(const Option&) { TT.load(); }
 void LoadEpdToHash(const Option&) { TT.load_epd_to_hash(); }
 //end_Hash
 
@@ -70,8 +73,11 @@ void init(OptionsMap& o) {
   // at most 2^32 clusters.
   constexpr int MaxHashMB = Is64Bit ? 131072 : 2048;
 
+  unsigned n = std::thread::hardware_concurrency();
+  if (!n) n = 1;
+  
   o["Debug Log File"]        << Option("", on_logger);
-  o["Threads"]               << Option(1, 1, 512, on_threads);
+  o["Threads"]               << Option(n, unsigned(1), unsigned(512), on_threads);
   o["Large Pages"]           << Option(false, on_large_pages);
   o["Hash"]                  << Option(16, 1, MaxHashMB, on_hash_size);
   o["Clear_Hash"]            << Option(on_clear_hash);
@@ -83,9 +89,9 @@ void init(OptionsMap& o) {
   o["UCI_LimitStrength"]     << Option(false);
   o["UCI_Elo"]               << Option(2800, 1500, 2800);
   //Hash save capability 
-  o["HashFile"]                 << Option("ShashChess_hash.hsh", on_HashFile);
-  o["SaveHashtoFile"]           << Option(SaveHashtoFile);
-  o["LoadHashfromFile"]         << Option(LoadHashfromFile);
+  o["HashFile"]                 << Option("hash.hsh", on_HashFile);
+  o["SaveHashToFile"]           << Option(SaveHashToFile);
+  o["LoadHashFromFile"]         << Option(LoadHashFromFile);
   o["LoadEpdToHash"]            << Option(LoadEpdToHash);
   o["SyzygyPath"]            << Option("<empty>", on_tb_path);
   o["SyzygyProbeDepth"]      << Option(1, 1, 100);
@@ -96,7 +102,7 @@ void init(OptionsMap& o) {
 
   //Polyglot Book management
   /*
-      - BookFile: default = <empty>, Path+Filename to the BrainFish book, for example d:\Chess\Cerebellum_Light_Poly.bin
+      - Book file: default = <empty>, Path+Filename to the BrainFish book, for example d:\Chess\Cerebellum_Light_Poly.bin
       - BestBookMove: default = true, if false the move is selected according to the weights in the Polyglot book
         Brain Fish can of course handle also moves or openings which are never played by the book, for example 1. ..e6.
         You can play such openings with using a Standard opening book for your GUI which for example plays only 1. ..e6 as black and then stops.
@@ -128,11 +134,13 @@ std::ostream& operator<<(std::ostream& os, const OptionsMap& om) {
               const Option& o = it.second;
               os << "\noption name " << it.first << " type " << o.type;
 
-              if (o.type != "button")
+              if (o.type == "string" || o.type == "check" || o.type == "combo")
                   os << " default " << o.defaultValue;
 
               if (o.type == "spin")
-                  os << " min " << o.min << " max " << o.max;
+                  os << " default " << int(stof(o.defaultValue))
+                     << " min "     << o.min
+                     << " max "     << o.max;
 
               break;
           }
@@ -142,6 +150,10 @@ std::ostream& operator<<(std::ostream& os, const OptionsMap& om) {
 
 
 /// Option class constructors and conversion operators
+Option::Option(const char* v, const char* cur, OnChange f) : type("combo"), min(0), max(0), on_change(f)
+{
+	defaultValue = v; currentValue = cur;
+}
 
 Option::Option(const char* v, OnChange f) : type("string"), min(0), max(0), on_change(f)
 { defaultValue = currentValue = v; }
@@ -151,14 +163,6 @@ Option::Option(bool v, OnChange f) : type("check"), min(0), max(0), on_change(f)
 
 Option::Option(OnChange f) : type("button"), min(0), max(0), on_change(f)
 {}
-
-Option::Option(const char* v, const char* cur, OnChange f) : type("combo"), min(0), max(0), on_change(f)
-{ defaultValue = v; currentValue = cur; }
-
-Option::operator int() const {
-  assert(type == "check" || type == "spin");
-  return (type == "spin" ? stoi(currentValue) : currentValue == "true");
-}
 
 Option::operator std::string() const {
   assert(type == "string");
@@ -193,7 +197,7 @@ Option& Option::operator=(const string& v) {
 
   if (   (type != "button" && v.empty())
       || (type == "check" && v != "true" && v != "false")
-      || (type == "spin" && (stoi(v) < min || stoi(v) > max)))
+      || (type == "spin" && (stof(v) < min || stof(v) > max)))
       return *this;
 
   if (type != "button")

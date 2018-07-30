@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+#include <cmath>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -30,6 +31,12 @@
 #include "pawns.h"
 #include "thread.h"
 #include "uci.h"
+
+
+//from Shashin
+extern bool pawnsPiecesSpace, passedPawns,initiativeToCalculate;
+extern int uciElo;
+//end from Shashin
 
 namespace Trace {
 
