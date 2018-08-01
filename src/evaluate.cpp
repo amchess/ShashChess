@@ -213,7 +213,7 @@ namespace {
 
   public:
     Evaluation() = delete;
-    explicit Evaluation(Position& p) : pos(p) {}
+    explicit Evaluation(const Position& p) : pos(p) {}
     Evaluation& operator=(const Evaluation&) = delete;
     Value value();
 
@@ -227,7 +227,7 @@ namespace {
     ScaleFactor scale_factor(Value eg) const;
     Score initiative(Value eg) const;
 
-    Position& pos;
+    const Position& pos;
     Material::Entry* me;
     Pawns::Entry* pe;
     Bitboard mobilityArea[COLOR_NB];
@@ -513,7 +513,7 @@ namespace {
                      -   30;
 
         // Transform the kingDanger units into a Score, and subtract it from the evaluation
-        int kingSafe = pos.getShashinKingSafe();//Shashin very good tactical patch
+        int kingSafe = Search::shashinKingSafe;//Shashin very good tactical patch
         if (kingDanger > 0)
         {
             int mobilityDanger = mg_value(mobility[Them] - mobility[Us]);
@@ -861,7 +861,7 @@ namespace {
   Value Evaluation<T>::value() {
 
     assert(!pos.checkers());
-    setWeightsByShashinValue(pos.getShashinValue()); //from shashin
+    setWeightsByShashinValue(Search::shashinValue); //from shashin
     // Probe the material hash table
     me = Material::probe(pos);
 
@@ -897,14 +897,23 @@ namespace {
 	    + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >(),weightsMG[PIECES_POS],weightsEG[PIECES_POS]);
   }
     //from Sugar
-    double passed_Junior_scale = 1.0 + (-abs(v / Value(int(1.0 * double(PawnValueMg + PawnValueEg) / 2.0))) + 0.5) * abs(0.2 / (MidgameLimit + EndgameLimit));
-    double king_Junior_scale = 1.0 - (-abs(v / Value(int(1.0 * double(PawnValueMg + PawnValueEg) / 2.0))) + 0.5) * abs(0.2 / (MidgameLimit + EndgameLimit));
+    double king_Shashin_scale = 1.0;
+    double passed_Shashin_scale = 1.0;
+
+    if (abs(v) >= double(PawnValueMg + PawnValueEg) / 2.0)
+    {
+	    king_Shashin_scale = 1.0 - (-abs(v / Value(int(1.0 * double(PawnValueMg + PawnValueEg) / 2.0))) + 0.5) * abs(0.1 / (MidgameLimit + EndgameLimit));
+    }
+    else
+    {
+	    passed_Shashin_scale = 1.0 + (-abs(v / Value(int(1.0 * double(PawnValueMg + PawnValueEg) / 2.0))) + 0.5) * abs(0.1 / (MidgameLimit + EndgameLimit));
+    }
     //end from Sugar
 
     score += apply_weight(mobility[WHITE] - mobility[BLACK],weightsMG[MOBILITY_POS],weightsEG[MOBILITY_POS]);
-    score +=  apply_weight(Score(int(double(king<   WHITE>() - king<   BLACK>()) * king_Junior_scale)),weightsMG[KING_SAFETY_POS],weightsEG[KING_SAFETY_POS]); //from Sugar
+    score +=  apply_weight(Score(int(double(king<   WHITE>() - king<   BLACK>()) * king_Shashin_scale)),weightsMG[KING_SAFETY_POS],weightsEG[KING_SAFETY_POS]); //from Sugar
     score += apply_weight(threats<WHITE>() - threats<BLACK>(),weightsMG[THREATS_POS],weightsEG[THREATS_POS]);
-    score += apply_weight(Score(int(double(passed< WHITE>() - passed< BLACK>()) * passed_Junior_scale)),weightsMG[PASSED_PAWNS_POS],weightsEG[PASSED_PAWNS_POS]); //from Sugar
+    score += apply_weight(Score(int(double(passed< WHITE>() - passed< BLACK>()) * passed_Shashin_scale)),weightsMG[PASSED_PAWNS_POS],weightsEG[PASSED_PAWNS_POS]); //from Sugar
     if(pawnsPiecesSpace)
       score += apply_weight(space<  WHITE>() - space<  BLACK>(),weightsMG[SPACE_POS],weightsEG[SPACE_POS]);
     if(initiativeToCalculate)
@@ -937,7 +946,7 @@ namespace {
 /// evaluate() is the evaluator for the outer world. It returns a static
 /// evaluation of the position from the point of view of the side to move.
 
-Value Eval::evaluate(Position& pos) {
+Value Eval::evaluate(const Position& pos) {
   return Evaluation<NO_TRACE>(pos).value();
 }
 
@@ -946,7 +955,7 @@ Value Eval::evaluate(Position& pos) {
 /// a string (suitable for outputting to stdout) that contains the detailed
 /// descriptions and values of each evaluation term. Useful for debugging.
 
-std::string Eval::trace(Position& pos) {
+std::string Eval::trace(const Position& pos) {
 
   std::memset(scores, 0, sizeof(scores));
 

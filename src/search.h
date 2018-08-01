@@ -99,6 +99,10 @@ struct LimitsType {
 };
 
 extern LimitsType Limits;
+//from Shashin
+extern uint8_t shashinValue,shashinContempt;
+extern int shashinKingSafe,shashinQuiescentCapablanca,shashinQuiescentCapablancaMC;
+//end from Shashin
 
 void init(bool optionCleanSearch);
 void clear();

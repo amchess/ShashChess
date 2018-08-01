@@ -78,7 +78,7 @@ void init(OptionsMap& o) {
   
   o["Debug Log File"]        << Option("", on_logger);
   o["Threads"]               << Option(n, unsigned(1), unsigned(512), on_threads);
-  o["Large Pages"]           << Option(false, on_large_pages);
+  o["Large Pages"]           << Option(true, on_large_pages);
   o["Hash"]                  << Option(16, 1, MaxHashMB, on_hash_size);
   o["Clear_Hash"]            << Option(on_clear_hash);
   o["NeverClearHash"]           << Option(false);

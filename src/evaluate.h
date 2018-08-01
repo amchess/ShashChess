@@ -31,9 +31,9 @@ namespace Eval {
 
 constexpr Value Tempo = Value(20); // Must be visible to search
 
-std::string trace(Position& pos);//from Shashin
+std::string trace(const Position& pos);
 
-Value evaluate(Position& pos);//from Shashin
+Value evaluate(const Position& pos);
 }
 
 #endif // #ifndef EVALUATE_H_INCLUDED
