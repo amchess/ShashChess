@@ -48,6 +48,10 @@ int uciElo;
 namespace Search {
 
   LimitsType Limits;
+  //from Shashin
+  uint8_t shashinValue,shashinContempt;
+  int shashinKingSafe,shashinQuiescentCapablanca,shashinQuiescentCapablancaMC;
+  //end from Shashin
 }
 
 namespace Tablebases {
@@ -374,7 +378,7 @@ void Thread::search() {
 
   std::memset(ss-4, 0, 7 * sizeof(Stack));
   for (int i = 4; i > 0; i--)
-     (ss-i)->continuationHistory = this->continuationHistory[NO_PIECE][0].get(); // Use as sentinel
+     (ss-i)->continuationHistory = &this->continuationHistory[NO_PIECE][0]; // Use as sentinel
 
   if (cleanSearch)
 	  Search::clear();
@@ -394,7 +398,7 @@ void Thread::search() {
       multiPV = std::max(multiPV, (size_t)4);
 
   multiPV = std::min(multiPV, rootMoves.size());
-  int ct = (rootPos.getShashinContempt()) * PawnValueEg / 100; // From centipawns
+  int ct = (shashinContempt) * PawnValueEg / 100; // From centipawns Shashin
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
 
@@ -452,10 +456,10 @@ void Thread::search() {
               //update Shashin's values from previous score
               if (abs(previousScore) < VALUE_MATE - MAX_PLY){
                   Value scoreCP = (Value)(previousScore * 100 / PawnValueEg);
-                  rootPos.setShashinValue(getShashinValue(scoreCP));
-                  rootPos.setShashinKingSafe(getShashinKingSafe(scoreCP));
-                  rootPos.setShashinQuiescentCapablanca(abs(scoreCP) > SHASHIN_MAX_SCORE ? 0 : 1);
-                  rootPos.setShashinQuiescentCapablancaMC(abs(scoreCP) > SHASHIN_MAX_SCORE_MC ? 0 : 1);
+                  shashinValue=getShashinValue(scoreCP);
+                  shashinKingSafe=getShashinKingSafe(scoreCP);
+                  shashinQuiescentCapablanca=abs(scoreCP) > SHASHIN_MAX_SCORE ? 0 : 1;
+                  shashinQuiescentCapablancaMC=abs(scoreCP) > SHASHIN_MAX_SCORE_MC ? 0 : 1;
               }
               //end update Shashin's values from previous score
           }
@@ -573,10 +577,10 @@ void Thread::search() {
                       Threads.stop = true;
               }
           }
-      //from Stefano80 playoutSimpleAlways
-      if (mainThread && !Threads.stop && !rootPos.isShashinQuiescentCapablancaMC())
+      //from Stefano80 playoutSimple
+      if (mainThread && !Threads.stop && !shashinQuiescentCapablancaMC)
 		   playout(lastBestMove, ss, bestValue);
-      //end from Stefano80 playoutSimpleAlways
+      //end from Stefano80 playoutSimple
   }
 
   if (!mainThread)
@@ -590,38 +594,37 @@ void Thread::search() {
                 skill.best ? skill.best : skill.pick_best(multiPV)));
 }
 
-//from Stefano80 playoutSimpleAlways
+//from Stefano80 playoutSimple
 // Playout a game, in the hope of meaningfully filling the TT beyond the horizon
 Value Thread::playout(Move playMove, Stack* ss, Value playoutValue) {
     StateInfo st;
     bool ttHit;
-    TTEntry* tte ;
-
-    if (!MoveList<LEGAL>(rootPos).size())
-         return rootPos.checkers()? mated_in(ss->ply): VALUE_DRAW;
 
     if (     Threads.stop 
         ||  !rootPos.pseudo_legal(playMove)
         ||  !rootPos.legal(playMove))
-        return playoutValue;
+        return VALUE_NONE;
 
     if (rootPos.is_draw(ss->ply))
         return VALUE_DRAW;
 
     ss->currentMove         = playMove;
-    ss->continuationHistory = continuationHistory[rootPos.moved_piece(playMove)][to_sq(playMove)].get();
-    (ss+1)->ply = ss->ply + 1;
+    ss->continuationHistory = &continuationHistory[rootPos.moved_piece(playMove)][to_sq(playMove)];
 
     rootPos.do_move(playMove, st);
 
-    int d = int(rootDepth) * int(rootDepth) / (rootDepth + 4 * ONE_PLY) - ss->ply/2;
+    (ss+1)->ply = ss->ply + 1;
+    int d = int(rootDepth) * int(rootDepth) / (rootDepth + 4 * ONE_PLY) - 2;
 	Depth newDepth  = d * ONE_PLY;
-	playoutValue = - ::search<NonPV>(rootPos, ss+1, - playoutValue,  - playoutValue + 1, newDepth, false);
-
-    tte    = TT.probe(rootPos.key(), ttHit);
+    TTEntry* tte    = TT.probe(rootPos.key(), ttHit);
+	if (!ttHit && MoveList<LEGAL>(rootPos).size()){
+	    playoutValue = ::search<NonPV>(rootPos, ss+1, - playoutValue,  - playoutValue + 1, newDepth, true);
+	    tte    = TT.probe(rootPos.key(), ttHit);
+	   }
+    
     Move ttMove  = ttHit ? tte->move() : MOVE_NONE;
-    if(  ttHit
-      && ttMove != MOVE_NONE
+    if(  ttHit 
+      && ttMove != MOVE_NONE 
       && ss->ply < MAX_PLY - 2
       && abs(playoutValue) < VALUE_KNOWN_WIN)
         playoutValue = - playout(ttMove, ss+1, - playoutValue);
@@ -629,7 +632,7 @@ Value Thread::playout(Move playMove, Stack* ss, Value playoutValue) {
     rootPos.undo_move(playMove);
 	return playoutValue;
 }
-//end from Stefano80 playoutSimpleAlways
+//end from Stefano80 playoutSimple
 
 namespace {
 
@@ -637,7 +640,6 @@ namespace {
 
   template <NodeType NT>
   Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, bool cutNode) {
-
     constexpr bool PvNode = NT == PV;
     const bool rootNode = PvNode && ss->ply == 0;
 
@@ -693,7 +695,7 @@ namespace {
 
 /*    
     //from JEllis MateFinder
-    if(!pos.getShashinQuiescentCapablanca()){
+    if(!shashinQuiescentCapablanca){
       excludedMove = ss->excludedMove;
       posKey = pos.key() ^ Key(excludedMove);
       tte = TT.probe(posKey, ttHit);
@@ -722,7 +724,7 @@ namespace {
 
 	/*	
 	//from JEllis mateFinder
-        if ((alpha >= mate_in(ss->ply+1)) && !pos.isShashinQuiescentCapablanca()) 
+        if ((alpha >= mate_in(ss->ply+1)) && !shashinQuiescentCapablanca)
             return alpha;
         //}
         //end from JEllis MateFinder
@@ -733,7 +735,7 @@ namespace {
 
     (ss+1)->ply = ss->ply + 1;
     ss->currentMove = (ss+1)->excludedMove = bestMove = MOVE_NONE;
-    ss->continuationHistory = thisThread->continuationHistory[NO_PIECE][0].get();
+    ss->continuationHistory = &thisThread->continuationHistory[NO_PIECE][0];
     (ss+2)->killers[0] = (ss+2)->killers[1] = MOVE_NONE;
     Square prevSq = to_sq((ss-1)->currentMove);
 
@@ -789,7 +791,7 @@ namespace {
     if (!rootNode && TB::Cardinality)
     {
 	int piecesCount = pos.count<ALL_PIECES>();
-        //int piecesCount = !pos.isShashinQuiescentCapablanca() ? popcount(pos.pieces()) : pos.count<ALL_PIECES>(); // from JEllis MateFinder
+        //int piecesCount = !shashinQuiescentCapablanca ? popcount(pos.pieces()) : pos.count<ALL_PIECES>(); // from JEllis MateFinder
 
         if (    piecesCount <= TB::Cardinality
             && (piecesCount <  TB::Cardinality || depth >= TB::ProbeDepth)
@@ -865,7 +867,7 @@ namespace {
     if (  !PvNode
         && depth < 3 * ONE_PLY
         && eval <= alpha - RazorMargin[depth / ONE_PLY])
-	//&& (pos.isShashinQuiescentCapablanca()||(abs(eval) < 2 * VALUE_KNOWN_WIN))) //from JEllis MateFinder
+	//&& (shashinQuiescentCapablanca||(abs(eval) < 2 * VALUE_KNOWN_WIN))) //from JEllis MateFinder
     {
         Value ralpha = alpha - (depth >= 2 * ONE_PLY) * RazorMargin[depth / ONE_PLY];
         Value v = qsearch<NonPV>(pos, ss, ralpha, ralpha+1);
@@ -878,7 +880,7 @@ namespace {
 
     // Step 8. Futility pruning: child node (~30 Elo)
     if (
-	((!rootNode && pos.isShashinQuiescentCapablanca())|| (!PvNode && !pos.isShashinQuiescentCapablanca())) //from JEllis MateFinder
+	((!rootNode && shashinQuiescentCapablanca)|| (!PvNode && !shashinQuiescentCapablanca)) //from JEllis MateFinder
         &&  depth < 7 * ONE_PLY
         &&  eval - futility_margin(depth, improving) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
@@ -893,7 +895,7 @@ namespace {
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply > thisThread->nmpMinPly || us != thisThread->nmpColor)
-	    && (pos.isShashinQuiescentCapablanca() || (abs(eval) < 2 * VALUE_KNOWN_WIN )) //from JEllis MateFinder
+	    && (shashinQuiescentCapablanca || (abs(eval) < 2 * VALUE_KNOWN_WIN )) //from JEllis MateFinder
     )
     {
         assert(eval - beta >= 0);
@@ -902,7 +904,7 @@ namespace {
         Depth R = ((823 + 67 * depth / ONE_PLY) / 256 + std::min((eval - beta) / PawnValueMg, 3)) * ONE_PLY;
 
         ss->currentMove = MOVE_NULL;
-        ss->continuationHistory = thisThread->continuationHistory[NO_PIECE][0].get();
+        ss->continuationHistory = &thisThread->continuationHistory[NO_PIECE][0];
 
         pos.do_null_move(st);
 
@@ -941,7 +943,7 @@ namespace {
     if (   !PvNode
         &&  depth >= 5 * ONE_PLY
         &&  abs(beta) < VALUE_MATE_IN_MAX_PLY)
-	//&& (pos.isShashinQuiescentCapablanca()|| //from JEllis MateFinder
+	//&& (shashinQuiescentCapablanca|| //from JEllis MateFinder
 	    //(ss->ply % 2 == 0 &&  abs(eval) < 2 * VALUE_KNOWN_WIN)))
     {
         Value rbeta = std::min(beta + 216 - 48 * improving, VALUE_INFINITE);
@@ -955,7 +957,7 @@ namespace {
                 probCutCount++;
 
                 ss->currentMove = move;
-                ss->continuationHistory = thisThread->continuationHistory[pos.moved_piece(move)][to_sq(move)].get();
+                ss->continuationHistory = &thisThread->continuationHistory[pos.moved_piece(move)][to_sq(move)];
 
                 assert(depth >= 5 * ONE_PLY);
 
@@ -1070,9 +1072,9 @@ moves_loop: // When in check, search starts from here
 
       // Step 14. Pruning at shallow depth (~170 Elo)
       if (  (//from JEllis MateFinder
-	  (!rootNode && pos.isShashinQuiescentCapablanca())
+	  (!rootNode && shashinQuiescentCapablanca)
 	  ||
-	  (!PvNode && !pos.isShashinQuiescentCapablanca())) //End from JEllis MateFinder
+	  (!PvNode && !shashinQuiescentCapablanca)) //End from JEllis MateFinder
 
           && pos.non_pawn_material(us)
           && bestValue > VALUE_MATED_IN_MAX_PLY)
@@ -1127,7 +1129,7 @@ moves_loop: // When in check, search starts from here
 
       // Update the current move (this must be done after singular extension search)
       ss->currentMove = move;
-      ss->continuationHistory = thisThread->continuationHistory[movedPiece][to_sq(move)].get();
+      ss->continuationHistory = &thisThread->continuationHistory[movedPiece][to_sq(move)];
 
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);
@@ -1137,7 +1139,7 @@ moves_loop: // When in check, search starts from here
       if (    depth >= 3 * ONE_PLY
           &&  moveCount > 1
           && (!captureOrPromotion || moveCountPruning)
-	  && (pos.isShashinQuiescentCapablanca() || (thisThread->selDepth > depth //from JEllis MateFinder
+	  && (shashinQuiescentCapablanca || (thisThread->selDepth > depth //from JEllis MateFinder
 	          //&& !(depth >= 16 * ONE_PLY && ss->ply < 3 * ONE_PLY)
 	  )
 	 )
@@ -1192,7 +1194,7 @@ moves_loop: // When in check, search starts from here
               // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
               r -= ss->statScore / 20000 * ONE_PLY;
           }
-          /*((newDepth - r + 8 * ONE_PLY < thisThread->rootDepth) && !pos.isShashinQuiescentCapablanca()) //from JEllis MateFinder
+          /*((newDepth - r + 8 * ONE_PLY < thisThread->rootDepth) && !shashinQuiescentCapablanca) //from JEllis MateFinder
             r = std::min(r, 3 * ONE_PLY);*/
 
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
@@ -1330,7 +1332,7 @@ moves_loop: // When in check, search starts from here
              && is_ok((ss-1)->currentMove))
         update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth));
 
-    if(PvNode && pos.isShashinQuiescentCapablanca()) //from JEllis MateFinder
+    if(PvNode && shashinQuiescentCapablanca) //from JEllis MateFinder
         bestValue = std::min(bestValue, maxValue);
 
     if (!excludedMove)
@@ -1377,7 +1379,7 @@ moves_loop: // When in check, search starts from here
     Thread* thisThread = pos.this_thread();
     (ss+1)->ply = ss->ply + 1;
     ss->currentMove = bestMove = MOVE_NONE;
-    ss->continuationHistory = thisThread->continuationHistory[NO_PIECE][0].get();
+    ss->continuationHistory = &thisThread->continuationHistory[NO_PIECE][0];
     inCheck = pos.checkers();
     moveCount = 0;
 
@@ -1386,7 +1388,7 @@ moves_loop: // When in check, search starts from here
         || ss->ply >= MAX_PLY)
         return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) : VALUE_DRAW;
 
-    /*if ((alpha >= mate_in(ss->ply+1)) && !pos.isShashinQuiescentCapablanca()) //from JEllis MateFinder
+    /*if ((alpha >= mate_in(ss->ply+1)) && !shashinQuiescentCapablanca) //from JEllis MateFinder
         return alpha;*/
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
@@ -1515,7 +1517,7 @@ moves_loop: // When in check, search starts from here
       }
 
       ss->currentMove = move;
-      ss->continuationHistory = thisThread->continuationHistory[pos.moved_piece(move)][to_sq(move)].get();
+      ss->continuationHistory = &thisThread->continuationHistory[pos.moved_piece(move)][to_sq(move)];
 
       // Make and search the move
       pos.do_move(move, st, givesCheck);
@@ -1736,7 +1738,7 @@ void MainThread::check_time() {
 /// UCI::pv() formats PV information according to the UCI protocol. UCI requires
 /// that all (if any) unsearched PV lines are sent using a previous search score.
 
-string UCI::pv(Position& pos, Depth depth, Value alpha, Value beta) {
+string UCI::pv(const Position& pos, Depth depth, Value alpha, Value beta) {
 
   std::stringstream ss;
   TimePoint elapsed = Time.elapsed() + 1;

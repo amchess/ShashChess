@@ -63,9 +63,9 @@ void Thread::clear() {
 
   for (auto& to : continuationHistory)
       for (auto& h : to)
-          h.get()->fill(0);
+          h->fill(0);
 
-  continuationHistory[NO_PIECE][0].get()->fill(Search::CounterMovePruneThreshold - 1);
+  continuationHistory[NO_PIECE][0]->fill(Search::CounterMovePruneThreshold - 1);
 }
 
 /// Thread::start_searching() wakes up the thread that will start the search
@@ -153,7 +153,107 @@ void ThreadPool::clear() {
   main()->previousScore = VALUE_INFINITE;
   main()->previousTimeReduction = 1.0;
 }
+//from Shashin
+inline uint8_t getInitialShashinValue() {
+	if (!Options["Tal"] && !Options["Capablanca"]
+			&& !Options["Petrosian"])
+		return SHASHIN_POSITION_DEFAULT;
 
+	if (Options["Tal"] && Options["Capablanca"]
+			&& !Options["Petrosian"])
+		return SHASHIN_POSITION_TAL_CAPABLANCA;
+
+	if (Options["Tal"] && !Options["Capablanca"]
+			&& !Options["Petrosian"])
+		return SHASHIN_POSITION_TAL;
+
+	if (!Options["Tal"] && Options["Capablanca"]
+			&& !Options["Petrosian"])
+		return SHASHIN_POSITION_CAPABLANCA;
+
+	if (!Options["Tal"] && Options["Capablanca"]
+			&& Options["Petrosian"])
+		return SHASHIN_POSITION_CAPABLANCA_PETROSIAN;
+
+	if (!Options["Tal"] && !Options["Capablanca"]
+			&& Options["Petrosian"])
+		return SHASHIN_POSITION_PETROSIAN;
+
+	if (Options["Tal"] && Options["Capablanca"]
+			&& Options["Petrosian"])
+		return SHASHIN_POSITION_TAL_CAPABLANCA_PETROSIAN;
+
+	return SHASHIN_POSITION_TAL_PETROSIAN;
+}
+
+inline uint8_t getInitialContemptByShashin() {
+	if (!Options["Tal"] && !Options["Capablanca"]
+			&& !Options["Petrosian"])
+		return SHASHIN_DEFAULT_CONTEMPT;
+
+	if (Options["Tal"] && Options["Capablanca"]
+			&& !Options["Petrosian"])
+		return SHASHIN_TAL_CAPABLANCA_CONTEMPT;
+
+	if (Options["Tal"] && !Options["Capablanca"]
+			&& !Options["Petrosian"])
+		return SHASHIN_TAL_CONTEMPT;
+
+	if (!Options["Tal"] && Options["Capablanca"]
+			&& !Options["Petrosian"])
+		return SHASHIN_CAPABLANCA_CONTEMPT;
+
+	if (!Options["Tal"] && Options["Capablanca"]
+			&& Options["Petrosian"])
+		return SHASHIN_CAPABLANCA_PETROSIAN_CONTEMPT;
+
+	if (!Options["Tal"] && !Options["Capablanca"]
+			&& Options["Petrosian"])
+		return SHASHIN_PETROSIAN_CONTEMPT;
+
+	if (Options["Tal"] && Options["Capablanca"]
+			&& Options["Petrosian"])
+		return SHASHIN_TAL_CAPABLANCA_PETROSIAN_CONTEMPT;
+
+	return SHASHIN_TAL_PETROSIAN_CONTEMPT;
+}
+inline int getInitialShashinKingSafe(){
+    if ((!Options["Tal"] && !Options["Capablanca"]
+		    && !Options["Petrosian"])
+	||
+	(!Options["Tal"] && Options["Capablanca"]
+			    && !Options["Petrosian"]))
+	    return SHASHIN_KING_SAFE_DEFAULT;
+
+    if ((Options["Tal"] && Options["Capablanca"]
+		    && !Options["Petrosian"])
+	||
+	(!Options["Tal"] && Options["Capablanca"]
+			    && Options["Petrosian"]))
+	    return SHASHIN_KING_SAFE_MIDDLE;
+
+    if ((Options["Tal"] && !Options["Capablanca"]
+		    && !Options["Petrosian"])
+	||
+	(Options["Tal"] && Options["Capablanca"]
+			    && Options["Petrosian"])
+	||
+	(!Options["Tal"] && !Options["Capablanca"]
+			    && Options["Petrosian"]))
+	    return SHASHIN_KING_SAFE_MAX;
+    return SHASHIN_KING_SAFE_DEFAULT;
+}
+
+inline int getInitialShashinQuiescent(){
+    if ((!Options["Tal"] && !Options["Capablanca"]
+		    && !Options["Petrosian"])
+	||
+	(!Options["Tal"] && Options["Capablanca"]
+			    && !Options["Petrosian"]))
+	    return 1;
+      return 0;
+}
+//end from Shashin
 /// ThreadPool::start_thinking() wakes up main thread waiting in idle_loop() and
 /// returns immediately. Main thread will wake up other threads and start the search.
 
@@ -161,7 +261,13 @@ void ThreadPool::start_thinking(Position& pos, StateListPtr& states,
                                 const Search::LimitsType& limits, bool ponderMode) {
 
   main()->wait_for_search_finished();
-  pos.set_initial_shashin_values(); //from Shashin
+   //from Shashin
+  Search::shashinValue = getInitialShashinValue();
+  Search::shashinContempt = getInitialContemptByShashin();
+  Search::shashinKingSafe=getInitialShashinKingSafe();
+  Search::shashinQuiescentCapablanca=getInitialShashinQuiescent();
+  Search::shashinQuiescentCapablancaMC=getInitialShashinQuiescent();
+  //end from Shashin
   stopOnPonderhit = stop = false;
   ponder = ponderMode;
   Search::Limits = limits;
@@ -195,7 +301,6 @@ void ThreadPool::start_thinking(Position& pos, StateListPtr& states,
       th->rootDepth = th->completedDepth = DEPTH_ZERO;
       th->rootMoves = rootMoves;
       th->rootPos.set(pos.fen(), pos.is_chess960(), &setupStates->back(), th);
-      th->rootPos.set_initial_shashin_values(); //from Shashin
   }
 
   setupStates->back() = tmp;

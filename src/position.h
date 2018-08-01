@@ -115,14 +115,6 @@ public:
   template<PieceType> Bitboard attacks_from(Square s, Color c) const;
   Bitboard slider_blockers(Bitboard sliders, Square s, Bitboard& pinners) const;
 
-  //from Shashin
-  uint8_t shashinValue;
-  uint8_t shashinContempt;
-  int shashinKingSafe;
-  int shashinQuiescentCapablanca;
-  int shashinQuiescentCapablancaMC;
-  //end from Shashin
-
   // Properties of moves
   bool legal(Move m) const;
   bool pseudo_legal(const Move m) const;
@@ -169,21 +161,6 @@ public:
   // Position consistency check, for debugging
   bool pos_is_ok() const;
   void flip();
-  //from Shashin
-  uint8_t getShashinContempt ();
-  void setShashinContempt (uint8_t shashinContempt);
-  int getShashinKingSafe ();
-  void setShashinKingSafe (int shashinKingSafe);
-  int isShashinQuiescentCapablanca ();
-  void setShashinQuiescentCapablanca (int shashinQuiescentCapablanca);
-  int isShashinQuiescentCapablancaMC ();
-  void setShashinQuiescentCapablancaMC (int shashinQuiescentCapablancaMC);
-  uint8_t getShashinValue ();
-  void setShashinValue (uint8_t shashinValue);
-  //shashin methods
-  void set_initial_shashin_values();
-  //end from Shashin
-
 
 private:
   // Initialization helpers (used while setting up a position)
@@ -221,47 +198,7 @@ namespace PSQT {
 }
 
 extern std::ostream& operator<<(std::ostream& os, const Position& pos);
-//from Shashin
-inline uint8_t Position::getShashinContempt () {
-  return shashinContempt;
-}
 
-inline void Position::setShashinContempt (uint8_t shashinContemptIn){
-  this->shashinContempt = shashinContemptIn;
-}
-
-inline int Position::getShashinKingSafe () {
-  return shashinKingSafe;
-}
-
-inline void Position::setShashinKingSafe (int shashinKingSafeIn) {
-  this->shashinKingSafe = shashinKingSafeIn;
-}
-
-inline int Position::isShashinQuiescentCapablanca () {
-  return shashinQuiescentCapablanca;
-}
-
-inline void Position::setShashinQuiescentCapablanca (int shashinQuiescentCabablancaIn){
-  shashinQuiescentCapablanca = shashinQuiescentCabablancaIn;
-}
-
-inline int Position::isShashinQuiescentCapablancaMC () {
-  return shashinQuiescentCapablancaMC;
-}
-
-inline void Position::setShashinQuiescentCapablancaMC (int shashinQuiescentCabablancaMCIn){
-  shashinQuiescentCapablancaMC = shashinQuiescentCabablancaMCIn;
-}
-
-inline uint8_t Position::getShashinValue () {
-  return shashinValue;
-}
-
-inline void Position::setShashinValue (uint8_t shashinValueIn){
-  this->shashinValue = shashinValueIn;
-}
-//end from Shashin
 inline Color Position::side_to_move() const {
   return sideToMove;
 }
