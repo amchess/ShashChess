@@ -513,7 +513,7 @@ namespace {
                      -   30;
 
         // Transform the kingDanger units into a Score, and subtract it from the evaluation
-        int kingSafe = Search::shashinKingSafe;//Shashin very good tactical patch
+        int kingSafe = pos.this_thread()->shashinKingSafe;//Shashin very good tactical patch
         if (kingDanger > 0)
         {
             int mobilityDanger = mg_value(mobility[Them] - mobility[Us]);
@@ -835,18 +835,37 @@ namespace {
   //from shashin
   void setWeightsByShashinValue(uint8_t shashinValue) {
     if ((shashinValue == SHASHIN_POSITION_CAPABLANCA_PETROSIAN) || (shashinValue == SHASHIN_POSITION_TAL_CAPABLANCA)){
-  	  weightsEG[MATERIAL_POS] = MIDDLE_FOR_WEIGHT;
-  	  weightsEG[MOBILITY_POS] = MIDDLE_FOR_WEIGHT;
+	  weightsEG[MATERIAL_POS] = MIDDLE_FOR_WEIGHT;
+	  weightsEG[MOBILITY_POS] = MIDDLE_FOR_WEIGHT;
+	  weightsEG[PASSED_PAWNS_POS] = MIDDLE_FOR_WEIGHT;
+	  weightsEG[KING_SAFETY_POS] = MIDDLE_FOR_WEIGHT;
+	  weightsMG[MATERIAL_POS] = MIDDLE_FOR_WEIGHT;
+	  weightsMG[MOBILITY_POS] = MIDDLE_FOR_WEIGHT;
+	  weightsMG[PASSED_PAWNS_POS] = MIDDLE_FOR_WEIGHT;
+	  weightsMG[KING_SAFETY_POS] = MIDDLE_FOR_WEIGHT;
     }
     else{
   	  if ((shashinValue == SHASHIN_POSITION_PETROSIAN) || (shashinValue == SHASHIN_POSITION_TAL) || (shashinValue == SHASHIN_POSITION_TAL_PETROSIAN)) {
-  		  weightsEG[MATERIAL_POS] = MIN_FOR_WEIGHT_EG;
-  		  weightsEG[MOBILITY_POS] = MAX_FOR_WEIGHT_EG ;
+		  weightsEG[MATERIAL_POS] = MIN_FOR_WEIGHT_EG;
+		  weightsEG[MOBILITY_POS] = MAX_FOR_WEIGHT_EG ;
+		  weightsEG[PASSED_PAWNS_POS] = MIN_FOR_WEIGHT_EG;
+		  weightsEG[KING_SAFETY_POS] = MAX_FOR_WEIGHT_EG ;
+		  weightsMG[MATERIAL_POS] = MIN_FOR_WEIGHT_MG;
+		  weightsMG[MOBILITY_POS] = MAX_FOR_WEIGHT_MG ;
+		  weightsMG[PASSED_PAWNS_POS] = MIN_FOR_WEIGHT_MG;
+		  weightsMG[KING_SAFETY_POS] = MAX_FOR_WEIGHT_MG ;
+
   	  }
   	  else {
   		  if ((shashinValue == SHASHIN_POSITION_DEFAULT) ||(shashinValue == SHASHIN_POSITION_CAPABLANCA) || (shashinValue == SHASHIN_POSITION_TAL_CAPABLANCA_PETROSIAN)) {
-  			  weightsEG[MATERIAL_POS] = MAX_FOR_WEIGHT_EG ;
-  			  weightsEG[MOBILITY_POS] = MIN_FOR_WEIGHT_EG;
+			  weightsEG[MATERIAL_POS] = MAX_FOR_WEIGHT_EG ;
+			  weightsEG[MOBILITY_POS] = MIN_FOR_WEIGHT_EG;
+			  weightsEG[PASSED_PAWNS_POS] = MAX_FOR_WEIGHT_EG ;
+			  weightsEG[KING_SAFETY_POS] = MIN_FOR_WEIGHT_EG;
+			  weightsMG[MATERIAL_POS] = MAX_FOR_WEIGHT_MG ;
+			  weightsMG[MOBILITY_POS] = MIN_FOR_WEIGHT_MG;
+			  weightsMG[PASSED_PAWNS_POS] = MAX_FOR_WEIGHT_MG ;
+			  weightsMG[KING_SAFETY_POS] = MIN_FOR_WEIGHT_MG;
   		  }
   	  }
     }
@@ -861,7 +880,7 @@ namespace {
   Value Evaluation<T>::value() {
 
     assert(!pos.checkers());
-    setWeightsByShashinValue(Search::shashinValue); //from shashin
+    setWeightsByShashinValue(pos.this_thread()->shashinValue); //from shashin
     // Probe the material hash table
     me = Material::probe(pos);
 
@@ -896,24 +915,10 @@ namespace {
 	    + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
 	    + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >(),weightsMG[PIECES_POS],weightsEG[PIECES_POS]);
   }
-    //from Sugar
-    double king_Shashin_scale = 1.0;
-    double passed_Shashin_scale = 1.0;
-
-    if (abs(v) >= double(PawnValueMg + PawnValueEg) / 2.0)
-    {
-	    king_Shashin_scale = 1.0 - (-abs(v / Value(int(1.0 * double(PawnValueMg + PawnValueEg) / 2.0))) + 0.5) * abs(0.1 / (MidgameLimit + EndgameLimit));
-    }
-    else
-    {
-	    passed_Shashin_scale = 1.0 + (-abs(v / Value(int(1.0 * double(PawnValueMg + PawnValueEg) / 2.0))) + 0.5) * abs(0.1 / (MidgameLimit + EndgameLimit));
-    }
-    //end from Sugar
-
     score += apply_weight(mobility[WHITE] - mobility[BLACK],weightsMG[MOBILITY_POS],weightsEG[MOBILITY_POS]);
-    score +=  apply_weight(Score(int(double(king<   WHITE>() - king<   BLACK>()) * king_Shashin_scale)),weightsMG[KING_SAFETY_POS],weightsEG[KING_SAFETY_POS]); //from Sugar
+    score +=  apply_weight(Score(int(double(king<   WHITE>() - king<   BLACK>()))),weightsMG[KING_SAFETY_POS],weightsEG[KING_SAFETY_POS]); //from Sugar
     score += apply_weight(threats<WHITE>() - threats<BLACK>(),weightsMG[THREATS_POS],weightsEG[THREATS_POS]);
-    score += apply_weight(Score(int(double(passed< WHITE>() - passed< BLACK>()) * passed_Shashin_scale)),weightsMG[PASSED_PAWNS_POS],weightsEG[PASSED_PAWNS_POS]); //from Sugar
+    score += apply_weight(Score(int(double(passed< WHITE>() - passed< BLACK>()))),weightsMG[PASSED_PAWNS_POS],weightsEG[PASSED_PAWNS_POS]); //from Sugar
     if(pawnsPiecesSpace)
       score += apply_weight(space<  WHITE>() - space<  BLACK>(),weightsMG[SPACE_POS],weightsEG[SPACE_POS]);
     if(initiativeToCalculate)
