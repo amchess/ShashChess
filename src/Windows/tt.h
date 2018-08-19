@@ -41,28 +41,7 @@ struct TTEntry {
   Value eval()  const { return (Value)eval16; }
   Depth depth() const { return (Depth)(depth8 * int(ONE_PLY)); }
   Bound bound() const { return (Bound)(genBound8 & 0x3); }
-
-  void save(Key k, Value v, Bound b, Depth d, Move m, Value ev, uint8_t g) {
-
-    assert(d / ONE_PLY * ONE_PLY == d);
-
-    // Preserve any existing move for the same position
-    if (m || (k >> 48) != key16)
-        move16 = (uint16_t)m;
-
-    // Don't overwrite more valuable entries
-    if (  (k >> 48) != key16
-        || d / ONE_PLY > depth8 - 4
-     /* || g != (genBound8 & 0xFC) // Matching non-zero keys are already refreshed by probe() */
-        || b == BOUND_EXACT)
-    {
-        key16     = (uint16_t)(k >> 48);
-        value16   = (int16_t)v;
-        eval16    = (int16_t)ev;
-        genBound8 = (uint8_t)(g | b);
-        depth8    = (int8_t)(d / ONE_PLY);
-    }
-  }
+  void save(Key k, Value v, Bound b, Depth d, Move m, Value ev);
 
 private:
   friend class TranspositionTable;
@@ -97,7 +76,7 @@ class TranspositionTable {
 
 public:
   TranspositionTable() { mbSize_last_used = 0;  mbSize_last_used = 0; }
- ~TranspositionTable() {}
+  ~TranspositionTable() {}
   void new_search() { generation8 += 4; } // Lower 2 bits are used by Bound
   void infinite_search() { generation8 = 4; }
   uint8_t generation() const { return generation8; }
@@ -117,6 +96,8 @@ public:
   }
 
 private:
+  friend struct TTEntry;
+
   size_t  mbSize_last_used;
 
 #ifdef _WIN32

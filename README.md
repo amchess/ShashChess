@@ -267,4 +267,15 @@ Strategical algorithm (for quiescent positions)
 
 Defense position/algorithm (the "reversed colors" Tal)
 
+## Acknowledgments
 
+- Maurizio Platino, a CCE and CCM ICCF player (https://www.iccf.com/player?id=241094), the official tester
+- The Stockfish team
+- The Sugar team: 
+    - Marco Zerbinati, for the optimized windows builds and for his forum http://mzchessforum.altervista.org) and 
+    - Sergey Aleksandrovitch Kozlov for his very interesting patch and code
+- The mzforum user hagtorp for his pretious suggestions about the android version
+- The BrainFish, McBrain, CorChess, CiChess and MateFinder authors for their very interesting derivative
+- Obviously, the chess theorician Alexander Shashin, whithout whom I wouldn't had the idea of this engine
+
+Sorry If I forgot someone.
