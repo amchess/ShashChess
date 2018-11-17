@@ -21,10 +21,6 @@
 #include <algorithm>
 #include <cassert>
 #include <ostream>
-//Hash		
-#include <iostream>
-//end_Hash
-#include <thread>
 
 #include "misc.h"
 #include "search.h"
@@ -47,13 +43,6 @@ void on_large_pages(const Option& o) { TT.resize(o); }  // warning is ok, will b
 void on_logger(const Option& o) { start_logger(o); }
 void on_threads(const Option& o) { Threads.set(o); }
 void on_tb_path(const Option& o) { Tablebases::init(o); }
-//Hash	
-void on_HashFile(const Option& o) { TT.set_hash_file_name(o); }
-void SaveHashToFile(const Option&) { TT.save(); }
-void LoadHashFromFile(const Option&) { TT.load(); }
-void LoadEpdToHash(const Option&) { TT.load_epd_to_hash(); }
-//end_Hash
-
 void on_book_file(const Option& o) { polybook.init(o); }
 void on_best_book_move(const Option& o) { polybook.set_best_book_move(o); }
 void on_book_depth(const Option& o) { polybook.set_book_depth(o); }
@@ -73,47 +62,37 @@ void init(OptionsMap& o) {
   // at most 2^32 clusters.
   constexpr int MaxHashMB = Is64Bit ? 131072 : 2048;
 
-  unsigned n = std::thread::hardware_concurrency();
-  if (!n) n = 1;
-  
   o["Debug Log File"]        << Option("", on_logger);
-  o["Threads"]               << Option(n, unsigned(1), unsigned(512), on_threads);
+  o["Analysis Contempt"]     << Option("Both var Off var White var Black var Both", "Both");
+  o["Threads"]               << Option(1, 1, 512, on_threads);
   o["Large Pages"]           << Option(false, on_large_pages);
   o["Hash"]                  << Option(16, 1, MaxHashMB, on_hash_size);
   o["Clear_Hash"]            << Option(on_clear_hash);
-  o["NeverClearHash"]           << Option(false);
   o["Ponder"]                << Option(false);
   o["MultiPV"]               << Option(1, 1, 500);
   o["UCI_Chess960"]          << Option(false);
   //handicap mode
   o["UCI_LimitStrength"]     << Option(false);
   o["UCI_Elo"]               << Option(2800, 1500, 2800);
-  //Hash save capability 
-  o["HashFile"]                 << Option("hash.hsh", on_HashFile);
-  o["SaveHashToFile"]           << Option(SaveHashToFile);
-  o["LoadHashFromFile"]         << Option(LoadHashFromFile);
-  o["LoadEpdToHash"]            << Option(LoadEpdToHash);
   o["SyzygyPath"]            << Option("<empty>", on_tb_path);
   o["SyzygyProbeDepth"]      << Option(1, 1, 100);
   o["SyzygyProbeLimit"]      << Option(7, 0, 7);
   o["Deep Analysis Mode"]     << Option(0, 0,  8);
-  o["Clean Search"]            << Option(false);
   o["Variety"]               << Option (0, 0, 40);
 
   //Polyglot Book management
   /*
       - Book file: default = <empty>, Path+Filename to the BrainFish book, for example d:\Chess\Cerebellum_Light_Poly.bin
-      - BestBookMove: default = true, if false the move is selected according to the weights in the Polyglot book
+      - Best book move: default = true, if false the move is selected according to the weights in the Polyglot book
         Brain Fish can of course handle also moves or openings which are never played by the book, for example 1. ..e6.
         You can play such openings with using a Standard opening book for your GUI which for example plays only 1. ..e6 as black and then stops.
         Another option is to edit the Poyglot Book.
       - BookDepth: default 255, maximum number of moves played out of the book in one row.
 
    */
-  o["Book enabled"]          << Option(false);
-  o["Book file"]              << Option("<empty>", on_book_file);
-  o["Best book move"]          << Option(true, on_best_book_move);
-  o["Book depth"]             << Option(255, 1, 255, on_book_depth);
+  o["BookFile"]              << Option("<empty>", on_book_file);
+  o["BestBookMove"]          << Option(true, on_best_book_move);
+  o["BookDepth"]             << Option(255, 1, 255, on_book_depth);
 
   o["Tal"]                   << Option(false);
   o["Capablanca"]            << Option(false);
@@ -150,10 +129,6 @@ std::ostream& operator<<(std::ostream& os, const OptionsMap& om) {
 
 
 /// Option class constructors and conversion operators
-Option::Option(const char* v, const char* cur, OnChange f) : type("combo"), min(0), max(0), on_change(f)
-{
-	defaultValue = v; currentValue = cur;
-}
 
 Option::Option(const char* v, OnChange f) : type("string"), min(0), max(0), on_change(f)
 { defaultValue = currentValue = v; }
@@ -163,6 +138,17 @@ Option::Option(bool v, OnChange f) : type("check"), min(0), max(0), on_change(f)
 
 Option::Option(OnChange f) : type("button"), min(0), max(0), on_change(f)
 {}
+
+Option::Option(double v, int minv, int maxv, OnChange f) : type("spin"), min(minv), max(maxv), on_change(f)
+{ defaultValue = currentValue = std::to_string(v); }
+
+Option::Option(const char* v, const char* cur, OnChange f) : type("combo"), min(0), max(0), on_change(f)
+{ defaultValue = v; currentValue = cur; }
+
+Option::operator double() const {
+  assert(type == "check" || type == "spin");
+  return (type == "spin" ? stof(currentValue) : currentValue == "true");
+}
 
 Option::operator std::string() const {
   assert(type == "string");

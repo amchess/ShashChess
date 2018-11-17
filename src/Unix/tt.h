@@ -64,8 +64,8 @@ private:
 
 class TranspositionTable {
 
-  static constexpr size_t CacheLineSize = 64;
-  static constexpr size_t ClusterSize = 3;
+  static constexpr int CacheLineSize = 64;
+  static constexpr int ClusterSize = 3;
 
   struct Cluster {
     TTEntry entry[ClusterSize];
@@ -75,18 +75,12 @@ class TranspositionTable {
   static_assert(CacheLineSize % sizeof(Cluster) == 0, "Cluster size incorrect");
 
 public:
-  ~TranspositionTable() { free(mem); }
+ ~TranspositionTable() { free(mem); }
   void new_search() { generation8 += 4; } // Lower 2 bits are used by Bound
-  void infinite_search() { generation8 = 4; }
   TTEntry* probe(const Key key, bool& found) const;
   int hashfull() const;
   void resize(size_t mbSize);
   void clear();
-  void set_hash_file_name(const std::string& fname);
-  bool save();
-  void load();
-  void load_epd_to_hash();
-  std::string hashfilename = "hash.hsh";
 
   // The 32 lowest order bits of the key are used to get the index of the cluster
   TTEntry* first_entry(const Key key) const {
@@ -95,7 +89,7 @@ public:
 
 private:
   friend struct TTEntry;
-  size_t  mbSize_last_used;
+
   size_t clusterCount;
   Cluster* table;
   void* mem;

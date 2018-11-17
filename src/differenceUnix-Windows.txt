@@ -1,0 +1,6 @@
+misc.cpp
+tt.cpp
+tt.h
+uci.h  only MOVE_OVERHEAD (30-100)
+ucioption.cpp
+MakeAll.bat vs MakeAll.sh

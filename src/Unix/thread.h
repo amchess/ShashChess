@@ -52,6 +52,8 @@ public:
   explicit Thread(size_t);
   virtual ~Thread();
   virtual void search();
+  virtual void updateShashinValues (Value score);
+  virtual void initShashinElements ();
   void clear();
   void idle_loop();
   void start_searching();
@@ -75,7 +77,7 @@ public:
   Score contempt;
   //from Shashin
   uint8_t shashinValue,shashinContempt;
-  int shashinKingSafe,shashinQuiescentCapablancaMaxScore,shashinQuiescentCapablancaLowScore,shashinQuiescentCapablancaMiddleLowScore,shashinQuiescentCapablancaMiddleHighScore;
+  int shashinKingSafe,shashinQuiescentCapablancaMaxScore;
   //end from Shashin
  };
 

@@ -73,12 +73,15 @@ T = the average move time (in seconds)_
 Button to clear the Hash Memory.
 If the Never Clear Hash option is enabled, this button doesn't do anything.
 
-### Never Clear Hash (checkbox)
+## Analysis Contempt
 
-This option prevents the Hash Memory from being cleared between successive games or positions
-belonging to different games. Check this option also if you want to Load the Hash from disk file,
-otherwise your loaded Hash could be cleared by a subsequent ucinewgame or Clear Hash
-command.
+This option has no effect in the playing mode.
+A non-zero contempt is determined by Shashin's options and used only during game play, not during infinite analysis where it's turned off.
+This helps make analysis consistent when switching sides and exploring various lines and lets you include a non-zero Contempt in your analysis. 
+Note when playing against the computer, if you wish to use a non-zero Contempt, either turn off “White Contempt” so that Contempt will apply to the Computer’s side, or you can use the above description to set an appropriate Contempt for the specific side that ShashChess is playing. 
+Please note if “White Contempt” is off, in infinite search or analysis mode, ShashChess will always use a value of 0 for Contempt.
+If you use this option, you can analyse with contempt settled for white, black or for all points of view.
+Obviously, this option can produce an asymmetry in the evaluations (the evaluation changes when you switch sides). So, be aware!
 
 ## Threads
 
@@ -146,30 +149,6 @@ above.
 The UCI_Elo feature is controlled by the chess GUI, and usually doesn't appear in the configuration
 window.
 
-## Hash save capability
-
-The goal is to use an hash saving capability to allow the user to recover a previous analysis session and continue it. 
-The code is from Daniel Josè.
-The saved hash file will be of the same size of the hash memory, so if you defined 4 GB of hash, such will be the file size. Saving and loading such big files can take some time.
-You can set the NeverClearHash option to avoid that the hash could be cleared by a Clear Hash or ucinewgame command.
-
-### HashFile
-
-The full file name with path information. If you don't set the path, it will be saved in the current folder. It defaults to hash.hsh.
-
-
-### SaveHashtoFile
-
-To save the hash, stop the analysis and press this button in the uci options screen of the GUI.
-
-### Load Hash from File
-
-To load the hash file, load the game you are interested in, load the engine withouth starting it, and press the LoadHashfromFile button in the uci options screen of the GUI. Now you can start the analysis.
-
-### LoadEpdToHash
-
-It loads EPD on offer
-
 ## Sygyzy End Game table bases
 
 Download at [http://olympuschess.com/egtb/sbases](http://olympuschess.com/egtb/sbases) (by Ronald De Man)
@@ -212,10 +191,6 @@ So, fewer tactical shots missed, but loss of some ELO, increasingly until 8, cor
 multiPV = 256.
 Recommended values: from 1 to 4 ( > 4 too wide search width)
 
-### Clean Search
-
-If on, it always resets search state to its initial value
-
 ### Variety
 
 _Integer, Default: 0, Min: 0, Max: 40_
@@ -225,11 +200,6 @@ Higher variety -> more probable loss of ELO
 ## Book management
 
 Polyglot and Cerebellum opening books, to instant play
-
-### Book enabled
-
-If enabled, ShashChess will try to use the Polyglot/Cerebellum opening book specified in the "Book
-File" parameter.
 
 ### Book file
 
@@ -269,7 +239,8 @@ Defense position/algorithm (the "reversed colors" Tal)
 
 ## Acknowledgments
 
-- Maurizio Platino, a CCE and CCM ICCF player (https://www.iccf.com/player?id=241094), the official tester
+- ICCF GM Matjaž Pirš (https://www.iccf.com/player?id=480232), for his great experience and tests on positions analysis in different game's phases
+- ICCF CCE and CCM Maurizio Platino (https://www.iccf.com/player?id=241094), the official tester
 - The Stockfish team
 - The Sugar team: 
     - Marco Zerbinati, for the optimized windows builds and for his forum http://mzchessforum.altervista.org) and 
