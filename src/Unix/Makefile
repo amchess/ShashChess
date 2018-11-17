@@ -444,7 +444,7 @@ objclean:
 profileclean:
 	@rm -rf profdir
 	@rm -f bench.txt *.gcda ./syzygy/*.gcda *.gcno ./syzygy/*.gcno
-	@rm -f shashchess.profdata *.profraw
+	@rm -f stockfish.profdata *.profraw
 
 default:
 	help

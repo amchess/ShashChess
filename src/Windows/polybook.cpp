@@ -334,25 +334,17 @@ PolyBook::~PolyBook()
 void PolyBook::init(const std::string& bookfile)
 {
     if (bookfile.length() == 0) return;
-    const char *file_name = bookfile.c_str();
+    const char *fnam = bookfile.c_str();
 
-    if (strcmp(file_name, "<empty>") == 0)
+    if (strcmp(fnam, "<empty>") == 0)
     {
         enabled = false;
         return;
     }
 
-#ifdef _WIN32
-	FILE *fpt;
-	errno_t errno_local = fopen_s(&fpt, file_name, "rb");
-	if (fpt == NULL || errno_local != 0)
-	{
-		assert(errno_local != 0);
-#else
-    FILE *fpt = fopen(file_name, "rb");
+    FILE *fpt = fopen(fnam, "rb");
     if (fpt == NULL)
     {
-#endif
         sync_cout << "info string Could not open " << bookfile << sync_endl;
         enabled = false;
         return;

@@ -49,22 +49,12 @@ public:
   Option(OnChange = nullptr);
   Option(bool v, OnChange = nullptr);
   Option(const char* v, OnChange = nullptr);
+  Option(double v, int minv, int maxv, OnChange = nullptr);
   Option(const char* v, const char* cur, OnChange = nullptr);
-  //from Sugar
-  template<class T> Option(T v, T minv, T maxv, OnChange f = nullptr) : type("spin"), min(minv), max(maxv), on_change(f)
-  {
-	  defaultValue = currentValue = std::to_string(v);
-  }
-  //end from Sugar
+
   Option& operator=(const std::string&);
   void operator<<(const Option&);
-  //from Sugar
-  template<class T> operator T() const
-  {
-	  assert(type == "spin" || type == "check");
-	  return (type == "spin" ? T(stof(currentValue)): type == "check" ? (currentValue == "true") : T(0));
-  }
-  //end from Sugar
+  operator double() const;
   operator std::string() const;
   bool operator==(const char*) const;
 
@@ -92,7 +82,6 @@ enum {
 	NODES_TIME = 0,
 	SLOW_MOVER = 84,
 	MIN_THINK_TIME = 20,
-	MOVE_OVERHEAD = 30,
 	SYZ_50_MOVE = 1
 };
 //end from Shashin

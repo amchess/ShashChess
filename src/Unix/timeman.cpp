@@ -84,7 +84,7 @@ namespace {
 void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
 
   TimePoint minThinkingTime = MIN_THINK_TIME;
-  TimePoint moveOverhead    = MOVE_OVERHEAD;
+  TimePoint moveOverhead    = Options["Move Overhead"];
   TimePoint slowMover       = SLOW_MOVER;
   TimePoint npmsec          = NODES_TIME;
   TimePoint hypMyTime;
