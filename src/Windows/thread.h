@@ -77,7 +77,7 @@ public:
   Score contempt;
   //from Shashin
   uint8_t shashinValue,shashinContempt;
-  int shashinKingSafe,shashinQuiescentCapablancaMaxScore;
+  int shashinKingSafe,shashinQuiescentCapablancaMaxScore,shashinMaxLmr;
   //end from Shashin
  };
 

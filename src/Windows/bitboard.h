@@ -82,6 +82,7 @@ struct Magic {
   Bitboard  mask;
   Bitboard  magic;
   Bitboard* attacks;
+//from BrainFish this file
 
   // Compute the attack's index using the 'magic bitboards' approach
   template<PieceType Pt>
@@ -132,6 +133,10 @@ constexpr bool more_than_one(Bitboard b) {
   return b & (b - 1);
 }
 
+inline bool opposite_colors(Square s1, Square s2) {
+  return bool(DarkSquares & s1) != bool(DarkSquares & s2);
+}
+
 /// rank_bb() and file_bb() return a bitboard representing all the squares on
 /// the given file or rank.
 
@@ -171,6 +176,16 @@ template<Color C>
 constexpr Bitboard pawn_attacks_bb(Bitboard b) {
   return C == WHITE ? shift<NORTH_WEST>(b) | shift<NORTH_EAST>(b)
                     : shift<SOUTH_WEST>(b) | shift<SOUTH_EAST>(b);
+}
+
+
+/// double_pawn_attacks_bb() returns the pawn attacks for the given color
+/// from the squares in the given bitboard.
+
+template<Color C>
+constexpr Bitboard double_pawn_attacks_bb(Bitboard b) {
+  return C == WHITE ? shift<NORTH_WEST>(b) & shift<NORTH_EAST>(b)
+                    : shift<SOUTH_WEST>(b) & shift<SOUTH_EAST>(b);
 }
 
 

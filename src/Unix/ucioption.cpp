@@ -68,8 +68,9 @@ void init(OptionsMap& o) {
   o["Clear_Hash"]            << Option(on_clear_hash);
   o["Ponder"]                << Option(false);
   o["MultiPV"]               << Option(1, 1, 500);
-  o["UCI_Chess960"]          << Option(false);
   o["Move Overhead"]         << Option(30, 0, 5000);
+  o["UCI_Chess960"]          << Option(false);
+  o["UCI_AnalyseMode"]       << Option(false);
   //handicap mode
   o["UCI_LimitStrength"]     << Option(false);
   o["UCI_Elo"]               << Option(2800, 1500, 2800);

@@ -56,7 +56,7 @@ namespace {
 
 /// Version number. If Version is left empty, then compile date in the format
 /// DD-MM-YY and show in engine_info.
-const string Version = "4.0";
+const string Version = "5.0";
 
 /// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 /// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
@@ -151,8 +151,8 @@ void dbg_hit_on(bool b) { ++hits[0]; if (b) ++hits[1]; }
 void dbg_hit_on(bool c, bool b) { if (c) dbg_hit_on(b); }
 void dbg_mean_of(int v) { ++means[0]; means[1] += v; }
 
-
 void dbg_print() {
+
   if (hits[0])
       cerr << "Total " << hits[0] << " Hits " << hits[1]
            << " hit rate (%) " << 100 * hits[1] / hits[0] << endl;
