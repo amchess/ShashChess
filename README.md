@@ -131,26 +131,30 @@ window.
 _Default 30, min 0, max 5000_
 In ms, the default value seems to be the best on Linux systems, but must be increased for slow GUI like Fritz. In general, on Windows system it seems a good value to be 100.
 
+## Slow mover
+
+_Default 84, min 10, max 1000_
+ "Time usage percent": how much the engine thinks on a move. Many engines seem to move faster and the engine is behind in time clock. With lower values it plays faster, with higher values slower - of course always within the time control.
+
 ## Handicap mode
-
-A very refined handicap mode based on the four famous sovietic chess school levels:
-
-- _beginner: elo < 2000_
-- _intermediate: 2000 <= elo < 2200_
-- _advanced: 2200 <= elo < 2400_
-- _expert: elo > 2400_
-Every school correspond to a different evaluation function, more and more refined.
 
 ### UCI_LimitStrength
 
-Activate the strength limit specified in the UCI_Elo parameter.
+Activate the strength limit by a weaker play in a random fashion to simulate human blunders.
 
 ### UCI_Elo
 
 _Default 2800, min 1500, max 2800_
 UCI-protocol compliant version of Strength parameter.
-Internally the UCI_Elo value will be converted to a Strength value according to the table given
-above.
+A very refined handicap mode based on the four famous sovietic chess school levels:
+Internally the UCI_Elo value will be converted to a Strength value according to the following table:
+
+- _beginner: elo < 2000_
+- _intermediate: 2000 <= elo < 2200_
+- _advanced: 2200 <= elo < 2400_
+- _expert: elo > 2400_
+
+Every school correspond to a different evaluation function, more and more refined.
 The UCI_Elo feature is controlled by the chess GUI, and usually doesn't appear in the configuration
 window.
 
@@ -201,6 +205,22 @@ Recommended values: from 1 to 4 ( > 4 too wide search width)
 _Integer, Default: 0, Min: 0, Max: 40_
 To play different lines from default (0), if not from book (see below).
 Higher variety -> more probable loss of ELO
+
+
+### MCTS
+_Boolean, Default: False_
+
+Experimental, MonteCarloTreeSearch, if activated, the engine's behaviour is similar to AlphaZero concepts.
+For now, two ideas are implemented, integrated on Shashin's theory:
+
+- [https://github.com/Stefano80/Stockfish/compare/0365b08...ad6b324](playout by Stefano Cardanobile) for quiescent positions
+- [https://github.com/Kellykinyama12/Stockfish] (montecarlo by Kelly Kinyama) only when true. This creates three files for machine learning purposes:
+	-experience.bin when no more than 40 moves are played, there are non more than 6 pieces on the chessboard and at a not low depth in analysis
+	-pawngame.bin when there are no more than 2 pieces and the game's phase is not the ending
+	-openings.bin, in the form <positionKey>.bin (>=1) at the initial stage of game with memorized the move played, the depth and the score.
+In this mode, the engine is not less strong than Stockfish in a match play without learning, but a lot better in analysis mode and to solve hard positions.
+With learning, the engine became stronger and stronger.
+The default mode, conversely, is stronger than Stockfish in a match play, but not as good as MCTS for the rest and can't improve its play because of no learning enabled.
 
 ## Book management
 
