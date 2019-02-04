@@ -39,7 +39,7 @@
 #include "uci.h"
 #include "syzygy/tbprobe.h"
 
-bool pawnsPiecesSpaceToEvaluate, passedPawnsToEvaluate,initiativeToEvaluate; //from Shashin Handicap mode
+bool pawnsPiecesToEvaluate, passedPawnsToEvaluate,initiativeToEvaluate; //from Shashin Handicap mode
 //kellykynyama mcts begin
 bool useExp = true;
 bool expHits;
@@ -253,7 +253,7 @@ void MainThread::search() {
   tal=Options["Tal"];
   capablanca=Options["Capablanca"];
   petrosian=Options["Petrosian"];
-  pawnsPiecesSpaceToEvaluate = uciElo >= 2000;
+  pawnsPiecesToEvaluate = uciElo >= 2000;
   passedPawnsToEvaluate = uciElo>=2200;
   initiativeToEvaluate= uciElo>=2400;
   skillLevel= ((int)((uciElo-1500)/65));

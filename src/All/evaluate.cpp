@@ -34,7 +34,7 @@
 
 
 //from Shashin
-extern bool pawnsPiecesSpaceToEvaluate, passedPawnsToEvaluate,initiativeToEvaluate;
+extern bool pawnsPiecesToEvaluate, passedPawnsToEvaluate,initiativeToEvaluate;
 //end from Shashin
 
 namespace Trace {
@@ -509,12 +509,13 @@ namespace {
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  +  69 * kingAttacksCount[Them]
                  + 185 * popcount(kingRing[Us] & weak)
+                 - 100 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
                  + 150 * popcount(pos.blockers_for_king(Us) | unsafeChecks)
                  +   5 * tropism * tropism / 16
                  - 873 * !pos.count<QUEEN>(Them)
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
-                 -   30;
+                 -   25;
 
 	// Transform the kingDanger units into a Score, and subtract it from the evaluation
 	int kingSafe = pos.this_thread()->shashinKingSafe;//Shashin very good tactical patch
@@ -890,10 +891,11 @@ namespace {
     // imbalance. Score is computed internally from the white point of view.
     Score score =   apply_weight(pos.psq_score(), weightsMG[MATERIAL_POS],weightsEG[MATERIAL_POS]) + apply_weight(me->imbalance(),weightsMG[IMBALANCE_POS],weightsEG[IMBALANCE_POS]) + pos.this_thread()->contempt;
     //from Shashin
-    if (pawnsPiecesSpaceToEvaluate){
-	// Probe the pawn hash table
-	pe = Pawns::probe(pos);
-	score += apply_weight(pe->pawn_score(WHITE) - pe->pawn_score(BLACK),weightsMG[PAWN_STRUCTURE_POS],weightsEG[PAWN_STRUCTURE_POS]);
+    // Probe the pawn hash table
+    pe = Pawns::probe(pos);
+    Score peScore=apply_weight(pe->pawn_score(WHITE) - pe->pawn_score(BLACK),weightsMG[PAWN_STRUCTURE_POS],weightsEG[PAWN_STRUCTURE_POS]);
+    if (pawnsPiecesToEvaluate){
+	score += peScore;
     }
     //end from Shashin
     // Early exit if score is high
@@ -906,27 +908,29 @@ namespace {
     initialize<WHITE>();
     initialize<BLACK>();
 
-  // Pieces should be evaluated first (populate attack tables)
-  //from Shashin
+    // Pieces should be evaluated first (populate attack tables)
+    //from Shashin
     Score piecesScore = apply_weight(pieces<WHITE, KNIGHT>() - pieces<BLACK, KNIGHT>()
 				      + pieces<WHITE, BISHOP>() - pieces<BLACK, BISHOP>()
 				      + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
 				      + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >(),weightsMG[PIECES_POS],weightsEG[PIECES_POS]);
-    if(pawnsPiecesSpaceToEvaluate){
+    if(pawnsPiecesToEvaluate){
       score +=  piecesScore;
     }
     score += apply_weight(mobility[WHITE] - mobility[BLACK],weightsMG[MOBILITY_POS],weightsEG[MOBILITY_POS]);
     score +=  apply_weight(king<   WHITE>() - king<   BLACK>(),weightsMG[KING_SAFETY_POS],weightsEG[KING_SAFETY_POS]); //from Sugar
     score += apply_weight(threats<WHITE>() - threats<BLACK>(),weightsMG[THREATS_POS],weightsEG[THREATS_POS]);
+    Score passedScore=apply_weight(passed< WHITE>() - passed< BLACK>(),weightsMG[PASSED_PAWNS_POS],weightsEG[PASSED_PAWNS_POS]);
     if(passedPawnsToEvaluate)
     {
-      score += apply_weight(passed< WHITE>() - passed< BLACK>(),weightsMG[PASSED_PAWNS_POS],weightsEG[PASSED_PAWNS_POS]); //from Sugar
+      score += passedScore;
     }
-    if(pawnsPiecesSpaceToEvaluate)
-      score += apply_weight(space<  WHITE>() - space<  BLACK>(),weightsMG[SPACE_POS],weightsEG[SPACE_POS]);
-    if(initiativeToEvaluate)
-      score += apply_weight(initiative(eg_value(score)),weightsMG[INITIATIVE_POS],weightsEG[INITIATIVE_POS]);
-	//end from Shashin
+    score += apply_weight(space<  WHITE>() - space<  BLACK>(),weightsMG[SPACE_POS],weightsEG[SPACE_POS]);
+    Score initiativeScore=apply_weight(initiative(eg_value(score)),weightsMG[INITIATIVE_POS],weightsEG[INITIATIVE_POS]);
+    if(initiativeToEvaluate){
+      score +=initiativeScore;
+    }
+    //end from Shashin
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));
     v =  mg_value(score) * int(me->game_phase())
