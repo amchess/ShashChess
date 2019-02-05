@@ -56,73 +56,91 @@ namespace {
 
     Move m;
     string token, fen;
-	string Newfen; //kellykanyama mcts
-
+    string Newfen; //kellykanyama mcts
+    bool mcts=Options["MCTS"];
     is >> token;
 
-	if (token == "startpos")
-	{
-		startposition = true; //kellykynyama mcts begin
-		fen = StartFEN;
-		Newfen = fen; //kellykynyama mcts
-		is >> token; // Consume "moves" token if any
-	}
-	else if (token == "fen")
-	{
-		//kellykynyama mcts begin
-		startposition = false;
-		Newfen = token;
-		//kellykynyama mcts end
-		while (is >> token && token != "moves")
-			fen += token + " ";
-	}
-	else
-		return;
+    if (token == "startpos")
+    {
+      //kellykynyama mcts begin
+      if(mcts)
+      {
+	startposition = true;
+	Newfen = fen;
+      }
+      //kellykynyama end
+      fen = StartFEN;
+      is >> token; // Consume "moves" token if any
+    }
+    else if (token == "fen")
+    {
+      //kellykynyama mcts begin
+      if(mcts)
+      {
+	startposition = false;
+	Newfen = token;
+      }
+      //kellykynyama mcts end
+      while (is >> token && token != "moves")
+	      fen += token + " ";
+    }
+    else
+	    return;
 
     states = StateListPtr(new std::deque<StateInfo>(1)); // Drop old and create a new one
     pos.set(fen, Options["UCI_Chess960"], &states->back(), Threads.main());
-	//kellykynyama mcts begin
-	int movesplayed = 0;
-	int OPmoves = 0;
-
-	if (StartFEN != Newfen)
-	{
-		startposition = false;
-		FileKey = pos.key();
-	}
-	else
-	{
-		startposition = true;
-		FileKey = 0;
-	}
-	//kellykynyama mcts end
+    //kellykynyama mcts begin
+    int movesplayed = 0;
+    int OPmoves = 0;
+    if(mcts)
+    {
+      if (StartFEN != Newfen)
+      {
+	      startposition = false;
+	      FileKey = pos.key();
+      }
+      else
+      {
+	      startposition = true;
+	      FileKey = 0;
+      }
+    }
+    //kellykynyama mcts end
 
     // Parse move list (if any)
     while (is >> token && (m = UCI::to_move(pos, token)) != MOVE_NONE)
     {
         states->emplace_back();
 
-		//kellykynyama mcts begin
-		if (!FileKey)
-		{
-			if ((movesplayed == 2 || movesplayed == 4 || movesplayed == 6 || movesplayed == 8 || movesplayed == 10 || movesplayed == 12 || movesplayed == 14 || movesplayed == 16) && Newfen == StartFEN)
-			{
-				files(OPmoves, pos.key());
-				OPmoves++;
-				kelly(startposition);
+	//kellykynyama mcts begin
+        if(mcts)
+        {
+	  if (!FileKey)
+	  {
+	    if ((movesplayed == 2 || movesplayed == 4 || movesplayed == 6 || movesplayed == 8 || movesplayed == 10 || movesplayed == 12 || movesplayed == 14 || movesplayed == 16) && Newfen == StartFEN)
+	    {
+		    files(OPmoves, pos.key());
+		    OPmoves++;
+		    kelly(startposition);
 
-			}
-			if (movesplayed == 16 && Newfen == StartFEN)
-			{
-				FileKey = pos.key();
-				kelly(startposition);
-			}
-		}
-		//kellykyniama mcts end
+	    }
+	    if (movesplayed == 16 && Newfen == StartFEN)
+	    {
+		    FileKey = pos.key();
+		    kelly(startposition);
+	    }
+	  }
+        }
+	//kellykyniama mcts end
 
         pos.do_move(m, states->back());
-		movesplayed++; //kellykyniama mcts
-	}
+        //kellykyniama mcts begin
+        if(mcts)
+        {
+            movesplayed++;
+        }
+        //kellykyniama mcts end
+    }
   }
 
 
