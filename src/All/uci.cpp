@@ -57,7 +57,7 @@ namespace {
     Move m;
     string token, fen;
     string Newfen; //kellykanyama mcts
-    bool mcts=Options["MCTS"];
+    bool mcts=Options["MCTS"]; //mcts
     is >> token;
 
     if (token == "startpos")
@@ -66,10 +66,15 @@ namespace {
       if(mcts)
       {
 	startposition = true;
-	Newfen = fen;
       }
       //kellykynyama end
       fen = StartFEN;
+      //kellykynyama mcts begin
+      if(mcts)
+      {
+	 Newfen = fen;
+      }
+      //kellykynyama mcts end
       is >> token; // Consume "moves" token if any
     }
     else if (token == "fen")

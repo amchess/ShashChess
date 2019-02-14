@@ -77,8 +77,8 @@ public:
   ContinuationHistory continuationHistory;
   Score contempt;
   //from Shashin
-  uint8_t shashinValue,shashinContempt;
-  int shashinKingSafe,shashinQuiescentCapablancaMaxScore,shashinMaxLmr;
+  uint8_t shashinValue;
+  int shashinContempt,shashinKingSafe,shashinQuiescentCapablancaMaxScore,shashinMaxLmr;
   //end from Shashin
  };
 

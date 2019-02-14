@@ -17,7 +17,7 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+//from BrainFish
 #ifndef BITBOARD_H_INCLUDED
 #define BITBOARD_H_INCLUDED
 
@@ -81,7 +81,6 @@ struct Magic {
   Bitboard  mask;
   Bitboard  magic;
   Bitboard* attacks;
-//from BrainFish this file
 
   // Compute the attack's index using the 'magic bitboards' approach
   template<PieceType Pt>
@@ -168,8 +167,8 @@ constexpr Bitboard shift(Bitboard b) {
 }
 
 
-/// pawn_attacks_bb() returns the pawn attacks for the given color from the
-/// squares in the given bitboard.
+/// pawn_attacks_bb() returns the squares attacked by pawns of the given color
+/// from the squares in the given bitboard.
 
 template<Color C>
 constexpr Bitboard pawn_attacks_bb(Bitboard b) {
@@ -178,11 +177,11 @@ constexpr Bitboard pawn_attacks_bb(Bitboard b) {
 }
 
 
-/// double_pawn_attacks_bb() returns the pawn attacks for the given color
-/// from the squares in the given bitboard.
+/// pawn_double_attacks_bb() returns the squares doubly attacked by pawns of the
+/// given color from the squares in the given bitboard.
 
 template<Color C>
-constexpr Bitboard double_pawn_attacks_bb(Bitboard b) {
+constexpr Bitboard pawn_double_attacks_bb(Bitboard b) {
   return C == WHITE ? shift<NORTH_WEST>(b) & shift<NORTH_EAST>(b)
                     : shift<SOUTH_WEST>(b) & shift<SOUTH_EAST>(b);
 }
@@ -393,3 +392,4 @@ inline Square frontmost_sq(Color c, Bitboard b) { return c == WHITE ? msb(b) : l
 inline Square  backmost_sq(Color c, Bitboard b) { return c == WHITE ? lsb(b) : msb(b); }
 
 #endif // #ifndef BITBOARD_H_INCLUDED
+//end from BrainFish
