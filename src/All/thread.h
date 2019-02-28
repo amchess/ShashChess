@@ -52,8 +52,10 @@ public:
   explicit Thread(size_t);
   virtual ~Thread();
   virtual void search();
+  //from Shashin
   virtual void updateShashinValues (Value score);
   virtual void initShashinElements ();
+  //end from Shashin
   void clear();
   virtual Value playout(Move, Search::Stack*, Value);//playout
   void idle_loop();
@@ -65,6 +67,7 @@ public:
   Endgames endgames;
   size_t pvIdx, pvLast;
   int selDepth, nmpMinPly;
+  int64_t visits, allScores; //mcts Cardanobile from joergoster
   Color nmpColor;
   std::atomic<uint64_t> nodes, tbHits;
 

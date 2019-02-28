@@ -183,6 +183,7 @@ namespace {
   constexpr Score PawnlessFlank      = S( 17, 95);
   constexpr Score RestrictedPiece    = S(  7,  7);
   constexpr Score RookOnPawn         = S( 10, 32);
+  constexpr Score SafeKingWithPawns  = S(  5, 30); //nokdpawn2 patch
   constexpr Score SliderOnQueen      = S( 59, 18);
   constexpr Score ThreatByKing       = S( 24, 89);
   constexpr Score ThreatByPawnPush   = S( 48, 39);
@@ -499,6 +500,9 @@ namespace {
     b2 = b1 & attackedBy2[Them];
 
     int kingFlankAttacks = popcount(b1) + popcount(b2);
+    //nokdpawn2 and piece_reserve patches begin
+    bool shashinQuiescentCapablancaMaxScore=pos.this_thread()->shashinQuiescentCapablancaMaxScore;
+    int pieceReserveKingDangerCorrection=shashinQuiescentCapablancaMaxScore ? 0:pos.count<ALL_PIECES>(Them) - 30;
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  +  69 * kingAttacksCount[Them]
@@ -509,13 +513,19 @@ namespace {
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
                  +   5 * kingFlankAttacks * kingFlankAttacks / 16
-                 -   25;
+                 -   25
+		 +pieceReserveKingDangerCorrection;//piece_reserve patch
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
 	int kingSafe = pos.this_thread()->shashinKingSafe;//Shashin very good tactical patch
 	if (kingDanger > 0)
 		score -= make_score(kingDanger * kingSafe * kingDanger / 4096, kingDanger / 16);
-
+	//nokdpawn2 patch begin
+	else
+	  if ((pos.count<PAWN>(Us) > pos.count<PAWN>(Them)) && !shashinQuiescentCapablancaMaxScore)
+	    score += SafeKingWithPawns;
+	//nokdpawn2 patch end
+    //nokdpawn2 and piece_reserve patches end
     // Penalty when our king is on a pawnless flank
     if (!(pos.pieces(PAWN) & KingFlank[file_of(ksq)]))
         score -= PawnlessFlank;

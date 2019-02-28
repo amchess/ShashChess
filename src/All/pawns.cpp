@@ -185,9 +185,12 @@ Entry* probe(const Position& pos) {
   e->key = key;
   e->scores[WHITE] = evaluate<WHITE>(pos, e);
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
+  //patch sac3 begin
+  int asymmetryCorrection=pos.this_thread()->shashinValue==SHASHIN_POSITION_CAPABLANCA ? 0:(pos.count<PAWN>(WHITE) != pos.count<PAWN>(BLACK));
   e->asymmetry = popcount(  (e->passedPawns[WHITE]   | e->passedPawns[BLACK])
-                          | (e->semiopenFiles[WHITE] ^ e->semiopenFiles[BLACK]));
-
+                          | (e->semiopenFiles[WHITE] ^ e->semiopenFiles[BLACK]))
+		 + asymmetryCorrection;
+  //end patch sac3 begin
   return e;
 }
 

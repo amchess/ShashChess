@@ -24,9 +24,9 @@
 #include <cstring>   // For std::memset
 #include <iostream>
 #include <sstream>
-#include <random>
+#include <random>  //variety sugar
 #include <fstream> // KellyKinyama mcts
-#include "polybook.h"
+#include "polybook.h" //polybook BrainFish
 #include "evaluate.h"
 #include "misc.h"
 #include "movegen.h"
@@ -92,10 +92,10 @@ namespace {
 
   // Futility and reductions lookup tables, initialized at startup
   int FutilityMoveCounts[2][16]; // [improving][depth]
-  int Reductions[2][2][64][64];  // [pv][improving][depth][moveNumber]
+  int Reductions[2][64][64];  // [improving][depth][moveNumber]
 
   template <bool PvNode> Depth reduction(bool i, Depth d, int mn) {
-    return Reductions[PvNode][i][std::min(d / ONE_PLY, 63)][std::min(mn, 63)] * ONE_PLY;
+    return (Reductions[i][std::min(d / ONE_PLY, 63)][std::min(mn, 63)] - PvNode) * ONE_PLY;
   }
 
   // History and stats update bonus, based on depth
@@ -182,12 +182,11 @@ void Search::init() {
           {
               double r = log(d) * log(mc) / 1.95;
 
-              Reductions[NonPV][imp][d][mc] = int(std::round(r));
-              Reductions[PV][imp][d][mc] = std::max(Reductions[NonPV][imp][d][mc] - 1, 0);
+              Reductions[imp][d][mc] = std::round(r);
 
               // Increase reduction for non-PV nodes when eval is not improving
               if (!imp && r > 1.0)
-                Reductions[NonPV][imp][d][mc]++;
+                Reductions[imp][d][mc]++;
           }
 
   for (int d = 0; d < 16; ++d)
@@ -247,8 +246,10 @@ void MainThread::search() {
 	  }
   }	
   //KellyKinyama mcts end
-  deepAnalysisMode = Options["Deep Analysis Mode"];//from Sugar
-  variety = Options["Variety"];//from Sugar
+  //from Sugar
+  deepAnalysisMode = Options["Deep Analysis Mode"];
+  variety = Options["Variety"];
+  //end from Sugar
   //from Shashin
   uciElo=Options["UCI_Elo"];
   tal=Options["Tal"];
@@ -663,6 +664,14 @@ void Thread::search() {
       size_t pvFirst = 0;
       pvLast = 0;
 
+      //mcts Cardanobile from joergoster begin
+      if(mcts)
+	{
+	  // Reset mcts values
+	  visits = 0;
+	  allScores = 0;
+	}
+      //mcts Cardanobile from joergoster end
       // MultiPV loop. We perform a full root search for each PV line
       for (pvIdx = 0; pvIdx < multiPV && !Threads.stop; ++pvIdx)
       {
@@ -730,7 +739,12 @@ void Thread::search() {
 
               // In case of failing low/high increase aspiration window and
               // re-search, otherwise exit the loop.
-              if (bestValue <= alpha)
+              if (bestValue <= alpha ||
+        	  //mcts Cardanobile from joergoster begin
+        	  (((rootPos.this_thread()->shashinValue!=SHASHIN_POSITION_TAL)
+        	  && (rootPos.this_thread()->shashinValue!=SHASHIN_POSITION_PETROSIAN) && mcts)
+        	  && (Value(rootMoves[0].zScore / rootMoves[0].visits) <= alpha - PawnValueMg / 2)))
+        	 //mcts Cardanobile from joergoster end
               {
                   beta = (alpha + beta) / 2;
                   alpha = std::max(bestValue - delta, -VALUE_INFINITE);
@@ -781,7 +795,7 @@ void Thread::search() {
           continue;
 
       // If skill level is enabled and time is up, pick a sub-optimal best move
-      if (skill.enabled() && skill.time_to_pick(rootDepth) && limitStrength)
+      if (skill.enabled() && skill.time_to_pick(rootDepth) && limitStrength) //from Shashin
           skill.pick_best(multiPV);
 
       // Do we have time for the next iteration? Can we stop searching now?
@@ -811,13 +825,13 @@ void Thread::search() {
                   Threads.stop = true;
           }
       }
-      //playout and mcts kynyama begin
+      //mcts cardanobile playout begin
       if ((mainThread && !Threads.stop)
 	  && (rootPos.this_thread()->shashinValue!=SHASHIN_POSITION_TAL) && (rootPos.this_thread()->shashinValue!=SHASHIN_POSITION_PETROSIAN) && mcts)
       {
 	  playout(lastBestMove, ss, bestValue);
       }
-      //playout and mcts kynyama end
+      //mcts cardanobile playout end
   }
 
   if (!mainThread)
@@ -826,7 +840,7 @@ void Thread::search() {
   mainThread->previousTimeReduction = timeReduction;
 
   // If skill level is enabled, swap best PV line with the sub-optimal one
-  if (skill.enabled() && limitStrength)
+  if (skill.enabled() && limitStrength)//from Shashin
       std::swap(rootMoves[0], *std::find(rootMoves.begin(), rootMoves.end(),
                 skill.best ? skill.best : skill.pick_best(multiPV)));
 }
@@ -878,6 +892,8 @@ namespace {
     constexpr bool PvNode = NT == PV;
     const bool rootNode = PvNode && ss->ply == 0;
 
+    Thread* thisThread = pos.this_thread(); //mcts Cardanobile from joergoster
+
     // Check if we have an upcoming move which draws by repetition, or
     // if the opponent had an alternative move earlier to this position.
     if (   pos.rule50_count() >= 3
@@ -887,12 +903,31 @@ namespace {
     {
         alpha = value_draw(depth, pos.this_thread());
         if (alpha >= beta)
+          //mcts Cardanobile from joergoster begin
+          {
+            if(mcts)
+              {
+                thisThread->visits++;
+                thisThread->allScores += (ss->ply % 2 == 0) ? alpha : -alpha;
+              }
             return alpha;
+          }
+          //mcts Cardanobile from joergoster end
     }
 
     // Dive into quiescence search when the depth reaches zero
     if (depth < ONE_PLY)
-        return qsearch<NT>(pos, ss, alpha, beta);
+      //mcts Cardanobile from joergoster begin
+      {
+        Value qs = qsearch<NT>(pos, ss, alpha, beta);
+        if(mcts)
+          {
+            thisThread->visits++;
+            thisThread->allScores += (ss->ply % 2 == 0) ? qs : -qs;
+          }
+        return qs;
+      }
+      //mcts Cardanobile from joergoster end
 
     assert(-VALUE_INFINITE <= alpha && alpha < beta && beta <= VALUE_INFINITE);
     assert(PvNode || (alpha == beta - 1));
@@ -902,18 +937,20 @@ namespace {
 
     Move pv[MAX_PLY+1], capturesSearched[32], quietsSearched[64];
     StateInfo st;
-    TTEntry* tte=NULL;//from MateFinder
+	//from MateFinder
+    TTEntry* tte=NULL;
     Key posKey=0;
+	//end from MateFinder
     Move ttMove, move, excludedMove=MOVE_NONE, bestMove,expttMove=MOVE_NONE;//from MateFinder and kellykynyama mcts
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, pureStaticEval, expttValue=VALUE_NONE;//kellykynyama mcts
     bool ttHit, ttPv, inCheck, givesCheck, improving, expttHit=false;//kellykynyama mcts
-    bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture;
+    bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
 
     // Step 1. Initialize node
-    Thread* thisThread = pos.this_thread();
+    // Thread* thisThread = pos.this_thread(); //mcts Cardanobile from joergoster
     inCheck = pos.checkers();
     Color us = pos.side_to_move();
     moveCount = captureCount = quietCount = ss->moveCount = 0;
@@ -934,8 +971,17 @@ namespace {
         if (   Threads.stop.load(std::memory_order_relaxed)
             || pos.is_draw(ss->ply)
             || ss->ply >= MAX_PLY)
-            return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos)
-                                                    : value_draw(depth, pos.this_thread());
+          //mcts Cardanobile from joergoster begin
+          {
+            Value draw = value_draw(depth, pos.this_thread());
+            if(mcts)
+              {
+                thisThread->visits++;
+                thisThread->allScores += (ss->ply % 2 == 0) ? draw : -draw;
+              }
+            return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) : draw;
+            //mcts Cardanobile from joergoster end
+          }
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
         // would be at best mate_in(ss->ply+1), but if alpha is already bigger because
@@ -1004,6 +1050,13 @@ namespace {
                 update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
             }
         }
+        //mcts Cardanobile from joergoster begin
+        if(mcts)
+          {
+            thisThread->visits++;
+            thisThread->allScores += (ss->ply % 2 == 0) ? ttValue : -ttValue;
+          }
+        //mcts Cardanobile from joergoster end
         return ttValue;
     }
 
@@ -1139,7 +1192,13 @@ namespace {
                     tte->save(posKey, value_to_tt(value, ss->ply), ttPv, b,
                               std::min(DEPTH_MAX - ONE_PLY, depth + 6 * ONE_PLY),
                               MOVE_NONE, VALUE_NONE);
-
+                    //mcts Cardanobile from joergoster begin
+                    if(mcts)
+                      {
+                        thisThread->visits++;
+                        thisThread->allScores += (ss->ply % 2 == 0) ? value : -value;
+                      }
+                    //mcts Cardanobile from joergoster end
                     return value;
                 }
 
@@ -1205,7 +1264,20 @@ namespace {
     if (   !rootNode // The required rootNode PV handling is not available in qsearch
         &&  depth < 2 * ONE_PLY
         &&  eval <= alpha - RazorMargin)
-        return qsearch<NT>(pos, ss, alpha, beta);
+      {
+        Value razor = qsearch<NT>(pos, ss, alpha, beta);
+        //mcts Cardanobile from joergoster begin
+        if(mcts)
+          {
+            thisThread->visits++;
+            thisThread->allScores += (ss->ply % 2 == 0) ? razor : -razor;
+
+          }
+        //mcts Cardanobile from joergoster end
+        return razor;
+
+
+      }
 
     improving =   ss->staticEval >= (ss-2)->staticEval
                || (ss-2)->staticEval == VALUE_NONE;
@@ -1215,8 +1287,16 @@ namespace {
         &&  depth < 7 * ONE_PLY
         &&  eval - futility_margin(depth, improving) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
-        return eval;
-
+      //mcts Cardanobile from joergoster begin
+      {
+	if(mcts)
+	  {
+	    thisThread->visits++;
+	    thisThread->allScores += (ss->ply % 2 == 0) ? eval : -eval;
+	  }
+	return eval;
+      }
+      //mcts Cardanobile from joergoster end
     // Step 9. Null move search with verification search (~40 Elo)
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
@@ -1252,7 +1332,16 @@ namespace {
                 nullValue = beta;
 
             if (thisThread->nmpMinPly || (abs(beta) < VALUE_KNOWN_WIN && depth < 12 * ONE_PLY))
+              //mcts Cardanobile from joergoster begin
+              {
+    	    	if(mcts)
+    	      	 {
+                    thisThread->visits++;
+                    thisThread->allScores += (ss->ply % 2 == 0) ? nullValue : -nullValue;
+    	      	 }
                 return nullValue;
+              }
+            //mcts Cardanobile from joergoster end
             assert(!thisThread->nmpMinPly); // Recursive verification is not allowed
             // Do verification search at high depths, with null move pruning disabled
             // for us, until ply exceeds nmpMinPly.
@@ -1263,7 +1352,16 @@ namespace {
             thisThread->nmpMinPly = 0;
 
             if (v >= beta)
-                return nullValue;
+              //mcts Cardanobile from joergoster begin
+              {
+        	if(mcts)
+        	  {
+                    thisThread->visits++;
+                    thisThread->allScores += (ss->ply % 2 == 0) ? nullValue : -nullValue;
+        	  }
+        	return nullValue;
+              }
+              //mcts Cardanobile from joergoster end
         }
     }
 
@@ -1279,7 +1377,7 @@ namespace {
         int probCutCount = 0;
 
         while (  (move = mp.next_move()) != MOVE_NONE
-               && probCutCount < 3)
+               && probCutCount < 2 + 2 * cutNode)
             if (move != excludedMove && pos.legal(move))
             {
                 probCutCount++;
@@ -1301,7 +1399,16 @@ namespace {
                 pos.undo_move(move);
 
                 if (value >= raisedBeta)
+                  //mcts Cardanobile from joergoster begin
+                  {
+                    if(mcts)
+                      {
+                        thisThread->visits++;
+                        thisThread->allScores += (ss->ply % 2 == 0) ? value : -value;
+                      }
                     return value;
+                  }
+		  //mcts Cardanobile from joergoster end
             }
     }
 
@@ -1328,12 +1435,12 @@ moves_loop: // When in check, search starts from here
                                       ss->killers);
     value = bestValue; // Workaround a bogus 'uninitialized' warning under gcc
 
-    skipQuiets = false;
+    moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
-    while ((move = mp.next_move(skipQuiets)) != MOVE_NONE)
+    while ((move = mp.next_move(moveCountPruning)) != MOVE_NONE)
     {
       assert(is_ok(move));
 
@@ -1361,9 +1468,6 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = gives_check(pos, move);
-
-      moveCountPruning =   depth < 16 * ONE_PLY
-                        && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY];
 
       bool moveCountPruning2 = depth < 16 * ONE_PLY
 	      && moveCount >= FutilityMoveCounts[false][depth / ONE_PLY];//capLMRt
@@ -1407,7 +1511,16 @@ moves_loop: // When in check, search starts from here
           // that is multiple moves fail high, and we can prune the whole subtree by returning
           // the hard beta bound.
           else if (cutNode && singularBeta > beta)
+            //mcts Cardanobile from joergoster begin
+            {
+              if(mcts)
+        	{
+                  thisThread->visits++;
+                  thisThread->allScores += (ss->ply % 2 == 0) ? beta : -beta;
+        	}
               return beta;
+            }
+	    //mcts Cardanobile from joergoster end
       }
 
       // Check extension (~2 Elo)
@@ -1427,16 +1540,17 @@ moves_loop: // When in check, search starts from here
           && pos.non_pawn_material(us)
           && bestValue > VALUE_MATED_IN_MAX_PLY)
       {
+          // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
+          moveCountPruning = depth < 16 * ONE_PLY
+                          && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY];
+
           if (   !captureOrPromotion
               && !givesCheck
               && !pos.advanced_pawn_push(move))
           {
               // Move count based pruning (~30 Elo)
               if (moveCountPruning)
-              {
-                  skipQuiets = true;
                   continue;
-              }
 			  //kellykyniama mcts begin
 			  if (mcts && SE && moveCount > 3)
 				  continue;
@@ -1482,14 +1596,14 @@ moves_loop: // When in check, search starts from here
 
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);
-
+      bool shashinCapablancaPos=pos.this_thread()->shashinValue==SHASHIN_POSITION_CAPABLANCA;//for lmr patches
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
           &&  moveCount > 1
           && (!captureOrPromotion || ((moveCountPruning && (pos.this_thread()->shashinQuiescentCapablancaMaxScore) ) || (moveCountPruning2 && (!pos.this_thread()->shashinQuiescentCapablancaMaxScore)))) //capLMRt
 	  && ((pos.this_thread()->shashinQuiescentCapablancaMaxScore) || (thisThread->selDepth > depth //from JEllis MateFinder
-	  && !(depth >= 16 * ONE_PLY && ss->ply < 3 * ONE_PLY)
+	  && !(depth >= 16 * ONE_PLY && ss->ply < 3 * ONE_PLY) //from JEllis MateFinder
 	  )
 	 )
       )
@@ -1514,14 +1628,42 @@ moves_loop: // When in check, search starts from here
               if (cutNode)
                   r += 2 * ONE_PLY;
 
+
+              //patch KingMoves MJZ begin 16/02/2019
+              // Increase reduction for king moves at MG
+	      if (type_of(movedPiece) == KING
+		  && pos.non_pawn_material() > 8000
+		      && type_of(move) != CASTLING
+		      && !inCheck && shashinCapablancaPos )
+	      {
+		  r += ONE_PLY;
+	      }
+	      //patch KingMoves MJZ end 16/02/2019
+	      //patch lmr_pawnPushVsK 09/02/2019 begin
+	      // Less reduction for pawn moves near the king
+	      if (   type_of(movedPiece) == PAWN
+		  && pos.non_pawn_material(us) > RookValueMg + 2 * KnightValueMg
+		  && std::abs(file_of(to_sq(move)) - file_of(pos.square<KING>(~us))) <= 1
+		  && std::abs(rank_of(to_sq(move)) - rank_of(pos.square<KING>(~us))) <= 3
+		  && !shashinCapablancaPos)
+	      {
+		  r -= ONE_PLY;
+	      }
+	      ////patch lmr_pawnPushVsK 09/02/2019 end
+
               // Decrease reduction for moves that escape a capture. Filter out
               // castling moves, because they are coded as "king captures rook" and
               // hence break make_move(). (~5 Elo)
               else if (    type_of(move) == NORMAL
                        && !pos.see_ge(make_move(to_sq(move), from_sq(move))))
                   r -= 2 * ONE_PLY;
-
-              ss->statScore =  thisThread->mainHistory[us][from_to(move)]
+	      //patch lmrpp 11/02/2019 begin
+              else if (type_of(movedPiece) == PAWN
+                      && relative_rank(us, rank_of(from_sq(move))) > RANK_4
+		      && !shashinCapablancaPos)
+                  r -= ONE_PLY;
+	      //patch lmrpp 11/02/2019 end
+	      ss->statScore =  thisThread->mainHistory[us][from_to(move)]
                              + (*contHist[0])[movedPiece][to_sq(move)]
                              + (*contHist[1])[movedPiece][to_sq(move)]
                              + (*contHist[3])[movedPiece][to_sq(move)]
@@ -1581,6 +1723,17 @@ moves_loop: // When in check, search starts from here
       {
           RootMove& rm = *std::find(thisThread->rootMoves.begin(),
                                     thisThread->rootMoves.end(), move);
+          //mcts Cardanobile from joergoster begin
+          if(mcts)
+            {
+              // Add all visits and returned scores to this root move's stats
+              rm.visits += thisThread->visits;
+              rm.zScore += thisThread->allScores;
+
+              thisThread->visits = 0;
+              thisThread->allScores = 0;
+            }
+           //mcts Cardanobile from joergoster end
 
           // PV move or new best move?
           if (moveCount == 1 || value > alpha)
@@ -1687,7 +1840,13 @@ moves_loop: // When in check, search starts from here
                   depth, bestMove, pureStaticEval);
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
-
+    //mcts Cardanobile from joergoster begin
+	if(mcts)
+      {
+	  thisThread->visits++;
+	  thisThread->allScores += (ss->ply % 2 == 0) ? bestValue : -bestValue;
+      }
+	//mcts Cardanobile from joergoster end
     return bestValue;
   }
 
