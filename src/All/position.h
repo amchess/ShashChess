@@ -315,7 +315,7 @@ inline Bitboard Position::check_squares(PieceType pt) const {
 }
 
 inline bool Position::pawn_passed(Color c, Square s) const {
-  return !(pieces(~c, PAWN) & passed_pawn_mask(c, s));
+  return !(pieces(~c, PAWN) & passed_pawn_span(c, s));
 }
 
 inline bool Position::advanced_pawn_push(Move m) const {
@@ -418,7 +418,7 @@ inline void Position::move_piece(Piece pc, Square from, Square to) {
 
   // index[from] is not updated and becomes stale. This works as long as index[]
   // is accessed just by known occupied squares.
-  Bitboard fromTo = SquareBB[from] ^ SquareBB[to];
+  Bitboard fromTo = square_bb(from) | square_bb(to);
   byTypeBB[ALL_PIECES] ^= fromTo;
   byTypeBB[type_of(pc)] ^= fromTo;
   byColorBB[color_of(pc)] ^= fromTo;

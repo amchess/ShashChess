@@ -35,7 +35,7 @@ PGOBENCH = ./$(EXE) bench
 ### Object files
 OBJS = benchmark.o bitbase.o bitboard.o endgame.o evaluate.o main.o \
 	material.o misc.o movegen.o movepick.o pawns.o position.o psqt.o \
-	search.o thread.o timeman.o tt.o uci.o ucioption.o polybook.o syzygy/tbprobe.o
+	search.o thread.o timeman.o tt.o uci.o ucioption.o syzygy/tbprobe.o
 
 ### Establish the operating system name
 KERNEL = $(shell uname -s)
@@ -444,7 +444,7 @@ objclean:
 profileclean:
 	@rm -rf profdir
 	@rm -f bench.txt *.gcda ./syzygy/*.gcda *.gcno ./syzygy/*.gcno
-	@rm -f stockfish.profdata *.profraw
+	@rm -f shashchess.profdata *.profraw
 
 default:
 	help
@@ -499,9 +499,9 @@ clang-profile-make:
 	all
 
 clang-profile-use:
-	llvm-profdata merge -output=stockfish.profdata *.profraw
+	llvm-profdata merge -output=shashchess.profdata *.profraw
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-fprofile-instr-use=stockfish.profdata' \
+	EXTRACXXFLAGS='-fprofile-instr-use=shashchess.profdata' \
 	EXTRALDFLAGS='-fprofile-use ' \
 	all
 

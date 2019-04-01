@@ -32,7 +32,7 @@
 #include "pawns.h"
 #include "position.h"
 #include "search.h"
-#include "thread_win32.h"
+#include "thread_win32_osx.h"
 
 
 /// Thread class keeps together all the thread-related stuff. We use
@@ -46,14 +46,16 @@ class Thread {
   ConditionVariable cv;
   size_t idx;
   bool exit = false, searching = true; // Set before starting std::thread
-  std::thread stdThread;
+  NativeThread stdThread;
 
 public:
   explicit Thread(size_t);
   virtual ~Thread();
   virtual void search();
-  virtual void updateShashinValues (Value score);
+  //from Shashin
+  virtual void updateShashinValues (Value score, int ct, Color us, Value value);
   virtual void initShashinElements ();
+  //end from Shashin
   void clear();
   virtual Value playout(Move, Search::Stack*, Value);//playout
   void idle_loop();
@@ -65,6 +67,7 @@ public:
   Endgames endgames;
   size_t pvIdx, pvLast;
   int selDepth, nmpMinPly;
+  int64_t visits, allScores; //mcts Cardanobile from joergoster
   Color nmpColor;
   std::atomic<uint64_t> nodes, tbHits;
 
@@ -77,8 +80,8 @@ public:
   ContinuationHistory continuationHistory;
   Score contempt;
   //from Shashin
-  uint8_t shashinValue,shashinContempt;
-  int shashinKingSafe,shashinQuiescentCapablancaMaxScore,shashinMaxLmr;
+  uint8_t shashinValue;
+  int shashinContempt,shashinQuiescentCapablancaMaxScore,shashinMaxLmr;
   //end from Shashin
  };
 

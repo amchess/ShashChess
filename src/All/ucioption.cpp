@@ -18,9 +18,9 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <algorithm>
 #include <cassert>
 #include <ostream>
+#include <sstream>
 
 #include "misc.h"
 #include "search.h"
@@ -28,7 +28,6 @@
 #include "tt.h"
 #include "uci.h"
 #include "syzygy/tbprobe.h"
-#include "polybook.h"
 
 using std::string;
 
@@ -42,9 +41,7 @@ void on_hash_size(const Option& o) { TT.resize(o); EXP.resize(0); EXPresize(); }
 void on_logger(const Option& o) { start_logger(o); }
 void on_threads(const Option& o) { Threads.set(o); }
 void on_tb_path(const Option& o) { Tablebases::init(o); }
-void on_book_file(const Option& o) { polybook.init(o); }
-void on_best_book_move(const Option& o) { polybook.set_best_book_move(o); }
-void on_book_depth(const Option& o) { polybook.set_book_depth(o); }
+
 
 /// Our case insensitive less() function as required by UCI protocol
 bool CaseInsensitiveLess::operator() (const string& s1, const string& s2) const {
@@ -61,43 +58,30 @@ void init(OptionsMap& o) {
   // at most 2^32 clusters.
   constexpr int MaxHashMB = Is64Bit ? 131072 : 2048;
 
-  o["Debug Log File"]        << Option("", on_logger);
-  o["Analysis Contempt"]     << Option("Both var Off var White var Black var Both", "Both");
-  o["Threads"]               << Option(1, 1, 512, on_threads);
-  o["Hash"]                  << Option(16, 1, MaxHashMB, on_hash_size);
-  o["Clear Hash"]            << Option(on_clear_hash);
-  o["Ponder"]                << Option(false);
-  o["MultiPV"]               << Option(1, 1, 500);
-  o["Move Overhead"]         << Option(30, 0, 5000);
-  o["Slow Mover"]            << Option(84, 10, 1000);
-  o["UCI_Chess960"]          << Option(false);
-  o["UCI_AnalyseMode"]       << Option(false);
+  o["Debug Log File"]              << Option("", on_logger);
+  o["Analysis Contempt"]     	   << Option("Both var Off var White var Black var Both", "Both");
+  o["Threads"]               	   << Option(1, 1, 512, on_threads);
+  o["Hash"]                  	   << Option(16, 1, MaxHashMB, on_hash_size);
+  o["Clear Hash"]            	   << Option(on_clear_hash);
+  o["Ponder"]                	   << Option(false);
+  o["MultiPV"]               	   << Option(1, 1, 500);
+  o["Move Overhead"]         	   << Option(30, 0, 5000);
+  o["Slow Mover"]            	   << Option(84, 10, 1000);
+  o["UCI_Chess960"]          	   << Option(false);
+  o["UCI_AnalyseMode"]       	   << Option(false);
   //handicap mode
-  o["UCI_LimitStrength"]     << Option(false);
-  o["UCI_Elo"]               << Option(2800, 1500, 2800);
-  o["SyzygyPath"]            << Option("<empty>", on_tb_path);
-  o["SyzygyProbeDepth"]      << Option(1, 1, 100);
-  o["SyzygyProbeLimit"]      << Option(7, 0, 7);
-  o["Deep Analysis Mode"]     << Option(0, 0,  8);
-  o["Variety"]               << Option (0, 0, 40);
-  o["MCTS"]                  << Option(false);
-  //Polyglot Book management
-  /*
-      - Book file: default = <empty>, Path+Filename to the BrainFish book, for example d:\Chess\Cerebellum_Light_Poly.bin
-      - Best book move: default = true, if false the move is selected according to the weights in the Polyglot book
-        Brain Fish can of course handle also moves or openings which are never played by the book, for example 1. ..e6.
-        You can play such openings with using a Standard opening book for your GUI which for example plays only 1. ..e6 as black and then stops.
-        Another option is to edit the Poyglot Book.
-      - BookDepth: default 255, maximum number of moves played out of the book in one row.
-
-   */
-  o["BookFile"]              << Option("<empty>", on_book_file);
-  o["BestBookMove"]          << Option(true, on_best_book_move);
-  o["BookDepth"]             << Option(255, 1, 255, on_book_depth);
-
-  o["Tal"]                   << Option(false);
-  o["Capablanca"]            << Option(false);
-  o["Petrosian"]             << Option(false);
+  o["UCI_LimitStrength"]     	   << Option(false);
+  o["UCI_Elo"]               	   << Option(2800, 1500, 2800);
+  o["SyzygyPath"]            	   << Option("<empty>", on_tb_path);
+  o["SyzygyProbeDepth"]            << Option(1, 1, 100);
+  o["SyzygyProbeLimit"]            << Option(7, 0, 7);
+  o["Less Pruning Mode"]    	   << Option(0, 0,  9);
+  o["Variety"]                     << Option (0, 0, 40);
+  o["NN Perceptron Search"]  	   << Option(false);
+  o["NN Persisted Self-Learning"]  << Option(false);
+  o["Tal"]                         << Option(false);
+  o["Capablanca"]            	   << Option(false);
+  o["Petrosian"]                   << Option(false);
 
 }
 
@@ -158,8 +142,8 @@ Option::operator std::string() const {
 
 bool Option::operator==(const char* s) const {
   assert(type == "combo");
-  return    !CaseInsensitiveLess()(currentValue, s)
-         && !CaseInsensitiveLess()(s, currentValue);
+  return   !CaseInsensitiveLess()(currentValue, s)
+        && !CaseInsensitiveLess()(s, currentValue);
 }
 
 
@@ -175,8 +159,8 @@ void Option::operator<<(const Option& o) {
 
 
 /// operator=() updates currentValue and triggers on_change() action. It's up to
-/// the GUI to check for option's limits, but we could receive the new value from
-/// the user by console window, so let's check the bounds anyway.
+/// the GUI to check for option's limits, but we could receive the new value
+/// from the user by console window, so let's check the bounds anyway.
 
 Option& Option::operator=(const string& v) {
 
@@ -186,6 +170,17 @@ Option& Option::operator=(const string& v) {
       || (type == "check" && v != "true" && v != "false")
       || (type == "spin" && (stof(v) < min || stof(v) > max)))
       return *this;
+
+  if (type == "combo")
+  {
+      OptionsMap comboMap; // To have case insensitive compare
+      string token;
+      std::istringstream ss(defaultValue);
+      while (ss >> token)
+          comboMap[token] << Option();
+      if (!comboMap.count(v) || v == "var")
+          return *this;
+  }
 
   if (type != "button")
       currentValue = v;

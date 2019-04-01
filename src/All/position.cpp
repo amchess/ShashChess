@@ -18,7 +18,6 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <algorithm>
 #include <cassert>
 #include <cstddef> // For offsetof()
 #include <cstring> // For std::memset, std::memcmp
@@ -498,14 +497,15 @@ Bitboard Position::slider_blockers(Bitboard sliders, Square s, Bitboard& pinners
   Bitboard blockers = 0;
   pinners = 0;
 
-  // Snipers are sliders that attack 's' when a piece is removed
+  // Snipers are sliders that attack 's' when a piece and other snipers are removed
   Bitboard snipers = (  (PseudoAttacks[  ROOK][s] & pieces(QUEEN, ROOK))
                       | (PseudoAttacks[BISHOP][s] & pieces(QUEEN, BISHOP))) & sliders;
+  Bitboard occupancy = pieces() & ~snipers;
 
   while (snipers)
   {
     Square sniperSq = pop_lsb(&snipers);
-    Bitboard b = between_bb(s, sniperSq) & pieces();
+    Bitboard b = between_bb(s, sniperSq) & occupancy;
 
     if (b && !more_than_one(b))
     {
@@ -628,7 +628,7 @@ bool Position::pseudo_legal(const Move m) const {
   {
       // We have already handled promotion moves, so destination
       // cannot be on the 8th/1st rank.
-      if (rank_of(to) == relative_rank(us, RANK_8))
+      if ((Rank8BB | Rank1BB) & to)
           return false;
 
       if (   !(attacks_from<PAWN>(from, us) & pieces(~us) & to) // Not a capture
@@ -1076,8 +1076,8 @@ bool Position::see_ge(Move m, Value threshold) const {
       stmAttackers = attackers & pieces(stm);
 
       // Don't allow pinned pieces to attack (except the king) as long as
-      // all pinners are on their original square.
-      if (!(st->pinners[~stm] & ~occupied))
+      // any pinners are on their original square.
+      if (st->pinners[~stm] & occupied)
           stmAttackers &= ~st->blockersForKing[stm];
 
       // If stm has no more attackers then give up: stm loses

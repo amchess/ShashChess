@@ -27,7 +27,6 @@
 #include "tt.h"
 #include "uci.h"
 #include "syzygy/tbprobe.h"
-#include "polybook.h"
 
 namespace PSQT {
   void init();
@@ -42,11 +41,8 @@ int main(int argc, char* argv[]) {
   Bitboards::init();
   Position::init();
   Bitbases::init();
-
   Search::init();
-  Pawns::init();
   Threads.set(Options["Threads"]);
-  polybook.init(Options["BookFile"]);//from BrainFish
   Search::clear(); // After threads are up
 
   UCI::loop(argc, argv);
