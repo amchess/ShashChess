@@ -253,6 +253,7 @@ Defense position/algorithm (the "reversed colors" Tal)
 - Alexei Chernakoff for his pretious suggestions about the android version and its contribution to it
 - Dariusz Domagala for the Mac version
 - The BrainFish, McBrain, CorChess, CiChess and MateFinder authors for their very interesting derivative
+- The known chess forum  (mzforum, talkchess,...) and technical sites (www.chessprogramming.org)
 - Obviously, the chess theorician Alexander Shashin, whithout whom I wouldn't had the idea of this engine
 
 Stockfish community
@@ -263,8 +264,6 @@ Stockfish community
 - official tester: Maurizio Colbacchini, FSI 1N
 - official tester and concept analyst: ICCF GM Fabio Finocchiaro (https://www.iccf.com/player?id=240090), 2012 ICCF world champion 
 - tester and concept analyst: ICCF GM Matjaž Pirš (https://www.iccf.com/player?id=480232), for his great experience and tests on positions analysis in different game's phases
-- concept analyst and builds expert, also owning the very known forum http://mzchessforum.altervista.org: Marco Zerbinati
-
 
 
 Sorry If I forgot someone.
