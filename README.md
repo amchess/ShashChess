@@ -249,6 +249,7 @@ Defense position/algorithm (the "reversed colors" Tal)
 
 ## Acknowledgments
 
+- Kelly Kiniama for his great persisting learning algorithm
 - Sergey Aleksandrovitch Kozlov for his very interesting patch and code on Sugar engine
 - Alexei Chernakoff for his pretious suggestions about the android version and its contribution to it
 - Dariusz Domagala for the Mac version
