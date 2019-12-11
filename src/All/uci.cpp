@@ -2,7 +2,7 @@
   ShashChess, a UCI chess playing engine derived from Stockfish
   Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
   Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2018 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -37,6 +37,8 @@ using namespace std;
 
 extern vector<string> setup_bench(const Position&, istream&);
 
+int maximumPly = 0; // from Kelly
+
 namespace {
 
   // FEN string of the initial position, normal chess
@@ -47,104 +49,48 @@ namespace {
   // The function sets up the position described in the given FEN string ("fen")
   // or the starting position ("startpos") and then makes the moves given in the
   // following move list ("moves").
-  //kellykynyama mcts begin
-  bool startposition = false;
-  Key FileKey = 0;
-  //kellykynyama mcts end
 
   void position(Position& pos, istringstream& is, StateListPtr& states) {
 
     Move m;
     string token, fen;
-    string Newfen; //kellykanyama mcts
-    bool persistedSelfLearning=Options["NN Persisted Self-Learning"]; //mcts
     is >> token;
 
     if (token == "startpos")
     {
-      //kellykynyama mcts begin
-      if(persistedSelfLearning)
-      {
-	startposition = true;
-      }
-      //kellykynyama end
-      fen = StartFEN;
-      //kellykynyama mcts begin
-      if(persistedSelfLearning)
-      {
-	 Newfen = fen;
-      }
-      //kellykynyama mcts end
-      is >> token; // Consume "moves" token if any
+        fen = StartFEN;
+        is >> token; // Consume "moves" token if any
     }
     else if (token == "fen")
-    {
-      //kellykynyama mcts begin
-      if(persistedSelfLearning)
-      {
-	startposition = false;
-	Newfen = token;
-      }
-      //kellykynyama mcts end
-      while (is >> token && token != "moves")
-	      fen += token + " ";
-    }
+        while (is >> token && token != "moves")
+            fen += token + " ";
     else
-	    return;
+        return;
 
     states = StateListPtr(new std::deque<StateInfo>(1)); // Drop old and create a new one
     pos.set(fen, Options["UCI_Chess960"], &states->back(), Threads.main());
-    //kellykynyama mcts begin
-    int movesplayed = 0;
-    int OPmoves = 0;
-    if(persistedSelfLearning)
-    {
-      if (StartFEN != Newfen)
-      {
-	      startposition = false;
-	      FileKey = pos.key();
-      }
-      else
-      {
-	      startposition = true;
-	      FileKey = 0;
-      }
-    }
-    //kellykynyama mcts end
+
+    int plies = 0; //from Kelly
 
     // Parse move list (if any)
     while (is >> token && (m = UCI::to_move(pos, token)) != MOVE_NONE)
     {
-        states->emplace_back();
-
-	//kellykynyama mcts begin
-        if(persistedSelfLearning)
-        {
-	  if (!FileKey)
-	  {
-	    if ((movesplayed == 2 || movesplayed == 4 || movesplayed == 6 || movesplayed == 8 || movesplayed == 10 || movesplayed == 12 || movesplayed == 14 || movesplayed == 16) && Newfen == StartFEN)
-	    {
-		    files(OPmoves, pos.key());
-		    OPmoves++;
-		    kelly(startposition);
-
-	    }
-	    if (movesplayed == 16 && Newfen == StartFEN)
-	    {
-		    FileKey = pos.key();
-		    kelly(startposition);
-	    }
-	  }
-        }
-	//kellykyniama mcts end
-
+	 //kelly begin
+	if (Options["NN Persisted Self-Learning"] && (plies > maximumPly))
+	{
+	  plies++;
+	  LearningFileEntry currentLearningEntry;
+	  currentLearningEntry.depth = 0;
+	  currentLearningEntry.hashKey = pos.key();
+	  currentLearningEntry.move = m;
+	  currentLearningEntry.score = VALUE_NONE;
+	  currentLearningEntry.performance = 0;
+	  insertIntoOrUpdateLearningTable(currentLearningEntry,globalLearningHT);
+	  maximumPly = plies;
+	}
+	//kelly end
+	states->emplace_back();
         pos.do_move(m, states->back());
-        //kellykyniama mcts begin
-        if(persistedSelfLearning)
-        {
-            movesplayed++;
-        }
-        //kellykyniama mcts end
     }
   }
 
@@ -165,9 +111,17 @@ namespace {
     // Read option value (can contain spaces)
     while (is >> token)
         value += (value.empty() ? "" : " ") + token;
-
     if (Options.count(name))
+    {
         Options[name] = value;
+        //from Kelly begin
+        if((name=="NN Persisted Self-Learning") && (value=="true"))
+        {
+            UCI::initLearning();
+
+        }
+        //from Kelly end
+    }
     else
         sync_cout << "No such option: " << name << sync_endl;
   }
@@ -217,7 +171,7 @@ namespace {
     uint64_t num, nodes = 0, cnt = 1;
 
     vector<string> list = setup_bench(pos, args);
-    num = count_if(list.begin(), list.end(), [](string s) { return s.find("go ") == 0; });
+    num = count_if(list.begin(), list.end(), [](string s) { return s.find("go ") == 0 || s.find("eval") == 0; });
 
     TimePoint elapsed = now();
 
@@ -226,16 +180,30 @@ namespace {
         istringstream is(cmd);
         is >> skipws >> token;
 
-        if (token == "go")
+        if (token == "go" || token == "eval")
         {
             cerr << "\nPosition: " << cnt++ << '/' << num << endl;
-            go(pos, is, states);
-            Threads.main()->wait_for_search_finished();
-            nodes += Threads.nodes_searched();
+            if (token == "go")
+            {
+               go(pos, is, states);
+               Threads.main()->wait_for_search_finished();
+               nodes += Threads.nodes_searched();
+            }
+            else
+               sync_cout << "\n" << Eval::trace(pos) << sync_endl;
         }
         else if (token == "setoption")  setoption(is);
         else if (token == "position")   position(pos, is, states);
-        else if (token == "ucinewgame") Search::clear();
+        else if (token == "ucinewgame") {
+	    //from Kelly
+            if(Options["NN Persisted Self-Learning"])
+              {
+        	maximumPly = 0;
+        	setStartPoint();
+              }
+	   //end from Kelly
+	    Search::clear(); elapsed = now();// Search::clear() may take some while
+        }
     }
 
     elapsed = now() - elapsed + 1; // Ensure positivity to avoid a 'divide by zero'
@@ -262,9 +230,8 @@ void UCI::loop(int argc, char* argv[]) {
   Position pos;
   string token, cmd;
   StateListPtr states(new std::deque<StateInfo>(1));
-  auto uiThread = std::make_shared<Thread>(0);
 
-  pos.set(StartFEN, false, &states->back(), uiThread.get());
+  pos.set(StartFEN, false, &states->back(), Threads.main());
 
   for (int i = 1; i < argc; ++i)
       cmd += std::string(argv[i]) + " ";
@@ -278,9 +245,17 @@ void UCI::loop(int argc, char* argv[]) {
       token.clear(); // Avoid a stale if getline() returns empty or blank line
       is >> skipws >> token;
 
-      if (    token == "quit"
-          ||  token == "stop")
-          Threads.stop = true;
+      //from Kelly begin
+      if (token == "quit"
+                ||  token == "stop")
+      	{
+      	  if ((Options["NN Persisted Self-Learning"]) && (token == "quit"))
+	    {
+	     writeLearningFile(HashTableType::global);
+	    }
+      	  Threads.stop = true;
+      	}
+      //from Kelly end
 
       // The GUI sends 'ponderhit' to tell us the user has played the expected move.
       // So 'ponderhit' will be sent if we were told to ponder on the same move the
@@ -297,10 +272,20 @@ void UCI::loop(int argc, char* argv[]) {
       else if (token == "setoption")  setoption(is);
       else if (token == "go")         go(pos, is, states);
       else if (token == "position")   position(pos, is, states);
-      else if (token == "ucinewgame") Search::clear();
+	  else if (token == "ucinewgame")
+	  {
+	      //from Kelly
+	      if(Options["NN Persisted Self-Learning"]){
+		  maximumPly = 0;
+		  setStartPoint();
+	      }
+	      //end from Kelly
+	      Search::clear();
+	  }
       else if (token == "isready")    sync_cout << "readyok" << sync_endl;
 
-      // Additional custom non-UCI commands, mainly for debugging
+      // Additional custom non-UCI commands, mainly for debugging.
+      // Do not use these commands during a search!
       else if (token == "flip")  pos.flip();
       else if (token == "bench") bench(pos, is, states);
       else if (token == "d")     sync_cout << pos << sync_endl;
@@ -326,7 +311,7 @@ string UCI::value(Value v) {
   stringstream ss;
 
   if (abs(v) < VALUE_MATE - MAX_PLY)
-      ss << "cp " << v * scoreScale / PawnValueEg;
+      ss << "cp " << v * scoreScale / PawnValueEg; //scoreScale adapt to realistic shown value
   else
       ss << "mate " << (v > 0 ? VALUE_MATE - v + 1 : -VALUE_MATE - v) / 2;
 

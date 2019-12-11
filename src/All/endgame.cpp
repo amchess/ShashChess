@@ -2,7 +2,7 @@
   ShashChess, a UCI chess playing engine derived from Stockfish
   Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
   Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2018 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -74,12 +74,40 @@ namespace {
     assert(pos.count<PAWN>(strongSide) == 1);
 
     if (file_of(pos.square<PAWN>(strongSide)) >= FILE_E)
-        sq = Square(sq ^ 7); // Mirror SQ_H1 -> SQ_A1
+        sq = Square(int(sq) ^ 7); // Mirror SQ_H1 -> SQ_A1
 
     return strongSide == WHITE ? sq : ~sq;
   }
 
 } // namespace
+
+
+namespace Endgames {
+
+  std::pair<Map<Value>, Map<ScaleFactor>> maps;
+
+  void init() {
+
+    add<KPK>("KPK");
+    add<KNNK>("KNNK");
+    add<KBNK>("KBNK");
+    add<KRKP>("KRKP");
+    add<KRKB>("KRKB");
+    add<KRKN>("KRKN");
+    add<KQKP>("KQKP");
+    add<KQKR>("KQKR");
+    add<KNNKP>("KNNKP");
+
+    add<KNPK>("KNPK");
+    add<KNPKB>("KNPKB");
+    add<KRPKR>("KRPKR");
+    add<KRPKB>("KRPKB");
+    add<KBPKB>("KBPKB");
+    add<KBPKN>("KBPKN");
+    add<KBPPKB>("KBPPKB");
+    add<KRPPKRP>("KRPPKRP");
+  }
+}
 
 
 /// Mate with KX vs K. This function is used to evaluate positions with
@@ -337,7 +365,7 @@ ScaleFactor Endgame<KBPsK>::operator()(const Position& pos) const {
       && pos.count<PAWN>(weakSide) >= 1)
   {
       // Get weakSide pawn that is closest to the home rank
-      Square weakPawnSq = backmost_sq(weakSide, pos.pieces(weakSide, PAWN));
+      Square weakPawnSq = frontmost_sq(strongSide, pos.pieces(weakSide, PAWN));
 
       Square strongKingSq = pos.square<KING>(strongSide);
       Square weakKingSq = pos.square<KING>(weakSide);
@@ -425,6 +453,15 @@ ScaleFactor Endgame<KRPKR>::operator()(const Position& pos) const {
       && (rank_of(brsq) == RANK_6 || (r <= RANK_3 && rank_of(wrsq) != RANK_6)))
       return SCALE_FACTOR_DRAW;
 
+  //rookEndgames patch begin
+  // Back-rank defence always works on A and B files.
+  if (f <= FILE_B
+      && file_of(bksq) == f
+      && rank_of(bksq) == RANK_8
+      && rank_of(brsq) == RANK_8)
+      return SCALE_FACTOR_DRAW;
+  //rookEndgames patch end
+
   // The defending side saves a draw by checking from behind in case the pawn
   // has advanced to the 6th rank with the king behind.
   if (   r == RANK_6
@@ -439,6 +476,21 @@ ScaleFactor Endgame<KRPKR>::operator()(const Position& pos) const {
       && (!tempo || distance(wksq, wpsq) >= 2))
       return SCALE_FACTOR_DRAW;
 
+
+  // Vancura position, white cannot make progress unless the pawn is pushed,
+  // but it allows black to play Ra6 and draw via the next rule
+
+  //rookEndgames patch begin
+  // Vancura position, white cannot make progress unless the pawn is pushed,
+  // but it allows black to play Ra6 and draw via the next rule
+  if ( wpsq == SQ_A6
+      && (wrsq == SQ_A8 || wrsq == SQ_A7)
+      && rank_of(bksq) >= RANK_7
+      && file_of(bksq) >= FILE_G
+      && rank_of(brsq) == RANK_6
+      && distance<File>(wksq, SQ_A7) > 1)
+      return SCALE_FACTOR_DRAW;
+  //rookEndgames patch end
   // White pawn on a7 and rook on a8 is a draw if black's king is on g7 or h7
   // and the black rook is behind the pawn.
   if (   wpsq == SQ_A7
@@ -447,6 +499,17 @@ ScaleFactor Endgame<KRPKR>::operator()(const Position& pos) const {
       && file_of(brsq) == FILE_A
       && (rank_of(brsq) <= RANK_3 || file_of(wksq) >= FILE_D || rank_of(wksq) <= RANK_5))
       return SCALE_FACTOR_DRAW;
+
+  // White king blocks his own pawn and cannot get out
+  //rookEndgames patch begin
+  // White king blocks his own pawn and cannot get out
+  if (   wpsq == SQ_A7
+      && wksq == SQ_A8
+      && file_of(bksq) == FILE_C
+      && rank_of(bksq) >= RANK_7
+      && (FileBBB | FileCBB) & ~(Rank7BB | Rank8BB) & brsq)
+      return SCALE_FACTOR_DRAW;
+  //rookEndgames patch end
 
   // If the defending king blocks the pawn and the attacking king is too far
   // away, it's a draw.
@@ -536,6 +599,68 @@ ScaleFactor Endgame<KRPKB>::operator()(const Position& pos) const {
 
   return SCALE_FACTOR_NONE;
 }
+
+/// KRPP vs KR. This is usually winning, but there are cases where a
+
+
+/// draw is possible
+
+
+template<>
+
+//rookEndgames patch begin
+ScaleFactor Endgame<KRPPKR>::operator()(const Position& pos) const {
+  assert(verify_material(pos, strongSide, RookValueMg, 2));
+  assert(verify_material(pos, weakSide,   RookValueMg, 0));
+  Square backPawn = relative_square(strongSide, frontmost_sq(weakSide, pos.pieces(strongSide, PAWN)));
+  Square frontPawn = relative_square(strongSide, frontmost_sq(strongSide, pos.pieces(strongSide, PAWN)));
+  Square wksq = relative_square(strongSide, pos.square<KING>(strongSide));
+  Square wrsq = relative_square(strongSide, pos.square<ROOK>(strongSide));
+  Square bksq = relative_square(strongSide, pos.square<KING>(weakSide));
+  Square brsq = relative_square(strongSide, pos.square<ROOK>(weakSide));
+  Bitboard wpbb = square_bb(backPawn) | square_bb(frontPawn);
+  // Against doubled pawns, third-rank defence still works most of the time
+  if (   file_of(backPawn) == file_of(frontPawn)
+      && rank_of(frontPawn) <= RANK_5
+      && distance(bksq, make_square(file_of(frontPawn), RANK_8)) <= 1
+      && wksq <= SQ_H5
+      && rank_of(brsq) == RANK_6)
+      return SCALE_FACTOR_DRAW;
+  // Back-rank defence against doubled pawns on knight and rook-files.
+  if (   file_of(backPawn) == file_of(frontPawn)
+      && (FileABB | FileBBB | FileGBB | FileHBB) & frontPawn
+      && file_of(bksq) == file_of(frontPawn)
+      && rank_of(bksq) == RANK_8
+      && rank_of(brsq) == RANK_8)
+      return SCALE_FACTOR_DRAW;
+  // A Vancura-type positions, with a useless extra pawn
+  if (   wpbb & make_square(file_of(wrsq), RANK_6)
+      && (FileABB | FileHBB) & wrsq
+      && rank_of(wrsq) >= RANK_7
+      && (FileABB | FileBBB | FileGBB | FileHBB) & bksq
+      && rank_of(bksq) >= RANK_7
+      && forward_file_bb(BLACK, bksq) & wpbb
+      && rank_of(brsq) == RANK_6
+      && distance<File>(wksq, wrsq) > 1)
+      return SCALE_FACTOR_DRAW;
+  if (   (wrsq == SQ_A8 || wrsq == SQ_H8)
+      && (square_bb(SQ_A7) | square_bb(SQ_H7)) & wpbb
+      && (FileABB | FileBBB | FileGBB | FileHBB) & Rank7BB & bksq
+      && forward_file_bb(BLACK, bksq) & wpbb
+      && file_of(brsq) == file_of(wrsq))
+      return SCALE_FACTOR_DRAW;
+  // King can establish an outpost in front of a connected backward non-central pawn
+  if (  ~CenterFiles & backPawn
+      && forward_file_bb(WHITE, backPawn) & bksq
+      && distance<File>(frontPawn, backPawn) < 2
+      && rank_of(frontPawn) == rank_of(bksq)
+      && forward_ranks_bb(BLACK, backPawn) & wrsq
+      && distance<File>(wksq, frontPawn) > 1
+      && rank_of(brsq) > rank_of(frontPawn))
+      return SCALE_FACTOR_DRAW;
+  return SCALE_FACTOR_NONE;
+}
+//rookEndgames patch end
 
 /// KRPP vs KRP. There is just a single rule: if the stronger side has no passed
 /// pawns and the defending king is actively placed, the position is drawish.
@@ -635,8 +760,6 @@ ScaleFactor Endgame<KBPPKB>::operator()(const Position& pos) const {
   Square ksq = pos.square<KING>(weakSide);
   Square psq1 = pos.squares<PAWN>(strongSide)[0];
   Square psq2 = pos.squares<PAWN>(strongSide)[1];
-  Rank r1 = rank_of(psq1);
-  Rank r2 = rank_of(psq2);
   Square blockSq1, blockSq2;
 
   if (relative_rank(strongSide, psq1) > relative_rank(strongSide, psq2))
@@ -670,7 +793,7 @@ ScaleFactor Endgame<KBPPKB>::operator()(const Position& pos) const {
         && opposite_colors(ksq, wbsq)
         && (   bbsq == blockSq2
             || (pos.attacks_from<BISHOP>(blockSq2) & pos.pieces(weakSide, BISHOP))
-            || distance(r1, r2) >= 2))
+            || distance<Rank>(psq1, psq2) >= 2))
         return SCALE_FACTOR_DRAW;
 
     else if (   ksq == blockSq2

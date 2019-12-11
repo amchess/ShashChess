@@ -2,7 +2,7 @@
   ShashChess, a UCI chess playing engine derived from Stockfish
   Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
   Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2018 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -65,16 +65,19 @@ constexpr Bitboard CenterFiles = FileCBB | FileDBB | FileEBB | FileFBB;
 constexpr Bitboard KingSide    = FileEBB | FileFBB | FileGBB | FileHBB;
 constexpr Bitboard Center      = (FileDBB | FileEBB) & (Rank4BB | Rank5BB);
 
+constexpr Bitboard KingFlank[FILE_NB] = {
+  QueenSide ^ FileDBB, QueenSide, QueenSide,
+  CenterFiles, CenterFiles,
+  KingSide, KingSide, KingSide ^ FileEBB
+};
+
 extern uint8_t PopCnt16[1 << 16];
 extern uint8_t SquareDistance[SQUARE_NB][SQUARE_NB];
 
-extern Bitboard BetweenBB[SQUARE_NB][SQUARE_NB];
+extern Bitboard SquareBB[SQUARE_NB];
 extern Bitboard LineBB[SQUARE_NB][SQUARE_NB];
-extern Bitboard DistanceRingBB[SQUARE_NB][8];
 extern Bitboard PseudoAttacks[PIECE_TYPE_NB][SQUARE_NB];
 extern Bitboard PawnAttacks[COLOR_NB][SQUARE_NB];
-extern Bitboard KingFlank[FILE_NB];
-extern Bitboard SquareBB[SQUARE_NB];
 
 
 /// Magic holds all magic bitboards relevant data for a single square
@@ -116,6 +119,12 @@ inline Bitboard  operator^( Bitboard  b, Square s) { return b ^  square_bb(s); }
 inline Bitboard& operator|=(Bitboard& b, Square s) { return b |= square_bb(s); }
 inline Bitboard& operator^=(Bitboard& b, Square s) { return b ^= square_bb(s); }
 
+inline Bitboard  operator&(Square s, Bitboard b) { return b & s; }
+inline Bitboard  operator|(Square s, Bitboard b) { return b | s; }
+inline Bitboard  operator^(Square s, Bitboard b) { return b ^ s; }
+
+inline Bitboard  operator|(Square s, Square s2) { return square_bb(s) | square_bb(s2); }
+
 constexpr bool more_than_one(Bitboard b) {
   return b & (b - 1);
 }
@@ -150,6 +159,7 @@ inline Bitboard file_bb(Square s) {
 template<Direction D>
 constexpr Bitboard shift(Bitboard b) {
   return  D == NORTH      ?  b             << 8 : D == SOUTH      ?  b             >> 8
+        : D == NORTH+NORTH?  b             <<16 : D == SOUTH+SOUTH?  b             >>16
         : D == EAST       ? (b & ~FileHBB) << 1 : D == WEST       ? (b & ~FileABB) >> 1
         : D == NORTH_EAST ? (b & ~FileHBB) << 9 : D == NORTH_WEST ? (b & ~FileABB) << 7
         : D == SOUTH_EAST ? (b & ~FileHBB) >> 7 : D == SOUTH_WEST ? (b & ~FileABB) >> 9
@@ -180,18 +190,17 @@ constexpr Bitboard pawn_double_attacks_bb(Bitboard b) {
 /// adjacent_files_bb() returns a bitboard representing all the squares on the
 /// adjacent files of the given one.
 
-inline Bitboard adjacent_files_bb(File f) {
-  return shift<EAST>(file_bb(f)) | shift<WEST>(file_bb(f));
+inline Bitboard adjacent_files_bb(Square s) {
+  return shift<EAST>(file_bb(s)) | shift<WEST>(file_bb(s));
 }
 
 
-/// between_bb() returns a bitboard representing all the squares between the two
-/// given ones. For instance, between_bb(SQ_C4, SQ_F7) returns a bitboard with
-/// the bits for square d5 and e6 set. If s1 and s2 are not on the same rank,
-/// file or diagonal, 0 is returned.
+/// between_bb() returns squares that are linearly between the given squares
+/// If the given squares are not on a same file/rank/diagonal, return 0.
 
 inline Bitboard between_bb(Square s1, Square s2) {
-  return BetweenBB[s1][s2];
+  return LineBB[s1][s2] & ( (AllSquares << (s1 +  (s1 < s2)))
+                           ^(AllSquares << (s2 + !(s1 < s2))));
 }
 
 
@@ -218,7 +227,7 @@ inline Bitboard forward_file_bb(Color c, Square s) {
 /// starting from the given square.
 
 inline Bitboard pawn_attack_span(Color c, Square s) {
-  return forward_ranks_bb(c, s) & adjacent_files_bb(file_of(s));
+  return forward_ranks_bb(c, s) & adjacent_files_bb(s);
 }
 
 
@@ -226,7 +235,7 @@ inline Bitboard pawn_attack_span(Color c, Square s) {
 /// the given color and on the given square is a passed pawn.
 
 inline Bitboard passed_pawn_span(Color c, Square s) {
-  return forward_ranks_bb(c, s) & (adjacent_files_bb(file_of(s)) | file_bb(s));
+  return forward_ranks_bb(c, s) & (adjacent_files_bb(s) | file_bb(s));
 }
 
 
@@ -239,14 +248,12 @@ inline bool aligned(Square s1, Square s2, Square s3) {
 
 
 /// distance() functions return the distance between x and y, defined as the
-/// number of steps for a king in x to reach y. Works with squares, ranks, files.
+/// number of steps for a king in x to reach y.
 
-template<typename T> inline int distance(T x, T y) { return std::abs(x - y); }
+template<typename T1 = Square> inline int distance(Square x, Square y);
+template<> inline int distance<File>(Square x, Square y) { return std::abs(file_of(x) - file_of(y)); }
+template<> inline int distance<Rank>(Square x, Square y) { return std::abs(rank_of(x) - rank_of(y)); }
 template<> inline int distance<Square>(Square x, Square y) { return SquareDistance[x][y]; }
-
-template<typename T1, typename T2> inline int distance(T2 x, T2 y);
-template<> inline int distance<File>(Square x, Square y) { return distance(file_of(x), file_of(y)); }
-template<> inline int distance<Rank>(Square x, Square y) { return distance(rank_of(x), rank_of(y)); }
 
 template<class T> constexpr const T& clamp(const T& v, const T& lo, const T&  hi) {
   return v < lo ? lo : v > hi ? hi : v;
@@ -375,10 +382,9 @@ inline Square pop_lsb(Bitboard* b) {
 }
 
 
-/// frontmost_sq() and backmost_sq() return the square corresponding to the
-/// most/least advanced bit relative to the given color.
-
-inline Square frontmost_sq(Color c, Bitboard b) { return c == WHITE ? msb(b) : lsb(b); }
-inline Square  backmost_sq(Color c, Bitboard b) { return c == WHITE ? lsb(b) : msb(b); }
+/// frontmost_sq() returns the most advanced square for the given color
+inline Square frontmost_sq(Color c, Bitboard b) {
+  return c == WHITE ? msb(b) : lsb(b);
+}
 
 #endif // #ifndef BITBOARD_H_INCLUDED

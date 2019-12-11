@@ -1,7 +1,7 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
   Copyright (c) 2013 Ronald de Man
-  Copyright (C) 2016-2018 Marco Costalba, Lucas Braesch
+  Copyright (C) 2016-2019 Marco Costalba, Lucas Braesch
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,12 +27,12 @@
 #include <list>
 #include <sstream>
 #include <type_traits>
+#include <mutex>
 
 #include "../bitboard.h"
 #include "../movegen.h"
 #include "../position.h"
 #include "../search.h"
-#include "../thread_win32_osx.h"
 #include "../types.h"
 #include "../uci.h"
 
@@ -45,7 +45,9 @@
 #include <sys/stat.h>
 #else
 #define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
+#ifndef NOMINMAX
+#  define NOMINMAX // Disable macros min() and max()
+#endif
 #include <windows.h>
 #endif
 
@@ -367,7 +369,7 @@ TBTable<WDL>::TBTable(const std::string& code) : TBTable() {
     hasPawns = pos.pieces(PAWN);
 
     hasUniquePieces = false;
-    for (Color c = WHITE; c <= BLACK; ++c)
+    for (Color c : { WHITE, BLACK })
         for (PieceType pt = PAWN; pt < KING; ++pt)
             if (popcount(pos.pieces(c, pt)) == 1)
                 hasUniquePieces = true;
@@ -704,9 +706,7 @@ Ret do_probe_table(const Position& pos, T* entry, WDLScore wdl, ProbeState* resu
 
         std::swap(squares[0], *std::max_element(squares, squares + leadPawnsCnt, pawns_comp));
 
-        tbFile = file_of(squares[0]);
-        if (tbFile > FILE_D)
-            tbFile = file_of(squares[0] ^ 7); // Horizontal flip: SQ_H1 -> SQ_A1
+        tbFile = map_to_queenside(file_of(squares[0]));
     }
 
     // DTZ tables are one-sided, i.e. they store positions only for white to
@@ -730,8 +730,8 @@ Ret do_probe_table(const Position& pos, T* entry, WDLScore wdl, ProbeState* resu
 
     // Then we reorder the pieces to have the same sequence as the one stored
     // in pieces[i]: the sequence that ensures the best compression.
-    for (int i = leadPawnsCnt; i < size; ++i)
-        for (int j = i; j < size; ++j)
+    for (int i = leadPawnsCnt; i < size - 1; ++i)
+        for (int j = i + 1; j < size; ++j)
             if (d->pieces[i] == pieces[j])
             {
                 std::swap(pieces[i], pieces[j]);
@@ -1060,8 +1060,8 @@ void set(T& e, uint8_t* data) {
 
     enum { Split = 1, HasPawns = 2 };
 
-    assert(e.hasPawns        == !!(*data & HasPawns));
-    assert((e.key != e.key2) == !!(*data & Split));
+    assert(e.hasPawns        == bool(*data & HasPawns));
+    assert((e.key != e.key2) == bool(*data & Split));
 
     data++; // First byte stores flags
 
@@ -1124,14 +1124,14 @@ void set(T& e, uint8_t* data) {
 template<TBType Type>
 void* mapped(TBTable<Type>& e, const Position& pos) {
 
-    static Mutex mutex;
+    static std::mutex mutex;
 
     // Use 'acquire' to avoid a thread reading 'ready' == true while
     // another is still working. (compiler reordering may cause this).
     if (e.ready.load(std::memory_order_acquire))
         return e.baseAddress; // Could be nullptr if file does not exist
 
-    std::unique_lock<Mutex> lk(mutex);
+    std::unique_lock<std::mutex> lk(mutex);
 
     if (e.ready.load(std::memory_order_relaxed)) // Recheck under lock
         return e.baseAddress;

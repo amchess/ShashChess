@@ -6,7 +6,7 @@ https://www.amazon.com/Best-Play-Method-Discovering-Strongest/dp/1936277468
 to improve
 
 - base engine strength
-- engine’s behaviour on the different positions types (requiring the corresponding algorithm) :
+- engine's behaviour on the different positions types (requiring the corresponding algorithm) :
     - Tal
     - Capablanca
     - Petrosian
@@ -78,8 +78,8 @@ If the Never Clear Hash option is enabled, this button doesn't do anything.
 This option has no effect in the playing mode.
 A non-zero contempt is determined by Shashin's options and used only during game play, not during infinite analysis where it's turned off.
 This helps make analysis consistent when switching sides and exploring various lines and lets you include a non-zero Contempt in your analysis. 
-Note when playing against the computer, if you wish to use a non-zero Contempt, either turn off “White Contempt” so that Contempt will apply to the Computer’s side, or you can use the above description to set an appropriate Contempt for the specific side that ShashChess is playing. 
-Please note if “White Contempt” is off, in infinite search or analysis mode, ShashChess will always use a value of 0 for Contempt.
+Note when playing against the computer, if you wish to use a non-zero Contempt, either turn off 'White Contempt' so that Contempt will apply to the Computer's side, or you can use the above description to set an appropriate Contempt for the specific side that ShashChess is playing. 
+Please note if 'White Contempt' is off, in infinite search or analysis mode, ShashChess will always use a value of 0 for Contempt.
 If you use this option, you can analyse with contempt settled for white, black or for all points of view.
 Obviously, this option can produce an asymmetry in the evaluations (the evaluation changes when you switch sides). So, be aware!
 
@@ -128,7 +128,7 @@ Activate the strength limit by a weaker play in a random fashion to simulate hum
 
 #### UCI_Elo
 
-_Default 2800, min 1500, max 2800_
+_Default 2850, min 1350, max 2850_
 UCI-protocol compliant version of Strength parameter.
 A very refined handicap mode based on the four famous sovietic chess school levels:
 Internally the UCI_Elo value will be converted to a Strength value according to the following table:
@@ -138,7 +138,7 @@ Internally the UCI_Elo value will be converted to a Strength value according to 
 - _advanced: 2200 <= elo < 2400_
 - _expert: elo > 2400_
 
-Every school correspond to a different evaluation function, more and more refined.
+Every school corresponds to a different evaluation function, more and more refined.
 The UCI_Elo feature is controlled by the chess GUI, and usually doesn't appear in the configuration
 window.
 
@@ -176,56 +176,80 @@ Current default, obviously, is for 6-man.
 
 Advanced analysis options, highly recommended for CC play
 
-#### Less Pruning Mode
+#### Full depth threads
 
-_Default: 0, Min: 0, Max:9_
-- 0, no MultiPV. 
-- 1, no MultiPV and corchess mode (for game play at very long time control or analysis purpose)
-- 2-9 MultiPV and corchess mode : higher depths and longer time to reach them. So, fewer tactical shots missed, but loss of some ELO, increasingly until 9, corresponding to multiPV = 256. 
+_Integer, Default: 0, Min: 0, Max: 512_
+The number of settled threads to use for a full depth brute force search. 
+If the number is greater than threads number, all threads are for full depth brute force search.
 
-N.B. Corchess mode [https://github.com/IIvec/Stockfish/tree/corchess/]
+### Live Book section (thanks to Eman's author Khalid Omar for windows builds)
 
-Recommended values: from 2 to 5 ( > 5 too wide search width)
+#### Live Book (checkbox)
 
-#### Variety
+_Boolean, Default: False_ If activated, the engine uses the livebook as primary choice.
+
+#### Live Book URL
+The default is the online chessdb [https://www.chessdb.cn/queryc_en/](https://www.chessdb.cn/queryc_en/), a wonderful project by noobpwnftw (thanks to him!)
+ 
+[https://github.com/noobpwnftw/chessdb](https://github.com/noobpwnftw/chessdb)
+[http://talkchess.com/forum3/viewtopic.php?f=2&t=71764&hilit=chessdb](http://talkchess.com/forum3/viewtopic.php?f=2&t=71764&hilit=chessdb)
+
+The private application can also learn from this live db.
+
+#### Live Book Timeout
+
+_Default 1500, min 0, max 10000_
+
+#### Live Book Diversity
+
+_Boolean, Default: False_ If activated, the engine varies its play, reducing conversely its strength because already the live chessdb is very large.
+
+#### Live Book Contribute
+
+_Boolean, Default: False_ If activated, the engine sends a move, not in live chessdb, in its queue to be analysed. In this manner, we have a kind of learning cloud.
+
+### Full depth threads
+
+_Default 0, min 0, max 512_ The number of threads doing a full depth analysis (brute force). Useful in analysis of particular hard positions to limit the strong pruning's drawbacks. 
+
+### Opening variety
 
 _Integer, Default: 0, Min: 0, Max: 40_
-To play different lines from default (0), if not from book (see below).
+To play different opening lines from default (0), if not from book (see below).
 Higher variety -> more probable loss of ELO
 
 
-### NN section (Experimental Neural Networks inspired technics)
-
-#### NN Perceptron Search
+### NN Persisted Self-Learning
 
 _Boolean, Default: False_
 
-It includes three mcts (Montecarlo Tree Search) implementations:
+[https://github.com/amchess/BrainLearn](https://github.com/amchess/BrainLearn) (Kelly Kiniama and Andrea Manzo), only when true. it implements a persisted learning algorithm, managing a file named experience.bin.
 
-- [https://github.com/Stefano80/Stockfish/compare/0365b08...ad6b324] ( playout by Stefano Cardanobile) for quiescent positions
-- [https://github.com/Stefano80/Stockfish/compare/82ff04b992a53c757519a6ff61576ebd267c0cee...f013d90c669940e68fd707e2197fe655e35c04ed] ( perceptron by Stefano Cardanobile) for Late Move Reductions search as training signal
-- [https://github.com/Stefano80/Stockfish/compare/badb2ac...86fdeac] ( Montecarlo by Stefano Cardanobile and Jörg Oster) in main search function to an upper node
-
-#### NN Persisted Self-Learning
-
-_Boolean, Default: False_
-
-[https://github.com/Kellykinyama12/Stockfish] (montecarlo by Kelly Kinyama) only when true. It keeps the played games in created three type of files for machine/self learning purposes from experience:
-	
-- experience.bin when no more than 40 moves are played, there are non more than 6 pieces on the chessboard and at a not low depth in analysis, the positions are stored and searched for by hash key 
-- pawngame.bin when there are no more than 2 pieces and the game's phase is not the ending, to better play the following ending.
-- openings.bin, in the form <positionKey>.bin (>=1) at the initial stage of game with memorized the move played, the depth and the score. Every file is a single opening variation (random files).
-
-When activated, it loads these files in memory and therefore it can use Search Statistics (Principal Variation, History Heuristics, Transposition Table, Refutation Table and Killer Moves) to play better if the same game is encountered.
-It persists the following information on the Hard Disk:
+It is a collection of one or more positions stored with the following format (similar to in memory Stockfish Transposition Table):
 
 - _best move_
 - _board signature (hash key)_
 - _best move depth_
 - _best move score_
+- _best move performance_ , the new parameter calculated based on pattern recognition concept via a private offline learning application. Not having it, the default performance is 0 (not applied). This new learning algorithm is a lot stronger than the previous one as demostrate here: [Graphical result](https://github.com/amchess/BrainLearn/tree/master/tests/6-5.jpg)
 
-With learning, the engine became stronger and stronger.
-The algorithm builds a decision tree of moves and contains the statistics similar to Monte Carlo Tree Search. It makes a decision depending on what information is in the Decision Tree, so both Best Search First and later Depth First Search. 
+This file is loaded in an hashtable at the engine load and updated each time the engine receive quit or stop uci command.
+When BrainLearn starts a new game or when we have max 8 pieces on the chessboard, the learning is activated and the hash table updated each time the engine has a best score
+at a depth >= 4 PLIES, according to Stockfish aspiration window.
+
+At the engine loading, there is an automatic merge to experience.bin files, if we put the other ones, based on the following convention:
+
+&lt;fileType&gt;&lt;qualityIndex&gt;.bin
+
+where
+
+- _fileType=&quot;experience&quot;/&quot;bin&quot;_
+- _qualityIndex_ , an integer, incrementally from 0 on based on the file&#39;s quality assigned by the user (0 best quality and so on)
+
+N.B.
+
+Because of disk access, to be effective, the learning must be made at no bullet time controls (less than 5 minutes/game).
+ 
 
 ### Shashin section
 
@@ -249,22 +273,23 @@ Defense position/algorithm (the "reversed colors" Tal)
 
 ## Acknowledgments
 
-- Kelly Kiniama for his great persisting learning algorithm
 - Sergey Aleksandrovitch Kozlov for his very interesting patch and code on Sugar engine
 - Alexei Chernakoff for his pretious suggestions about the android version and its contribution to it
 - Dariusz Domagala for the Mac version
 - The BrainFish, McBrain, CorChess, CiChess and MateFinder authors for their very interesting derivative
-- The known chess forum  (mzforum, talkchess,...) and technical sites (www.chessprogramming.org)
 - Obviously, the chess theorician Alexander Shashin, whithout whom I wouldn't had the idea of this engine
 
 Stockfish community
 
 ## ShashChess team
 - engine owner and main developer: ICCF IM Andrea Manzo (https://www.iccf.com/player?id=241224)
+- IM Yohan Benitah for his professional chess understanding and help in testing against neural networks 
 - official tester: ICCF CCE and CCM Maurizio Platino (https://www.iccf.com/player?id=241094)
 - official tester: Maurizio Colbacchini, FSI 1N
 - official tester and concept analyst: ICCF GM Fabio Finocchiaro (https://www.iccf.com/player?id=240090), 2012 ICCF world champion 
-- tester and concept analyst: ICCF GM Matjaž Pirš (https://www.iccf.com/player?id=480232), for his great experience and tests on positions analysis in different game's phases
+- official tester Dennis Marvin (NDL) (overall the online learning)
+- tester and concept analyst: ICCF GM Matjas Pirs (https://www.iccf.com/player?id=480232), for his great experience and tests on positions analysis in different game's phases
+
 
 
 Sorry If I forgot someone.

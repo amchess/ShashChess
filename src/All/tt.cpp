@@ -2,7 +2,7 @@
   ShashChess, a UCI chess playing engine derived from Stockfish
   Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
   Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2018 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,13 +28,10 @@
 #include "tt.h"
 #include "uci.h"
 
-//from kellykynyama begin
+//from Kelly Begin
 using namespace std;
-
-TranspositionTable EXP; // Our global transposition table
-
-MCTSHashTable MCTS;
-//from kellykynyama end
+LearningHashTable globalLearningHT,experienceHT;
+//from Kelly end
 
 TranspositionTable TT; // Our global transposition table
 
@@ -43,22 +40,22 @@ TranspositionTable TT; // Our global transposition table
 
 void TTEntry::save(Key k, Value v, bool pv, Bound b, Depth d, Move m, Value ev) {
 
-  assert(d / ONE_PLY * ONE_PLY == d);
-
   // Preserve any existing move for the same position
   if (m || (k >> 48) != key16)
       move16 = (uint16_t)m;
 
   // Overwrite less valuable entries
   if (  (k >> 48) != key16
-      || d / ONE_PLY > depth8 - 4
+      || d - DEPTH_OFFSET > depth8 - 4
       || b == BOUND_EXACT)
   {
+      assert(d >= DEPTH_OFFSET);
+
       key16     = (uint16_t)(k >> 48);
       value16   = (int16_t)v;
       eval16    = (int16_t)ev;
       genBound8 = (uint8_t)(TT.generation8 | uint8_t(pv) << 2 | b);
-      depth8    = (int8_t)(d / ONE_PLY);
+      depth8    = (uint8_t)(d - DEPTH_OFFSET);
   }
 }
 
@@ -164,217 +161,258 @@ int TranspositionTable::hashfull() const {
 
   return cnt * 1000 / (ClusterSize * (1000 / ClusterSize));
 }
+//from Kelly begin
+void loadLearningFileIntoLearningTables(bool toDeleteBinFile) {
+  std::string fileName="experience";
+  ifstream inputLearningFile("experience.bin", ios::in | ios::binary);
+  int loading = 1;
+  while (loading)
+  {
+    LearningFileEntry currentInputLearningFileEntry;
+    currentInputLearningFileEntry.depth = 0;
+    currentInputLearningFileEntry.hashKey = 0;
+    currentInputLearningFileEntry.move = MOVE_NONE;
+    currentInputLearningFileEntry.score = VALUE_NONE;
+    currentInputLearningFileEntry.performance = 0;
+    inputLearningFile.read((char*)&currentInputLearningFileEntry, sizeof(currentInputLearningFileEntry));
+    if (currentInputLearningFileEntry.hashKey)
+    {
+      insertIntoOrUpdateLearningTable(currentInputLearningFileEntry,globalLearningHT);
 
-//kellyKinyama mcts begin
-void EXPresize() {
-
-	ifstream myFile("experience.bin", ios::in | ios::binary);
-
-
-	int load = 1;
-	while (load)
-	{
-		ExpEntry tempExpEntry;
-		tempExpEntry.depth = Depth(0);
-		tempExpEntry.hashkey = 0;
-		tempExpEntry.move = Move(0);
-		tempExpEntry.score = Value(0);
-
-		myFile.read((char*)&tempExpEntry, sizeof(tempExpEntry));
-
-		if (tempExpEntry.hashkey)
-		{
-
-			mctsInsert(tempExpEntry);
-		}
-		else
-			load = 0;
-
-
-
-		if (!tempExpEntry.hashkey)
-			load = 0;
-	}
-	myFile.close();
-
+      if(toDeleteBinFile)
+      {
+	 insertIntoOrUpdateLearningTable(currentInputLearningFileEntry,experienceHT);
+      }
+    }
+    else
+      loading = 0;
+  }
+  inputLearningFile.close();
+  if(toDeleteBinFile)
+  {
+    char fileNameStr[fileName.size() + 1];
+    strcpy(fileNameStr, fileName.c_str());
+    remove(fileNameStr);
+  }
 }
-void EXPawnresize() {
 
-	ifstream myFile("pawngame.bin", ios::in | ios::binary);
-
-
-	int load = 1;
-	while (load)
-	{
-		ExpEntry tempExpEntry;
-		tempExpEntry.depth = Depth(0);
-		tempExpEntry.hashkey = 0;
-		tempExpEntry.move = Move(0);
-		tempExpEntry.score = Value(0);
-
-		myFile.read((char*)&tempExpEntry, sizeof(tempExpEntry));
-
-		if (tempExpEntry.hashkey)
-		{
-			mctsInsert(tempExpEntry);
-		}
-		else
-			load = 0;
-
-
-		if (!tempExpEntry.hashkey)
-			load = 0;
-	}
-	myFile.close();
-
-}
-void EXPload(char* fen)
+void insertIntoOrUpdateLearningTable(LearningFileEntry& fileExpEntry,LearningHashTable& learningHT)
 {
+    // We search in the range of all the hash table entries with key fileExpEntry
+    auto range = learningHT.equal_range(fileExpEntry.hashKey);
+    auto it1 = range.first;
+    auto it2 = range.second;
 
-	ifstream myFile(fen, ios::in | ios::binary);
-
-
-
-
-	int load = 1;
-
-	while (load)
+    bool isNewNode = true;
+    while (it1 != it2)
+    {
+      Node node = &(it1->second);
+      if (node->hashKey == fileExpEntry.hashKey)
+      {
+	isNewNode = false;
+	for(int k = 0; k <= node->siblings; k++)
 	{
-		ExpEntry tempExpEntry;
-		tempExpEntry.depth = Depth(0);
-		tempExpEntry.hashkey = 0;
-		tempExpEntry.move = Move(0);
-		tempExpEntry.score = Value(0);
-		myFile.read((char*)&tempExpEntry, sizeof(tempExpEntry));
+	  if(k == node->siblings)
+	  {
+	    //update lateChild begin
+	    node->siblingMoveInfo[k].move = fileExpEntry.move;
+	    node->siblingMoveInfo[k].score = fileExpEntry.score;
+	    node->siblingMoveInfo[k].depth = fileExpEntry.depth;
+	    node->siblingMoveInfo[k].performance = fileExpEntry.performance;
+	    //update lateChild end
+	    node->siblings++;
+	    //update lateChild end
+	    if( ((node->siblingMoveInfo[k].performance<50) &&
+		(((node->latestMoveInfo.move == node->siblingMoveInfo[k].move) && (node->latestMoveInfo.depth <= node->siblingMoveInfo[k].depth))
+		||
+		((node->latestMoveInfo.move != node->siblingMoveInfo[k].move) &&
+		((node->latestMoveInfo.depth < node->siblingMoveInfo[k].depth)
+		 ||
+		 ((node->latestMoveInfo.depth == node->siblingMoveInfo[k].depth) &&
+		 ((node->latestMoveInfo.score <= node->siblingMoveInfo[k].score )||(node->latestMoveInfo.performance <= node->siblingMoveInfo[k].performance)))))
+		 ))||
+		 (node->siblingMoveInfo[k].performance>=50)
+	    )
+	    {// Return the HashTable's node updated
+	      //update lateChild begin
+	      node->latestMoveInfo.move = node->siblingMoveInfo[k].move;
+	      node->latestMoveInfo.score = node->siblingMoveInfo[k].score;
+	      node->latestMoveInfo.depth = node->siblingMoveInfo[k].depth;
+	      node->latestMoveInfo.performance = node->siblingMoveInfo[k].performance;
+	      //update lateChild end
 
-		if (tempExpEntry.hashkey)
-		{
-			mctsInsert(tempExpEntry);
-		}
-		load = 0;
-
-
-		if (!tempExpEntry.hashkey)
-			load = 0;
+	    }
+	    //exit the sibling
+	    break;
+	  }
+	  else
+	  {
+	    if(node->siblingMoveInfo[k].move == fileExpEntry.move)
+	    {
+		if(
+		    ((fileExpEntry.performance<50) &&
+		    (((node->siblingMoveInfo[k].depth < fileExpEntry.depth))
+		    ||
+		    ((node->siblingMoveInfo[k].depth == fileExpEntry.depth) &&
+		     ((node->siblingMoveInfo[k].score <= fileExpEntry.score )||(node->siblingMoveInfo[k].performance <= fileExpEntry.performance)))))
+		    ||
+		    (fileExpEntry.performance>=50)
+		  )
+		  { // Return the HashTable's node updated
+		    //update lateChild begin
+		    node->siblingMoveInfo[k].move = fileExpEntry.move;
+		    node->siblingMoveInfo[k].score = fileExpEntry.score;
+		    node->siblingMoveInfo[k].depth = fileExpEntry.depth;
+		    //update lateChild end
+		    if(
+			(((node->siblingMoveInfo[k].performance<50))&&(((node->latestMoveInfo.move == node->siblingMoveInfo[k].move) && (node->latestMoveInfo.depth <= node->siblingMoveInfo[k].depth))
+			||
+			(
+			 (node->latestMoveInfo.move != node->siblingMoveInfo[k].move) &&
+			 (
+			  (node->latestMoveInfo.depth < node->siblingMoveInfo[k].depth)
+			  ||
+			  (
+			   (node->latestMoveInfo.depth == node->siblingMoveInfo[k].depth) &&
+			   ((node->latestMoveInfo.score <= node->siblingMoveInfo[k].score )||(node->latestMoveInfo.performance <= node->siblingMoveInfo[k].performance ))
+			  )
+			 )
+			)))
+			||
+			(node->siblingMoveInfo[k].performance>=50)
+		      )
+		      {// Return the HashTable's node updated
+			//update lateChild begin
+			node->latestMoveInfo.move = node->siblingMoveInfo[k].move;
+			node->latestMoveInfo.score = node->siblingMoveInfo[k].score;
+			node->latestMoveInfo.depth = node->siblingMoveInfo[k].depth;
+			node->latestMoveInfo.performance = node->siblingMoveInfo[k].performance;
+			//update lateChild end
+		      }
+		    }
+		    //exit the sibling
+		    break;
+	    }
+	  }
 	}
-	myFile.close();
+	//exit the position
+	  break;
+      }
+      it1++;
+    }
+
+    if (isNewNode)
+    {
+      // Node was not found, so we have to create a new one
+      NodeInfo infos;
+      infos.hashKey = fileExpEntry.hashKey;
+      infos.latestMoveInfo.move = fileExpEntry.move;
+      infos.latestMoveInfo.score = fileExpEntry.score;
+      infos.latestMoveInfo.depth = fileExpEntry.depth;
+      infos.latestMoveInfo.performance = fileExpEntry.performance;
+      infos.siblingMoveInfo[0] = infos.latestMoveInfo;
+      infos.siblings = 1;
+      learningHT.insert(make_pair(fileExpEntry.hashKey, infos));
+    }
 }
 
-void mctsInsert(ExpEntry tempExpEntry)
+/// getNodeFromGlobalHT(Key key) probes the Monte-Carlo hash table to return the node with the given
+/// position or a nullptr Node if it doesn't exist yet in the table.
+Node getNodeFromHT(Key key,HashTableType hashTableType)
 {
-	// If the node already exists in the hash table, we want to return it.
-	// We search in the range of all the hash table entries with key "key1".
-	auto range = MCTS.equal_range(tempExpEntry.hashkey);
-	auto it1 = range.first;
-	auto it2 = range.second;
+  // We search in the range of all the hash table entries with key key.
+  Node currentNode = nullptr;
+  auto range=globalLearningHT.equal_range(key);
+  if(hashTableType==HashTableType::experience)
+    {
+      range=experienceHT.equal_range(key);
+    }
+  auto it1 = range.first;
+  auto it2 = range.second;
+  while (it1 != it2)
+  {
+    currentNode = &(it1->second);
+    if (currentNode->hashKey == key)
+    {
+	return currentNode;
+    }
+    it1++;
+  }
 
-	bool newNode = true;
-	while (it1 != it2)
-	{
-		Node node = &(it1->second);
-
-		if (node->hashkey == tempExpEntry.hashkey)
-		{
-			bool newChild = true;
-			newNode = false;
-			for (int x = 0; x < node->sons; x++)
-			{
-				if (node->child[x].move == tempExpEntry.move)
-				{
-					newChild = false;
-					node->child[x].move = tempExpEntry.move;
-					node->child[x].depth = tempExpEntry.depth;
-					node->child[x].score = tempExpEntry.score;
-					node->child[x].visits++;
-					//	node->sons++;
-					node->totalVisits++;
-					break;
-				}
-			}
-			if (newChild && node->sons < MAX_CHILDREN)
-			{
-				node->child[node->sons].move = tempExpEntry.move;
-				node->child[node->sons].depth = tempExpEntry.depth;
-				node->child[node->sons].score = tempExpEntry.score;
-				node->child[node->sons].visits++;
-				node->sons++;
-				node->totalVisits++;
-			}
-
-
-
-		}
-
-		it1++;
-	}
-
-	if (newNode)
-	{
-		// Node was not found, so we have to create a new one
-		NodeInfo infos;
-
-		infos.hashkey = 0;        // Zobrist hash of pawns
-		infos.sons = 0;
-
-		infos.totalVisits = 0;// number of visits by the Monte-Carlo algorithm
-		infos.child[0].move = MOVE_NONE;
-		infos.child[0].depth = DEPTH_NONE;
-		infos.child[0].score = VALUE_NONE;
-		infos.child[0].visits = 0;
-		std::memset(infos.child, 0, sizeof(Child) * 20);
-
-		infos.hashkey = tempExpEntry.hashkey;        // Zobrist hash of pawns
-		infos.sons = 1;       // number of visits by the Monte-Carlo algorithm
-		infos.totalVisits = 1;
-		infos.child[0].move = tempExpEntry.move;
-		infos.child[0].depth = tempExpEntry.depth;
-		infos.child[0].score = tempExpEntry.score;
-		infos.child[0].visits = 1;       // number of sons expanded by the Monte-Carlo algorithm
-										 //infos.lastMove = MOVE_NONE; // the move between the parent and this node
-
-										 //debug << "inserting into the hash table: key = " << key1 << endl;
-
-		MCTS.insert(make_pair(tempExpEntry.hashkey, infos));
-	}
+  return currentNode;
 }
 
-/// get_node() probes the Monte-Carlo hash table to find the node with the given
-/// position, creating a new entry if it doesn't exist yet in the table.
-/// The returned node is always valid.
-Node get_node(Key key) {
-
-
-	// If the node already exists in the hash table, we want to return it.
-	// We search in the range of all the hash table entries with key "key1".
-
-	Node mynode = nullptr;
-	auto range = MCTS.equal_range(key);
-	auto it1 = range.first;
-	auto it2 = range.second;
-
-	if (
-		it1 != MCTS.end()
-		&& 
-		it2 != MCTS.end()
-		)
+void writeLearningFile(HashTableType hashTableType)
+{
+  LearningHashTable currentLearningHT;
+  currentLearningHT=experienceHT;
+  if(hashTableType==HashTableType::global)
+    {
+      currentLearningHT=globalLearningHT;
+    }
+  if(!currentLearningHT.empty())
+    {
+      std::ofstream outputFile ("experience.bin", std::ofstream::trunc | std::ofstream::binary);
+      for(auto& it:currentLearningHT)
+      {
+        LearningFileEntry currentFileExpEntry;
+        NodeInfo currentNodeInfo=it.second;
+        for(int k = 0; k < currentNodeInfo.siblings; k++)
 	{
-
-		mynode = &(it1->second);
-
-		while (
-			it1 != it2
-			&&
-			it1 != MCTS.end()
-			)
-		{
-			Node node = &(it1->second);
-			if (node->hashkey == key)
-				return node;
-
-			it1++;
-		}
-
+		MoveInfo currentLatestMoveInfo=currentNodeInfo.siblingMoveInfo[k];
+		currentFileExpEntry.depth = currentLatestMoveInfo.depth;
+		currentFileExpEntry.hashKey = it.first;
+		currentFileExpEntry.move = currentLatestMoveInfo.move;
+		currentFileExpEntry.score = currentLatestMoveInfo.score;
+		currentFileExpEntry.performance = currentLatestMoveInfo.performance;
+		outputFile.write((char*)&currentFileExpEntry, sizeof(currentFileExpEntry));
 	}
-	return mynode;
+      }
+      outputFile.close();
+    }
 }
-//kellyKinyama mcts end
+
+void loadSlaveLearningFilesIntoLearningTables()
+{
+    bool merging=true;
+    int i=0;
+    while (merging)
+    {
+      std::string index = std::to_string(i);
+      std::string slaveFileName ="";
+      slaveFileName="experience" + index + ".bin";
+      ifstream slaveInputFile (slaveFileName, ios::in | ios::binary);
+      if(!slaveInputFile.good())
+      {
+	merging=false;
+	i++;
+      }
+      else
+      {
+	while(slaveInputFile.good())
+	{
+	  LearningFileEntry slaveFileExpEntry;
+	  slaveFileExpEntry.depth = 0;
+	  slaveFileExpEntry.hashKey = 0;
+	  slaveFileExpEntry.move = MOVE_NONE;
+	  slaveFileExpEntry.score = VALUE_NONE;
+	  slaveFileExpEntry.performance = 0;
+
+	  slaveInputFile.read((char*)&slaveFileExpEntry, sizeof(slaveFileExpEntry));
+	  if (slaveFileExpEntry.hashKey)
+	  {
+	      insertIntoOrUpdateLearningTable(slaveFileExpEntry,experienceHT);
+	  }
+	  else
+	  {
+	    slaveInputFile.close();
+	    char slaveStr[slaveFileName.size() + 1];
+	    strcpy(slaveStr, slaveFileName.c_str());
+	    remove(slaveStr);
+	    i++;
+	  }
+	}
+      }
+    }
+}
+//from Kelly End
