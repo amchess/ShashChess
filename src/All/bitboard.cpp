@@ -2,7 +2,7 @@
   ShashChess, a UCI chess playing engine derived from Stockfish
   Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
   Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2018 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <bitset>
 #include <algorithm>
+#include <bitset>
 
 #include "bitboard.h"
 #include "misc.h"
@@ -27,18 +27,10 @@
 uint8_t PopCnt16[1 << 16];
 uint8_t SquareDistance[SQUARE_NB][SQUARE_NB];
 
-Bitboard BetweenBB[SQUARE_NB][SQUARE_NB];
+Bitboard SquareBB[SQUARE_NB];
 Bitboard LineBB[SQUARE_NB][SQUARE_NB];
-Bitboard DistanceRingBB[SQUARE_NB][8];
 Bitboard PseudoAttacks[PIECE_TYPE_NB][SQUARE_NB];
 Bitboard PawnAttacks[COLOR_NB][SQUARE_NB];
-Bitboard SquareBB[SQUARE_NB];
-
-Bitboard KingFlank[FILE_NB] = {
-  QueenSide ^ FileDBB, QueenSide, QueenSide,
-  CenterFiles, CenterFiles,
-  KingSide, KingSide, KingSide ^ FileEBB
-};
 
 Magic RookMagics[SQUARE_NB];
 Magic BishopMagics[SQUARE_NB];
@@ -84,14 +76,11 @@ void Bitboards::init() {
 
   for (Square s1 = SQ_A1; s1 <= SQ_H8; ++s1)
       for (Square s2 = SQ_A1; s2 <= SQ_H8; ++s2)
-          {
               SquareDistance[s1][s2] = std::max(distance<File>(s1, s2), distance<Rank>(s1, s2));
-              DistanceRingBB[s1][SquareDistance[s1][s2]] |= s2;
-          }
 
   int steps[][5] = { {}, { 7, 9 }, { 6, 10, 15, 17 }, {}, {}, {}, { 1, 7, 8, 9 } };
 
-  for (Color c = WHITE; c <= BLACK; ++c)
+  for (Color c : { WHITE, BLACK })
       for (PieceType pt : { PAWN, KNIGHT, KING })
           for (Square s = SQ_A1; s <= SQ_H8; ++s)
               for (int i = 0; steps[pt][i]; ++i)
@@ -121,10 +110,7 @@ void Bitboards::init() {
       for (PieceType pt : { BISHOP, ROOK })
           for (Square s2 = SQ_A1; s2 <= SQ_H8; ++s2)
               if (PseudoAttacks[pt][s1] & s2)
-              {
                   LineBB[s1][s2] = (attacks_bb(pt, s1, 0) & attacks_bb(pt, s2, 0)) | s1 | s2;
-                  BetweenBB[s1][s2] = attacks_bb(pt, s1, square_bb(s2)) & attacks_bb(pt, s2, square_bb(s1));
-              }
   }
 }
 

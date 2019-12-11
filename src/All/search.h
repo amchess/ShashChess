@@ -2,7 +2,7 @@
   ShashChess, a UCI chess playing engine derived from Stockfish
   Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
   Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2018 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -49,6 +49,7 @@ struct Stack {
   Value staticEval;
   int statScore;
   int moveCount;
+  Depth red;//redCompare3 patch
 };
 
 
@@ -68,12 +69,9 @@ struct RootMove {
 
   Value score = -VALUE_INFINITE;
   Value previousScore = -VALUE_INFINITE;
-  //mcts Cardanobile from joergoster begin
-  int64_t zScore = 0;
-  int64_t visits = 0;
-  //mcts Cardanobile from joergoster end
   int selDepth = 0;
-  int tbRank;
+  int tbRank = 0;
+  int bestMoveCount = 0;
   Value tbScore;
   std::vector<Move> pv;
 };
@@ -106,6 +104,11 @@ extern LimitsType Limits;
 
 void init();
 void clear();
+
+//livebook begin
+void setLiveBookURL(const std::string &newURL);
+void setLiveBookTimeout(size_t newTimeoutMS);
+//livebook end
 
 } // namespace Search
 

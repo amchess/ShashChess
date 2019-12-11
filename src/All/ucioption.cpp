@@ -2,7 +2,7 @@
   ShashChess, a UCI chess playing engine derived from Stockfish
   Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
   Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2018 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <algorithm>
 #include <cassert>
 #include <ostream>
 #include <sstream>
@@ -37,11 +38,15 @@ namespace UCI {
 
 /// 'On change' actions, triggered by an option's value change
 void on_clear_hash(const Option&) { Search::clear(); }
-void on_hash_size(const Option& o) { TT.resize(o); EXP.resize(0); EXPresize(); } //mcts kellykynyama
+void on_hash_size(const Option& o) { TT.resize(o);} 
 void on_logger(const Option& o) { start_logger(o); }
 void on_threads(const Option& o) { Threads.set(o); }
+void on_full_threads(const Option& o) { Threads.setFull(o); } //full threads patch
 void on_tb_path(const Option& o) { Tablebases::init(o); }
-
+//livebook begin
+void on_livebook_url(const Option& o) { Search::setLiveBookURL(o); }
+void on_livebook_timeout(const Option& o) { Search::setLiveBookTimeout(o); }
+//livebook end
 
 /// Our case insensitive less() function as required by UCI protocol
 bool CaseInsensitiveLess::operator() (const string& s1, const string& s2) const {
@@ -61,7 +66,7 @@ void init(OptionsMap& o) {
   o["Debug Log File"]              << Option("", on_logger);
   o["Analysis Contempt"]     	   << Option("Both var Off var White var Black var Both", "Both");
   o["Threads"]               	   << Option(1, 1, 512, on_threads);
-  o["Hash"]                  	   << Option(16, 1, MaxHashMB, on_hash_size);
+    o["Hash"]                  	   << Option(16, 1, MaxHashMB, on_hash_size);
   o["Clear Hash"]            	   << Option(on_clear_hash);
   o["Ponder"]                	   << Option(false);
   o["MultiPV"]               	   << Option(1, 1, 500);
@@ -71,20 +76,34 @@ void init(OptionsMap& o) {
   o["UCI_AnalyseMode"]       	   << Option(false);
   //handicap mode
   o["UCI_LimitStrength"]     	   << Option(false);
-  o["UCI_Elo"]               	   << Option(2800, 1500, 2800);
+  o["UCI_Elo"]               << Option(2850, 1350, 2850); //from ShashChess
   o["SyzygyPath"]            	   << Option("<empty>", on_tb_path);
   o["SyzygyProbeDepth"]            << Option(1, 1, 100);
   o["SyzygyProbeLimit"]            << Option(7, 0, 7);
-  o["Less Pruning Mode"]    	   << Option(0, 0,  9);
-  o["Variety"]                     << Option (0, 0, 40);
-  o["NN Perceptron Search"]  	   << Option(false);
+  //livebook begin
+  o["Live Book"]             << Option(false);
+  o["Live Book URL"]         << Option("http://www.chessdb.cn/cdb.php", on_livebook_url);
+  o["Live Book Timeout"]     << Option(1500, 0, 10000, on_livebook_timeout);
+  o["Live Book Diversity"]   << Option(false);
+  o["Live Book Contribute"]  << Option(false);
+  //livebook end
+  o["Full depth threads"]           << Option(0, 0, 512, on_full_threads); //if this is used, must be after #Threads is set.
+  o["Opening variety"]       << Option (0, 0, 40);
   o["NN Persisted Self-Learning"]  << Option(false);
   o["Tal"]                         << Option(false);
   o["Capablanca"]            	   << Option(false);
   o["Petrosian"]                   << Option(false);
-
 }
-
+//Kelly begin
+void initLearning() {
+  loadLearningFileIntoLearningTables(true);
+  loadSlaveLearningFilesIntoLearningTables();
+  writeLearningFile(HashTableType::experience);
+  experienceHT.clear();
+  globalLearningHT.clear();
+  loadLearningFileIntoLearningTables(false);
+}
+//Kelly end
 
 /// operator<<() is used to print all the options default values in chronological
 /// insertion order (the idx field) and in the format defined by the UCI protocol.

@@ -2,7 +2,7 @@
   ShashChess, a UCI chess playing engine derived from Stockfish
   Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
   Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2018 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 
 #include "misc.h"
 #include "types.h"
-#include <unordered_map> //frol Kellykynyama
+#include <unordered_map> //from Kelly
 
 /// TTEntry struct is the 10 bytes transposition table entry, defined as below:
 ///
@@ -41,7 +41,7 @@ struct TTEntry {
   Move  move()  const { return (Move )move16; }
   Value value() const { return (Value)value16; }
   Value eval()  const { return (Value)eval16; }
-  Depth depth() const { return (Depth)(depth8 * int(ONE_PLY)); }
+  Depth depth() const { return (Depth)depth8 + DEPTH_OFFSET; }
   bool is_pv() const { return (bool)(genBound8 & 0x4); }
   Bound bound() const { return (Bound)(genBound8 & 0x3); }
   void save(Key k, Value v, bool pv, Bound b, Depth d, Move m, Value ev);
@@ -54,7 +54,7 @@ private:
   int16_t  value16;
   int16_t  eval16;
   uint8_t  genBound8;
-  int8_t   depth8;
+  uint8_t  depth8;
 };
 
 
@@ -99,54 +99,50 @@ private:
   uint8_t generation8; // Size must be not bigger than TTEntry::genBound8
 };
 
-//mcts kellykynyama begin
-struct ExpEntry
+//from Kelly begin
+enum class HashTableType { global, experience };
+struct LearningFileEntry
 {
-	uint64_t hashkey;
-	Depth depth;
-	Value score;
-	Move move;
+	Key hashKey = 0;
+	Depth depth = 0;
+	Value score = VALUE_NONE;
+	Move move = MOVE_NONE;
+	int performance = 0;
+};
+struct MoveInfo
+{
+	Move move = MOVE_NONE;
+	Depth depth = 0;
+	Value score = VALUE_NONE;
+	int performance = 0;
 };
 
-void EXPresize();
-void EXPawnresize();
-void startposition();
-void EXPload(char* fen);
-
-extern TranspositionTable EXP;
-
-
-void EXPresize();
-void EXPawnresize();
-void startposition();
-void EXPload(char* fen);
-void mctsInsert(ExpEntry tempExpEntry);
-
-const int MAX_CHILDREN = 25;
-
-struct Child
-{
-	Move move;
-	Depth depth;
-	Value score;
-	int visits;
-};
 
 struct NodeInfo
 {
-	Key hashkey;
-	Child child[20];
-	int sons;
-	int totalVisits;
+	Key hashKey;
+	MoveInfo latestMoveInfo;	
+	MoveInfo siblingMoveInfo[25];
+	int siblings = 0;
 };
 
-typedef NodeInfo* Node;
-Node get_node(Key key);
-// The Monte-Carlo tree is stored implicitly in one big hash table
-typedef std::unordered_multimap<Key, NodeInfo> MCTSHashTable;
 
-extern MCTSHashTable MCTS;
-//mcts kellykynyama end
+// The Monte-Carlo tree is stored implicitly in one big hash table
+typedef std::unordered_multimap<Key, NodeInfo> LearningHashTable;
+void loadLearningFileIntoLearningTables(bool toDeleteBinFile);
+void startposition();
+
+void loadSlaveLearningFilesIntoLearningTables();
+
+void writeLearningFile(HashTableType hashTableType);
+
+void insertIntoOrUpdateLearningTable(LearningFileEntry& tempExpEntry,LearningHashTable& learningHT);
+
+typedef NodeInfo* Node;
+Node getNodeFromHT(Key key,HashTableType hashTableType);
+
+extern LearningHashTable globalLearningHT,experienceHT;
+//from Kelly end
 
 extern TranspositionTable TT;
 

@@ -1,5 +1,5 @@
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.21"]
 [Round "1"]
 [White "ShashChess Pro 3.0-x86-64-bmi2"]
@@ -18,7 +18,7 @@
 d5 Nbd7 9. O-O e5 *
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.21"]
 [Round "1"]
 [White "ShashChess Pro 3.0-x86-64-bmi2"]
@@ -57,7 +57,7 @@ Qd8-c8 Bf1-e2 Qc8-d8 Kh2-g1 Ra8-a6 Kg1-h1 Re8-f8 Nf3-h2 f7-f5 e4xf5 Ng6-h4
 Be2-d3 Nh7-g5 Nh2-g4 Nh4xf5 Kh1-g1 Ra6-a8) +1.15/34 111} *
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.21"]
 [Round "1"]
 [White "ShashChess Pro 3.0-x86-64-bmi2"]
@@ -306,7 +306,7 @@ Qg3xf4 Rh4xf4 Kg8-f8 Kd1-d2 Kf8-g7 Rf4-f2 f7-f6 Rf2-f5 f6xg5 Rf5xg5+
 Kg7-f7) +2.09/28 21} Ng6 {(Ne7-g6 Qc1-g5) -0.06/30 11} *
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.21"]
 [Round "1"]
 [White "ShashChess Pro 3.0-x86-64-bmi2"]
@@ -349,7 +349,7 @@ Qb8-c8 Nc3-b5 Ra7-a6 Nf1-g3 Bd8-a5 Be2-f1 Ng6-h4 Nb5-c3 Re8-e7 Bc1-d2
 Ba5xc3 Qc2xc3 Bd7-a4 Rb3-b2 Ba4-e8 Qc3-e3 Ra6-a8 Qe3-d3) +1.22/32 30} *
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.21"]
 [Round "1"]
 [White "ShashChess Pro 3.0-x86-64-bmi2"]
@@ -865,7 +865,7 @@ c4xb5) +10.36/34 10} Qf5 {(Qe4-f5 Ra1-a7+ Kd7-e8) -13.03/27 9  Arena
 Adjudication} 1-0
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.21"]
 [Round "2"]
 [White "Komodo-12.1.1-64bit-bmi2"]
@@ -1756,7 +1756,7 @@ Kc2-b3 Bg3-h2 Ba2-b1 Bh2-g1) 0.00/13 2} 142. Kxf1 {(Kg1xf1 Bd5-e4 Bd4-a7
 Be4-c2 Ba7-b8+ Kf4-f3) 0.00/5 0 Insufficient material} 1/2-1/2
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.21"]
 [Round "3"]
 [White "ShashChess Pro 3.0-x86-64-bmi2"]
@@ -1983,7 +1983,7 @@ Kf4-f5) 0.00/62 20} 57. Ke4 {(Kf5-e4 Rf3-f6 Rd6xf6 Kg7xf6) 0.00/69 21} Ra3
 {(Ra3-f3+) 0.00/73 21 3-fold repetition} 1/2-1/2
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.21"]
 [Round "4"]
 [White "Komodo-12.1.1-64bit-bmi2"]
@@ -2222,7 +2222,7 @@ Kd3-c4) 0.00/60 11} Ke6 {(Ke5-e6) 0.00/61 113} 56. Kc4 {(Kd3-c4) 0.00/64 22
 3-fold repetition} 1/2-1/2
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.21"]
 [Round "5"]
 [White "ShashChess Pro 3.0-x86-64-bmi2"]
@@ -2882,7 +2882,7 @@ Rd7-a7 Kg7-f6 Ka6-b5 Bb1-d3+ Kb5-b4 f7-f8Q Kb4-c3 Re8xa8 Ra7xa8 Qf8xa8
 Kc3xd3) -14.79/25 10  Arena Adjudication} 1-0
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.21"]
 [Round "6"]
 [White "Komodo-12.1.1-64bit-bmi2"]
@@ -3398,7 +3398,7 @@ Qg1-b1+ Kc2-d2) +25.67/22 7} 99. Rg5 {(Rg6-g5 Kc7-b6 Rg5-g6+) -15.66/22 9
 Arena Adjudication} 0-1
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.22"]
 [Round "7"]
 [White "ShashChess Pro 3.0-x86-64-bmi2"]
@@ -3789,7 +3789,7 @@ Rg1-g2+) 0.00/28 5} Rg1+ {(Rg2-g1+ Kb1-c2 Rg1-g2+) 0.00/41 8} 69. Kc2
 0.00/44 9} 71. Kc2 {(Kb1-c2) 0.00/52 5 3-fold repetition} 1/2-1/2
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.22"]
 [Round "8"]
 [White "Komodo-12.1.1-64bit-bmi2"]
@@ -4320,7 +4320,7 @@ Kh7-h6 Be5-f4+ Kh6-h7 Bf4-d2 Kh7-h8 Kf7-f6 Kh8-g8) 0.00/50 10 Insufficient
 material} 1/2-1/2
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.22"]
 [Round "9"]
 [White "ShashChess Pro 3.0-x86-64-bmi2"]
@@ -4501,7 +4501,7 @@ Kg6-f5) 0.00/65 20} 49. Kg3 {(Kf2-g3) 0.00/92 42} Kf5 {(Kg6-f5) 0.00/74 18
 3-fold repetition} 1/2-1/2
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.22"]
 [Round "10"]
 [White "Komodo-12.1.1-64bit-bmi2"]
@@ -4958,7 +4958,7 @@ Kb6-c7 Rh4-h5 Rc6-d6 Rh5-h4 Kc7-d7 Rh4-b4 Kd7-c7 Rb4-h4) 0.00/45 11} Rh5+
 1/2-1/2
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.22"]
 [Round "11"]
 [White "ShashChess Pro 3.0-x86-64-bmi2"]
@@ -5251,7 +5251,7 @@ Kxc4 {(Kc5xc4 Kf3-e4 Kc4-c5 Ke4-e5 Kc5-c6 Ke5-e6 Kc6-c5 Ke6-f7 Kc5-d5
 Kf7-f6 Kd5-c6 Kf6-e6) 0.00/99 3 Insufficient material} 1/2-1/2
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.22"]
 [Round "12"]
 [White "Komodo-12.1.1-64bit-bmi2"]
@@ -6716,7 +6716,7 @@ Ka7-b8 Be2-g4 Kb8-c7 Ke5-f6 Kc7-b6 Kf6-g5 Kb6-a7 Bg4-e6 Ka7-b6 Kg5-h6
 Kb6-a5) 0.00/15 8 Insufficient material} 1/2-1/2
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.22"]
 [Round "13"]
 [White "ShashChess Pro 3.0-x86-64-bmi2"]
@@ -6963,7 +6963,7 @@ Kf4-f5 Kf7-g7 Kf5-g4 Kg7-g8 Kg4-g3 Kg8-g7 Kg3-f4 Kg7-f8 Kf4-e3 Kf8-f7
 Ke3-f3 Kf7-e7 Kf3-g4) 0.00/87 81  Arena Adjudication (Tablebases)} 1/2-1/2
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.22"]
 [Round "14"]
 [White "Komodo-12.1.1-64bit-bmi2"]
@@ -7313,7 +7313,7 @@ Nf5-d4 Kg6-g5 Nd4xe6+ Kg5xh4 Ne6xf4 Kh4-g4 Nf4-d3 Kg4-f5) +0.05/31 25} ...
 {Black forfeits on time} 1-0
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.22"]
 [Round "15"]
 [White "ShashChess Pro 3.0-x86-64-bmi2"]
@@ -7645,7 +7645,7 @@ Qf2-f1+) 0.00/47 11} 78. Kh3 {(Kh2-h3) 0.00/67 14} Qf1+ {(Qf2-f1+) 0.00/55
 9 3-fold repetition} 1/2-1/2
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.22"]
 [Round "16"]
 [White "Komodo-12.1.1-64bit-bmi2"]
@@ -7901,7 +7901,7 @@ Qg3-b8+ Be6-g8 Qb8-g3) 0.00/45 33} Be6 {(Bg8-e6 Qg3-b8+ Be6-g8) 0.00/51 13}
 Qg3 {(Qb8-g3) 0.00/75 15 3-fold repetition} 1/2-1/2
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.22"]
 [Round "17"]
 [White "ShashChess Pro 3.0-x86-64-bmi2"]
@@ -8078,7 +8078,7 @@ d4-d3 e7-e8Q+ Ra8xe8 Qf7xe8+ Kh8-g7 Qe8-f7+ Kg7-h6 Bd5xc6) +15.31/26 16}
 Qe5 {(Qg7-e5 Rg5-h5) -12.59/28 179  Arena Adjudication} 1-0
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.22"]
 [Round "18"]
 [White "Komodo-12.1.1-64bit-bmi2"]
@@ -8372,7 +8372,7 @@ Kg5-h4 Bf8-d6) +M30/23 3} Ba6 {(Bc8-a6) -32.13/27 14  Arena Adjudication}
 1-0
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.22"]
 [Round "19"]
 [White "ShashChess Pro 3.0-x86-64-bmi2"]
@@ -8873,7 +8873,7 @@ Ke5-d5 Kb6-a6 Kd5-e5 Ka6-b5 Ke5-e4 Kb5-c5 Ke4-f4 Kc5-c4 Kf4-f3) 0.00/76 14}
 Insufficient material} 1/2-1/2
 
 [Event "ShashChessPro3.0-Komodo12.1.1"]
-[Site "MAURIZIO-PC"]
+[Site "?"]
 [Date "2018.08.22"]
 [Round "20"]
 [White "Komodo-12.1.1-64bit-bmi2"]
