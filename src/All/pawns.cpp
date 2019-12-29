@@ -41,6 +41,7 @@ namespace {
 
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+  constexpr int Supported[FILE_NB] = { 21, 21, 21, 26, 26, 21, 21, 21 };//patch pawns_by_file~1
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
@@ -93,6 +94,7 @@ namespace {
         assert(pos.piece_on(s) == make_piece(Us, PAWN));
 
         Rank r = relative_rank(Us, s);
+        File f = file_of(s);//patch pawns_by_file~1
 
         // Flag the pawn
         opposed    = theirPawns & forward_file_bb(Us, s);
@@ -133,7 +135,7 @@ namespace {
         if (support | phalanx)
         {
             int v =  Connected[r] * (2 + bool(phalanx) - bool(opposed))
-                   + 21 * popcount(support);
+                   +((pos.this_thread()->shashinValue==SHASHIN_POSITION_CAPABLANCA)? 21:Supported[f])* popcount(support);//patch pawns_by_file~1
 
             score += make_score(v, v * (r - 2) / 4);
         }

@@ -198,7 +198,7 @@ The private application can also learn from this live db.
 
 #### Live Book Timeout
 
-_Default 1500, min 0, max 10000_
+_Default 5000, min 0, max 10000_ Only for bullet games, use a lower value, for example, 1500.
 
 #### Live Book Diversity
 
@@ -207,6 +207,10 @@ _Boolean, Default: False_ If activated, the engine varies its play, reducing con
 #### Live Book Contribute
 
 _Boolean, Default: False_ If activated, the engine sends a move, not in live chessdb, in its queue to be analysed. In this manner, we have a kind of learning cloud.
+
+### Full depth threads
+
+_Default 0, min 0, max 512_ The number of threads doing a full depth analysis (brute force). Useful in analysis of particular hard positions to limit the strong pruning's drawbacks. 
 
 ### Opening variety
 

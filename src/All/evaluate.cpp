@@ -450,6 +450,11 @@ namespace {
     int kingFlankAttack = popcount(b1) + popcount(b2);
     int kingFlankDefense = popcount(b3);
 
+    if ((pos.this_thread()->shashinValue!=SHASHIN_POSITION_PETROSIAN)||(kingDanger || pos.count<QUEEN>(Them))) { 
+        // Penalty if king flank is under attack, potentially moving toward the king
+        score -= FlankAttacks * kingFlankAttack;
+    }
+    
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  + 185 * popcount(kingRing[Us] & weak)
                  + 148 * popcount(unsafeChecks)
@@ -470,9 +475,6 @@ namespace {
     // Penalty when our king is on a pawnless flank
     if (!(pos.pieces(PAWN) & KingFlank[file_of(ksq)]))
         score -= PawnlessFlank;
-
-    // Penalty if king flank is under attack, potentially moving toward the king
-    score -= FlankAttacks * kingFlankAttack;
 
     if (T)
         Trace::add(KING, Us, score);
