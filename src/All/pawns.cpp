@@ -36,6 +36,7 @@ namespace {
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
+  constexpr Score Unconnected   = S( 2,  8); //unconnected1
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
@@ -73,7 +74,7 @@ namespace {
     constexpr Direction Up   = pawn_push(Us);
 
     Bitboard neighbours, stoppers, support, phalanx, opposed;
-    Bitboard lever, leverPush, blocked;
+    Bitboard lever, leverPush, blocked, supporting;//unconnected1
     Square s;
     bool backward, passed, doubled;
     Score score = SCORE_ZERO;
@@ -106,6 +107,7 @@ namespace {
         neighbours = ourPawns   & adjacent_files_bb(s);
         phalanx    = neighbours & rank_bb(s);
         support    = neighbours & rank_bb(s - Up);
+        supporting = neighbours & rank_bb(s + Up);//unconnected1
 
         // A pawn is backward when it is behind all pawns of the same color on
         // the adjacent files and cannot safely advance.
@@ -147,7 +149,10 @@ namespace {
         else if (backward)
             score -=   Backward
                      + WeakUnopposed * !opposed;
-
+        //unconnected1  begin
+        else if ((pos.this_thread()->shashinValue==SHASHIN_POSITION_CAPABLANCA)&&(!supporting))
+            score -= Unconnected;
+        //unconnected1 end
         if (!support)
             score -=   Doubled * doubled
                      + WeakLever * more_than_one(lever);

@@ -249,7 +249,7 @@ enum Rank : int {
 };
 
 //Shashin section
-enum {scoreScale = 35};//scoreScale adapt to realistic shown value: 0.24 at contempt 0
+enum {scoreScale = 20};//scoreScale adapt to realistic shown value: 0.10 at contempt 0
 enum {
   SHASHIN_DEFAULT_CONTEMPT = 0, SHASHIN_PETROSIAN_CONTEMPT = -30, SHASHIN_CAPABLANCA_CONTEMPT = 0, SHASHIN_CAPABLANCA_PETROSIAN_CONTEMPT = -15,
   SHASHIN_TAL_CONTEMPT = 30, SHASHIN_TAL_PETROSIAN_CONTEMPT = 0, SHASHIN_TAL_CAPABLANCA_CONTEMPT = 15, SHASHIN_TAL_CAPABLANCA_PETROSIAN_CONTEMPT = 0,

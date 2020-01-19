@@ -76,9 +76,9 @@ namespace {
     while (is >> token && (m = UCI::to_move(pos, token)) != MOVE_NONE)
     {
 	 //kelly begin
+	  plies++;
 	if (Options["NN Persisted Self-Learning"] && (plies > maximumPly))
 	{
-	  plies++;
 	  LearningFileEntry currentLearningEntry;
 	  currentLearningEntry.depth = 0;
 	  currentLearningEntry.hashKey = pos.key();
@@ -290,6 +290,7 @@ void UCI::loop(int argc, char* argv[]) {
       else if (token == "bench") bench(pos, is, states);
       else if (token == "d")     sync_cout << pos << sync_endl;
       else if (token == "eval")  sync_cout << Eval::trace(pos) << sync_endl;
+      else if (token == "compiler") sync_cout << compiler_info() << sync_endl;
       else
           sync_cout << "Unknown command: " << cmd << sync_endl;
 
