@@ -37,13 +37,12 @@ using namespace std;
 
 extern vector<string> setup_bench(const Position&, istream&);
 
-int maximumPly = 0; // from Kelly
+int maximumPly = 0; //from Kelly
 
 namespace {
 
   // FEN string of the initial position, normal chess
   const char* StartFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-
 
   // position() is called when engine receives the "position" UCI command.
   // The function sets up the position described in the given FEN string ("fen")
@@ -69,9 +68,7 @@ namespace {
 
     states = StateListPtr(new std::deque<StateInfo>(1)); // Drop old and create a new one
     pos.set(fen, Options["UCI_Chess960"], &states->back(), Threads.main());
-
-    int plies = 0; //from Kelly
-
+    int plies = 0;//from Kelly
     // Parse move list (if any)
     while (is >> token && (m = UCI::to_move(pos, token)) != MOVE_NONE)
     {
@@ -84,7 +81,7 @@ namespace {
 	  currentLearningEntry.hashKey = pos.key();
 	  currentLearningEntry.move = m;
 	  currentLearningEntry.score = VALUE_NONE;
-	  currentLearningEntry.performance = 0;
+	  currentLearningEntry.performance = 100;
 	  insertIntoOrUpdateLearningTable(currentLearningEntry,globalLearningHT);
 	  maximumPly = plies;
 	}
@@ -249,7 +246,7 @@ void UCI::loop(int argc, char* argv[]) {
       if (token == "quit"
                 ||  token == "stop")
       	{
-      	  if ((Options["NN Persisted Self-Learning"]) && (token == "quit"))
+      	  if ((Options["NN Persisted Self-Learning"]) && (token == "quit") && (!(Options["Read only learning"])))
 	    {
 	     writeLearningFile(HashTableType::global);
 	    }
@@ -311,8 +308,14 @@ string UCI::value(Value v) {
 
   stringstream ss;
 
-  if (abs(v) < VALUE_MATE - MAX_PLY)
-      ss << "cp " << v * scoreScale / PawnValueEg; //scoreScale adapt to realistic shown value
+  if (abs(v) < VALUE_MATE - MAX_PLY){
+      if(abs(v) > valueThreshold){
+	  ss << "cp " << v * 100 / PawnValueEg;
+      }
+      else{
+	  ss << "cp " << v * scoreScale / PawnValueEg;
+      }
+  }
   else
       ss << "mate " << (v > 0 ? VALUE_MATE - v + 1 : -VALUE_MATE - v) / 2;
 

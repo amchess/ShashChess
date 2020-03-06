@@ -147,7 +147,7 @@ endif
 
 CXXFLAGS += -Wall -Wcast-qual -std=c++11 $(EXTRACXXFLAGS)
 DEPENDFLAGS += -std=c++11
-LDFLAGS += -lcurl -lws2_32 $(EXTRALDFLAGS)
+LDFLAGS += -lcurl $(EXTRALDFLAGS)
 
 ifeq ($(COMP),)
 	COMP=gcc
@@ -407,7 +407,7 @@ help:
 	@echo ""
 
 
-.PHONY: help build profile-build strip install clean objclean profileclean help \
+.PHONY: help build profile-build strip install clean objclean profileclean \
         config-sanity icc-profile-use icc-profile-make gcc-profile-use gcc-profile-make \
         clang-profile-use clang-profile-make
 

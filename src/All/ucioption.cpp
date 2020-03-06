@@ -46,6 +46,7 @@ void on_tb_path(const Option& o) { Tablebases::init(o); }
 //livebook begin
 void on_livebook_url(const Option& o) { Search::setLiveBookURL(o); }
 void on_livebook_timeout(const Option& o) { Search::setLiveBookTimeout(o); }
+void on_livebook_depth(const Option& o) { Search::set_livebook_depth(o); }
 //livebook end
 
 /// Our case insensitive less() function as required by UCI protocol
@@ -86,10 +87,12 @@ void init(OptionsMap& o) {
   o["Live Book Timeout"]     << Option(5000, 0, 10000, on_livebook_timeout);
   o["Live Book Diversity"]   << Option(false);
   o["Live Book Contribute"]  << Option(false);
+  o["Live Book Depth"]       << Option(100, 1, 100, on_livebook_depth);
   //livebook end
   o["Full depth threads"]           << Option(0, 0, 512, on_full_threads); //if this is used, must be after #Threads is set.
   o["Opening variety"]       << Option (0, 0, 40);
   o["NN Persisted Self-Learning"]  << Option(false);
+  o["Read only learning"]      << Option(false);
   o["Tal"]                         << Option(false);
   o["Capablanca"]            	   << Option(false);
   o["Petrosian"]                   << Option(false);
