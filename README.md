@@ -208,6 +208,10 @@ _Boolean, Default: False_ If activated, the engine varies its play, reducing con
 
 _Boolean, Default: False_ If activated, the engine sends a move, not in live chessdb, in its queue to be analysed. In this manner, we have a kind of learning cloud.
 
+#### Live Book Depth
+
+_Default 100, min 1, max 100_ Depth of live book moves.
+
 ### Full depth threads
 
 _Default 0, min 0, max 512_ The number of threads doing a full depth analysis (brute force). Useful in analysis of particular hard positions to limit the strong pruning's drawbacks. 
@@ -249,7 +253,11 @@ where
 N.B.
 
 Because of disk access, to be effective, the learning must be made at no bullet time controls (less than 5 minutes/game).
- 
+
+### Read only learning
+
+_Boolean, Default: False_ 
+If activated, the learning file is only read.
 
 ### Shashin section
 

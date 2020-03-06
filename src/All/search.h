@@ -108,6 +108,7 @@ void clear();
 //livebook begin
 void setLiveBookURL(const std::string &newURL);
 void setLiveBookTimeout(size_t newTimeoutMS);
+void set_livebook_depth(int book_depth);
 //livebook end
 
 } // namespace Search

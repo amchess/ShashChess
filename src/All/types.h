@@ -176,14 +176,17 @@ enum Value : int {
   VALUE_INFINITE  = 32001,
   VALUE_NONE      = 32002,
 
-  VALUE_MATE_IN_MAX_PLY  =  VALUE_MATE - 2 * MAX_PLY,
-  VALUE_MATED_IN_MAX_PLY = -VALUE_MATE + 2 * MAX_PLY,
+  VALUE_TB_WIN_IN_MAX_PLY  =  VALUE_MATE - 2 * MAX_PLY,
+  VALUE_TB_LOSS_IN_MAX_PLY = -VALUE_MATE + 2 * MAX_PLY,
+  VALUE_MATE_IN_MAX_PLY  =  VALUE_MATE - MAX_PLY,
+  VALUE_MATED_IN_MAX_PLY = -VALUE_MATE + MAX_PLY,
 
   PawnValueMg   = 128,   PawnValueEg   = 213,
   KnightValueMg = 781,   KnightValueEg = 854,
   BishopValueMg = 825,   BishopValueEg = 915,
   RookValueMg   = 1276,  RookValueEg   = 1380,
   QueenValueMg  = 2538,  QueenValueEg  = 2682,
+  Tempo = 28,
 
   MidgameLimit  = 15258, EndgameLimit  = 3915
 };
@@ -201,7 +204,12 @@ enum Piece {
   PIECE_NB = 16
 };
 
-extern Value PieceValue[PHASE_NB][PIECE_NB];
+constexpr Value PieceValue[PHASE_NB][PIECE_NB] = {
+  { VALUE_ZERO, PawnValueMg, KnightValueMg, BishopValueMg, RookValueMg, QueenValueMg, VALUE_ZERO, VALUE_ZERO,
+    VALUE_ZERO, PawnValueMg, KnightValueMg, BishopValueMg, RookValueMg, QueenValueMg, VALUE_ZERO, VALUE_ZERO },
+  { VALUE_ZERO, PawnValueEg, KnightValueEg, BishopValueEg, RookValueEg, QueenValueEg, VALUE_ZERO, VALUE_ZERO,
+    VALUE_ZERO, PawnValueEg, KnightValueEg, BishopValueEg, RookValueEg, QueenValueEg, VALUE_ZERO, VALUE_ZERO }
+};
 typedef int Depth;
 
 enum : int {
@@ -249,17 +257,17 @@ enum Rank : int {
 };
 
 //Shashin section
-enum {scoreScale = 20};//scoreScale adapt to realistic shown value: 0.10 at contempt 0
+enum {scoreScale = 28, valueThreshold=320};//scoreScale and valueThreshold to adapt value to realistic shown score: 0.10 at contempt 0
 enum {
   SHASHIN_DEFAULT_CONTEMPT = 0, SHASHIN_PETROSIAN_CONTEMPT = -30, SHASHIN_CAPABLANCA_CONTEMPT = 0, SHASHIN_CAPABLANCA_PETROSIAN_CONTEMPT = -15,
   SHASHIN_TAL_CONTEMPT = 30, SHASHIN_TAL_PETROSIAN_CONTEMPT = 0, SHASHIN_TAL_CAPABLANCA_CONTEMPT = 15, SHASHIN_TAL_CAPABLANCA_PETROSIAN_CONTEMPT = 0,
-  SHASHIN_MAX_SCORE = 140, SHASHIN_MIDDLE_HIGH_SCORE = 70, SHASHIN_MIDDLE_LOW_SCORE=25};
+  SHASHIN_MAX_SCORE = 140*PawnValueEg/scoreScale, SHASHIN_MIDDLE_HIGH_SCORE = 70*PawnValueEg/scoreScale, SHASHIN_MIDDLE_LOW_SCORE=25*PawnValueEg/scoreScale};
 //Positions-algorithms types
 enum {
   SHASHIN_POSITION_DEFAULT, SHASHIN_POSITION_PETROSIAN, SHASHIN_POSITION_CAPABLANCA, SHASHIN_POSITION_CAPABLANCA_PETROSIAN,
   SHASHIN_POSITION_TAL,SHASHIN_POSITION_TAL_PETROSIAN,SHASHIN_POSITION_TAL_CAPABLANCA,SHASHIN_POSITION_TAL_CAPABLANCA_PETROSIAN
 };
-enum { SHASHIN_TAL_THRESHOLD = 35, SHASHIN_CAPABLANCA_THRESHOLD = 15 };
+enum { SHASHIN_TAL_THRESHOLD = 35*PawnValueEg/scoreScale, SHASHIN_CAPABLANCA_THRESHOLD = 15*PawnValueEg/scoreScale };
 
 //End Shashin section
 
@@ -364,8 +372,11 @@ constexpr Color operator~(Color c) {
   return Color(c ^ BLACK); // Toggle color
 }
 
-constexpr Square operator~(Square s) {
-  return Square(s ^ SQ_A8); // Vertical flip SQ_A1 -> SQ_A8
+constexpr Square flip_rank(Square s) {
+  return Square(s ^ SQ_A8);
+}
+constexpr Square flip_file(Square s) {
+  return Square(s ^ SQ_H1);
 }
 
 constexpr Piece operator~(Piece pc) {
