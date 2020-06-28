@@ -60,7 +60,7 @@ namespace {
 constexpr int TBPIECES = 7; // Max number of supported pieces
 
 enum { BigEndian, LittleEndian };
-enum TBType { KEY, WDL, DTZ }; // Used as template parameter
+enum TBType { WDL, DTZ }; // Used as template parameter
 
 // Each table has a set of flags: all of them refer to DTZ tables, the last one to WDL tables
 enum TBFlag { STM = 1, Mapped = 2, WinPlies = 4, LossPlies = 8, Wide = 16, SingleValue = 128 };
@@ -403,7 +403,17 @@ TBTable<DTZ>::TBTable(const TBTable<WDL>& wdl) : TBTable() {
 // at init time, accessed at probe time.
 class TBTables {
 
-    typedef std::tuple<Key, TBTable<WDL>*, TBTable<DTZ>*> Entry;
+    struct Entry
+    {
+        Key key;
+        TBTable<WDL>* wdl;
+        TBTable<DTZ>* dtz;
+
+        template <TBType Type>
+        TBTable<Type>* get() const {
+            return (TBTable<Type>*)(Type == WDL ? (void*)wdl : (void*)dtz);
+        }
+    };
 
     static constexpr int Size = 1 << 12; // 4K table, indexed by key's 12 lsb
     static constexpr int Overflow = 1;  // Number of elements allowed to map to the last bucket
@@ -415,12 +425,12 @@ class TBTables {
 
     void insert(Key key, TBTable<WDL>* wdl, TBTable<DTZ>* dtz) {
         uint32_t homeBucket = (uint32_t)key & (Size - 1);
-        Entry entry = std::make_tuple(key, wdl, dtz);
+        Entry entry{ key, wdl, dtz };
 
         // Ensure last element is empty to avoid overflow when looking up
         for (uint32_t bucket = homeBucket; bucket < Size + Overflow - 1; ++bucket) {
-            Key otherKey = std::get<KEY>(hashTable[bucket]);
-            if (otherKey == key || !std::get<WDL>(hashTable[bucket])) {
+            Key otherKey = hashTable[bucket].key;
+            if (otherKey == key || !hashTable[bucket].get<WDL>()) {
                 hashTable[bucket] = entry;
                 return;
             }
@@ -429,7 +439,7 @@ class TBTables {
             // insert here and search for a new spot for the other element instead.
             uint32_t otherHomeBucket = (uint32_t)otherKey & (Size - 1);
             if (otherHomeBucket > homeBucket) {
-                swap(entry, hashTable[bucket]);
+                std::swap(entry, hashTable[bucket]);
                 key = otherKey;
                 homeBucket = otherHomeBucket;
             }
@@ -442,8 +452,8 @@ public:
     template<TBType Type>
     TBTable<Type>* get(Key key) {
         for (const Entry* entry = &hashTable[(uint32_t)key & (Size - 1)]; ; ++entry) {
-            if (std::get<KEY>(*entry) == key || !std::get<Type>(*entry))
-                return std::get<Type>(*entry);
+            if (entry->key == key || !entry->get<Type>())
+                return entry->get<Type>();
         }
     }
 
@@ -520,7 +530,7 @@ int decompress_pairs(PairsData* d, uint64_t idx) {
     //       I(k) = k * d->span + d->span / 2      (1)
 
     // First step is to get the 'k' of the I(k) nearest to our idx, using definition (1)
-    uint32_t k = idx / d->span;
+    uint32_t k = uint32_t(idx / d->span);
 
     // Then we read the corresponding SparseIndex[] entry
     uint32_t block = number<uint32_t, LittleEndian>(&d->sparseIndex[k].block);
@@ -566,7 +576,7 @@ int decompress_pairs(PairsData* d, uint64_t idx) {
         // All the symbols of a given length are consecutive integers (numerical
         // sequence property), so we can compute the offset of our symbol of
         // length len, stored at the beginning of buf64.
-        sym = (buf64 - d->base64[len]) >> (64 - len - d->minSymLen);
+        sym = Sym((buf64 - d->base64[len]) >> (64 - len - d->minSymLen));
 
         // Now add the value of the lowest symbol of length len to get our symbol
         sym += number<Sym, LittleEndian>(&d->lowestSym[len]);
@@ -705,7 +715,7 @@ Ret do_probe_table(const Position& pos, T* entry, WDLScore wdl, ProbeState* resu
 
         std::swap(squares[0], *std::max_element(squares, squares + leadPawnsCnt, pawns_comp));
 
-        tbFile = map_to_queenside(file_of(squares[0]));
+        tbFile = File(edge_distance(file_of(squares[0])));
     }
 
     // DTZ tables are one-sided, i.e. they store positions only for white to
@@ -769,7 +779,7 @@ Ret do_probe_table(const Position& pos, T* entry, WDLScore wdl, ProbeState* resu
         if (!off_A1H8(squares[i]))
             continue;
 
-        if (off_A1H8(squares[i]) > 0) // A1-H8 diagonal flip: SQ_A3 -> SQ_C3
+        if (off_A1H8(squares[i]) > 0) // A1-H8 diagonal flip: SQ_A3 -> SQ_C1
             for (int j = i; j < size; ++j)
                 squares[j] = Square(((squares[j] >> 3) | (squares[j] << 3)) & 63);
         break;
@@ -974,7 +984,7 @@ uint8_t* set_sizes(PairsData* d, uint8_t* data) {
 
     d->sizeofBlock = 1ULL << *data++;
     d->span = 1ULL << *data++;
-    d->sparseIndexSize = (tbSize + d->span - 1) / d->span; // Round up
+    d->sparseIndexSize = size_t((tbSize + d->span - 1) / d->span); // Round up
     auto padding = number<uint8_t, LittleEndian>(data++);
     d->blocksNum = number<uint32_t, LittleEndian>(data); data += sizeof(uint32_t);
     d->blockLengthSize = d->blocksNum + padding; // Padded to ensure SparseIndex[]
@@ -1190,7 +1200,7 @@ WDLScore search(Position& pos, ProbeState* result) {
     auto moveList = MoveList<LEGAL>(pos);
     size_t totalCount = moveList.size(), moveCount = 0;
 
-    for (const Move& move : moveList)
+    for (const Move move : moveList)
     {
         if (   !pos.capture(move)
             && (!CheckZeroingMoves || type_of(pos.moved_piece(move)) != PAWN))
@@ -1352,7 +1362,7 @@ void Tablebases::init(const std::string& paths) {
             LeadPawnsSize[leadPawnsCnt][f] = idx;
         }
 
-    // Add entries in TB tables if the corresponding ".rtbw" file exsists
+    // Add entries in TB tables if the corresponding ".rtbw" file exists
     for (PieceType p1 = PAWN; p1 < KING; ++p1) {
         TBTables.add({KING, p1, KING});
 
@@ -1459,7 +1469,7 @@ int Tablebases::probe_dtz(Position& pos, ProbeState* result) {
     StateInfo st;
     int minDTZ = 0xFFFF;
 
-    for (const Move& move : MoveList<LEGAL>(pos))
+    for (const Move move : MoveList<LEGAL>(pos))
     {
         bool zeroing = pos.capture(move) || type_of(pos.moved_piece(move)) == PAWN;
 

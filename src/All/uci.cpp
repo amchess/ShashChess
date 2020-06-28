@@ -44,6 +44,7 @@ namespace {
   // FEN string of the initial position, normal chess
   const char* StartFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
+
   // position() is called when engine receives the "position" UCI command.
   // The function sets up the position described in the given FEN string ("fen")
   // or the starting position ("startpos") and then makes the moves given in the
@@ -53,6 +54,7 @@ namespace {
 
     Move m;
     string token, fen;
+
     is >> token;
 
     if (token == "startpos")
@@ -74,7 +76,7 @@ namespace {
     {
 	 //kelly begin
 	  plies++;
-	if (Options["NN Persisted Self-Learning"] && (plies > maximumPly))
+	if ((!(Options["Persisted learning"]=="Off")) && (plies > maximumPly))
 	{
 	  LearningFileEntry currentLearningEntry;
 	  currentLearningEntry.depth = 0;
@@ -82,7 +84,10 @@ namespace {
 	  currentLearningEntry.move = m;
 	  currentLearningEntry.score = VALUE_NONE;
 	  currentLearningEntry.performance = 100;
-	  insertIntoOrUpdateLearningTable(currentLearningEntry,globalLearningHT);
+	  if(Options["Persisted learning"]=="Standard")
+	  {
+	      insertIntoOrUpdateLearningTable(currentLearningEntry,globalLearningHT);
+	  }
 	  maximumPly = plies;
 	}
 	//kelly end
@@ -108,14 +113,14 @@ namespace {
     // Read option value (can contain spaces)
     while (is >> token)
         value += (value.empty() ? "" : " ") + token;
+
     if (Options.count(name))
     {
         Options[name] = value;
         //from Kelly begin
-        if((name=="NN Persisted Self-Learning") && (value=="true"))
+        if((name=="Persisted learning") && (value!="Off"))
         {
-            UCI::initLearning();
-
+            setLearningStructures ();
         }
         //from Kelly end
     }
@@ -137,7 +142,7 @@ namespace {
     limits.startTime = now(); // As early as possible!
 
     while (is >> token)
-        if (token == "searchmoves")
+        if (token == "searchmoves") // Needs to be the last command on the line
             while (is >> token)
                 limits.searchmoves.push_back(UCI::to_move(pos, token));
 
@@ -193,10 +198,14 @@ namespace {
         else if (token == "position")   position(pos, is, states);
         else if (token == "ucinewgame") {
 	    //from Kelly
-            if(Options["NN Persisted Self-Learning"])
+            if(!(Options["Persisted learning"]=="Off"))
               {
         	maximumPly = 0;
         	setStartPoint();
+		if(Options["Persisted learning"]=="Self")
+		{
+		    putGameLineIntoLearningTable();
+		}
               }
 	   //end from Kelly
 	    Search::clear(); elapsed = now();// Search::clear() may take some while
@@ -246,7 +255,7 @@ void UCI::loop(int argc, char* argv[]) {
       if (token == "quit"
                 ||  token == "stop")
       	{
-      	  if ((Options["NN Persisted Self-Learning"]) && (token == "quit") && (!(Options["Read only learning"])))
+      	  if ((!(Options["Persisted learning"]=="Off")) && (token == "quit") && (!(Options["Read only learning"])))
 	    {
 	     writeLearningFile(HashTableType::global);
 	    }
@@ -272,9 +281,13 @@ void UCI::loop(int argc, char* argv[]) {
 	  else if (token == "ucinewgame")
 	  {
 	      //from Kelly
-	      if(Options["NN Persisted Self-Learning"]){
+	      if(!(Options["Persisted learning"]=="Off")){
 		  maximumPly = 0;
 		  setStartPoint();
+	      if(Options["Persisted learning"]=="Self")
+	      {
+		  	putGameLineIntoLearningTable();
+		  }
 	      }
 	      //end from Kelly
 	      Search::clear();
@@ -283,10 +296,10 @@ void UCI::loop(int argc, char* argv[]) {
 
       // Additional custom non-UCI commands, mainly for debugging.
       // Do not use these commands during a search!
-      else if (token == "flip")  pos.flip();
-      else if (token == "bench") bench(pos, is, states);
-      else if (token == "d")     sync_cout << pos << sync_endl;
-      else if (token == "eval")  sync_cout << Eval::trace(pos) << sync_endl;
+      else if (token == "flip")     pos.flip();
+      else if (token == "bench")    bench(pos, is, states);
+      else if (token == "d")        sync_cout << pos << sync_endl;
+      else if (token == "eval")     sync_cout << Eval::trace(pos) << sync_endl;
       else if (token == "compiler") sync_cout << compiler_info() << sync_endl;
       else
           sync_cout << "Unknown command: " << cmd << sync_endl;
@@ -308,14 +321,8 @@ string UCI::value(Value v) {
 
   stringstream ss;
 
-  if (abs(v) < VALUE_MATE - MAX_PLY){
-      if(abs(v) > valueThreshold){
-	  ss << "cp " << v * 100 / PawnValueEg;
-      }
-      else{
-	  ss << "cp " << v * scoreScale / PawnValueEg;
-      }
-  }
+  if (abs(v) < VALUE_MATE_IN_MAX_PLY)
+      ss << "cp " << v * 100 / PawnValueEg;
   else
       ss << "mate " << (v > 0 ? VALUE_MATE - v + 1 : -VALUE_MATE - v) / 2;
 

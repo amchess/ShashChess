@@ -38,10 +38,11 @@ int main(int argc, char* argv[]) {
   std::cout << engine_info() << std::endl;
 
   UCI::init(Options);
+  Tune::init();
   //from Kelly begin
-  if(Options["NN Persisted Self-Learning"])
+  if(Options["Persisted learning"])
   {
-    UCI::initLearning();
+  	setLearningStructures ();//Kelly
   }
   //from Kelly end
   PSQT::init();
@@ -49,7 +50,7 @@ int main(int argc, char* argv[]) {
   Position::init();
   Bitbases::init();
   Endgames::init();
-  Threads.set(Options["Threads"]);
+  Threads.set(size_t(Options["Threads"]));
   Threads.setFull(Options["Full depth threads"]);//Full threads patch
   Search::clear(); // After threads are up
 
