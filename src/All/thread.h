@@ -74,9 +74,8 @@ public:
   LowPlyHistory lowPlyHistory;
   CapturePieceToHistory captureHistory;
   ContinuationHistory continuationHistory[2][2];
-  Score contempt;
   bool fullSearch;//full threads patch
-  int shashinValue,shashinContempt,shashinQuiescentCapablancaMaxScore;//shashinValue
+  int shashinValue, shashinQuiescentCapablancaMiddleHighScore, shashinQuiescentCapablancaMaxScore;//shashinValue
  };
 
 
@@ -90,7 +89,7 @@ struct MainThread : public Thread {
   void check_time();
 
   double previousTimeReduction;
-  Value previousScore;
+  Value bestPreviousScore;
   Value iterValue[4];
   int callsCnt;
   bool stopOnPonderhit;
@@ -112,6 +111,9 @@ struct ThreadPool : public std::vector<Thread*> {
   MainThread* main()        const { return static_cast<MainThread*>(front()); }
   uint64_t nodes_searched() const { return accumulate(&Thread::nodes); }
   uint64_t tb_hits()        const { return accumulate(&Thread::tbHits); }
+  Thread* get_best_thread() const;
+  void start_searching();
+  void wait_for_search_finished() const;
 
   std::atomic_bool stop, increaseDepth;
 

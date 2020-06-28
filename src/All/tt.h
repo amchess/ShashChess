@@ -42,7 +42,7 @@ struct TTEntry {
   Value value() const { return (Value)value16; }
   Value eval()  const { return (Value)eval16; }
   Depth depth() const { return (Depth)depth8 + DEPTH_OFFSET; }
-  bool is_pv() const { return (bool)(genBound8 & 0x4); }
+  bool is_pv()  const { return (bool)(genBound8 & 0x4); }
   Bound bound() const { return (Bound)(genBound8 & 0x3); }
   void save(Key k, Value v, bool pv, Bound b, Depth d, Move m, Value ev);
 
@@ -61,8 +61,8 @@ private:
 /// A TranspositionTable is an array of Cluster, of size clusterCount. Each
 /// cluster consists of ClusterSize number of TTEntry. Each non-empty TTEntry
 /// contains information on exactly one position. The size of a Cluster should
-/// divide the size of a cache line for best performance,
-/// as the cacheline is prefetched when possible.
+/// divide the size of a cache line for best performance, as the cacheline is
+/// prefetched when possible.
 
 class TranspositionTable {
 
@@ -76,16 +76,15 @@ class TranspositionTable {
   static_assert(sizeof(Cluster) == 32, "Unexpected Cluster size");
 
 public:
- ~TranspositionTable() { free(mem); }
+ ~TranspositionTable() { aligned_ttmem_free(mem); }
   void new_search() { generation8 += 8; } // Lower 3 bits are used by PV flag and Bound
   TTEntry* probe(const Key key, bool& found) const;
   int hashfull() const;
   void resize(size_t mbSize);
   void clear();
 
-  // The 32 lowest order bits of the key are used to get the index of the cluster
   TTEntry* first_entry(const Key key) const {
-    return &table[(uint32_t(key) * uint64_t(clusterCount)) >> 32].entry[0];
+    return &table[mul_hi64(key, clusterCount)].entry[0];
   }
 
 private:
@@ -120,13 +119,14 @@ struct NodeInfo
 {
 	Key hashKey;
 	MoveInfo latestMoveInfo;	
-	MoveInfo siblingMoveInfo[25];
+	MoveInfo siblingMoveInfo[MOVE_INFOS_SIZE];
 	int siblings = 0;
 };
 
 
 // The Monte-Carlo tree is stored implicitly in one big hash table
 typedef std::unordered_multimap<Key, NodeInfo> LearningHashTable;
+void setLearningStructures ();
 void loadLearningFileIntoLearningTables(bool toDeleteBinFile);
 void startposition();
 
@@ -138,6 +138,8 @@ void insertIntoOrUpdateLearningTable(LearningFileEntry& tempExpEntry,LearningHas
 
 typedef NodeInfo* Node;
 Node getNodeFromHT(Key key,HashTableType hashTableType);
+
+Value makeExpValue(LearningFileEntry fileExpEntry,HashTableType hashTableType);
 
 extern LearningHashTable globalLearningHT,experienceHT;
 //from Kelly end

@@ -68,7 +68,6 @@ private:
 };
 
 void init(OptionsMap&);
-void initLearning();
 void loop(int argc, char* argv[]);
 std::string value(Value v);
 std::string square(Square s);
@@ -82,7 +81,7 @@ extern UCI::OptionsMap Options;
 //no uci options, but constants
 enum {
 	NODES_TIME = 0,
-	MIN_THINK_TIME = 20,
+	MIN_THINK_TIME = 0,
 	SYZ_50_MOVE = 1
 };
 //end no uci options, but constants

@@ -40,7 +40,6 @@
 
 #include <cassert>
 #include <cctype>
-#include <climits>
 #include <cstdint>
 #include <cstdlib>
 #include <algorithm>
@@ -103,6 +102,8 @@ typedef uint64_t Bitboard;
 
 constexpr int MAX_MOVES = 256;
 constexpr int MAX_PLY   = 246;
+
+constexpr int MOVE_INFOS_SIZE   = 25; //from Kelly
 
 /// A move needs 16 bits to be stored
 ///
@@ -177,11 +178,11 @@ enum Value : int {
   VALUE_NONE      = 32002,
 
   VALUE_TB_WIN_IN_MAX_PLY  =  VALUE_MATE - 2 * MAX_PLY,
-  VALUE_TB_LOSS_IN_MAX_PLY = -VALUE_MATE + 2 * MAX_PLY,
+  VALUE_TB_LOSS_IN_MAX_PLY = -VALUE_TB_WIN_IN_MAX_PLY,
   VALUE_MATE_IN_MAX_PLY  =  VALUE_MATE - MAX_PLY,
-  VALUE_MATED_IN_MAX_PLY = -VALUE_MATE + MAX_PLY,
+  VALUE_MATED_IN_MAX_PLY = -VALUE_MATE_IN_MAX_PLY,
 
-  PawnValueMg   = 128,   PawnValueEg   = 213,
+  PawnValueMg   = 124,   PawnValueEg   = 206,
   KnightValueMg = 781,   KnightValueEg = 854,
   BishopValueMg = 825,   BishopValueEg = 915,
   RookValueMg   = 1276,  RookValueEg   = 1380,
@@ -210,16 +211,16 @@ constexpr Value PieceValue[PHASE_NB][PIECE_NB] = {
   { VALUE_ZERO, PawnValueEg, KnightValueEg, BishopValueEg, RookValueEg, QueenValueEg, VALUE_ZERO, VALUE_ZERO,
     VALUE_ZERO, PawnValueEg, KnightValueEg, BishopValueEg, RookValueEg, QueenValueEg, VALUE_ZERO, VALUE_ZERO }
 };
+
 typedef int Depth;
 
 enum : int {
-
   DEPTH_QS_CHECKS     =  0,
   DEPTH_QS_NO_CHECKS  = -1,
   DEPTH_QS_RECAPTURES = -5,
 
   DEPTH_NONE   = -6,
-  DEPTH_OFFSET = DEPTH_NONE,
+  DEPTH_OFFSET = DEPTH_NONE
 };
 
 enum Square : int {
@@ -257,17 +258,14 @@ enum Rank : int {
 };
 
 //Shashin section
-enum {scoreScale = 28, valueThreshold=320};//scoreScale and valueThreshold to adapt value to realistic shown score: 0.10 at contempt 0
 enum {
-  SHASHIN_DEFAULT_CONTEMPT = 0, SHASHIN_PETROSIAN_CONTEMPT = -30, SHASHIN_CAPABLANCA_CONTEMPT = 0, SHASHIN_CAPABLANCA_PETROSIAN_CONTEMPT = -15,
-  SHASHIN_TAL_CONTEMPT = 30, SHASHIN_TAL_PETROSIAN_CONTEMPT = 0, SHASHIN_TAL_CAPABLANCA_CONTEMPT = 15, SHASHIN_TAL_CAPABLANCA_PETROSIAN_CONTEMPT = 0,
-  SHASHIN_MAX_SCORE = 140*PawnValueEg/scoreScale, SHASHIN_MIDDLE_HIGH_SCORE = 70*PawnValueEg/scoreScale, SHASHIN_MIDDLE_LOW_SCORE=25*PawnValueEg/scoreScale};
+  SHASHIN_MAX_SCORE = 139 * PawnValueEg/100, SHASHIN_MIDDLE_HIGH_SCORE = 69 * PawnValueEg/100, SHASHIN_MIDDLE_LOW_SCORE=25 * PawnValueEg/100};
 //Positions-algorithms types
 enum {
   SHASHIN_POSITION_DEFAULT, SHASHIN_POSITION_PETROSIAN, SHASHIN_POSITION_CAPABLANCA, SHASHIN_POSITION_CAPABLANCA_PETROSIAN,
   SHASHIN_POSITION_TAL,SHASHIN_POSITION_TAL_PETROSIAN,SHASHIN_POSITION_TAL_CAPABLANCA,SHASHIN_POSITION_TAL_CAPABLANCA_PETROSIAN
 };
-enum { SHASHIN_TAL_THRESHOLD = 35*PawnValueEg/scoreScale, SHASHIN_CAPABLANCA_THRESHOLD = 15*PawnValueEg/scoreScale };
+enum { SHASHIN_TAL_THRESHOLD = 35 * PawnValueEg/100, SHASHIN_CAPABLANCA_THRESHOLD = 15 * PawnValueEg/100};
 
 //End Shashin section
 
@@ -296,11 +294,11 @@ inline Value mg_value(Score s) {
 }
 
 #define ENABLE_BASE_OPERATORS_ON(T)                                \
-constexpr T operator+(T d1, T d2) { return T(int(d1) + int(d2)); } \
-constexpr T operator-(T d1, T d2) { return T(int(d1) - int(d2)); } \
+constexpr T operator+(T d1, int d2) { return T(int(d1) + d2); } \
+constexpr T operator-(T d1, int d2) { return T(int(d1) - d2); } \
 constexpr T operator-(T d) { return T(-int(d)); }                  \
-inline T& operator+=(T& d1, T d2) { return d1 = d1 + d2; }         \
-inline T& operator-=(T& d1, T d2) { return d1 = d1 - d2; }
+inline T& operator+=(T& d1, int d2) { return d1 = d1 + d2; }         \
+inline T& operator-=(T& d1, int d2) { return d1 = d1 - d2; }
 
 #define ENABLE_INCR_OPERATORS_ON(T)                                \
 inline T& operator++(T& d) { return d = T(int(d) + 1); }           \
@@ -319,7 +317,6 @@ ENABLE_FULL_OPERATORS_ON(Value)
 ENABLE_FULL_OPERATORS_ON(Direction)
 
 ENABLE_INCR_OPERATORS_ON(PieceType)
-ENABLE_INCR_OPERATORS_ON(Piece)
 ENABLE_INCR_OPERATORS_ON(Square)
 ENABLE_INCR_OPERATORS_ON(File)
 ENABLE_INCR_OPERATORS_ON(Rank)
@@ -329,12 +326,6 @@ ENABLE_BASE_OPERATORS_ON(Score)
 #undef ENABLE_FULL_OPERATORS_ON
 #undef ENABLE_INCR_OPERATORS_ON
 #undef ENABLE_BASE_OPERATORS_ON
-
-/// Additional operators to add integers to a Value
-constexpr Value operator+(Value v, int i) { return Value(int(v) + i); }
-constexpr Value operator-(Value v, int i) { return Value(int(v) - i); }
-inline Value& operator+=(Value& v, int i) { return v = v + i; }
-inline Value& operator-=(Value& v, int i) { return v = v - i; }
 
 /// Additional operators to add a Direction to a Square
 constexpr Square operator+(Square s, Direction d) { return Square(int(s) + int(d)); }
@@ -365,26 +356,23 @@ inline Score operator*(Score s, int i) {
 
 /// Multiplication of a Score by a boolean
 inline Score operator*(Score s, bool b) {
-  return Score(int(s) * int(b));
+  return b ? s : SCORE_ZERO;
 }
 
 constexpr Color operator~(Color c) {
   return Color(c ^ BLACK); // Toggle color
 }
 
-constexpr Square flip_rank(Square s) {
+constexpr Square flip_rank(Square s) { // Swap A1 <-> A8
   return Square(s ^ SQ_A8);
 }
-constexpr Square flip_file(Square s) {
+
+constexpr Square flip_file(Square s) { // Swap A1 <-> H1
   return Square(s ^ SQ_H1);
 }
 
 constexpr Piece operator~(Piece pc) {
-  return Piece(pc ^ 8); // Swap color of piece B_KNIGHT -> W_KNIGHT
-}
-
-inline File map_to_queenside(File f) {
-  return std::min(f, File(FILE_H - f)); // Map files ABCDEFGH to files ABCDDCBA
+  return Piece(pc ^ 8); // Swap color of piece B_KNIGHT <-> W_KNIGHT
 }
 
 constexpr CastlingRights operator&(Color c, CastlingRights cr) {
@@ -482,3 +470,5 @@ constexpr bool is_ok(Move m) {
 }
 
 #endif // #ifndef TYPES_H_INCLUDED
+
+#include "tune.h" // Global visibility to tuning setup
