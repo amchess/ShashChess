@@ -29,6 +29,8 @@
 
 #include "types.h"
 
+class Position; //Needed by is_game_decided() Learner from Khalid
+
 const std::string engine_info(bool to_uci = false);
 const std::string compiler_info();
 void prefetch(void* addr);
@@ -72,6 +74,11 @@ template<class T> constexpr const T& clamp(const T& v, const T& lo, const T& hi)
   return v < lo ? lo : v > hi ? hi : v;
 }
 
+//begin khalid from learner
+void init(const char *arg0);
+std::string map_path(const std::string& path);
+bool is_game_decided(const Position &pos, Value lastScore);
+//end khalid from learner
 }
 
 /// xorshift64star Pseudo-Random Number Generator
@@ -128,7 +135,7 @@ inline uint64_t mul_hi64(uint64_t a, uint64_t b) {
 /// logical processor group. This usually means to be limited to use max 64
 /// cores. To overcome this, some special platform specific API should be
 /// called to set group affinity for each thread. Original code from Texel by
-/// Peter Ã–sterlund.
+/// Peter Österlund.
 
 namespace WinProcGroup {
   void bindThisThread(size_t idx);

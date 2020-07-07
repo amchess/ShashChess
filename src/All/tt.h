@@ -97,7 +97,18 @@ private:
 };
 
 //from Kelly begin
-enum class HashTableType { global, experience };
+//Very important to have HashTableType values use flag friendly values (i.e., powers of 2)
+//since we use bitwise oprations on them
+enum class HashTableType : uint8_t  { global = 0x01, experience = 0x02 };
+
+extern bool pauseExperience;
+
+//Operator overloading for HashTableType enum
+//Those operators are used elsewhere in the code and therefore need to be defined
+//More operators can be added if needed
+constexpr HashTableType operator |(HashTableType h1, HashTableType h2) { return HashTableType((uint8_t)h1 | (uint8_t)h2); }
+constexpr HashTableType operator &(HashTableType h1, HashTableType h2) { return HashTableType((uint8_t)h1 & (uint8_t)h2); }
+
 struct LearningFileEntry
 {
 	Key hashKey = 0;
@@ -127,11 +138,6 @@ struct NodeInfo
 // The Monte-Carlo tree is stored implicitly in one big hash table
 typedef std::unordered_multimap<Key, NodeInfo> LearningHashTable;
 void setLearningStructures ();
-void loadLearningFileIntoLearningTables(bool toDeleteBinFile);
-void startposition();
-
-void loadSlaveLearningFilesIntoLearningTables();
-
 void writeLearningFile(HashTableType hashTableType);
 
 void insertIntoOrUpdateLearningTable(LearningFileEntry& tempExpEntry,LearningHashTable& learningHT);

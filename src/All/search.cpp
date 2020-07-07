@@ -230,7 +230,7 @@ size_t cURL_WriteFunc(void *contents, size_t size, size_t nmemb, std::string *s)
   {
     s->append((char*)contents, newLength);
   }
-  catch (std::bad_alloc &e)
+  catch (std::bad_alloc &)
   {
     //handle memory problem
     return 0;
@@ -282,6 +282,7 @@ void Search::clear() {
 
 void MainThread::search() {
 
+  persistedLearning=(!(Options["Persisted learning"]=="Off"));//from Kelly
   if (Limits.perft)
   {
       nodes = perft<true>(rootPos, Limits.perft);
@@ -295,7 +296,6 @@ void MainThread::search() {
   Time.init(Limits, us, rootPos.game_ply());
   TT.new_search();
   //Kelly begin
-  persistedLearning=(!(Options["Persisted learning"]=="Off"));
   if(persistedLearning){
       enabledLearningProbe = false;
       int piecesCnt = rootPos.count<KNIGHT>(WHITE) + rootPos.count<BISHOP>(WHITE) + rootPos.count<ROOK>(WHITE) + rootPos.count<QUEEN>(WHITE) + rootPos.count<KING>(WHITE)
@@ -402,17 +402,16 @@ void MainThread::search() {
 
   Thread* bestThread = this;
 
-  // Check if there are threads with a better score than main thread
-  if (    int(Options["MultiPV"]) == 1
-      && !Limits.depth
-      && !(Skill(Options["Skill Level"]).enabled() || int(Options["UCI_LimitStrength"]))
-      &&  rootMoves[0].pv[0] != MOVE_NONE)
+  if (int(Options["MultiPV"]) == 1 &&
+      !Limits.depth &&
+      !(Skill(Options["Skill Level"]).enabled() || int(Options["UCI_LimitStrength"])) &&
+      rootMoves[0].pv[0] != MOVE_NONE)
       bestThread = Threads.get_best_thread();
 
   bestPreviousScore = bestThread->rootMoves[0].score;
   //kelly begin
   if(persistedLearning){
-	  if (bestThread->completedDepth > 4)
+	if (bestThread->completedDepth > 4 && !pauseExperience && !Options["Read only learning"])//from Khalid
 	  {
 	    LearningFileEntry currentLearningEntry;
 	    currentLearningEntry.depth = bestThread->completedDepth;
@@ -446,6 +445,23 @@ void MainThread::search() {
       std::cout << " ponder " << UCI::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
 
   std::cout << sync_endl;
+
+  //Kelly Khalid begin
+  //Save learning data if game is decided already
+  if (persistedLearning && (Utility::is_game_decided(rootPos, bestThread->rootMoves[0].score)))
+  {
+      //Perform Q-learning if enabled
+      if(Options["Self Q-learning"])
+          putGameLineIntoLearningTable();
+
+      //Save to learning file
+      if(!Options["Read only learning"])
+          writeLearningFile(HashTableType::global);
+
+      //Stop learning until we receive *ucinewgame* command
+      pauseExperience = true;
+  }
+  //Kelly Khalid end
   //livebook begin
   if (Options["Live Book"] && Options["Live Book Contribute"] && !g_inBook)
   {
@@ -933,7 +949,7 @@ namespace {
     // search to overwrite a previous full search TT value, so we use a different
     // position key in case of an excluded move.
     excludedMove = ss->excludedMove;
-    posKey = pos.key() ^ (Key(excludedMove) << 48); // Isn't a very good hash
+    posKey = excludedMove == MOVE_NONE ? pos.key() : pos.key() ^ make_key(excludedMove);
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply, pos.rule50_count()) : VALUE_NONE;
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
@@ -2334,6 +2350,9 @@ string UCI::pv(const Position& pos, Depth depth, Value alpha, Value beta) {
          << " multipv "  << i + 1
          << " score "    << UCI::value(v);
 
+      if (Options["UCI_ShowWDL"])
+          ss << UCI::wdl(v, pos.game_ply());
+
       if (!tb && i == pvIdx)
           ss << (v >= beta ? " lowerbound" : v <= alpha ? " upperbound" : "");
 
@@ -2454,5 +2473,6 @@ void putGameLineIntoLearningTable()
 void setStartPoint()
 {
   useLearning = true;
+  pauseExperience = false;
 }
 //from Kelly end

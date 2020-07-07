@@ -61,7 +61,7 @@ namespace {
 
 /// Version number. If Version is left empty, then compile date in the format
 /// DD-MM-YY and show in engine_info.
-const string Version = "12.0";
+const string Version = "12.1";
 
 /// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 /// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
@@ -127,6 +127,68 @@ public:
 };
 
 } // namespace
+
+//begin learning from Khalid
+namespace Utility
+{
+    string myFolder;
+
+    namespace
+    {
+#if defined(_WIN32) || defined (_WIN64)
+        constexpr char DirectorySeparator = '\\';
+#else
+        constexpr char DirectorySeparator = '/';
+#endif
+    }
+
+    void init(const char* arg0)
+    {
+        string s = arg0;
+        size_t i = s.find_last_of(DirectorySeparator);
+        if(i != string::npos)
+            myFolder = s.substr(0, i);
+    }
+
+    //Map relative folder or filename to local directory of the engine executable
+    string map_path(const string& path)
+    {
+        string newPath = path;
+
+        //Make sure we have something to work on
+        if (!path.size() || !myFolder.size())
+            return path;
+
+        //Make sure we can map this path
+        if (newPath.find(DirectorySeparator) == string::npos)
+            newPath = myFolder + DirectorySeparator + newPath;
+
+        return newPath;
+    }
+
+    bool is_game_decided(const Position& pos, Value lastScore)
+    {
+        //Assume game is decided if game ply is above 200
+        if (pos.game_ply() > 200)
+            return true;
+
+        //Assume game is decided if |last score| is above 2.5 Pawn
+        if (lastScore != VALUE_NONE && std::abs(lastScore) > PawnValueMg * 5 / 2)
+            return true;
+
+        //Assume game is decided if |last score| is below 0.25 Pawn and game ply is above 120
+        if (pos.game_ply() > 120 && lastScore < PawnValueMg / 4)
+            return true;
+
+        //Assume game is decided if remaining pieces is less than 9
+        if (pos.count<ALL_PIECES>() < 9)
+            return true;
+
+        //Assume game is not decided!
+        return false;
+    }
+};
+//end learning from Khalid
 
 /// engine_info() returns the full name of the current ShashChess version. This
 /// will be either "ShashChess <Tag> DD-MM-YY" (where DD-MM-YY is the date when

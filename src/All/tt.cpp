@@ -161,48 +161,88 @@ int TranspositionTable::hashfull() const {
   return cnt / ClusterSize;
 }
 //from Kelly begin
-void setLearningStructures ()
+bool pauseExperience = false;
+
+bool loadExperienceFile(const string& filename, HashTableType hashTableType, bool deleteAfterLoading)
 {
-  loadLearningFileIntoLearningTables (true);
-  loadSlaveLearningFilesIntoLearningTables ();
-  writeLearningFile (HashTableType::experience);
-  experienceHT.clear ();
-  globalLearningHT.clear ();
-  loadLearningFileIntoLearningTables (false);
+    std::string fn = Utility::map_path(filename);
+    ifstream inputLearningFile(fn, ios::in | ios::binary);
+
+    //Quick exit if file is not present
+    if (!inputLearningFile.is_open())
+        return false;
+
+    LearningFileEntry tempEntry;
+    while (true)
+    {
+        //Invalidate the entry
+        tempEntry.hashKey = (Key)0;
+
+        //Read a new entry
+        inputLearningFile.read((char*)&tempEntry, sizeof(tempEntry));
+        
+        //If we got a null hashKey it means we are done!
+        if (!tempEntry.hashKey)
+            break;
+
+        //Should add to global has table?
+        if ((hashTableType & HashTableType::global) == HashTableType::global)
+            insertIntoOrUpdateLearningTable(tempEntry, globalLearningHT);
+
+        //Should add to experience hash table?
+        if ((hashTableType & HashTableType::experience) == HashTableType::experience)
+            insertIntoOrUpdateLearningTable(tempEntry, experienceHT);
+    }
+
+    //Close it
+    inputLearningFile.close();
+
+    //Delete it if requested
+    if (deleteAfterLoading)
+        remove(fn.c_str());
+
+    return true;
 }
 
-void loadLearningFileIntoLearningTables(bool toDeleteBinFile) {
-  std::string fileName="experience";
-  ifstream inputLearningFile("experience.bin", ios::in | ios::binary);
-  int loading = 1;
-  while (loading)
-  {
-    LearningFileEntry currentInputLearningFileEntry;
-    currentInputLearningFileEntry.depth = 0;
-    currentInputLearningFileEntry.hashKey = 0;
-    currentInputLearningFileEntry.move = MOVE_NONE;
-    currentInputLearningFileEntry.score = VALUE_NONE;
-    currentInputLearningFileEntry.performance = 100;
-    inputLearningFile.read((char*)&currentInputLearningFileEntry, sizeof(currentInputLearningFileEntry));
-    if (currentInputLearningFileEntry.hashKey)
+bool loadSlaveLearningFilesIntoLearningTables()
+{
+    int i = 0;
+    while (true)
     {
-      insertIntoOrUpdateLearningTable(currentInputLearningFileEntry,globalLearningHT);
+        if (!loadExperienceFile("experience" + std::to_string(i) + ".bin", HashTableType::experience, true))
+            break;
 
-      if(toDeleteBinFile)
-      {
-	 insertIntoOrUpdateLearningTable(currentInputLearningFileEntry,experienceHT);
-      }
+        i++;
     }
-    else
-      loading = 0;
-  }
-  inputLearningFile.close();
-  if(toDeleteBinFile)
-  {
-    char fileNameStr[fileName.size() + 1];
-    strcpy(fileNameStr, fileName.c_str());
-    remove(fileNameStr);
-  }
+
+    return i > 0;
+}
+
+void setLearningStructures()
+{
+    loadExperienceFile("experience.bin", HashTableType::global | HashTableType::experience, false);
+
+    bool shouldRefresh = false;
+
+    //Just in case, check and load for "experience_new.bin" which will be present if
+    //previous saving operation failed (engine crashed or terminated)
+    shouldRefresh |= loadExperienceFile("experience_new.bin", HashTableType::global | HashTableType::experience, true);
+
+    //Load slave experience files (if any)
+    shouldRefresh |= loadSlaveLearningFilesIntoLearningTables();
+
+    if (shouldRefresh)
+    {
+        //We need to write all consolidated experience to disk
+        writeLearningFile(HashTableType::experience);
+
+        //Clear existing hash tables before we refresh them
+        experienceHT.clear();
+        globalLearningHT.clear();
+
+        //Refresh
+        loadExperienceFile("experience.bin", HashTableType::global | HashTableType::experience, false);
+    }
 }
 
 void updateLatestMoveInfo (Node node, int k)
@@ -385,9 +425,21 @@ void writeLearningFile(HashTableType hashTableType)
     {
       currentLearningHT=globalLearningHT;
     }
+
+  /*
+    To avoid any problems when saving to experience file, we will actually do the following:
+    1) Save new experience to "experience0.bin"
+    2) Remove "experience.bin"
+    3) Rename "experience0.bin" to "experience.bin"
+
+    This approach is failproof so that the old file is only removed when the new file is sufccessfully saved!
+    If, for whatever odd reason, the engine is able to execute step (1) and (2) and fails to execute step (3)
+    i.e., we end up with experience0.bin then it is not a problem since the file will be loaded anyway the next
+    time the engine starts!
+  */
   if(!currentLearningHT.empty())
     {
-      std::ofstream outputFile ("experience.bin", std::ofstream::trunc | std::ofstream::binary);
+      std::ofstream outputFile (Utility::map_path("experience_new.bin"), std::ofstream::trunc | std::ofstream::binary);
       for(auto& it:currentLearningHT)
       {
         LearningFileEntry currentFileExpEntry;
@@ -404,50 +456,9 @@ void writeLearningFile(HashTableType hashTableType)
 	}
       }
       outputFile.close();
-    }
-}
+      remove(Utility::map_path("experience.bin").c_str());
+      rename(Utility::map_path("experience_new.bin").c_str(), Utility::map_path("experience.bin").c_str());
 
-void loadSlaveLearningFilesIntoLearningTables()
-{
-    bool merging=true;
-    int i=0;
-    while (merging)
-    {
-      std::string index = std::to_string(i);
-      std::string slaveFileName ="";
-      slaveFileName="experience" + index + ".bin";
-      ifstream slaveInputFile (slaveFileName, ios::in | ios::binary);
-      if(!slaveInputFile.good())
-      {
-	merging=false;
-	i++;
-      }
-      else
-      {
-	while(slaveInputFile.good())
-	{
-	  LearningFileEntry slaveFileExpEntry;
-	  slaveFileExpEntry.depth = 0;
-	  slaveFileExpEntry.hashKey = 0;
-	  slaveFileExpEntry.move = MOVE_NONE;
-	  slaveFileExpEntry.score = VALUE_NONE;
-	  slaveFileExpEntry.performance = 100;
-
-	  slaveInputFile.read((char*)&slaveFileExpEntry, sizeof(slaveFileExpEntry));
-	  if (slaveFileExpEntry.hashKey)
-	  {
-	      insertIntoOrUpdateLearningTable(slaveFileExpEntry,experienceHT);
-	  }
-	  else
-	  {
-	    slaveInputFile.close();
-	    char slaveStr[slaveFileName.size() + 1];
-	    strcpy(slaveStr, slaveFileName.c_str());
-	    remove(slaveStr);
-	    i++;
-	  }
-	}
-      }
     }
 }
 //from Kelly End

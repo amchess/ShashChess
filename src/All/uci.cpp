@@ -19,6 +19,7 @@
 */
 
 #include <cassert>
+#include <cmath>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -74,24 +75,24 @@ namespace {
     // Parse move list (if any)
     while (is >> token && (m = UCI::to_move(pos, token)) != MOVE_NONE)
     {
-	 //kelly begin
-	  plies++;
-	if ((!(Options["Persisted learning"]=="Off")) && (plies > maximumPly))
-	{
-	  LearningFileEntry currentLearningEntry;
-	  currentLearningEntry.depth = 0;
-	  currentLearningEntry.hashKey = pos.key();
-	  currentLearningEntry.move = m;
-	  currentLearningEntry.score = VALUE_NONE;
-	  currentLearningEntry.performance = 100;
-	  if(Options["Persisted learning"]=="Standard")
-	  {
-	      insertIntoOrUpdateLearningTable(currentLearningEntry,globalLearningHT);
-	  }
-	  maximumPly = plies;
-	}
-	//kelly end
-	states->emplace_back();
+		//kelly begin
+		if ((!(Options["Persisted learning"]=="Off")) && (plies > maximumPly))
+		{
+		  plies++;
+		  LearningFileEntry currentLearningEntry;
+		  currentLearningEntry.depth = 0;
+		  currentLearningEntry.hashKey = pos.key();
+		  currentLearningEntry.move = m;
+		  currentLearningEntry.score = VALUE_NONE;
+		  currentLearningEntry.performance = 100;
+		  if(Options["Persisted learning"]=="Standard")
+		  {
+		      insertIntoOrUpdateLearningTable(currentLearningEntry,globalLearningHT);
+		  }
+		  maximumPly = plies;
+		}
+		//kelly end
+        states->emplace_back();
         pos.do_move(m, states->back());
     }
   }
@@ -120,7 +121,7 @@ namespace {
         //from Kelly begin
         if((name=="Persisted learning") && (value!="Off"))
         {
-            setLearningStructures ();
+			setLearningStructures ();
         }
         //from Kelly end
     }
@@ -222,6 +223,28 @@ namespace {
          << "\nNodes/second    : " << 1000 * nodes / elapsed << endl;
   }
 
+  // The win rate model returns the probability (per mille) of winning given an eval
+  // and a game-ply. The model fits rather accurately the LTC fishtest statistics.
+  int win_rate_model(Value v, int ply) {
+
+     // The model captures only up to 240 plies, so limit input (and rescale)
+     double m = std::min(240, ply) / 64.0;
+
+     // Coefficients of a 3rd order polynomial fit based on fishtest data
+     // for two parameters needed to transform eval to the argument of a
+     // logistic function.
+     double as[] = {-8.24404295, 64.23892342, -95.73056462, 153.86478679};
+     double bs[] = {-3.37154371, 28.44489198, -56.67657741,  72.05858751};
+     double a = (((as[0] * m + as[1]) * m + as[2]) * m) + as[3];
+     double b = (((bs[0] * m + bs[1]) * m + bs[2]) * m) + bs[3];
+
+     // Transform eval to centipawns with limited range
+     double x = Utility::clamp(double(100 * v) / PawnValueEg, -1000.0, 1000.0);
+
+     // Return win rate in per mille (rounded to nearest)
+     return int(0.5 + 1000 / (1 + std::exp((a - x) / b)));
+  }
+
 } // namespace
 
 
@@ -255,10 +278,17 @@ void UCI::loop(int argc, char* argv[]) {
       if (token == "quit"
                 ||  token == "stop")
       	{
-      	  if ((!(Options["Persisted learning"]=="Off")) && (token == "quit") && (!(Options["Read only learning"])))
-	    {
-	     writeLearningFile(HashTableType::global);
-	    }
+
+          if ((!(Options["Persisted Learning"]=="Off")) && token == "quit" && !Options["Read only learning"] && !pauseExperience)
+          //from Kelly begin
+          {
+              //Perform Q-learning if enabled
+              if (Options["Self Q-learning"])
+                  putGameLineIntoLearningTable();
+
+              //Save to learning file
+              writeLearningFile(HashTableType::global);
+          }
       	  Threads.stop = true;
       	}
       //from Kelly end
@@ -280,17 +310,22 @@ void UCI::loop(int argc, char* argv[]) {
       else if (token == "position")   position(pos, is, states);
 	  else if (token == "ucinewgame")
 	  {
-	      //from Kelly
-	      if(!(Options["Persisted learning"]=="Off")){
-		  maximumPly = 0;
-		  setStartPoint();
-	      if(Options["Persisted learning"]=="Self")
-	      {
-		  	putGameLineIntoLearningTable();
-		  }
-	      }
-	      //end from Kelly
+	      //from Kelly and Khalid
+	      if(!(Options["Persisted learning"]=="Off"))
+          {
+	          maximumPly = 0;
+	          setStartPoint();
+	
+	          //Perform Q-learning if enabled
+	          if(Options["Persisted Learning"]=="Self")
+	              putGameLineIntoLearningTable();
+	
+	          //Save to learning file
+	          if (!Options["Read only learning"])
+	              writeLearningFile(HashTableType::global);
+          }
 	      Search::clear();
+		  //end from Kelly and Khalid
 	  }
       else if (token == "isready")    sync_cout << "readyok" << sync_endl;
 
@@ -325,6 +360,22 @@ string UCI::value(Value v) {
       ss << "cp " << v * 100 / PawnValueEg;
   else
       ss << "mate " << (v > 0 ? VALUE_MATE - v + 1 : -VALUE_MATE - v) / 2;
+
+  return ss.str();
+}
+
+
+/// UCI::wdl() report WDL statistics given an evaluation and a game ply, based on
+/// data gathered for fishtest LTC games.
+
+string UCI::wdl(Value v, int ply) {
+
+  stringstream ss;
+
+  int wdl_w = win_rate_model( v, ply);
+  int wdl_l = win_rate_model(-v, ply);
+  int wdl_d = 1000 - wdl_w - wdl_l;
+  ss << " wdl " << wdl_w << " " << wdl_d << " " << wdl_l;
 
   return ss.str();
 }
