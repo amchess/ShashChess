@@ -135,7 +135,7 @@ inline uint64_t mul_hi64(uint64_t a, uint64_t b) {
 /// logical processor group. This usually means to be limited to use max 64
 /// cores. To overcome this, some special platform specific API should be
 /// called to set group affinity for each thread. Original code from Texel by
-/// Peter Österlund.
+/// Peter Ã–sterlund.
 
 namespace WinProcGroup {
   void bindThisThread(size_t idx);

@@ -54,6 +54,7 @@ typedef bool(*fun3_t)(HANDLE, CONST GROUP_AFFINITY*, PGROUP_AFFINITY);
 
 #include "misc.h"
 #include "thread.h"
+#include "syzygy/tbprobe.h"
 
 using namespace std;
 
@@ -61,7 +62,7 @@ namespace {
 
 /// Version number. If Version is left empty, then compile date in the format
 /// DD-MM-YY and show in engine_info.
-const string Version = "12.1";
+const string Version = "12.1.1";
 
 /// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 /// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
@@ -168,20 +169,22 @@ namespace Utility
 
     bool is_game_decided(const Position& pos, Value lastScore)
     {
-        //Assume game is decided if game ply is above 200
-        if (pos.game_ply() > 200)
+      //Arena's default adjudication conditions begin
+      //Assume game is decided if |last sent score| is above 900 cp
+      if (lastScore != VALUE_NONE && std::abs(lastScore) > 9* PawnValueEg)
+          return true;
+
+
+        //Assume game is decided (draw) if game ply is above 500
+        if (pos.game_ply() > 500)
+            return true;
+        //Arena's default adjudication conditions end
+        //From Fritz GUI: assume a game is decided when game ply is above 1200 and |last score| is 0=VALUE_DRAW
+        if (pos.game_ply() > 1200 && abs(lastScore) == VALUE_DRAW )
             return true;
 
-        //Assume game is decided if |last score| is above 2.5 Pawn
-        if (lastScore != VALUE_NONE && std::abs(lastScore) > PawnValueMg * 5 / 2)
-            return true;
-
-        //Assume game is decided if |last score| is below 0.25 Pawn and game ply is above 120
-        if (pos.game_ply() > 120 && lastScore < PawnValueMg / 4)
-            return true;
-
-        //Assume game is decided if remaining pieces is less than 9
-        if (pos.count<ALL_PIECES>() < 9)
+        //Assume game is decided if remaining pieces is less than 8 (based on Lomosonov tablebases)
+        if (pos.count<ALL_PIECES>() <= Tablebases::MaxCardinality)
             return true;
 
         //Assume game is not decided!

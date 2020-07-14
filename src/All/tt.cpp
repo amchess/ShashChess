@@ -185,7 +185,7 @@ bool loadExperienceFile(const string& filename, HashTableType hashTableType, boo
         if (!tempEntry.hashKey)
             break;
 
-        //Should add to global has table?
+        //Should add to global hash table?
         if ((hashTableType & HashTableType::global) == HashTableType::global)
             insertIntoOrUpdateLearningTable(tempEntry, globalLearningHT);
 
@@ -241,7 +241,7 @@ void setLearningStructures()
         globalLearningHT.clear();
 
         //Refresh
-        loadExperienceFile("experience.bin", HashTableType::global | HashTableType::experience, false);
+        loadExperienceFile("experience.bin", HashTableType::global, false);
     }
 }
 
@@ -428,9 +428,9 @@ void writeLearningFile(HashTableType hashTableType)
 
   /*
     To avoid any problems when saving to experience file, we will actually do the following:
-    1) Save new experience to "experience0.bin"
+    1) Save new experience to "experience_new.bin"
     2) Remove "experience.bin"
-    3) Rename "experience0.bin" to "experience.bin"
+    3) Rename "experience_new.bin" to "experience.bin"
 
     This approach is failproof so that the old file is only removed when the new file is sufccessfully saved!
     If, for whatever odd reason, the engine is able to execute step (1) and (2) and fails to execute step (3)
