@@ -43,6 +43,7 @@ void on_logger(const Option& o) { start_logger(o); }
 void on_threads(const Option& o) { Threads.set(size_t(o)); }
 void on_full_threads(const Option& o) { Threads.setFull(o); } //full threads patch
 void on_tb_path(const Option& o) { Tablebases::init(o); }
+void on_eval_file(const Option& o) { load_eval_finished = false; init_nnue(); }
 //livebook begin
 void on_livebook_url(const Option& o) { Search::setLiveBookURL(o); }
 void on_livebook_timeout(const Option& o) { Search::setLiveBookTimeout(o); }
@@ -91,6 +92,25 @@ void init(OptionsMap& o) {
   //livebook end
   o["Full depth threads"]    << Option(0, 0, 512, on_full_threads); //if this is used, must be after #Threads is set.
   o["Opening variety"]       << Option (0, 0, 40);
+  #ifdef EVAL_NNUE
+	  // Evaluation function file name. When this is changed, it is necessary to reread the evaluation function at the next ucinewgame timing.
+	  // Without the preceding "./", some GUIs can not load he net file.
+	  o["EvalFile"]              << Option("./eval/nn.bin", on_eval_file);
+	  // When the evaluation function is loaded at the ucinewgame timing, it is necessary to convert the new evaluation function.
+	  // I want to hit the test eval convert command, but there is no new evaluation function
+	  // It ends abnormally before executing this command.
+	  // Therefore, with this hidden option, you can suppress the loading of the evaluation function when ucinewgame,
+	  // Hit the test eval convert command.
+	  o["SkipLoadingEval"]       << Option(false);
+	  // how many moves to use a fixed move
+	  // o["BookMoves"] << Option(16, 0, 10000);
+  #endif
+  #if defined(EVAL_LEARN)
+	  // When learning the evaluation function, you can change the folder to save the evaluation function.
+	  // Evalsave by default. This folder shall be prepared in advance.
+	  // Automatically dig a folder under this folder like "0/", "1/", ... and save the evaluation function file there.
+	  o["EvalSaveDir"] << Option("evalsave");
+  #endif  
   o["Persisted learning"]     << Option("Off var Off var Standard var Self", "Off");
   o["Read only learning"]    << Option(false);
   o["Tal"]                   << Option(false);
@@ -203,4 +223,6 @@ Option& Option::operator=(const string& v) {
   return *this;
 }
 
+// Flag that read the evaluation function. This is set to false when evaldir is changed.
+bool load_eval_finished = false;
 } // namespace UCI

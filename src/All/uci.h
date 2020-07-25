@@ -76,6 +76,8 @@ std::string pv(const Position& pos, Depth depth, Value alpha, Value beta);
 std::string wdl(Value v, int ply);
 Move to_move(const Position& pos, std::string& str);
 
+// Flag that read the evaluation function. This is set to false when evaldir is changed.
+extern bool load_eval_finished; // = false;
 } // namespace UCI
 
 extern UCI::OptionsMap Options;
@@ -86,4 +88,13 @@ enum {
 	SYZ_50_MOVE = 1
 };
 //end no uci options, but constants
+
+// Processing when USI "isready" command is called. At this time, the evaluation function is read.
+// Used when you want to load the evaluation function when "isready" does not come in handler of benchmark command etc.
+// If skipCorruptCheck == true, skip memory corruption check by check sum when reading the evaluation function a second time.
+// * This function is inconvenient if it is not available in Stockfish, so add it.
+
+void init_nnue(bool skipCorruptCheck = false);
+
+extern const char* StartFEN;
 #endif // #ifndef UCI_H_INCLUDED

@@ -42,6 +42,7 @@ typedef bool(*fun3_t)(HANDLE, CONST GROUP_AFFINITY*, PGROUP_AFFINITY);
 #endif
 
 #include <fstream>
+#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -62,7 +63,7 @@ namespace {
 
 /// Version number. If Version is left empty, then compile date in the format
 /// DD-MM-YY and show in engine_info.
-const string Version = "12.1.1";
+const string Version = "12.1.2";
 
 /// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 /// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
@@ -435,8 +436,8 @@ void* aligned_ttmem_alloc(size_t allocSize, void*& mem) {
   {
       if (mem)
           sync_cout << "info string Hash table allocation: Windows large pages used." << sync_endl;
-      else
-          sync_cout << "info string Hash table allocation: Windows large pages not used." << sync_endl;
+      //else
+          //sync_cout << "info string Hash table allocation: Windows large pages not used." << sync_endl;
   }
   firstCall = false;
 
@@ -590,3 +591,164 @@ void bindThisThread(size_t idx) {
 #endif
 
 } // namespace WinProcGroup
+
+// Returns a string that represents the current time. (Used when learning evaluation functions)
+std::string now_string()
+{
+  // Using std::ctime(), localtime() gives a warning that MSVC is not secure.
+  // This shouldn't happen in the C++ standard, but...
+
+#if defined(_MSC_VER)
+  // C4996 : 'ctime' : This function or variable may be unsafe.Consider using ctime_s instead.
+#pragma warning(disable : 4996)
+#endif
+
+  auto now = std::chrono::system_clock::now();
+  auto tp = std::chrono::system_clock::to_time_t(now);
+  auto result = string(std::ctime(&tp));
+
+  // remove line endings if they are included at the end
+  while (*result.rbegin() == '\n' || (*result.rbegin() == '\r'))
+    result.pop_back();
+  return result;
+}
+
+void sleep(int ms)
+{
+	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+}
+
+void* aligned_malloc(size_t size, size_t align)
+{
+	void* p = _mm_malloc(size, align);
+	if (p == nullptr)
+	{
+		std::cout << "info string can't allocate memory. sise = " << size << std::endl;
+		exit(1);
+	}
+	return p;
+}
+
+int read_file_to_memory(std::string filename, std::function<void* (uint64_t)> callback_func)
+{
+  fstream fs(filename, ios::in | ios::binary);
+  if (fs.fail())
+    return 1;
+
+  fs.seekg(0, fstream::end);
+  uint64_t eofPos = (uint64_t)fs.tellg();
+  fs.clear(); // Otherwise the next seek may fail.
+  fs.seekg(0, fstream::beg);
+  uint64_t begPos = (uint64_t)fs.tellg();
+  uint64_t file_size = eofPos - begPos;
+  //std::cout << "filename = " << filename << " , file_size = " << file_size << endl;
+
+  // I know the file size, so call callback_func to get a buffer for this,
+  // Get the pointer.
+  void* ptr = callback_func(file_size);
+
+  // If the buffer could not be secured, or if the file size is different from the expected file size,
+  // It is supposed to return nullptr. At this time, reading is interrupted and an error is returned.
+  if (ptr == nullptr)
+    return 2;
+
+  // read in pieces
+
+  const uint64_t block_size = 1024 * 1024 * 1024; // number of elements to read in one read (1GB)
+  for (uint64_t pos = 0; pos < file_size; pos += block_size)
+  {
+    // size to read this time
+    uint64_t read_size = (pos + block_size < file_size) ? block_size : (file_size - pos);
+    fs.read((char*)ptr + pos, read_size);
+
+    // Read error occurred in the middle of the file.
+    if (fs.fail())
+      return 2;
+
+    //cout << ".";
+  }
+  fs.close();
+
+  return 0;
+}
+
+int write_memory_to_file(std::string filename, void* ptr, uint64_t size)
+{
+  fstream fs(filename, ios::out | ios::binary);
+  if (fs.fail())
+    return 1;
+
+  const uint64_t block_size = 1024 * 1024 * 1024; // number of elements to write in one write (1GB)
+  for (uint64_t pos = 0; pos < size; pos += block_size)
+  {
+    // Memory size to write this time
+    uint64_t write_size = (pos + block_size < size) ? block_size : (size - pos);
+    fs.write((char*)ptr + pos, write_size);
+    //cout << ".";
+  }
+  fs.close();
+  return 0;
+}
+
+// ----------------------------
+//     mkdir wrapper
+// ----------------------------
+
+// Specify relative to the current folder. Returns 0 on success, non-zero on failure.
+// Create a folder. Japanese is not used.
+// In case of gcc under msys2 environment, folder creation fails with _wmkdir(). Cause unknown.
+// Use _mkdir() because there is no help for it.
+
+#if defined(_WIN32)
+// for Windows
+
+#if defined(_MSC_VER)
+#include <codecvt> // I need this because I want wstring to mkdir
+#include <locale> // This is required for wstring_convert.
+
+namespace Dependency {
+  int mkdir(std::string dir_name)
+  {
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> cv;
+    return _wmkdir(cv.from_bytes(dir_name).c_str());
+    //	::CreateDirectory(cv.from_bytes(dir_name).c_str(),NULL);
+  }
+}
+
+#elif defined(__GNUC__) 
+
+#include <direct.h>
+namespace Dependency {
+  int mkdir(std::string dir_name)
+  {
+    return _mkdir(dir_name.c_str());
+  }
+}
+
+#endif
+#elif defined(__linux__)
+
+// In the linux environment, this symbol _LINUX is defined in the makefile.
+
+// mkdir implementation for Linux.
+#include "sys/stat.h"
+
+namespace Dependency {
+  int mkdir(std::string dir_name)
+  {
+    return ::mkdir(dir_name.c_str(), 0777);
+  }
+}
+#else
+
+// In order to judge whether it is a Linux environment, we have to divide the makefile..
+// The function to dig a folder on linux is good for the time being... Only used to save the evaluation function file...
+
+namespace Dependency {
+  int mkdir(std::string dir_name)
+  {
+    return 0;
+  }
+}
+
+#endif
