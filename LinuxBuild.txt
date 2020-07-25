@@ -1,0 +1,23 @@
+Linux build
+
+Only once, install libcurl 
+64bit
+apt-get install libcurl4-gnutls-dev
+or
+apt-get install libcurl4-openssl-dev
+
+32bit
+# enable i386 packages to be installed (may already be enabled)
+dpkg --add-architecture i386
+# update apt to fetch metadata for the new architecture
+apt update
+# install! (note: you may need a different version)
+apt install libcurl4-openssl-dev:i386
+
+
+MakeFile 
+Replace
+LDFLAGS += -lcurl -lws2_32 $(EXTRALDFLAGS)
+with
+LDFLAGS += -lcurl $(EXTRALDFLAGS)
+

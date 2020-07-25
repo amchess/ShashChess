@@ -40,6 +40,7 @@
 
 #include <cassert>
 #include <cctype>
+#include <climits>
 #include <cstdint>
 #include <cstdlib>
 #include <algorithm>
@@ -133,6 +134,8 @@ enum Color {
   WHITE, BLACK, COLOR_NB = 2
 };
 
+constexpr Color Colors[2] = { WHITE, BLACK };
+
 enum CastlingRights {
   NO_CASTLING,
   WHITE_OO,
@@ -189,7 +192,10 @@ enum Value : int {
   QueenValueMg  = 2538,  QueenValueEg  = 2682,
   Tempo = 28,
 
-  MidgameLimit  = 15258, EndgameLimit  = 3915
+  MidgameLimit  = 15258, EndgameLimit  = 3915,
+
+// Maximum value returned by the evaluation function (I want it to be around 2**14..)
+  VALUE_MAX_EVAL = 27000,
 };
 
 enum PieceType {
@@ -234,7 +240,8 @@ enum Square : int {
   SQ_A8, SQ_B8, SQ_C8, SQ_D8, SQ_E8, SQ_F8, SQ_G8, SQ_H8,
   SQ_NONE,
 
-  SQUARE_NB = 64
+  SQUARE_ZERO = 0, SQUARE_NB = 64,
+  SQUARE_NB_PLUS1 = SQUARE_NB + 1, // If there are no balls, it is treated as having moved to SQUARE_NB, so it may be necessary to secure the array with SQUARE_NB+1, so this constant is used.
 };
 
 enum Direction : int {
@@ -317,6 +324,7 @@ ENABLE_FULL_OPERATORS_ON(Value)
 ENABLE_FULL_OPERATORS_ON(Direction)
 
 ENABLE_INCR_OPERATORS_ON(PieceType)
+ENABLE_INCR_OPERATORS_ON(Piece)
 ENABLE_INCR_OPERATORS_ON(Square)
 ENABLE_INCR_OPERATORS_ON(File)
 ENABLE_INCR_OPERATORS_ON(Rank)
@@ -468,6 +476,44 @@ constexpr Move make(Square from, Square to, PieceType pt = KNIGHT) {
 constexpr bool is_ok(Move m) {
   return from_sq(m) != to_sq(m); // Catch MOVE_NULL and MOVE_NONE
 }
+
+// Return squares when turning the board 180Åã
+constexpr Square Inv(Square sq) { return (Square)((SQUARE_NB - 1) - sq); }
+
+// Return squares when mirroring the board
+constexpr Square Mir(Square sq) { return make_square(File(7 - (int)file_of(sq)), rank_of(sq)); }
+
+#if defined(EVAL_NNUE) || defined(EVAL_LEARN)
+// --------------------
+// 		piece box
+// --------------------
+
+// A number used to manage the piece list (which piece is where) used in the Position class.
+enum PieceNumber : uint8_t
+{
+	PIECE_NUMBER_PAWN = 0,
+	PIECE_NUMBER_KNIGHT = 16,
+	PIECE_NUMBER_BISHOP = 20,
+	PIECE_NUMBER_ROOK = 24,
+	PIECE_NUMBER_QUEEN = 28,
+	PIECE_NUMBER_KING = 30,
+	PIECE_NUMBER_WKING = 30,
+	PIECE_NUMBER_BKING = 31, // Use this if you need the numbers of the first and second balls
+	PIECE_NUMBER_ZERO = 0,
+	PIECE_NUMBER_NB = 32,
+};
+
+inline PieceNumber& operator++(PieceNumber& d) { return d = PieceNumber(int8_t(d) + 1); }
+inline PieceNumber operator++(PieceNumber& d, int) {
+  PieceNumber x = d;
+  d = PieceNumber(int8_t(d) + 1);
+  return x;
+}
+inline PieceNumber& operator--(PieceNumber& d) { return d = PieceNumber(int8_t(d) - 1); }
+
+// Piece Number integrity check. for assert.
+constexpr bool is_ok(PieceNumber pn) { return pn < PIECE_NUMBER_NB; }
+#endif  // defined(EVAL_NNUE) || defined(EVAL_LEARN)
 
 /// Based on a congruential pseudo random number generator
 constexpr Key make_key(uint64_t seed) {
