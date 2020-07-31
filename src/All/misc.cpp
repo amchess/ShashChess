@@ -63,7 +63,7 @@ namespace {
 
 /// Version number. If Version is left empty, then compile date in the format
 /// DD-MM-YY and show in engine_info.
-const string Version = "12.1.2";
+const string Version = "";
 
 /// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 /// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
@@ -214,7 +214,13 @@ const string engine_info(bool to_uci) {
   }
 
   ss << (Is64Bit ? " 64" : "")
+#if defined(USE_AVX512)
+     << (HasPext ? " AVX512 BMI2" : " AVX512")
+#elif defined(USE_AVX2)
+     << (HasPext ? " AVX2 BMI2" : " AVX2")
+#else
      << (HasPext ? " BMI2" : (HasPopCnt ? " POPCNT" : ""))
+#endif
      << (to_uci  ? "\nid author ": " by ")
      << "A. Manzo";
 
