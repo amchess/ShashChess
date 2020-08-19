@@ -23,12 +23,16 @@
 
 #include <cassert>
 #include <deque>
+#include <iostream>
 #include <memory> // For std::unique_ptr
 #include <string>
 
 #include "bitboard.h"
+#include "evaluate.h"
+#include "misc.h"
 #include "types.h"
 
+#include "nnue/nnue_accumulator.h"
 //kelly patch begin
 extern void setStartPoint();
 extern void putGameLineIntoLearningTable();
@@ -58,6 +62,10 @@ struct StateInfo {
   Bitboard   pinners[COLOR_NB];
   Bitboard   checkSquares[PIECE_TYPE_NB];
   int        repetition;
+
+  // Used by NNUE
+  Eval::NNUE::Accumulator accumulator;
+  DirtyPiece dirtyPiece;
 };
 
 
@@ -176,6 +184,10 @@ public:
   bool pos_is_ok() const;
   void flip();
 
+  // Used by NNUE
+  StateInfo* state() const;
+  const EvalList* eval_list() const;
+
 private:
   // Initialization helpers (used while setting up a position)
   void set_castling_right(Color c, Square rfrom);
@@ -188,6 +200,9 @@ private:
   void move_piece(Square from, Square to);
   template<bool Do>
   void do_castling(Color us, Square from, Square& to, Square& rfrom, Square& rto);
+
+  // ID of a piece on a given square
+  PieceId piece_id_on(Square sq) const;
 
   // Data members
   Piece board[SQUARE_NB];
@@ -206,6 +221,8 @@ private:
   StateInfo* st;
   bool chess960;
   bool isLeaf; //LeafDepth7
+  // List of pieces used in NNUE evaluation function
+  EvalList evalList;
 };
 
 namespace PSQT {
@@ -448,6 +465,27 @@ inline void Position::move_piece(Square from, Square to) {
 
 inline void Position::do_move(Move m, StateInfo& newSt) {
   do_move(m, newSt, gives_check(m));
+}
+
+inline StateInfo* Position::state() const {
+
+  return st;
+}
+
+inline const EvalList* Position::eval_list() const {
+
+  return &evalList;
+}
+
+inline PieceId Position::piece_id_on(Square sq) const
+{
+
+  assert(piece_on(sq) != NO_PIECE);
+
+  PieceId pid = evalList.piece_id_list[sq];
+  assert(is_ok(pid));
+
+  return pid;
 }
 
 #endif // #ifndef POSITION_H_INCLUDED

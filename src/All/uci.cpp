@@ -39,7 +39,6 @@ using namespace std;
 extern vector<string> setup_bench(const Position&, istream&);
 
 int maximumPly = 0; //from Kelly
-
 namespace {
 
   // FEN string of the initial position, normal chess
@@ -87,7 +86,7 @@ namespace {
 		  currentLearningEntry.performance = 100;
 		  if(Options["Persisted learning"]=="Standard")
 		  {
-		      insertIntoOrUpdateLearningTable(currentLearningEntry,globalLearningHT);
+		      insertIntoOrUpdateLearningTable(currentLearningEntry);
 		  }
 		  maximumPly = plies;
 		}
@@ -95,6 +94,20 @@ namespace {
         states->emplace_back();
         pos.do_move(m, states->back());
     }
+  }
+
+  // trace_eval() prints the evaluation for the current position, consistent with the UCI
+  // options set so far.
+
+  void trace_eval(Position& pos) {
+
+    StateListPtr states(new std::deque<StateInfo>(1));
+    Position p;
+    p.set(pos.fen(), Options["UCI_Chess960"], &states->back(), Threads.main());
+
+    Eval::verify_NNUE();
+
+    sync_cout << "\n" << Eval::trace(p) << sync_endl;
   }
 
 
@@ -193,7 +206,7 @@ namespace {
                nodes += Threads.nodes_searched();
             }
             else
-               sync_cout << "\n" << Eval::trace(pos) << sync_endl;
+               trace_eval(pos);
         }
         else if (token == "setoption")  setoption(is);
         else if (token == "position")   position(pos, is, states);
@@ -209,8 +222,8 @@ namespace {
 		}
               }
 	   //end from Kelly
-	    Search::clear(); elapsed = now();// Search::clear() may take some while
-        }
+	   Search::clear(); elapsed = now(); // Search::clear() may take some while
+	}
     }
 
     elapsed = now() - elapsed + 1; // Ensure positivity to avoid a 'divide by zero'
@@ -287,7 +300,7 @@ void UCI::loop(int argc, char* argv[]) {
                   putGameLineIntoLearningTable();
 
               //Save to learning file
-              writeLearningFile(HashTableType::global);
+              writeLearningFile();
           }
       	  Threads.stop = true;
       	}
@@ -322,19 +335,19 @@ void UCI::loop(int argc, char* argv[]) {
 	
 	          //Save to learning file
 	          if (!Options["Read only learning"])
-	              writeLearningFile(HashTableType::global);
+	              writeLearningFile();
           }
-	      Search::clear();
-		  //end from Kelly and Khalid
-	  }
+          Search::clear();//end from Kelly and Khalid
+      }
       else if (token == "isready")    sync_cout << "readyok" << sync_endl;
+
 
       // Additional custom non-UCI commands, mainly for debugging.
       // Do not use these commands during a search!
       else if (token == "flip")     pos.flip();
       else if (token == "bench")    bench(pos, is, states);
       else if (token == "d")        sync_cout << pos << sync_endl;
-      else if (token == "eval")     sync_cout << Eval::trace(pos) << sync_endl;
+      else if (token == "eval")     trace_eval(pos);
       else if (token == "compiler") sync_cout << compiler_info() << sync_endl;
       else
           sync_cout << "Unknown command: " << cmd << sync_endl;

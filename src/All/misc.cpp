@@ -42,14 +42,21 @@ typedef bool(*fun3_t)(HANDLE, CONST GROUP_AFFINITY*, PGROUP_AFFINITY);
 #endif
 
 #include <fstream>
+#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <cstdlib>
 
 #if defined(__linux__) && !defined(__ANDROID__)
 #include <stdlib.h>
 #include <sys/mman.h>
+#endif
+
+#if defined(__APPLE__) || defined(__ANDROID__) || defined(__OpenBSD__) || (defined(__GLIBCXX__) && !defined(_GLIBCXX_HAVE_ALIGNED_ALLOC) && !defined(_WIN32))
+#define POSIXALIGNEDALLOC
+#include <stdlib.h>
 #endif
 
 #include "misc.h"
@@ -62,7 +69,7 @@ namespace {
 
 /// Version number. If Version is left empty, then compile date in the format
 /// DD-MM-YY and show in engine_info.
-const string Version = "12.1.1";
+const string Version = "13";
 
 /// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 /// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
@@ -212,10 +219,8 @@ const string engine_info(bool to_uci) {
       ss << setw(2) << day << setw(2) << (1 + months.find(month) / 4) << year.substr(2);
   }
 
-  ss << (Is64Bit ? " 64" : "")
-     << (HasPext ? " BMI2" : (HasPopCnt ? " POPCNT" : ""))
-     << (to_uci  ? "\nid author ": " by ")
-     << "A. Manzo";
+  ss << (to_uci  ? "\nid author ": " by ")
+     << "K. Kiniama, A. Manzo and Stockfish developers (see AUTHORS file)";
 
   return ss.str();
 }
@@ -280,7 +285,40 @@ const std::string compiler_info() {
      compiler += " on unknown system";
   #endif
 
-  compiler += "\n __VERSION__ macro expands to: ";
+  compiler += "\nCompilation settings include: ";
+  compiler += (Is64Bit ? " 64bit" : " 32bit");
+  #if defined(USE_VNNI)
+    compiler += " VNNI";
+  #endif
+  #if defined(USE_AVX512)
+    compiler += " AVX512";
+  #endif
+  compiler += (HasPext ? " BMI2" : "");
+  #if defined(USE_AVX2)
+    compiler += " AVX2";
+  #endif
+  #if defined(USE_SSE41)
+    compiler += " SSE41";
+  #endif
+  #if defined(USE_SSSE3)
+    compiler += " SSSE3";
+  #endif
+  #if defined(USE_SSE2)
+    compiler += " SSE2";
+  #endif
+  compiler += (HasPopCnt ? " POPCNT" : "");
+  #if defined(USE_MMX)
+    compiler += " MMX";
+  #endif
+  #if defined(USE_NEON)
+    compiler += " NEON";
+  #endif
+
+  #if !defined(NDEBUG)
+    compiler += " DEBUG";
+  #endif
+
+  compiler += "\n__VERSION__ macro expands to: ";
   #ifdef __VERSION__
      compiler += __VERSION__;
   #else
@@ -358,6 +396,32 @@ void prefetch(void* addr) {
 
 #endif
 
+/// Wrappers for systems where the c++17 implementation doesn't guarantee the availability of aligned_alloc.
+/// Memory allocated with std_aligned_alloc must be freed with std_aligned_free.
+///
+
+void* std_aligned_alloc(size_t alignment, size_t size) {
+#if defined(POSIXALIGNEDALLOC)
+  void *pointer;
+  if(posix_memalign(&pointer, alignment, size) == 0)
+      return pointer;
+  return nullptr;
+#elif defined(_WIN32)
+  return _mm_malloc(size, alignment);
+#else
+  return std::aligned_alloc(alignment, size);
+#endif
+}
+
+void std_aligned_free(void* ptr) {
+#if defined(POSIXALIGNEDALLOC)
+  free(ptr);
+#elif defined(_WIN32)
+  _mm_free(ptr);
+#else
+  free(ptr);
+#endif
+}
 
 /// aligned_ttmem_alloc() will return suitably aligned memory, and if possible use large pages.
 /// The returned pointer is the aligned one, while the mem argument is the one that needs

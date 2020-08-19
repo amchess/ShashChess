@@ -22,6 +22,7 @@
 
 #include "bitboard.h"
 #include "endgame.h"
+#include "misc.h"
 #include "position.h"
 #include "search.h"
 #include "thread.h"
@@ -54,6 +55,7 @@ int main(int argc, char* argv[]) {
   Threads.set(size_t(Options["Threads"]));
   Threads.setFull(Options["Full depth threads"]);//Full threads patch
   Search::clear(); // After threads are up
+  Eval::init_NNUE();
 
   UCI::loop(argc, argv);
 

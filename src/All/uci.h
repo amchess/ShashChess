@@ -86,4 +86,5 @@ enum {
 	SYZ_50_MOVE = 1
 };
 //end no uci options, but constants
+
 #endif // #ifndef UCI_H_INCLUDED

@@ -21,13 +21,20 @@
 #ifndef MISC_H_INCLUDED
 #define MISC_H_INCLUDED
 
+#include <algorithm>
 #include <cassert>
 #include <chrono>
+#include <functional>
+#include <mutex>
 #include <ostream>
 #include <string>
 #include <vector>
+#ifndef _MSC_VER
+#include <mm_malloc.h>
+#endif
 
 #include "types.h"
+#include "thread_win32_osx.h"
 
 class Position; //Needed by is_game_decided() Learner from Khalid
 
@@ -35,6 +42,8 @@ const std::string engine_info(bool to_uci = false);
 const std::string compiler_info();
 void prefetch(void* addr);
 void start_logger(const std::string& fname);
+void* std_aligned_alloc(size_t alignment, size_t size);
+void std_aligned_free(void* ptr);
 void* aligned_ttmem_alloc(size_t size, void*& mem);
 void aligned_ttmem_free(void* mem); // nop if mem == nullptr
 
@@ -135,7 +144,7 @@ inline uint64_t mul_hi64(uint64_t a, uint64_t b) {
 /// logical processor group. This usually means to be limited to use max 64
 /// cores. To overcome this, some special platform specific API should be
 /// called to set group affinity for each thread. Original code from Texel by
-/// Peter Ã–sterlund.
+/// Peter Österlund.
 
 namespace WinProcGroup {
   void bindThisThread(size_t idx);

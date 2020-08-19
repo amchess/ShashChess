@@ -20,19 +20,58 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdlib>
 #include <cstring>   // For std::memset
 #include <iomanip>
+#include <set>
 #include <sstream>
+#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
 #include "material.h"
 #include "pawns.h"
 #include "thread.h"
+#include "uci.h"
 
 //from handicap mode
 extern bool pawnsToEvaluate, winnableToEvaluate, imbalancesToEvaluate;
 //end from handicap mode
+namespace Eval {
+
+  bool useNNUE;
+  std::string eval_file_loaded="None";
+
+  void init_NNUE() {
+
+    useNNUE = Options["Use NNUE"];
+    std::string eval_file = std::string(Options["EvalFile"]);
+    if (useNNUE && eval_file_loaded != eval_file)
+        if (Eval::NNUE::load_eval_file(eval_file))
+            eval_file_loaded = eval_file;
+  }
+
+  void verify_NNUE() {
+
+    std::string eval_file = std::string(Options["EvalFile"]);
+    if (useNNUE && eval_file_loaded != eval_file)
+    {
+        UCI::OptionsMap defaults;
+        UCI::init(defaults);
+
+        std::cerr << "NNUE evaluation used, but the network file " << eval_file << " was not loaded successfully. "
+                  << "These network evaluation parameters must be available, and compatible with this version of the code. "
+                  << "The UCI option EvalFile might need to specify the full path, including the directory/folder name, to the file. "
+                  << "The default net can be downloaded from: https://tests.stockfishchess.org/api/nn/"+std::string(defaults["EvalFile"]) << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
+
+    if (useNNUE)
+        sync_cout << "info string NNUE evaluation using " << eval_file << " enabled." << sync_endl;
+    else
+        sync_cout << "info string classical evaluation enabled." << sync_endl;
+  }
+}
 
 namespace Trace {
 
@@ -78,8 +117,11 @@ using namespace Trace;
 namespace {
 
   // Threshold for lazy and space evaluation
-  constexpr Value LazyThreshold  = Value(1400);
+  constexpr Value LazyThreshold1 =  Value(1400);
+  constexpr Value LazyThreshold2 =  Value(1300);
   constexpr Value SpaceThreshold = Value(12222);
+  constexpr Value NNUEThreshold1 =   Value(550);
+  constexpr Value NNUEThreshold2 =   Value(150);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 81, 52, 44, 10 };
@@ -312,13 +354,16 @@ namespace {
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {
-            // Bonus if piece is on an outpost square or can reach one
-            bb = OutpostRanks & attackedBy[Us][PAWN] & ~pe->pawn_attacks_span(Them);
+            // Bonus if the piece is on an outpost square or can reach one
+            // Reduced bonus for knights (BadOutpost) if few relevant targets
+            bb = OutpostRanks & (attackedBy[Us][PAWN] | shift<Down>(pos.pieces(PAWN)))
+                              & ~pe->pawn_attacks_span(Them);
+            Bitboard targets = pos.pieces(Them) & ~pos.pieces(PAWN);
+
             if (   Pt == KNIGHT
-                && bb & s & ~CenterFiles
-                && !(b & pos.pieces(Them) & ~pos.pieces(PAWN))
-                && !conditional_more_than_two(
-                      pos.pieces(Them) & ~pos.pieces(PAWN) & (s & QueenSide ? QueenSide : KingSide)))
+                && bb & s & ~CenterFiles // on a side outpost
+                && !(b & targets)        // no relevant attacks
+                && (!more_than_one(targets & (s & QueenSide ? QueenSide : KingSide))))
                 score += BadOutpost;
             else if (bb & s)
                 score += Outpost[Pt == BISHOP];
@@ -389,10 +434,6 @@ namespace {
             Bitboard queenPinners;
             if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
                 score -= WeakQueen;
-
-            // Bonus for queen on weak square in enemy camp
-            if (relative_rank(Us, s) > RANK_4 && (~pe->pawn_attacks_span(Them) & s))
-                score += QueenInfiltration;
         }
     }
     if (T)
@@ -585,17 +626,21 @@ namespace {
     // Bonus for threats on the next moves against enemy queen
     if (pos.count<QUEEN>(Them) == 1)
     {
+        bool queenImbalance = pos.count<QUEEN>() == 1;
+
         Square s = pos.square<QUEEN>(Them);
-        safe = mobilityArea[Us] & ~stronglyProtected;
+        safe =   mobilityArea[Us]
+              & ~pos.pieces(Us, PAWN)
+              & ~stronglyProtected;
 
         b = attackedBy[Us][KNIGHT] & attacks_bb<KNIGHT>(s);
 
-        score += KnightOnQueen * popcount(b & safe);
+        score += KnightOnQueen * popcount(b & safe) * (1 + queenImbalance);
 
         b =  (attackedBy[Us][BISHOP] & attacks_bb<BISHOP>(s, pos.pieces()))
            | (attackedBy[Us][ROOK  ] & attacks_bb<ROOK  >(s, pos.pieces()));
 
-        score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
+        score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]) * (1 + queenImbalance);
     }
 
     if (T)
@@ -800,7 +845,7 @@ namespace {
                 && pos.non_pawn_material(BLACK) == RookValueMg
                 && pos.count<PAWN>(strongSide) - pos.count<PAWN>(~strongSide) <= 1
                 && bool(KingSide & pos.pieces(strongSide, PAWN)) != bool(QueenSide & pos.pieces(strongSide, PAWN))
-                && (attackedBy[~strongSide][KING] & pos.pieces(~strongSide, PAWN)))
+                && (attacks_bb<KING>(pos.square<KING>(~strongSide)) & pos.pieces(~strongSide, PAWN)))
             sf = 36;
         else if (pos.count<QUEEN>() == 1)
             sf = 37 + 3 * (pos.count<QUEEN>(WHITE) == 1 ? pos.count<BISHOP>(BLACK) + pos.count<KNIGHT>(BLACK)
@@ -855,11 +900,14 @@ namespace {
 
     // Early exit if score is high
     Value v = (mg_value(score) + eg_value(score)) / 2;
+	auto lazy_skip = [&](Value lazyThreshold) {
+        return abs(v) > lazyThreshold + pos.non_pawn_material() / 64;
+    };
     //LeafDepth7 begin
     if(pos.this_thread()->shashinValue==SHASHIN_POSITION_CAPABLANCA)
     {
-	if (abs(v) > LazyThreshold + pos.non_pawn_material() / 64)
-	   return pos.side_to_move() == WHITE ? v : -v;
+	    if (lazy_skip(LazyThreshold1))
+	        goto make_v;
 
     }
     else
@@ -867,9 +915,10 @@ namespace {
 	if(!T)
 	{
 	    //No lazy eval from UCI
-	    if( pos.is_leaf()
-	      && (abs(v) > LazyThreshold + pos.non_pawn_material() / 64))
-	     return pos.side_to_move() == WHITE ? v : -v;
+	    if( pos.is_leaf()){
+		    if (lazy_skip(LazyThreshold1))
+		        goto make_v;
+		}
 	}
     }
     //LeafDepth7 end
@@ -891,13 +940,16 @@ namespace {
     score += mobility[WHITE] - mobility[BLACK];
 
     // More complex interactions that require fully populated attack bitboards
-    score +=  king<   WHITE>() - king<   BLACK>()
-            + threats<WHITE>() - threats<BLACK>();
+    score +=  king<   WHITE>() - king<   BLACK>();
     if (pawnsToEvaluate)
     {
-	score += passed<WHITE> () - passed<BLACK> ();
+		score += passed<WHITE> () - passed<BLACK> ();
     }
-    score += space<WHITE> () - space<BLACK> ();
+    if (lazy_skip(LazyThreshold2))
+        goto make_v;
+    score += threats<WHITE>() - threats<BLACK>()
+            + space<WHITE> () - space<BLACK> ();
+make_v:
     // Derive single value from mg and eg parts of score
     v = winnable(score);
 
@@ -932,45 +984,71 @@ namespace {
 /// evaluation of the position from the point of view of the side to move.
 
 Value Eval::evaluate(const Position& pos) {
-  return Evaluation<NO_TRACE>(pos).value();
-}
 
+  bool classical = !Eval::useNNUE
+                ||  abs(eg_value(pos.psq_score())) * 16 > NNUEThreshold1 * (16 + pos.rule50_count());
+  Value v = classical ? Evaluation<NO_TRACE>(pos).value()
+                      : NNUE::evaluate(pos) * 5 / 4 + Tempo;
+
+  if (classical && Eval::useNNUE && abs(v) * 16 < NNUEThreshold2 * (16 + pos.rule50_count()))
+      v = NNUE::evaluate(pos) * 5 / 4 + Tempo;
+
+  // Damp down the evaluation linearly when shuffling
+  v = v * (100 - pos.rule50_count()) / 100;
+
+  // Guarantee evalution outside of TB range
+  v = Utility::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
+
+  return v;
+}
 
 /// trace() is like evaluate(), but instead of returning a value, it returns
 /// a string (suitable for outputting to stdout) that contains the detailed
 /// descriptions and values of each evaluation term. Useful for debugging.
+/// Trace scores are from white's point of view
 
 std::string Eval::trace(const Position& pos) {
 
   if (pos.checkers())
-      return "Total evaluation: none (in check)";
-
-  std::memset(scores, 0, sizeof(scores));
-
-  Value v = Evaluation<TRACE>(pos).value();
-
-  v = pos.side_to_move() == WHITE ? v : -v; // Trace scores are from white's point of view
+      return "Final evaluation: none (in check)";
 
   std::stringstream ss;
-  ss << std::showpoint << std::noshowpos << std::fixed << std::setprecision(2)
-     << "     Term    |    White    |    Black    |    Total   \n"
-     << "             |   MG    EG  |   MG    EG  |   MG    EG \n"
-     << " ------------+-------------+-------------+------------\n"
-     << "    Material | " << Term(MATERIAL)
-     << "   Imbalance | " << Term(IMBALANCE)
-     << "       Pawns | " << Term(PAWN)
-     << "     Knights | " << Term(KNIGHT)
-     << "     Bishops | " << Term(BISHOP)
-     << "       Rooks | " << Term(ROOK)
-     << "      Queens | " << Term(QUEEN)
-     << "    Mobility | " << Term(MOBILITY)
-     << " King safety | " << Term(KING)
-     << "     Threats | " << Term(THREAT)
-     << "      Passed | " << Term(PASSED)
-     << "       Space | " << Term(SPACE)
-     << "    Winnable | " << Term(WINNABLE)
-     << " ------------+-------------+-------------+------------\n"
-     << "       Total | " << Term(TOTAL);
+  ss << std::showpoint << std::noshowpos << std::fixed << std::setprecision(2);
+
+  Value v;
+
+  if (Eval::useNNUE)
+  {
+      v = NNUE::evaluate(pos);
+  }
+  else
+  {
+      std::memset(scores, 0, sizeof(scores));
+
+      v = Evaluation<TRACE>(pos).value();
+
+      ss << std::showpoint << std::noshowpos << std::fixed << std::setprecision(2)
+         << "     Term    |    White    |    Black    |    Total   \n"
+         << "             |   MG    EG  |   MG    EG  |   MG    EG \n"
+         << " ------------+-------------+-------------+------------\n"
+         << "    Material | " << Term(MATERIAL)
+         << "   Imbalance | " << Term(IMBALANCE)
+         << "       Pawns | " << Term(PAWN)
+         << "     Knights | " << Term(KNIGHT)
+         << "     Bishops | " << Term(BISHOP)
+         << "       Rooks | " << Term(ROOK)
+         << "      Queens | " << Term(QUEEN)
+         << "    Mobility | " << Term(MOBILITY)
+         << " King safety | " << Term(KING)
+         << "     Threats | " << Term(THREAT)
+         << "      Passed | " << Term(PASSED)
+         << "       Space | " << Term(SPACE)
+         << "    Winnable | " << Term(WINNABLE)
+         << " ------------+-------------+-------------+------------\n"
+         << "       Total | " << Term(TOTAL);
+  }
+
+  v = pos.side_to_move() == WHITE ? v : -v;
 
   ss << "\nFinal evaluation: " << to_cp(v) << " (white side)\n";
 
