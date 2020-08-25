@@ -184,7 +184,7 @@ top:
           --endMoves;
 
       ++stage;
-      /* fallthrough */
+      [[fallthrough]];
 
   case REFUTATION:
       if (select<Next>([&](){ return    *cur != MOVE_NONE
@@ -192,7 +192,7 @@ top:
                                     &&  pos.pseudo_legal(*cur); }))
           return *(cur - 1);
       ++stage;
-      /* fallthrough */
+      [[fallthrough]];
 
   case QUIET_INIT:
       if (!skipQuiets)
@@ -205,7 +205,7 @@ top:
       }
 
       ++stage;
-      /* fallthrough */
+      [[fallthrough]];
 
   case QUIET:
       if (   !skipQuiets
@@ -219,7 +219,7 @@ top:
       endMoves = endBadCaptures;
 
       ++stage;
-      /* fallthrough */
+      [[fallthrough]];
 
   case BAD_CAPTURE:
       return select<Next>([](){ return true; });
@@ -230,7 +230,7 @@ top:
 
       score<EVASIONS>();
       ++stage;
-      /* fallthrough */
+      [[fallthrough]];
 
   case EVASION:
       return select<Best>([](){ return true; });
@@ -248,14 +248,14 @@ top:
           return MOVE_NONE;
 
       ++stage;
-      /* fallthrough */
+      [[fallthrough]];
 
   case QCHECK_INIT:
       cur = moves;
       endMoves = generate<QUIET_CHECKS>(pos, cur);
 
       ++stage;
-      /* fallthrough */
+      [[fallthrough]];
 
   case QCHECK:
       return select<Next>([](){ return true; });

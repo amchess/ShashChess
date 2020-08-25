@@ -32,7 +32,7 @@
 #include "misc.h"
 #include "types.h"
 
-#include "eval/nnue/nnue_accumulator.h"
+#include "nnue/nnue_accumulator.h"
 //kelly patch begin
 extern void setStartPoint();
 extern void putGameLineIntoLearningTable();
@@ -63,12 +63,9 @@ struct StateInfo {
   Bitboard   checkSquares[PIECE_TYPE_NB];
   int        repetition;
 
-#if defined(EVAL_NNUE)
+  // Used by NNUE
   Eval::NNUE::Accumulator accumulator;
-
-   // For management of evaluation value difference calculation
-  Eval::DirtyPiece dirtyPiece;
-#endif  // defined(EVAL_NNUE)
+  DirtyPiece dirtyPiece;
 };
 
 
@@ -84,9 +81,6 @@ typedef std::unique_ptr<std::deque<StateInfo>> StateListPtr;
 /// do_move() and undo_move(), used by the search to update node info when
 /// traversing the search tree.
 class Thread;
-
-// packed sfen
-struct PackedSfen { uint8_t data[32]; };
 
 class Position {
 public:
@@ -126,6 +120,7 @@ public:
   Bitboard checkers() const;
   Bitboard blockers_for_king(Color c) const;
   Bitboard check_squares(PieceType pt) const;
+  Bitboard pinners(Color c) const;
   bool is_discovery_check_on_king(Color c, Move m) const;
 
   // Attacks to/from a given square
@@ -190,36 +185,9 @@ public:
   bool pos_is_ok() const;
   void flip();
 
-#if defined(EVAL_NNUE) || defined(EVAL_LEARN)
-  // --- StateInfo
-
-  // Returns the StateInfo corresponding to the current situation.
-  // For example, if state()->capturedPiece, the pieces captured in the previous phase are stored.
-  StateInfo* state() const { return st; }
-
-  // Information such as where and which piece number is used for the evaluation function.
-  const Eval::EvalList* eval_list() const { return &evalList; }
-#endif  // defined(EVAL_NNUE) || defined(EVAL_LEARN)
-
-#if defined(EVAL_LEARN)
-  // --sfenization helper
-
-  // Get the packed sfen. Returns to the buffer specified in the argument.
-  // Do not include gamePly in pack.
-  void sfen_pack(PackedSfen& sfen);
-
-  // Å™ It is slow to go through sfen, so I made a function to set packed sfen directly.
-  // Equivalent to pos.set(sfen_unpack(data),si,th);.
-  // If there is a problem with the passed phase and there is an error, non-zero is returned.
-  // PackedSfen does not include gamePly so it cannot be restored. If you want to set it, specify it with an argument.
-  int set_from_packed_sfen(const PackedSfen& sfen, StateInfo* si, Thread* th, bool mirror = false);
-
-  // Give the board, hand piece, and turn, and return the sfen.
-  //static std::string sfen_from_rawdata(Piece board[81], Hand hands[2], Color turn, int gamePly);
-
-  // Returns the position of the ball on the c side.
-  Square king_square(Color c) const { return pieceList[make_piece(c, KING)][0]; }
-#endif // EVAL_LEARN
+  // Used by NNUE
+  StateInfo* state() const;
+  const EvalList* eval_list() const;
 
 private:
   // Initialization helpers (used while setting up a position)
@@ -234,10 +202,8 @@ private:
   template<bool Do>
   void do_castling(Color us, Square from, Square& to, Square& rfrom, Square& rto);
 
-#if defined(EVAL_NNUE)
-  // Returns the PieceNumber of the piece in the sq box on the board.
-  PieceNumber piece_no_of(Square sq) const;
-#endif  // defined(EVAL_NNUE)
+  // ID of a piece on a given square
+  PieceId piece_id_on(Square sq) const;
 
   // Data members
   Piece board[SQUARE_NB];
@@ -256,10 +222,8 @@ private:
   StateInfo* st;
   bool chess960;
   bool isLeaf; //LeafDepth7
-#if defined(EVAL_NNUE) || defined(EVAL_LEARN)
-  // List of pieces used in the evaluation function
-  Eval::EvalList evalList;
-#endif  // defined(EVAL_NNUE) || defined(EVAL_LEARN)
+  // List of pieces used in NNUE evaluation function
+  EvalList evalList;
 };
 
 namespace PSQT {
@@ -360,6 +324,10 @@ inline Bitboard Position::checkers() const {
 
 inline Bitboard Position::blockers_for_king(Color c) const {
   return st->blockersForKing[c];
+}
+
+inline Bitboard Position::pinners(Color c) const {
+  return st->pinners[c];
 }
 
 inline Bitboard Position::check_squares(PieceType pt) const {
@@ -502,6 +470,27 @@ inline void Position::move_piece(Square from, Square to) {
 
 inline void Position::do_move(Move m, StateInfo& newSt) {
   do_move(m, newSt, gives_check(m));
+}
+
+inline StateInfo* Position::state() const {
+
+  return st;
+}
+
+inline const EvalList* Position::eval_list() const {
+
+  return &evalList;
+}
+
+inline PieceId Position::piece_id_on(Square sq) const
+{
+
+  assert(piece_on(sq) != NO_PIECE);
+
+  PieceId pid = evalList.piece_id_list[sq];
+  assert(is_ok(pid));
+
+  return pid;
 }
 
 #endif // #ifndef POSITION_H_INCLUDED

@@ -129,12 +129,6 @@ constexpr bool more_than_one(Bitboard b) {
   return b & (b - 1);
 }
 
-/// Counts the occupation of the bitboard depending on the occupation of SQ_A1
-/// as in `b & (1ULL << SQ_A1) ? more_than_two(b) : more_than_one(b)`
-
-constexpr bool conditional_more_than_two(Bitboard b) {
-  return b & (b - 1) & (b - 2);
-}
 
 constexpr bool opposite_colors(Square s1, Square s2) {
   return (s1 + rank_of(s1) + s2 + rank_of(s2)) & 1;
@@ -285,15 +279,6 @@ template<> inline int distance<Square>(Square x, Square y) { return SquareDistan
 inline int edge_distance(File f) { return std::min(f, File(FILE_H - f)); }
 inline int edge_distance(Rank r) { return std::min(r, Rank(RANK_8 - r)); }
 
-
-/// safe_destination() returns the bitboard of target square for the given step
-/// from the given square. If the step is off the board, returns empty bitboard.
-
-inline Bitboard safe_destination(Square s, int step)
-{
-    Square to = Square(s + step);
-    return is_ok(to) && distance(s, to) <= 2 ? square_bb(to) : Bitboard(0);
-}
 
 /// attacks_bb(Square) returns the pseudo attacks of the give piece type
 /// assuming an empty board.

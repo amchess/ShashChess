@@ -97,8 +97,9 @@ const vector<string> Defaults = {
 /// setup_bench() builds a list of UCI commands to be run by bench. There
 /// are five parameters: TT size in MB, number of search threads that
 /// should be used, the limit value spent for each position, a file name
-/// where to look for positions in FEN format and the type of the limit:
-/// depth, perft, nodes and movetime (in millisecs).
+/// where to look for positions in FEN format, the type of the limit:
+/// depth, perft, nodes and movetime (in millisecs), and evaluation type
+/// mixed (default), classical, NNUE.
 ///
 /// bench -> search default positions up to depth 13
 /// bench 64 1 15 -> search default positions up to depth 15 (TT = 64MB)
@@ -117,6 +118,7 @@ vector<string> setup_bench(const Position& current, istream& is) {
   string limit     = (is >> token) ? token : "13";
   string fenFile   = (is >> token) ? token : "default";
   string limitType = (is >> token) ? token : "depth";
+  string evalType  = (is >> token) ? token : "mixed";
 
   go = limitType == "eval" ? "eval" : "go " + limitType + " " + limit;
 
@@ -147,6 +149,15 @@ vector<string> setup_bench(const Position& current, istream& is) {
   list.emplace_back("setoption name Threads value " + threads);
   list.emplace_back("setoption name Hash value " + ttSize);
   list.emplace_back("ucinewgame");
+  
+  if(evalType == "classical")
+      list.emplace_back("setoption name Use NNUE value Classical");
+  else if(evalType == "NNUE")
+      list.emplace_back("setoption name Use NNUE value Pure");
+  else
+      list.emplace_back("setoption name Use NNUE value Hybrid");
+
+  size_t posCounter = 0;
 
   for (const string& fen : fens)
       if (fen.find("setoption") != string::npos)
@@ -155,6 +166,7 @@ vector<string> setup_bench(const Position& current, istream& is) {
       {
           list.emplace_back("position fen " + fen);
           list.emplace_back(go);
+          ++posCounter;
       }
 
   return list;

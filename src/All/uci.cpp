@@ -34,57 +34,17 @@
 #include "uci.h"
 #include "syzygy/tbprobe.h"
 
-#if defined(EVAL_NNUE) && defined(ENABLE_TEST_CMD)
-#include "eval/nnue/nnue_test_command.h"
-#endif
-
 using namespace std;
 
 extern vector<string> setup_bench(const Position&, istream&);
 
-// FEN string of the initial position, normal chess
-const char* StartFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-
-// Command to automatically generate a game record
-#if defined (EVAL_LEARN)
-namespace Learner
-{
-  // Automatic generation of teacher position
-  void gen_sfen(Position& pos, istringstream& is);
-
-  // Learning from the generated game record
-  void learn(Position& pos, istringstream& is);
-
-#if defined(GENSFEN2019)
-  // Automatic generation command of teacher phase under development
-  void gen_sfen2019(Position& pos, istringstream& is);
-#endif
-
-  // A pair of reader and evaluation value. Returned by Learner::search(),Learner::qsearch().
-  typedef std::pair<Value, std::vector<Move> > ValueAndPV;
-
-  ValueAndPV qsearch(Position& pos);
-  ValueAndPV search(Position& pos, int depth_, size_t multiPV = 1, uint64_t nodesLimit = 0);
-
-}
-#endif
-
-#if defined(EVAL_NNUE) && defined(ENABLE_TEST_CMD)
-void test_cmd(Position& pos, istringstream& is)
-{
-    // Initialize as it may be searched.
-    init_nnue();
-
-    std::string param;
-    is >> param;
-
-    if (param == "nnue") Eval::NNUE::TestCommand(pos, is);
-}
-#endif
-
 int maximumPly = 0; //from Kelly
-
 namespace {
+
+  // FEN string of the initial position, normal chess
+  const char* StartFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+
   // position() is called when engine receives the "position" UCI command.
   // The function sets up the position described in the given FEN string ("fen")
   // or the starting position ("startpos") and then makes the moves given in the
@@ -115,7 +75,7 @@ namespace {
     while (is >> token && (m = UCI::to_move(pos, token)) != MOVE_NONE)
     {
 		//kelly begin
-		if ((!(Options["Persisted learning"]=="Off")) && (plies > maximumPly))
+		if ((usePersistedLearning != PersistedLearningUsage::Off) && (plies > maximumPly))
 		{
 		  plies++;
 		  LearningFileEntry currentLearningEntry;
@@ -124,9 +84,9 @@ namespace {
 		  currentLearningEntry.move = m;
 		  currentLearningEntry.score = VALUE_NONE;
 		  currentLearningEntry.performance = 100;
-		  if(Options["Persisted learning"]=="Standard")
+		  if (usePersistedLearning != PersistedLearningUsage::Self)
 		  {
-		      insertIntoOrUpdateLearningTable(currentLearningEntry,globalLearningHT);
+		      insertIntoOrUpdateLearningTable(currentLearningEntry);
 		  }
 		  maximumPly = plies;
 		}
@@ -134,6 +94,20 @@ namespace {
         states->emplace_back();
         pos.do_move(m, states->back());
     }
+  }
+
+  // trace_eval() prints the evaluation for the current position, consistent with the UCI
+  // options set so far.
+
+  void trace_eval(Position& pos) {
+
+    StateListPtr states(new std::deque<StateInfo>(1));
+    Position p;
+    p.set(pos.fen(), Options["UCI_Chess960"], &states->back(), Threads.main());
+
+    Eval::verify_NNUE();
+
+    sync_cout << "\n" << Eval::trace(p) << sync_endl;
   }
 
 
@@ -155,15 +129,7 @@ namespace {
         value += (value.empty() ? "" : " ") + token;
 
     if (Options.count(name))
-    {
         Options[name] = value;
-        //from Kelly begin
-        if((name=="Persisted learning") && (value!="Off"))
-        {
-			setLearningStructures ();
-        }
-        //from Kelly end
-    }
     else
         sync_cout << "No such option: " << name << sync_endl;
   }
@@ -232,27 +198,23 @@ namespace {
                nodes += Threads.nodes_searched();
             }
             else
-               sync_cout << "\n" << Eval::trace(pos) << sync_endl;
+               trace_eval(pos);
         }
         else if (token == "setoption")  setoption(is);
         else if (token == "position")   position(pos, is, states);
         else if (token == "ucinewgame") {
 	    //from Kelly
-            if(!(Options["Persisted learning"]=="Off"))
+            if (usePersistedLearning != PersistedLearningUsage::Off)
               {
         	maximumPly = 0;
         	setStartPoint();
-		if(Options["Persisted learning"]=="Self")
+		if (usePersistedLearning == PersistedLearningUsage::Self)
 		{
 		    putGameLineIntoLearningTable();
 		}
               }
 	   //end from Kelly
-	  #if defined(EVAL_NNUE)
-	            init_nnue();
-	  #endif
-	            Search::clear();
-	            elapsed = now(); // Search::clear() may take some while
+	   Search::clear(); elapsed = now(); // Search::clear() may take some while
 	}
     }
 
@@ -282,91 +244,14 @@ namespace {
      double b = (((bs[0] * m + bs[1]) * m + bs[2]) * m) + bs[3];
 
      // Transform eval to centipawns with limited range
-     double x = Utility::clamp(double(100 * v) / PawnValueEg, -1000.0, 1000.0);
+     double x = std::clamp(double(100 * v) / PawnValueEg, -1000.0, 1000.0);
 
      // Return win rate in per mille (rounded to nearest)
      return int(0.5 + 1000 / (1 + std::exp((a - x) / b)));
   }
 
-// When you calculate check sum, save it and check the consistency later.
-  uint64_t eval_sum;
 } // namespace
 
-// Make is_ready_cmd() callable from outside. (Because I want to call it from the bench command etc.)
-// Note that the phase is not initialized.
-void init_nnue(bool skipCorruptCheck)
-{
-#if defined(EVAL_NNUE)
-  // After receiving "isready", modify so that a line feed is sent every 5 seconds until "readyok" is returned. (keep alive processing)
-  // From USI 2.0 specifications.
-  // -The time out time after "is ready" is about 30 seconds. Beyond this, if you want to initialize the evaluation function and secure the hash table,
-  // You should send some kind of message (breakable) from the thinking engine side.
-  // -Shogi GUI already does so, so MyShogi will follow along.
-  //-Also, the engine side of Yaneura King modifies it so that after "isready" is received, a line feed is sent every 5 seconds until "readyok" is returned.
-
-  // Perform processing that may take time, such as reading the evaluation function, at this timing.
-  // If you do a time-consuming process at startup, Shogi place will make a timeout judgment and retire the recognition as a thinking engine.
-  if (!UCI::load_eval_finished)
-  {
-      // Read evaluation function
-      Eval::load_eval();
-
-      // Calculate and save checksum (to check for subsequent memory corruption)
-      eval_sum = Eval::calc_check_sum();
-
-      // display soft name
-      Eval::print_softname(eval_sum);
-
-      UCI::load_eval_finished = true;
-  }
-  else
-  {
-      // Check the checksum every time to see if the memory has been corrupted.
-      // It seems that the time is a little wasteful, but it is good because it is about 0.1 seconds.
-      if (!skipCorruptCheck && eval_sum != Eval::calc_check_sum())
-          sync_cout << "Error! : EVAL memory is corrupted" << sync_endl;
-  }
-#endif  // defined(EVAL_NNUE)
-}
-
-
-// --------------------
-// Call qsearch(),search() directly for testing
-// --------------------
-
-#if defined(EVAL_LEARN)
-void qsearch_cmd(Position& pos)
-{
-  cout << "qsearch : ";
-  auto pv = Learner::qsearch(pos);
-  cout << "Value = " << pv.first << " , " << UCI::value(pv.first) << " , PV = ";
-  for (auto m : pv.second)
-    cout << UCI::move(m, false) << " ";
-  cout << endl;
-}
-
-void search_cmd(Position& pos, istringstream& is)
-{
-  string token;
-  int depth = 1;
-  int multi_pv = (int)Options["MultiPV"];
-  while (is >> token)
-  {
-    if (token == "depth")
-      is >> depth;
-    if (token == "multipv")
-      is >> multi_pv;
-  }
-
-  cout << "search depth = " << depth << " , multi_pv = " << multi_pv << " : ";
-  auto pv = Learner::search(pos, depth, multi_pv);
-  cout << "Value = " << pv.first << " , " << UCI::value(pv.first) << " , PV = ";
-  for (auto m : pv.second)
-    cout << UCI::move(m, false) << " ";
-  cout << endl;
-}
-
-#endif
 
 /// UCI::loop() waits for a command from stdin, parses it and calls the appropriate
 /// function. Also intercepts EOF from stdin to ensure gracefully exiting if the
@@ -399,15 +284,15 @@ void UCI::loop(int argc, char* argv[]) {
                 ||  token == "stop")
       	{
 
-          if ((!(Options["Persisted Learning"]=="Off")) && token == "quit" && !Options["Read only learning"] && !pauseExperience)
+          if ((usePersistedLearning != PersistedLearningUsage::Off) && token == "quit" && !Options["Read only learning"] && !pauseExperience)
           //from Kelly begin
           {
               //Perform Q-learning if enabled
-              if (Options["Self Q-learning"])
+              if (usePersistedLearning == PersistedLearningUsage::Self)
                   putGameLineIntoLearningTable();
 
               //Save to learning file
-              writeLearningFile(HashTableType::global);
+              writeLearningFile();
           }
       	  Threads.stop = true;
       	}
@@ -431,62 +316,31 @@ void UCI::loop(int argc, char* argv[]) {
 	  else if (token == "ucinewgame")
 	  {
 	      //from Kelly and Khalid
-	      if(!(Options["Persisted learning"]=="Off"))
+	      if (usePersistedLearning != PersistedLearningUsage::Off)
           {
 	          maximumPly = 0;
 	          setStartPoint();
 	
 	          //Perform Q-learning if enabled
-	          if(Options["Persisted Learning"]=="Self")
+	          if (usePersistedLearning == PersistedLearningUsage::Self)
 	              putGameLineIntoLearningTable();
 	
 	          //Save to learning file
 	          if (!Options["Read only learning"])
-	              writeLearningFile(HashTableType::global);
+	              writeLearningFile();
           }
-		  #if defined(EVAL_NNUE)
-			  init_nnue();
-		  #endif
-			  Search::clear();
-          //end from Kelly and Khalid
+          Search::clear();//end from Kelly and Khalid
       }
-      else if (token == "isready") {
-		#if defined(EVAL_NNUE)
-		          init_nnue(true);
-		#endif
-		          sync_cout << "readyok" << sync_endl;
-      }
+      else if (token == "isready")    sync_cout << "readyok" << sync_endl;
+
 
       // Additional custom non-UCI commands, mainly for debugging.
       // Do not use these commands during a search!
       else if (token == "flip")     pos.flip();
       else if (token == "bench")    bench(pos, is, states);
       else if (token == "d")        sync_cout << pos << sync_endl;
-      else if (token == "eval")     sync_cout << Eval::trace(pos) << sync_endl;
+      else if (token == "eval")     trace_eval(pos);
       else if (token == "compiler") sync_cout << compiler_info() << sync_endl;
-#if defined (EVAL_LEARN)
-      else if (token == "gensfen") Learner::gen_sfen(pos, is);
-      else if (token == "learn") Learner::learn(pos, is);
-
-#if defined (GENSFEN2019)
-	  // Command to generate teacher phase under development
-      else if (token == "gensfen2019") Learner::gen_sfen2019(pos, is);
-#endif
-      // Command to call qsearch(),search() directly for testing
-      else if (token == "qsearch") qsearch_cmd(pos);
-      else if (token == "search") search_cmd(pos, is);
-
-#endif
-
-#if defined(EVAL_NNUE)
-      else if (token == "eval_nnue") sync_cout << "eval_nnue = " << Eval::compute_eval(pos) << sync_endl;
-#endif
-
-#if defined(EVAL_NNUE) && defined(ENABLE_TEST_CMD)
-      // test command
-      else if (token == "test") test_cmd(pos, is);
-#endif
-
       else
           sync_cout << "Unknown command: " << cmd << sync_endl;
 
