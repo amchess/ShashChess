@@ -69,7 +69,7 @@ namespace {
 
 /// Version number. If Version is left empty, then compile date in the format
 /// DD-MM-YY and show in engine_info.
-const string Version = "13";
+const string Version = "13.2";
 
 /// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 /// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
@@ -396,16 +396,15 @@ void prefetch(void* addr) {
 
 #endif
 
-/// Wrappers for systems where the c++17 implementation doesn't guarantee the availability of aligned_alloc.
-/// Memory allocated with std_aligned_alloc must be freed with std_aligned_free.
-///
+
+/// std_aligned_alloc() is our wrapper for systems where the c++17 implementation
+/// does not guarantee the availability of aligned_alloc(). Memory allocated with
+/// std_aligned_alloc() must be freed with std_aligned_free().
 
 void* std_aligned_alloc(size_t alignment, size_t size) {
 #if defined(POSIXALIGNEDALLOC)
-  void *pointer;
-  if(posix_memalign(&pointer, alignment, size) == 0)
-      return pointer;
-  return nullptr;
+  void *mem;
+  return posix_memalign(&mem, alignment, size) ? nullptr : mem;
 #elif defined(_WIN32)
   return _mm_malloc(size, alignment);
 #else
@@ -423,7 +422,7 @@ void std_aligned_free(void* ptr) {
 #endif
 }
 
-/// aligned_ttmem_alloc() will return suitably aligned memory, and if possible use large pages.
+/// aligned_ttmem_alloc() will return suitably aligned memory, if possible using large pages.
 /// The returned pointer is the aligned one, while the mem argument is the one that needs
 /// to be passed to free. With c++17 some of this functionality could be simplified.
 
@@ -435,7 +434,9 @@ void* aligned_ttmem_alloc(size_t allocSize, void*& mem) {
   size_t size = ((allocSize + alignment - 1) / alignment) * alignment; // multiple of alignment
   if (posix_memalign(&mem, alignment, size))
      mem = nullptr;
+#if defined(MADV_HUGEPAGE)
   madvise(mem, allocSize, MADV_HUGEPAGE);
+#endif
   return mem;
 }
 

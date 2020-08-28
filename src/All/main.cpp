@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
   if(!(Options["Persisted learning"]== "Off"))
   {
   	Utility::init(argv[0]); //Khalid
-	setLearningStructures ();//Kelly
+	initLearning ();//Kelly
   }
   //from Kelly end
   PSQT::init();

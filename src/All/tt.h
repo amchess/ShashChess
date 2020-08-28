@@ -25,16 +25,26 @@
 #include "types.h"
 #include <unordered_map> //from Kelly
 
+//from Kelly begin
+enum class PersistedLearningUsage
+{
+	Off = 1,
+	Standard = 2,
+	Self = 3,
+};
+extern PersistedLearningUsage usePersistedLearning;
+//from Kelly end
+
 /// TTEntry struct is the 10 bytes transposition table entry, defined as below:
 ///
 /// key        16 bit
-/// move       16 bit
-/// value      16 bit
-/// eval value 16 bit
+/// depth       8 bit
 /// generation  5 bit
 /// pv node     1 bit
 /// bound type  2 bit
-/// depth       8 bit
+/// move       16 bit
+/// value      16 bit
+/// eval value 16 bit
 
 struct TTEntry {
 
@@ -50,11 +60,11 @@ private:
   friend class TranspositionTable;
 
   uint16_t key16;
+  uint8_t  depth8;
+  uint8_t  genBound8;
   uint16_t move16;
   int16_t  value16;
   int16_t  eval16;
-  uint8_t  genBound8;
-  uint8_t  depth8;
 };
 
 
@@ -126,7 +136,8 @@ struct NodeInfo
 
 // The Monte-Carlo tree is stored implicitly in one big hash table
 typedef std::unordered_multimap<Key, NodeInfo> LearningHashTable;
-void setLearningStructures ();
+void initLearning ();
+void setUsePersistedLearning();
 void writeLearningFile();
 
 void insertIntoOrUpdateLearningTable(LearningFileEntry& tempExpEntry);

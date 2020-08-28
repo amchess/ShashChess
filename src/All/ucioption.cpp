@@ -42,6 +42,7 @@ void on_hash_size(const Option& o) { TT.resize(size_t(o)); }
 void on_logger(const Option& o) { start_logger(o); }
 void on_threads(const Option& o) { Threads.set(size_t(o)); }
 void on_full_threads(const Option& o) { Threads.setFull(o); } //full threads patch
+void on_persisted_learning(const Option& o) { if (!(o == "Off")) initLearning();}//Kelly learning
 void on_tb_path(const Option& o) { Tablebases::init(o); }
 void on_use_NNUE(const Option& ) { Eval::init_NNUE(); }
 void on_eval_file(const Option& ) { Eval::init_NNUE(); }
@@ -82,7 +83,7 @@ void init(OptionsMap& o) {
   o["SyzygyPath"]            	   << Option("<empty>", on_tb_path);
   o["SyzygyProbeDepth"]            << Option(1, 1, 100);
   o["SyzygyProbeLimit"]            << Option(7, 0, 7);
-  o["Use NNUE"]              << Option(false, on_use_NNUE);
+  o["Use NNUE"]              << Option(true, on_use_NNUE);
   // The default must follow the format nn-[SHA256 first 12 digits].nnue
   // for the build process (profile-build and fishtest) to work.
   o["EvalFile"]              << Option("nn-82215d0fd0df.nnue", on_eval_file);
@@ -97,7 +98,7 @@ void init(OptionsMap& o) {
   //livebook end
   o["Full depth threads"]    << Option(0, 0, 512, on_full_threads); //if this is used, must be after #Threads is set.
   o["Opening variety"]       << Option (0, 0, 40);
-  o["Persisted learning"]     << Option("Off var Off var Standard var Self", "Off");
+  o["Persisted learning"]     << Option("Off var Off var Standard var Self", "Off", on_persisted_learning);
   o["Read only learning"]    << Option(false);
   o["Tal"]                   << Option(false);
   o["Capablanca"]            << Option(false);

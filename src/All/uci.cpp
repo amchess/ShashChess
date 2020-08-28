@@ -75,7 +75,7 @@ namespace {
     while (is >> token && (m = UCI::to_move(pos, token)) != MOVE_NONE)
     {
 		//kelly begin
-		if ((!(Options["Persisted learning"]=="Off")) && (plies > maximumPly))
+		if ((usePersistedLearning != PersistedLearningUsage::Off) && (plies > maximumPly))
 		{
 		  plies++;
 		  LearningFileEntry currentLearningEntry;
@@ -84,7 +84,7 @@ namespace {
 		  currentLearningEntry.move = m;
 		  currentLearningEntry.score = VALUE_NONE;
 		  currentLearningEntry.performance = 100;
-		  if(Options["Persisted learning"]=="Standard")
+		  if (usePersistedLearning != PersistedLearningUsage::Self)
 		  {
 		      insertIntoOrUpdateLearningTable(currentLearningEntry);
 		  }
@@ -129,15 +129,7 @@ namespace {
         value += (value.empty() ? "" : " ") + token;
 
     if (Options.count(name))
-    {
         Options[name] = value;
-        //from Kelly begin
-        if((name=="Persisted learning") && (value!="Off"))
-        {
-			setLearningStructures ();
-        }
-        //from Kelly end
-    }
     else
         sync_cout << "No such option: " << name << sync_endl;
   }
@@ -212,11 +204,11 @@ namespace {
         else if (token == "position")   position(pos, is, states);
         else if (token == "ucinewgame") {
 	    //from Kelly
-            if(!(Options["Persisted learning"]=="Off"))
+            if (usePersistedLearning != PersistedLearningUsage::Off)
               {
         	maximumPly = 0;
         	setStartPoint();
-		if(Options["Persisted learning"]=="Self")
+		if (usePersistedLearning == PersistedLearningUsage::Self)
 		{
 		    putGameLineIntoLearningTable();
 		}
@@ -252,7 +244,7 @@ namespace {
      double b = (((bs[0] * m + bs[1]) * m + bs[2]) * m) + bs[3];
 
      // Transform eval to centipawns with limited range
-     double x = Utility::clamp(double(100 * v) / PawnValueEg, -1000.0, 1000.0);
+     double x = std::clamp(double(100 * v) / PawnValueEg, -1000.0, 1000.0);
 
      // Return win rate in per mille (rounded to nearest)
      return int(0.5 + 1000 / (1 + std::exp((a - x) / b)));
@@ -292,11 +284,11 @@ void UCI::loop(int argc, char* argv[]) {
                 ||  token == "stop")
       	{
 
-          if ((!(Options["Persisted Learning"]=="Off")) && token == "quit" && !Options["Read only learning"] && !pauseExperience)
+          if ((usePersistedLearning != PersistedLearningUsage::Off) && token == "quit" && !Options["Read only learning"] && !pauseExperience)
           //from Kelly begin
           {
               //Perform Q-learning if enabled
-              if (Options["Self Q-learning"])
+              if (usePersistedLearning == PersistedLearningUsage::Self)
                   putGameLineIntoLearningTable();
 
               //Save to learning file
@@ -324,13 +316,13 @@ void UCI::loop(int argc, char* argv[]) {
 	  else if (token == "ucinewgame")
 	  {
 	      //from Kelly and Khalid
-	      if(!(Options["Persisted learning"]=="Off"))
+	      if (usePersistedLearning != PersistedLearningUsage::Off)
           {
 	          maximumPly = 0;
 	          setStartPoint();
 	
 	          //Perform Q-learning if enabled
-	          if(Options["Persisted Learning"]=="Self")
+	          if (usePersistedLearning == PersistedLearningUsage::Self)
 	              putGameLineIntoLearningTable();
 	
 	          //Save to learning file

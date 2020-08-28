@@ -59,10 +59,11 @@ namespace Eval {
         UCI::OptionsMap defaults;
         UCI::init(defaults);
 
-        std::cerr << "NNUE evaluation used, but the network file " << eval_file << " was not loaded successfully. "
-                  << "These network evaluation parameters must be available, and compatible with this version of the code. "
-                  << "The UCI option EvalFile might need to specify the full path, including the directory/folder name, to the file. "
-                  << "The default net can be downloaded from: https://tests.stockfishchess.org/api/nn/"+std::string(defaults["EvalFile"]) << std::endl;
+        sync_cout << "info string ERROR: NNUE evaluation used, but the network file " << eval_file << " was not loaded successfully." << sync_endl;
+        sync_cout << "info string ERROR: The UCI option EvalFile might need to specify the full path, including the directory/folder name, to the file." << sync_endl;
+        sync_cout << "info string ERROR: The default net can be downloaded from: https://tests.stockfishchess.org/api/nn/"+std::string(defaults["EvalFile"]) << sync_endl;
+        sync_cout << "info string ERROR: If the UCI option Use NNUE is set to true, network evaluation parameters compatible with the program must be available." << sync_endl;
+        sync_cout << "info string ERROR: The engine will be terminated now." << sync_endl;
         std::exit(EXIT_FAILURE);
     }
 
@@ -294,8 +295,8 @@ namespace {
     attackedBy2[Us] = dblAttackByPawn | (attackedBy[Us][KING] & attackedBy[Us][PAWN]);
 
     // Init our king safety tables
-    Square s = make_square(Utility::clamp(file_of(ksq), FILE_B, FILE_G),
-                           Utility::clamp(rank_of(ksq), RANK_2, RANK_7));
+    Square s = make_square(std::clamp(file_of(ksq), FILE_B, FILE_G),
+                           std::clamp(rank_of(ksq), RANK_2, RANK_7));
     kingRing[Us] = attacks_bb<KING>(s) | s;
 
     kingAttackersCount[Them] = popcount(kingRing[Us] & pe->pawn_attacks(Them));
@@ -697,8 +698,8 @@ namespace {
             Square blockSq = s + Up;
 
             // Adjust bonus based on the king's proximity
-            bonus += make_score(0, (  (king_proximity(Them, blockSq) * 19) / 4
-                                     - king_proximity(Us,   blockSq) *  2) * w);
+            bonus += make_score(0, (  king_proximity(Them, blockSq) * 19 / 4
+                                    - king_proximity(Us,   blockSq) *  2) * w);
 
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)
@@ -742,7 +743,7 @@ namespace {
 
 
   // Evaluation::space() computes a space evaluation for a given side, aiming to improve game
-  // play in the opening. It is based on the number of safe squares on the 4 central files
+  // play in the opening. It is based on the number of safe squares on the four central files
   // on ranks 2 to 4. Completely safe squares behind a friendly pawn are counted twice.
   // Finally, the space bonus is multiplied by a weight which decreases according to occupancy.
 
@@ -816,7 +817,7 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting the
     // sign of the midgame or endgame values, and that we carefully cap the bonus
     // so that the midgame and endgame scores do not change sign after the bonus.
-    int u = ((mg > 0) - (mg < 0)) * Utility::clamp(complexity + 50, -abs(mg), 0);
+    int u = ((mg > 0) - (mg < 0)) * std::clamp(complexity + 50, -abs(mg), 0);
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
     //Handicap Mode begin
     if(winnableToEvaluate)
@@ -985,19 +986,14 @@ make_v:
 
 Value Eval::evaluate(const Position& pos) {
 
-  bool classical = !Eval::useNNUE
-                ||  abs(eg_value(pos.psq_score())) * 16 > NNUEThreshold1 * (16 + pos.rule50_count());
-  Value v = classical ? Evaluation<NO_TRACE>(pos).value()
-                      : NNUE::evaluate(pos) * 5 / 4 + Tempo;
-
-  if (classical && Eval::useNNUE && abs(v) * 16 < NNUEThreshold2 * (16 + pos.rule50_count()))
-      v = NNUE::evaluate(pos) * 5 / 4 + Tempo;
+    
+  Value v = (Eval::useNNUE) ? NNUE::evaluate(pos) * 5 / 4 + Tempo:Evaluation<NO_TRACE>(pos).value();//only pure-classical
 
   // Damp down the evaluation linearly when shuffling
   v = v * (100 - pos.rule50_count()) / 100;
 
-  // Guarantee evalution outside of TB range
-  v = Utility::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
+  // Guarantee evaluation does not hit the tablebase range
+  v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
 
   return v;
 }
@@ -1017,40 +1013,45 @@ std::string Eval::trace(const Position& pos) {
 
   Value v;
 
-  if (Eval::useNNUE)
-  {
-      v = NNUE::evaluate(pos);
-  }
-  else
-  {
-      std::memset(scores, 0, sizeof(scores));
+  std::memset(scores, 0, sizeof(scores));
 
-      v = Evaluation<TRACE>(pos).value();
+  v = Evaluation<TRACE>(pos).value();
 
-      ss << std::showpoint << std::noshowpos << std::fixed << std::setprecision(2)
-         << "     Term    |    White    |    Black    |    Total   \n"
-         << "             |   MG    EG  |   MG    EG  |   MG    EG \n"
-         << " ------------+-------------+-------------+------------\n"
-         << "    Material | " << Term(MATERIAL)
-         << "   Imbalance | " << Term(IMBALANCE)
-         << "       Pawns | " << Term(PAWN)
-         << "     Knights | " << Term(KNIGHT)
-         << "     Bishops | " << Term(BISHOP)
-         << "       Rooks | " << Term(ROOK)
-         << "      Queens | " << Term(QUEEN)
-         << "    Mobility | " << Term(MOBILITY)
-         << " King safety | " << Term(KING)
-         << "     Threats | " << Term(THREAT)
-         << "      Passed | " << Term(PASSED)
-         << "       Space | " << Term(SPACE)
-         << "    Winnable | " << Term(WINNABLE)
-         << " ------------+-------------+-------------+------------\n"
-         << "       Total | " << Term(TOTAL);
-  }
+  ss << std::showpoint << std::noshowpos << std::fixed << std::setprecision(2)
+     << "     Term    |    White    |    Black    |    Total   \n"
+     << "             |   MG    EG  |   MG    EG  |   MG    EG \n"
+     << " ------------+-------------+-------------+------------\n"
+     << "    Material | " << Term(MATERIAL)
+     << "   Imbalance | " << Term(IMBALANCE)
+     << "       Pawns | " << Term(PAWN)
+     << "     Knights | " << Term(KNIGHT)
+     << "     Bishops | " << Term(BISHOP)
+     << "       Rooks | " << Term(ROOK)
+     << "      Queens | " << Term(QUEEN)
+     << "    Mobility | " << Term(MOBILITY)
+     << " King safety | " << Term(KING)
+     << "     Threats | " << Term(THREAT)
+     << "      Passed | " << Term(PASSED)
+     << "       Space | " << Term(SPACE)
+     << "    Winnable | " << Term(WINNABLE)
+     << " ------------+-------------+-------------+------------\n"
+     << "       Total | " << Term(TOTAL);
 
   v = pos.side_to_move() == WHITE ? v : -v;
 
-  ss << "\nFinal evaluation: " << to_cp(v) << " (white side)\n";
+  ss << "\nClassical evaluation: " << to_cp(v) << " (white side)\n";
+
+  if (Eval::useNNUE)
+  {
+      v = NNUE::evaluate(pos);
+      v = pos.side_to_move() == WHITE ? v : -v;
+      ss << "\nNNUE evaluation:      " << to_cp(v) << " (white side)\n";
+  }
+
+  v = evaluate(pos);
+  v = pos.side_to_move() == WHITE ? v : -v;
+  ss << "\nFinal evaluation:     " << to_cp(v) << " (white side)\n";
+
 
   return ss.str();
 }
