@@ -38,6 +38,8 @@ int main(int argc, char* argv[]) {
 
   std::cout << engine_info() << std::endl;
 
+  CommandLine::init(argc, argv);
+  Utility::init(argv[0]); //Khalid
   UCI::init(Options);
   Tune::init();
   //from Kelly begin
