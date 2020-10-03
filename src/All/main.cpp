@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
   Threads.set(size_t(Options["Threads"]));
   Threads.setFull(Options["Full depth threads"]);//Full threads patch
   Search::clear(); // After threads are up
-  Eval::init_NNUE();
+  Eval::NNUE::init();
 
   UCI::loop(argc, argv);
 

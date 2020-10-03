@@ -45,8 +45,8 @@ void on_threads(const Option& o) { Threads.set(size_t(o)); }
 void on_full_threads(const Option& o) { Threads.setFull(o); } //full threads patch
 void on_persisted_learning(const Option& o) { if (!(o == "Off")) initLearning();}//Kelly learning
 void on_tb_path(const Option& o) { Tablebases::init(o); }
-void on_use_NNUE(const Option& ) { Eval::init_NNUE(); }
-void on_eval_file(const Option& ) { Eval::init_NNUE(); }
+void on_use_NNUE(const Option& ) { Eval::NNUE::init(); }
+void on_eval_file(const Option& ) { Eval::NNUE::init(); }
 //livebook begin
 void on_livebook_url(const Option& o) { Search::setLiveBookURL(o); }
 void on_livebook_timeout(const Option& o) { Search::setLiveBookTimeout(o); }
@@ -102,6 +102,7 @@ void init(OptionsMap& o) {
   o["Opening variety"]       << Option (0, 0, 40);
   o["Persisted learning"]     << Option("Off var Off var Standard var Self", "Off", on_persisted_learning);
   o["Read only learning"]    << Option(false);
+  o["MCTS"]                  << Option(false);
   o["Tal"]                   << Option(false);
   o["Capablanca"]            << Option(false);
   o["Petrosian"]             << Option(false);

@@ -30,9 +30,8 @@
 #include "tt.h"
 #include "uci.h"
 
-#define SHOW_EXP_STATS  0
-
 //from Kelly Begin
+#define SHOW_EXP_STATS  0
 PersistedLearningUsage usePersistedLearning;
 using namespace std;
 LearningHashTable globalLearningHT;
@@ -74,11 +73,12 @@ void TranspositionTable::resize(size_t mbSize) {
 
   Threads.main()->wait_for_search_finished();
 
-  aligned_ttmem_free(mem);
+  aligned_large_pages_free(table);
 
   clusterCount = mbSize * 1024 * 1024 / sizeof(Cluster);
-  table = static_cast<Cluster*>(aligned_ttmem_alloc(clusterCount * sizeof(Cluster), mem));
-  if (!mem)
+
+  table = static_cast<Cluster*>(aligned_large_pages_alloc(clusterCount * sizeof(Cluster)));
+  if (!table)
   {
       std::cerr << "Failed to allocate " << mbSize
                 << "MB for transposition table." << std::endl;

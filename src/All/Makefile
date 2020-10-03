@@ -35,7 +35,7 @@ PGOBENCH = ./$(EXE) bench
 
 ### Source and object files
 SRCS = benchmark.cpp bitbase.cpp bitboard.cpp endgame.cpp evaluate.cpp main.cpp \
-	material.cpp misc.cpp movegen.cpp movepick.cpp pawns.cpp position.cpp psqt.cpp \
+	material.cpp misc.cpp montecarlo.cpp movegen.cpp movepick.cpp pawns.cpp position.cpp psqt.cpp \
 	search.cpp thread.cpp timeman.cpp tt.cpp uci.cpp ucioption.cpp tune.cpp syzygy/tbprobe.cpp \
 	nnue/evaluate_nnue.cpp nnue/features/half_kp.cpp
 
@@ -380,19 +380,6 @@ ifeq ($(COMP),clang)
 	endif
 endif
 
-ifeq ($(comp),icc)
-	profile_make = icc-profile-make
-	profile_use = icc-profile-use
-else
-ifeq ($(comp),clang)
-	profile_make = clang-profile-make
-	profile_use = clang-profile-use
-else
-	profile_make = gcc-profile-make
-	profile_use = gcc-profile-use
-endif
-endif
-
 ifeq ($(KERNEL),Darwin)
 	CXXFLAGS += -arch $(arch) -mmacosx-version-min=10.14
 	LDFLAGS += -arch $(arch) -mmacosx-version-min=10.14
@@ -404,18 +391,28 @@ endif
 # Currently we don't know how to make PGO builds with the NDK yet.
 ifeq ($(COMP),ndk)
 	CXXFLAGS += -stdlib=libc++ -fPIE
+	comp=clang
 	ifeq ($(arch),armv7)
-		comp=armv7a-linux-androideabi16-clang
 		CXX=armv7a-linux-androideabi16-clang++
 		CXXFLAGS += -mthumb -march=armv7-a -mfloat-abi=softfp -mfpu=neon
 		STRIP=arm-linux-androideabi-strip
 	endif
 	ifeq ($(arch),armv8)
-		comp=aarch64-linux-android21-clang
 		CXX=aarch64-linux-android21-clang++
 		STRIP=aarch64-linux-android-strip
 	endif
 	LDFLAGS += -static-libstdc++ -pie -lm -latomic
+endif
+
+ifeq ($(comp),icc)
+	profile_make = icc-profile-make
+	profile_use = icc-profile-use
+else ifeq ($(comp),clang)
+	profile_make = clang-profile-make
+	profile_use = clang-profile-use
+else
+	profile_make = gcc-profile-make
+	profile_use = gcc-profile-use
 endif
 
 ### Travis CI script uses COMPILER to overwrite CXX
@@ -588,10 +585,7 @@ endif
 ### needs access to the optimization flags.
 ifeq ($(optimize),yes)
 ifeq ($(debug), no)
-	ifeq ($(COMP),ndk)
-		CXXFLAGS += -flto=thin
-		LDFLAGS += $(CXXFLAGS)
-	else ifeq ($(comp),clang)
+	ifeq ($(comp),clang)
 		CXXFLAGS += -flto=thin
 		ifneq ($(findstring MINGW,$(KERNEL)),)
 			CXXFLAGS += -fuse-ld=lld
@@ -718,7 +712,7 @@ endif
 build: config-sanity net
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) all
 
-profile-build: config-sanity objclean profileclean
+profile-build: net config-sanity objclean profileclean
 	@echo ""
 	@echo "Step 1/4. Building instrumented executable ..."
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) $(profile_make)

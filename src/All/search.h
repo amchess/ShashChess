@@ -73,7 +73,6 @@ struct RootMove {
   Value previousScore = -VALUE_INFINITE;
   int selDepth = 0;
   int tbRank = 0;
-  int bestMoveCount = 0;
   Value tbScore;
   std::vector<Move> pv;
 };
@@ -116,4 +115,8 @@ void set_livebook_depth(int book_depth);
 
 } // namespace Search
 
+//from Montecarlo begin
+Value minimax_value(Position& pos, Search::Stack* ss, Depth depth);
+Value minimax_value(Position& pos, Search::Stack* ss, Depth depth, Value alpha, Value beta);
+//from Montecarlo end
 #endif // #ifndef SEARCH_H_INCLUDED
