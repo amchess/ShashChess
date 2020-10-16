@@ -23,7 +23,7 @@
 #include <iomanip>
 #include <thread>
 #include <algorithm>
-#include <fstream> //from kellykynyama mcts
+#include <fstream> //from kellykynyama
 #include "bitboard.h"
 #include "misc.h"
 #include "thread.h"

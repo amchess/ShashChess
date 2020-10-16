@@ -255,12 +255,6 @@ Because of disk access, to be effective, the learning must be made at no bullet 
 _Boolean, Default: False_ 
 If activated, the learning file is only read.
 
-## MCTS
-
-_Boolean, Default: False_ 
-If activated, during the search, the engine uses, on only one thread (the firts one not main), the Montecarlo algorithm. So, the engine's behaviour is yet more similar to NN networks. On a single thread mode, so, there is no MCTS.
-A great thanks to Stephane Nicolet for his [original idea](https://github.com/snicolet/Stockfish/tree/montecarlo/src)
-
 ### Shashin section
 
 _Default: no option settled_

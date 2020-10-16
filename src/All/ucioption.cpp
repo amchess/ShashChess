@@ -102,7 +102,6 @@ void init(OptionsMap& o) {
   o["Opening variety"]       << Option (0, 0, 40);
   o["Persisted learning"]     << Option("Off var Off var Standard var Self", "Off", on_persisted_learning);
   o["Read only learning"]    << Option(false);
-  o["MCTS"]                  << Option(false);
   o["Tal"]                   << Option(false);
   o["Capablanca"]            << Option(false);
   o["Petrosian"]             << Option(false);

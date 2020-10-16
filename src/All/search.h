@@ -115,8 +115,4 @@ void set_livebook_depth(int book_depth);
 
 } // namespace Search
 
-//from Montecarlo begin
-Value minimax_value(Position& pos, Search::Stack* ss, Depth depth);
-Value minimax_value(Position& pos, Search::Stack* ss, Depth depth, Value alpha, Value beta);
-//from Montecarlo end
 #endif // #ifndef SEARCH_H_INCLUDED
