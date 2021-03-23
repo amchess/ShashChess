@@ -1,8 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-  Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,6 +26,8 @@
 #include "syzygy/tbprobe.h"
 #include "tt.h"
 
+namespace Stockfish {
+
 ThreadPool Threads; // Global object
 
 
@@ -52,15 +52,6 @@ Thread::~Thread() {
   stdThread.join();
 }
 
-/// Thread::bestMoveCount(Move move) return best move counter for the given root move
-
-int Thread::best_move_count(Move move) const {
-
-  auto rm = std::find(rootMoves.begin() + pvIdx,
-                      rootMoves.begin() + pvLast, move);
-
-  return rm != rootMoves.begin() + pvLast ? rm->bestMoveCount : 0;
-}
 
 /// Thread::clear() reset histories, usually before a new game
 
@@ -80,6 +71,7 @@ void Thread::clear() {
           continuationHistory[inCheck][c][NO_PIECE][0]->fill(Search::CounterMovePruneThreshold - 1);
       }
 }
+
 
 /// Thread::start_searching() wakes up the thread that will start the search
 
@@ -183,6 +175,7 @@ void ThreadPool::clear() {
   main()->previousTimeReduction = 1.0;
 }
 
+
 /// ThreadPool::start_thinking() wakes up main thread waiting in idle_loop() and
 /// returns immediately. Main thread will wake up other threads and start the search.
 
@@ -245,16 +238,16 @@ Thread* ThreadPool::get_best_thread() const {
         votes[th->rootMoves[0].pv[0]] +=
             (th->rootMoves[0].score - minScore + 14) * int(th->completedDepth);
 
-          if (abs(bestThread->rootMoves[0].score) >= VALUE_TB_WIN_IN_MAX_PLY)
-          {
-              // Make sure we pick the shortest mate / TB conversion or stave off mate the longest
-              if (th->rootMoves[0].score > bestThread->rootMoves[0].score)
-                  bestThread = th;
-          }
-          else if (   th->rootMoves[0].score >= VALUE_TB_WIN_IN_MAX_PLY
-                   || (   th->rootMoves[0].score > VALUE_TB_LOSS_IN_MAX_PLY
-                       && votes[th->rootMoves[0].pv[0]] > votes[bestThread->rootMoves[0].pv[0]]))
-              bestThread = th;
+        if (abs(bestThread->rootMoves[0].score) >= VALUE_TB_WIN_IN_MAX_PLY)
+        {
+            // Make sure we pick the shortest mate / TB conversion or stave off mate the longest
+            if (th->rootMoves[0].score > bestThread->rootMoves[0].score)
+                bestThread = th;
+        }
+        else if (   th->rootMoves[0].score >= VALUE_TB_WIN_IN_MAX_PLY
+                 || (   th->rootMoves[0].score > VALUE_TB_LOSS_IN_MAX_PLY
+                     && votes[th->rootMoves[0].pv[0]] > votes[bestThread->rootMoves[0].pv[0]]))
+            bestThread = th;
     }
 
     return bestThread;
@@ -279,3 +272,5 @@ void ThreadPool::wait_for_search_finished() const {
         if (th != front())
             th->wait_for_search_finished();
 }
+
+} // namespace Stockfish

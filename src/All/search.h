@@ -1,8 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-  Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,6 +25,7 @@
 #include "movepick.h"
 #include "types.h"
 
+namespace Stockfish {
 class Position;
 
 namespace Search {
@@ -49,7 +48,10 @@ struct Stack {
   Value staticEval;
   int statScore;
   int moveCount;
+  int distanceFromPv;
   bool inCheck;
+  bool ttPv;
+  bool ttHit;
 };
 
 
@@ -71,7 +73,6 @@ struct RootMove {
   Value previousScore = -VALUE_INFINITE;
   int selDepth = 0;
   int tbRank = 0;
-  int bestMoveCount = 0;
   Value tbScore;
   std::vector<Move> pv;
 };
@@ -108,9 +109,11 @@ void clear();
 //livebook begin
 void setLiveBookURL(const std::string &newURL);
 void setLiveBookTimeout(size_t newTimeoutMS);
+void set_livebook_retry(int retry);
 void set_livebook_depth(int book_depth);
 //livebook end
 
 } // namespace Search
+} // namespace Stockfish
 
 #endif // #ifndef SEARCH_H_INCLUDED

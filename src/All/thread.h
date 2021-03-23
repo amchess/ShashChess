@@ -1,8 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-  Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -34,6 +32,7 @@
 #include "search.h"
 #include "thread_win32_osx.h"
 
+namespace Stockfish {
 
 /// Thread class keeps together all the thread-related stuff. We use
 /// per-thread pawn and material hash tables so that once we get a
@@ -56,7 +55,6 @@ public:
   void idle_loop();
   void start_searching();
   void wait_for_search_finished();
-  int best_move_count(Move move) const;
 
   Pawns::Table pawnsTable;
   Material::Table materialTable;
@@ -64,7 +62,7 @@ public:
   uint64_t ttHitAverage;
   int selDepth, nmpMinPly;
   Color nmpColor;
-  std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
+  std::atomic<uint64_t> nodes, tbHits, bestMoveChanges, bestMoveMc;//bmMovecountR7
 
   Position rootPos;
   StateInfo rootState;
@@ -76,7 +74,7 @@ public:
   CapturePieceToHistory captureHistory;
   ContinuationHistory continuationHistory[2][2];
   bool fullSearch;//full threads patch
-  int shashinValue, shashinQuiescentCapablancaMiddleHighScore, shashinQuiescentCapablancaMaxScore;//shashinValue
+  int shashinValue, shashinQuiescentCapablancaMiddleHighScore, shashinQuiescentCapablancaMaxScore,failedHighCnt;//shashinValue
  };
 
 
@@ -131,5 +129,7 @@ private:
 };
 
 extern ThreadPool Threads;
+
+} // namespace Stockfish
 
 #endif // #ifndef THREAD_H_INCLUDED

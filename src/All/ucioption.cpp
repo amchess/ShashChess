@@ -1,8 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-  Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -23,6 +21,7 @@
 #include <ostream>
 #include <sstream>
 
+#include "evaluate.h"
 #include "misc.h"
 #include "search.h"
 #include "thread.h"
@@ -31,6 +30,8 @@
 #include "syzygy/tbprobe.h"
 
 using std::string;
+
+namespace Stockfish {
 
 UCI::OptionsMap Options; // Global object
 
@@ -44,11 +45,12 @@ void on_threads(const Option& o) { Threads.set(size_t(o)); }
 void on_full_threads(const Option& o) { Threads.setFull(o); } //full threads patch
 void on_persisted_learning(const Option& o) { if (!(o == "Off")) initLearning();}//Kelly learning
 void on_tb_path(const Option& o) { Tablebases::init(o); }
-void on_use_NNUE(const Option& ) { Eval::init_NNUE(); }
-void on_eval_file(const Option& ) { Eval::init_NNUE(); }
+void on_use_NNUE(const Option& ) { Eval::NNUE::init(); }
+void on_eval_file(const Option& ) { Eval::NNUE::init(); }
 //livebook begin
 void on_livebook_url(const Option& o) { Search::setLiveBookURL(o); }
 void on_livebook_timeout(const Option& o) { Search::setLiveBookTimeout(o); }
+void on_live_book_retry(const Option& o) { Search::set_livebook_retry(o); }
 void on_livebook_depth(const Option& o) { Search::set_livebook_depth(o); }
 //livebook end
 
@@ -86,12 +88,12 @@ void init(OptionsMap& o) {
   o["Use NNUE"]              << Option(true, on_use_NNUE);
   // The default must follow the format nn-[SHA256 first 12 digits].nnue
   // for the build process (profile-build and fishtest) to work.
-  o["EvalFile"]              << Option("nn-82215d0fd0df.nnue", on_eval_file);
+  o["EvalFile"]              << Option(EvalFileDefaultName, on_eval_file);
   //livebook begin
   o["Live Book"]             << Option(false);
   o["Live Book URL"]         << Option("http://www.chessdb.cn/cdb.php", on_livebook_url);
   o["Live Book Timeout"]     << Option(5000, 0, 10000, on_livebook_timeout);
-  o["Live Book Retry"]       << Option(3, 1, 100);
+  o["Live Book Retry"]       << Option(3, 1, 100, on_live_book_retry);
   o["Live Book Diversity"]   << Option(false);
   o["Live Book Contribute"]  << Option(false);
   o["Live Book Depth"]       << Option(100, 1, 100, on_livebook_depth);
@@ -104,6 +106,7 @@ void init(OptionsMap& o) {
   o["Capablanca"]            << Option(false);
   o["Petrosian"]             << Option(false);
 }
+
 
 /// operator<<() is used to print all the options default values in chronological
 /// insertion order (the idx field) and in the format defined by the UCI protocol.
@@ -211,3 +214,5 @@ Option& Option::operator=(const string& v) {
 }
 
 } // namespace UCI
+
+} // namespace Stockfish

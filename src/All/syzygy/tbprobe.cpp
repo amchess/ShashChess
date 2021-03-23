@@ -1,7 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (c) 2013 Ronald de Man
-  Copyright (C) 2016-2019 Marco Costalba, Lucas Braesch
+  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -51,9 +50,11 @@
 #include <windows.h>
 #endif
 
-using namespace Tablebases;
+using namespace Stockfish::Tablebases;
 
-int Tablebases::MaxCardinality;
+int Stockfish::Tablebases::MaxCardinality;
+
+namespace Stockfish {
 
 namespace {
 
@@ -224,7 +225,9 @@ public:
 
         *mapping = statbuf.st_size;
         *baseAddress = mmap(nullptr, statbuf.st_size, PROT_READ, MAP_SHARED, fd, 0);
+#if defined(MADV_RANDOM)
         madvise(*baseAddress, statbuf.st_size, MADV_RANDOM);
+#endif
         ::close(fd);
 
         if (*baseAddress == MAP_FAILED)
@@ -708,7 +711,7 @@ Ret do_probe_table(const Position& pos, T* entry, WDLScore wdl, ProbeState* resu
 
         leadPawns = b = pos.pieces(color_of(pc), PAWN);
         do
-            squares[size++] = pop_lsb(&b) ^ flipSquares;
+            squares[size++] = pop_lsb(b) ^ flipSquares;
         while (b);
 
         leadPawnsCnt = size;
@@ -728,7 +731,7 @@ Ret do_probe_table(const Position& pos, T* entry, WDLScore wdl, ProbeState* resu
     // directly map them to the correct color and square.
     b = pos.pieces() ^ leadPawns;
     do {
-        Square s = pop_lsb(&b);
+        Square s = pop_lsb(b);
         squares[size] = s ^ flipSquares;
         pieces[size++] = Piece(pos.piece_on(s) ^ flipColor);
     } while (b);
@@ -759,7 +762,7 @@ Ret do_probe_table(const Position& pos, T* entry, WDLScore wdl, ProbeState* resu
     if (entry->hasPawns) {
         idx = LeadPawnIdx[leadPawnsCnt][squares[0]];
 
-        std::sort(squares + 1, squares + leadPawnsCnt, pawns_comp);
+        std::stable_sort(squares + 1, squares + leadPawnsCnt, pawns_comp);
 
         for (int i = 1; i < leadPawnsCnt; ++i)
             idx += Binomial[i][MapPawns[squares[i]]];
@@ -860,7 +863,7 @@ encode_remaining:
 
     while (d->groupLen[++next])
     {
-        std::sort(groupSq, groupSq + d->groupLen[next]);
+        std::stable_sort(groupSq, groupSq + d->groupLen[next]);
         uint64_t n = 0;
 
         // Map down a square if "comes later" than a square in the previous
@@ -999,7 +1002,7 @@ uint8_t* set_sizes(PairsData* d, uint8_t* data) {
     // so that d->lowestSym[i] >= d->lowestSym[i+1] (when read as LittleEndian).
     // Starting from this we compute a base64[] table indexed by symbol length
     // and containing 64 bit values so that d->base64[i] >= d->base64[i+1].
-    // See http://www.eecs.harvard.edu/~michaelm/E210/huffman.pdf
+    // See https://en.wikipedia.org/wiki/Huffman_coding
     for (int i = d->base64.size() - 2; i >= 0; --i) {
         d->base64[i] = (d->base64[i + 1] + number<Sym, LittleEndian>(&d->lowestSym[i])
                                          - number<Sym, LittleEndian>(&d->lowestSym[i + 1])) / 2;
@@ -1140,7 +1143,7 @@ void* mapped(TBTable<Type>& e, const Position& pos) {
     if (e.ready.load(std::memory_order_acquire))
         return e.baseAddress; // Could be nullptr if file does not exist
 
-    std::unique_lock<std::mutex> lk(mutex);
+    std::scoped_lock<std::mutex> lk(mutex);
 
     if (e.ready.load(std::memory_order_relaxed)) // Recheck under lock
         return e.baseAddress;
@@ -1439,7 +1442,7 @@ WDLScore Tablebases::probe_wdl(Position& pos, ProbeState* result) {
 // If n = 100 immediately after a capture or pawn move, then the position
 // is also certainly a win, and during the whole phase until the next
 // capture or pawn move, the inequality to be preserved is
-// dtz + 50-movecounter <= 100.
+// dtz + 50-move-counter <= 100.
 //
 // In short, if a move is available resulting in dtz + 50-move-counter <= 99,
 // then do not accept moves leading to dtz + 50-move-counter == 100.
@@ -1609,3 +1612,5 @@ bool Tablebases::root_probe_wdl(Position& pos, Search::RootMoves& rootMoves) {
 
     return true;
 }
+
+} // namespace Stockfish

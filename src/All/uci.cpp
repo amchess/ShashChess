@@ -1,8 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-  Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -35,6 +33,8 @@
 #include "syzygy/tbprobe.h"
 
 using namespace std;
+
+namespace Stockfish {
 
 extern vector<string> setup_bench(const Position&, istream&);
 
@@ -105,7 +105,7 @@ namespace {
     Position p;
     p.set(pos.fen(), Options["UCI_Chess960"], &states->back(), Threads.main());
 
-    Eval::verify_NNUE();
+    Eval::NNUE::verify();
 
     sync_cout << "\n" << Eval::trace(p) << sync_endl;
   }
@@ -190,7 +190,7 @@ namespace {
 
         if (token == "go" || token == "eval")
         {
-            cerr << "\nPosition: " << cnt++ << '/' << num << endl;
+            cerr << "\nPosition: " << cnt++ << '/' << num << " (" << pos.fen() << ")" << endl;
             if (token == "go")
             {
                go(pos, is, states);
@@ -333,7 +333,6 @@ void UCI::loop(int argc, char* argv[]) {
       }
       else if (token == "isready")    sync_cout << "readyok" << sync_endl;
 
-
       // Additional custom non-UCI commands, mainly for debugging.
       // Do not use these commands during a search!
       else if (token == "flip")     pos.flip();
@@ -341,7 +340,7 @@ void UCI::loop(int argc, char* argv[]) {
       else if (token == "d")        sync_cout << pos << sync_endl;
       else if (token == "eval")     trace_eval(pos);
       else if (token == "compiler") sync_cout << compiler_info() << sync_endl;
-      else
+      else if (!token.empty() && token[0] != '#')
           sync_cout << "Unknown command: " << cmd << sync_endl;
 
   } while (token != "quit" && argc == 1); // Command line args are one-shot
@@ -435,3 +434,5 @@ Move UCI::to_move(const Position& pos, string& str) {
 
   return MOVE_NONE;
 }
+
+} // namespace Stockfish

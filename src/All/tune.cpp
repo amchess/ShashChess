@@ -1,8 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Glaurung 2.1
-  Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-  Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2020 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,6 +25,8 @@
 #include "uci.h"
 
 using std::string;
+
+namespace Stockfish {
 
 bool Tune::update_on_last;
 const UCI::Option* LastOption = nullptr;
@@ -128,6 +128,8 @@ void BoolConditions::set() {
       sync_cout << binary[i] << sync_endl;
 }
 
+} // namespace Stockfish
+
 
 // Init options with tuning session results instead of default values. Useful to
 // get correct bench signature after a tuning session or to test tuned values.
@@ -140,7 +142,11 @@ void BoolConditions::set() {
 
 #include <cmath>
 
+namespace Stockfish {
+
 void Tune::read_results() {
 
   /* ...insert your values here... */
 }
+
+} // namespace Stockfish

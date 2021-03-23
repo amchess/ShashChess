@@ -1,8 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-  Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,23 +27,25 @@
 #include <ostream>
 #include <string>
 #include <vector>
+#include <cstdint>
 #ifndef _MSC_VER
 #include <mm_malloc.h>
 #endif
 
 #include "types.h"
-#include "thread_win32_osx.h"
+
+namespace Stockfish {
 
 class Position; //Needed by is_game_decided() Learner from Khalid
 
-const std::string engine_info(bool to_uci = false);
-const std::string compiler_info();
+std::string engine_info(bool to_uci = false);
+std::string compiler_info();
 void prefetch(void* addr);
 void start_logger(const std::string& fname);
 void* std_aligned_alloc(size_t alignment, size_t size);
 void std_aligned_free(void* ptr);
-void* aligned_ttmem_alloc(size_t size, void*& mem);
-void aligned_ttmem_free(void* mem); // nop if mem == nullptr
+void* aligned_large_pages_alloc(size_t size); // memory aligned by page size, min alignment: 4096 bytes
+void aligned_large_pages_free(void* mem); // nop if mem == nullptr
 
 void dbg_hit_on(bool b);
 void dbg_hit_on(bool c, bool b);
@@ -53,9 +53,7 @@ void dbg_mean_of(int v);
 void dbg_print();
 
 typedef std::chrono::milliseconds::rep TimePoint; // A value in milliseconds
-
 static_assert(sizeof(TimePoint) == sizeof(int64_t), "TimePoint should be 64 bits");
-
 inline TimePoint now() {
   return std::chrono::duration_cast<std::chrono::milliseconds>
         (std::chrono::steady_clock::now().time_since_epoch()).count();
@@ -75,6 +73,18 @@ std::ostream& operator<<(std::ostream&, SyncCout);
 
 #define sync_cout std::cout << IO_LOCK
 #define sync_endl std::endl << IO_UNLOCK
+
+// `ptr` must point to an array of size at least
+// `sizeof(T) * N + alignment` bytes, where `N` is the
+// number of elements in the array.
+template <uintptr_t Alignment, typename T>
+T* align_ptr_up(T* ptr)
+{
+  static_assert(alignof(T) < Alignment);
+
+  const uintptr_t ptrint = reinterpret_cast<uintptr_t>(reinterpret_cast<char*>(ptr));
+  return reinterpret_cast<T*>(reinterpret_cast<char*>((ptrint + (Alignment - 1)) / Alignment * Alignment));
+}
 
 namespace Utility {
   //begin khalid from learner
@@ -138,10 +148,19 @@ inline uint64_t mul_hi64(uint64_t a, uint64_t b) {
 /// logical processor group. This usually means to be limited to use max 64
 /// cores. To overcome this, some special platform specific API should be
 /// called to set group affinity for each thread. Original code from Texel by
-/// Peter Österlund.
+/// Peter Ã–sterlund.
 
 namespace WinProcGroup {
   void bindThisThread(size_t idx);
 }
+
+namespace CommandLine {
+  void init(int argc, char* argv[]);
+
+  extern std::string binaryDirectory;  // path of the executable directory
+  extern std::string workingDirectory; // path of the working directory
+}
+
+} // namespace Stockfish
 
 #endif // #ifndef MISC_H_INCLUDED
