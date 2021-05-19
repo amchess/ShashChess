@@ -1,6 +1,6 @@
 /*
   Stockfish, a UCI chess playing engine derived from Glaurung 2.1
-  Copyright (C) 2004-2020 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
   Stockfish is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -16,30 +16,23 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//Common header of input features of NNUE evaluation function
 
-#ifndef NNUE_FEATURES_COMMON_H_INCLUDED
-#define NNUE_FEATURES_COMMON_H_INCLUDED
+#ifndef PSQT_H_INCLUDED
+#define PSQT_H_INCLUDED
 
-#include "../../evaluate.h"
-#include "../nnue_common.h"
 
-namespace Eval::NNUE::Features {
+#include "types.h"
 
-  class IndexList;
 
-  template <typename... FeatureTypes>
-  class FeatureSet;
+namespace Stockfish::PSQT
+{
 
-  // Trigger to perform full calculations instead of difference only
-  enum class TriggerEvent {
-    kFriendKingMoved // calculate full evaluation when own king moves
-  };
+extern Score psq[PIECE_NB][SQUARE_NB];
 
-  enum class Side {
-    kFriend // side to move
-  };
+// Fill psqt array from a set of internally linked parameters
+extern void init();
 
-}  // namespace Eval::NNUE::Features
+} // namespace Stockfish::PSQT
 
-#endif // #ifndef NNUE_FEATURES_COMMON_H_INCLUDED
+
+#endif // PSQT_H_INCLUDED

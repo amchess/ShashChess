@@ -1,8 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-  Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,7 +23,7 @@
 #include "position.h"
 #include "types.h"
 
-namespace Pawns {
+namespace Stockfish::Pawns {
 
 /// Pawns::Entry contains various information about a pawn structure. A lookup
 /// to the pawn hash table (performed by calling the probe function) returns a
@@ -67,6 +65,6 @@ typedef HashTable<Entry, 131072> Table;
 
 Entry* probe(const Position& pos);
 
-} // namespace Pawns
+} // namespace Stockfish::Pawns
 
 #endif // #ifndef PAWNS_H_INCLUDED

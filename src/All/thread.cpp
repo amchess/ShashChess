@@ -1,8 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-  Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,6 +25,8 @@
 #include "uci.h"
 #include "syzygy/tbprobe.h"
 #include "tt.h"
+
+namespace Stockfish {
 
 ThreadPool Threads; // Global object
 
@@ -71,6 +71,7 @@ void Thread::clear() {
           continuationHistory[inCheck][c][NO_PIECE][0]->fill(Search::CounterMovePruneThreshold - 1);
       }
 }
+
 
 /// Thread::start_searching() wakes up the thread that will start the search
 
@@ -127,14 +128,16 @@ void Thread::idle_loop() {
 
 void ThreadPool::set(size_t requested) {
 
-  if (size() > 0) { // destroy any existing thread(s)
+  if (size() > 0)   // destroy any existing thread(s)
+  {
       main()->wait_for_search_finished();
 
       while (size() > 0)
           delete back(), pop_back();
   }
 
-  if (requested > 0) { // create new thread(s)
+  if (requested > 0)   // create new thread(s)
+  {
       push_back(new MainThread(0));
 
       while (size() < requested)
@@ -173,6 +176,7 @@ void ThreadPool::clear() {
   main()->bestPreviousScore = VALUE_INFINITE;
   main()->previousTimeReduction = 1.0;
 }
+
 
 /// ThreadPool::start_thinking() wakes up main thread waiting in idle_loop() and
 /// returns immediately. Main thread will wake up other threads and start the search.
@@ -270,3 +274,5 @@ void ThreadPool::wait_for_search_finished() const {
         if (th != front())
             th->wait_for_search_finished();
 }
+
+} // namespace Stockfish

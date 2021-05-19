@@ -1,8 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-  Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,6 +23,7 @@
 #include "types.h"
 #include <unordered_map> //from Kelly
 
+namespace Stockfish {
 //from Kelly begin
 enum class PersistedLearningUsage
 {
@@ -85,9 +84,15 @@ class TranspositionTable {
 
   static_assert(sizeof(Cluster) == 32, "Unexpected Cluster size");
 
+  // Constants used to refresh the hash table periodically
+  static constexpr unsigned GENERATION_BITS  = 3;                                // nb of bits reserved for other things
+  static constexpr int      GENERATION_DELTA = (1 << GENERATION_BITS);           // increment for generation field
+  static constexpr int      GENERATION_CYCLE = 255 + (1 << GENERATION_BITS);     // cycle length
+  static constexpr int      GENERATION_MASK  = (0xFF << GENERATION_BITS) & 0xFF; // mask to pull out generation number
+
 public:
  ~TranspositionTable() { aligned_large_pages_free(table); }
-  void new_search() { generation8 += 8; } // Lower 3 bits are used by PV flag and Bound
+  void new_search() { generation8 += GENERATION_DELTA; } // Lower bits are used for other things
   TTEntry* probe(const Key key, bool& found) const;
   int hashfull() const;
   void resize(size_t mbSize);
@@ -149,5 +154,6 @@ extern LearningHashTable globalLearningHT;
 //from Kelly end
 
 extern TranspositionTable TT;
+} // namespace Stockfish
 
 #endif // #ifndef TT_H_INCLUDED

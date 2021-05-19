@@ -1,8 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-  Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,6 +22,8 @@
 
 #include "bitboard.h"
 #include "types.h"
+
+namespace Stockfish {
 
 namespace {
 
@@ -68,7 +68,6 @@ namespace {
 
 } // namespace
 
-
 bool Bitbases::probe(Square wksq, Square wpsq, Square bksq, Color stm) {
 
   assert(file_of(wpsq) <= FILE_D);
@@ -97,7 +96,6 @@ void Bitbases::init() {
       if (db[idx] == WIN)
           KPKBitbase.set(idx);
 }
-
 
 namespace {
 
@@ -152,8 +150,8 @@ namespace {
     Bitboard b = attacks_bb<KING>(ksq[stm]);
 
     while (b)
-        r |= stm == WHITE ? db[index(BLACK, ksq[BLACK] , pop_lsb(&b), psq)]
-                          : db[index(WHITE, pop_lsb(&b),  ksq[WHITE], psq)];
+        r |= stm == WHITE ? db[index(BLACK, ksq[BLACK], pop_lsb(b), psq)]
+                          : db[index(WHITE, pop_lsb(b), ksq[WHITE], psq)];
 
     if (stm == WHITE)
     {
@@ -170,3 +168,5 @@ namespace {
   }
 
 } // namespace
+
+} // namespace Stockfish

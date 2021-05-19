@@ -1,8 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-  Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -54,7 +52,7 @@ typedef bool(*fun3_t)(HANDLE, CONST GROUP_AFFINITY*, PGROUP_AFFINITY);
 #include <sys/mman.h>
 #endif
 
-#if defined(__APPLE__) || defined(__ANDROID__) || defined(__OpenBSD__) || (defined(__GLIBCXX__) && !defined(_GLIBCXX_HAVE_ALIGNED_ALLOC) && !defined(_WIN32))
+#if defined(__APPLE__) || defined(__ANDROID__) || defined(__OpenBSD__) || (defined(__GLIBCXX__) && !defined(_GLIBCXX_HAVE_ALIGNED_ALLOC) && !defined(_WIN32)) || defined(__e2k__)
 #define POSIXALIGNEDALLOC
 #include <stdlib.h>
 #endif
@@ -65,11 +63,13 @@ typedef bool(*fun3_t)(HANDLE, CONST GROUP_AFFINITY*, PGROUP_AFFINITY);
 
 using namespace std;
 
+namespace Stockfish {
+
 namespace {
 
 /// Version number. If Version is left empty, then compile date in the format
 /// DD-MM-YY and show in engine_info.
-const string Version = "15.1";
+const string Version = "17";
 
 /// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 /// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
@@ -197,7 +197,7 @@ namespace Utility
         //Assume game is not decided!
         return false;
     }
-};
+}
 //end learning from Khalid
 
 /// engine_info() returns the full name of the current ShashChess version. This
@@ -205,7 +205,7 @@ namespace Utility
 /// the program was compiled) or "ShashChess <Version>", depending on whether
 /// Version is empty.
 
-const string engine_info(bool to_uci) {
+string engine_info(bool to_uci) {
 
   const string months("Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec");
   string month, day, year;
@@ -228,7 +228,7 @@ const string engine_info(bool to_uci) {
 
 /// compiler_info() returns a string trying to describe the compiler we use
 
-const std::string compiler_info() {
+std::string compiler_info() {
 
   #define stringify2(x) #x
   #define stringify(x) stringify2(x)
@@ -256,6 +256,18 @@ const std::string compiler_info() {
      compiler += "MSVC ";
      compiler += "(version ";
      compiler += stringify(_MSC_FULL_VER) "." stringify(_MSC_BUILD);
+     compiler += ")";
+  #elif defined(__e2k__) && defined(__LCC__)
+    #define dot_ver2(n) \
+      compiler += (char)'.'; \
+      compiler += (char)('0' + (n) / 10); \
+      compiler += (char)('0' + (n) % 10);
+
+     compiler += "MCST LCC ";
+     compiler += "(version ";
+     compiler += std::to_string(__LCC__ / 100);
+     dot_ver2(__LCC__ % 100)
+     dot_ver2(__LCC_MINOR__)
      compiler += ")";
   #elif __GNUC__
      compiler += "g++ (GNUC) ";
@@ -402,6 +414,7 @@ void prefetch(void* addr) {
 /// std_aligned_alloc() must be freed with std_aligned_free().
 
 void* std_aligned_alloc(size_t alignment, size_t size) {
+
 #if defined(POSIXALIGNEDALLOC)
   void *mem;
   return posix_memalign(&mem, alignment, size) ? nullptr : mem;
@@ -413,6 +426,7 @@ void* std_aligned_alloc(size_t alignment, size_t size) {
 }
 
 void std_aligned_free(void* ptr) {
+
 #if defined(POSIXALIGNEDALLOC)
   free(ptr);
 #elif defined(_WIN32)
@@ -426,8 +440,11 @@ void std_aligned_free(void* ptr) {
 
 #if defined(_WIN32)
 
-static void* aligned_large_pages_alloc_win(size_t allocSize) {
+static void* aligned_large_pages_alloc_windows(size_t allocSize) {
 
+  #if !defined(_WIN64)
+    return nullptr;
+  #else
 
   HANDLE hProcessToken { };
   LUID luid { };
@@ -470,12 +487,14 @@ static void* aligned_large_pages_alloc_win(size_t allocSize) {
   CloseHandle(hProcessToken);
 
   return mem;
+
+  #endif
 }
 
 void* aligned_large_pages_alloc(size_t allocSize) {
 
   // Try to allocate large pages
-  void* mem = aligned_large_pages_alloc_win(allocSize);
+  void* mem = aligned_large_pages_alloc_windows(allocSize);
 
   // Fall back to regular, page aligned, allocation if necessary
   if (!mem)
@@ -493,6 +512,7 @@ void* aligned_large_pages_alloc(size_t allocSize) {
 #else
   constexpr size_t alignment = 4096; // assumed small page size
 #endif
+
   // round up to multiples of alignment
   size_t size = ((allocSize + alignment - 1) / alignment) * alignment;
   void *mem = std_aligned_alloc(alignment, size);
@@ -514,8 +534,9 @@ void aligned_large_pages_free(void* mem) {
   if (mem && !VirtualFree(mem, 0, MEM_RELEASE))
   {
       DWORD err = GetLastError();
-      std::cerr << "Failed to free transposition table. Error code: 0x" <<
-          std::hex << err << std::dec << std::endl;
+      std::cerr << "Failed to free large page memory. Error code: 0x"
+                << std::hex << err
+                << std::dec << std::endl;
       exit(EXIT_FAILURE);
   }
 }
@@ -648,11 +669,10 @@ namespace CommandLine {
 string argv0;            // path+name of the executable binary, as given by argv[0]
 string binaryDirectory;  // path of the executable directory
 string workingDirectory; // path of the working directory
-string pathSeparator;    // Separator for our current OS
 
 void init(int argc, char* argv[]) {
     (void)argc;
-    string separator;
+    string pathSeparator;
 
     // extract the path+name of the executable binary
     argv0 = argv[0];
@@ -692,3 +712,5 @@ void init(int argc, char* argv[]) {
 
 
 } // namespace CommandLine
+
+} // namespace Stockfish

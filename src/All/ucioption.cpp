@@ -1,8 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-  Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -32,6 +30,8 @@
 #include "syzygy/tbprobe.h"
 
 using std::string;
+
+namespace Stockfish {
 
 UCI::OptionsMap Options; // Global object
 
@@ -100,12 +100,17 @@ void init(OptionsMap& o) {
   //livebook end
   o["Full depth threads"]    << Option(0, 0, 512, on_full_threads); //if this is used, must be after #Threads is set.
   o["Opening variety"]       << Option (0, 0, 40);
-  o["Persisted learning"]     << Option("Off var Off var Standard var Self", "Off", on_persisted_learning);
+  o["Persisted learning"]    << Option("Off var Off var Standard var Self", "Off", on_persisted_learning);
   o["Read only learning"]    << Option(false);
+  o["MCTS"]                  << Option("Off var Off var Single var Multi", "Off");
+  o["Multi Strategy"]        << Option(20, 0, 100);
+  o["Multi MinVisits"]       << Option(5, 0, 1000);  
+  o["Concurrent Experience"] << Option (false);
   o["Tal"]                   << Option(false);
   o["Capablanca"]            << Option(false);
   o["Petrosian"]             << Option(false);
 }
+
 
 /// operator<<() is used to print all the options default values in chronological
 /// insertion order (the idx field) and in the format defined by the UCI protocol.
@@ -213,3 +218,5 @@ Option& Option::operator=(const string& v) {
 }
 
 } // namespace UCI
+
+} // namespace Stockfish
