@@ -1,8 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-  Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,7 +27,9 @@
 #include "thread.h"
 #include "tt.h"
 #include "uci.h"
+#include <sstream>
 
+namespace Stockfish {
 //from Kelly Begin
 #define SHOW_EXP_STATS  0
 PersistedLearningUsage usePersistedLearning;
@@ -118,6 +118,7 @@ void TranspositionTable::clear() {
       th.join();
 }
 
+
 /// TranspositionTable::probe() looks up the current position in the transposition
 /// table. It returns true and a pointer to the TTEntry if the position is found.
 /// Otherwise, it returns false and a pointer to an empty or least valuable TTEntry
@@ -133,7 +134,7 @@ TTEntry* TranspositionTable::probe(const Key key, bool& found) const {
   for (int i = 0; i < ClusterSize; ++i)
       if (tte[i].key16 == key16 || !tte[i].depth8)
       {
-          tte[i].genBound8 = uint8_t(generation8 | (tte[i].genBound8 & 0x7)); // Refresh
+          tte[i].genBound8 = uint8_t(generation8 | (tte[i].genBound8 & (GENERATION_DELTA - 1))); // Refresh
 
           return found = (bool)tte[i].depth8, &tte[i];
       }
@@ -142,11 +143,12 @@ TTEntry* TranspositionTable::probe(const Key key, bool& found) const {
   TTEntry* replace = tte;
   for (int i = 1; i < ClusterSize; ++i)
       // Due to our packed storage format for generation and its cyclic
-      // nature we add 263 (256 is the modulus plus 7 to keep the unrelated
-      // lowest three bits from affecting the result) to calculate the entry
-      // age correctly even after generation8 overflows into the next cycle.
-      if (  replace->depth8 - ((263 + generation8 - replace->genBound8) & 0xF8)
-          >   tte[i].depth8 - ((263 + generation8 -   tte[i].genBound8) & 0xF8))
+      // nature we add GENERATION_CYCLE (256 is the modulus, plus what
+      // is needed to keep the unrelated lowest n bits from affecting
+      // the result) to calculate the entry age correctly even after
+      // generation8 overflows into the next cycle.
+      if (  replace->depth8 - ((GENERATION_CYCLE + generation8 - replace->genBound8) & GENERATION_MASK)
+          >   tte[i].depth8 - ((GENERATION_CYCLE + generation8 -   tte[i].genBound8) & GENERATION_MASK))
           replace = &tte[i];
 
   return found = false, replace;
@@ -161,7 +163,7 @@ int TranspositionTable::hashfull() const {
   int cnt = 0;
   for (int i = 0; i < 1000; ++i)
       for (int j = 0; j < ClusterSize; ++j)
-          cnt += table[i].entry[j].depth8 && (table[i].entry[j].genBound8 & 0xF8) == generation8;
+          cnt += table[i].entry[j].depth8 && (table[i].entry[j].genBound8 & GENERATION_MASK) == generation8;
 
   return cnt / ClusterSize;
 }
@@ -481,7 +483,34 @@ void writeLearningFile()
     */
     if (!globalLearningHT.empty())
     {
-        std::ofstream outputFile(Utility::map_path("experience_new.bin"), std::ofstream::trunc | std::ofstream::binary);
+        std::string experienceFilename;
+        std::string tempExperienceFilename;
+
+        if ((bool)Options["Concurrent Experience"])
+        {
+            static std::string uniqueStr;
+
+            if (uniqueStr.empty())
+            {
+                PRNG prng(now());
+
+                std::stringstream ss;
+                ss << hex << prng.rand<uint64_t>();
+
+                uniqueStr = ss.str();
+            }
+
+            experienceFilename = Utility::map_path("experience-" + uniqueStr + ".bin");
+            tempExperienceFilename = Utility::map_path("experience_new-" + uniqueStr + ".bin");
+        }
+        else
+        {
+            experienceFilename = Utility::map_path("experience.bin");
+            tempExperienceFilename = Utility::map_path("experience_new.bin");
+        }
+
+        std::ofstream outputFile(tempExperienceFilename, std::ofstream::trunc | std::ofstream::binary);
+
         for (auto& it : globalLearningHT)
         {
             LearningFileEntry currentFileExpEntry;
@@ -500,8 +529,9 @@ void writeLearningFile()
         }
         outputFile.close();
 
-        remove(Utility::map_path("experience.bin").c_str());
-        rename(Utility::map_path("experience_new.bin").c_str(), Utility::map_path("experience.bin").c_str());
+        remove(experienceFilename.c_str());
+        rename(tempExperienceFilename.c_str(), experienceFilename.c_str());
     }
 }
 //from Kelly End
+} // namespace Stockfish

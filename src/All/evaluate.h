@@ -1,8 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-  Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,8 +20,11 @@
 #define EVALUATE_H_INCLUDED
 
 #include <string>
+#include <optional>
 
 #include "types.h"
+
+namespace Stockfish {
 
 class Position;
 
@@ -38,17 +39,21 @@ namespace Eval {
   // The default net name MUST follow the format nn-[SHA256 first 12 digits].nnue
   // for the build process (profile-build and fishtest) to work. Do not change the
   // name of the macro, as it is used in the Makefile.
-  #define EvalFileDefaultName   "nn-04cf2b4ed1da.nnue"
+  #define EvalFileDefaultName   "nn-8a08400ed089.nnue"
 
   namespace NNUE {
 
     Value evaluate(const Position& pos);
     bool load_eval(std::string name, std::istream& stream);
+    bool save_eval(std::ostream& stream);
     void init();
+    void export_net(const std::optional<std::string>& filename);
     void verify();
 
   } // namespace NNUE
 
 } // namespace Eval
+
+} // namespace Stockfish
 
 #endif // #ifndef EVALUATE_H_INCLUDED

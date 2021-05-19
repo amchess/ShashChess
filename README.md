@@ -172,6 +172,22 @@ _Integer, Default: 0, Min: 0, Max: 512_
 The number of settled threads to use for a full depth brute force search. 
 If the number is greater than threads number, all threads are for full depth brute force search.
 
+### MonteCarlo Tree Search section (experimental: thanks to original Stephan Nicolet work)
+#### MCTS
+
+Default is Off: no MonteCarlo Tree Search algorithm. The other values are "Single" and "Multi", 
+where "Single" means only main thread does MCTS and "Multi" means all threads but main one does MCTS
+
+#### Multi Strategy 
+
+_Integer, Default: 20, Min: 0, Max: 100_ 
+Only in multi mcts mode, for tree policy.
+
+#### Multi MinVisits
+
+_Integer, Default: 5, Min: 0, Max: 1000_
+Only in multi mcts mode, for Upper Confidence Bound.
+
 ### Live Book section (thanks to Eman's author Khalid Omar for windows builds)
 
 #### Live Book (checkbox)
@@ -215,6 +231,13 @@ _Default 0, min 0, max 512_ The number of threads doing a full depth analysis (b
 _Integer, Default: 0, Min: 0, Max: 40_
 To play different opening lines from default (0), if not from book (see below).
 Higher variety -> more probable loss of ELO
+
+### Concurrent Experience
+
+_Boolean, Default: False_ 
+Set this option to true when running under CuteChess and you experiences problems with concurrency > 1
+When this option is true, the saved experience file name will be modified to something like experience-64a4c665c57504a4.bin
+(64a4c665c57504a4 is random). Each concurrent instance of BrainLearn will have its own experience file name, however, all the concurrent instances will read "experience.bin" at start up.
 
   * #### Use NNUE
     Toggle between the NNUE and classical evaluation functions. If set to "true",

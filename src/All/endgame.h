@@ -1,8 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-  Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-  Copyright (C) 2015-2019 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
+  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -30,6 +28,7 @@
 #include "position.h"
 #include "types.h"
 
+namespace Stockfish {
 
 /// EndgameCode lists all supported endgame functions by corresponding codes
 
@@ -121,5 +120,7 @@ namespace Endgames {
     return it != map<T>().end() ? it->second.get() : nullptr;
   }
 }
+
+} // namespace Stockfish
 
 #endif // #ifndef ENDGAME_H_INCLUDED
