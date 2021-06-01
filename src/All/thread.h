@@ -75,7 +75,7 @@ public:
   CapturePieceToHistory captureHistory;
   ContinuationHistory continuationHistory[2][2];
   bool fullSearch;//full threads patch
-  int shashinValue, shashinQuiescentCapablancaMiddleHighScore, shashinQuiescentCapablancaMaxScore,failedHighCnt;//shashinValue
+  int shashinValue, shashinQuiescentCapablancaMiddleHighScore, shashinQuiescentCapablancaMaxScore;//shashinValue
  };
 
 
