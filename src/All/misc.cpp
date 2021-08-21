@@ -69,7 +69,7 @@ namespace {
 
 /// Version number. If Version is left empty, then compile date in the format
 /// DD-MM-YY and show in engine_info.
-const string Version = "17.1";
+const string Version = "18";
 
 /// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 /// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
@@ -112,7 +112,14 @@ public:
 
     static Logger l;
 
-    if (!fname.empty() && !l.file.is_open())
+    if (l.file.is_open())
+    {
+        cout.rdbuf(l.out.buf);
+        cin.rdbuf(l.in.buf);
+        l.file.close();
+    }
+
+    if (!fname.empty())
     {
         l.file.open(fname, ifstream::out);
 
@@ -124,12 +131,6 @@ public:
 
         cin.rdbuf(&l.in);
         cout.rdbuf(&l.out);
-    }
-    else if (fname.empty() && l.file.is_open())
-    {
-        cout.rdbuf(l.out.buf);
-        cin.rdbuf(l.in.buf);
-        l.file.close();
     }
   }
 };
@@ -443,6 +444,7 @@ void std_aligned_free(void* ptr) {
 static void* aligned_large_pages_alloc_windows(size_t allocSize) {
 
   #if !defined(_WIN64)
+    (void)allocSize; // suppress unused-parameter compiler warning
     return nullptr;
   #else
 

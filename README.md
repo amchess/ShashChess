@@ -114,7 +114,7 @@ _Default 84, min 10, max 1000_
 
 #### UCI_LimitStrength
 
-Activate the strength limit by a weaker play in a random fashion to simulate human blunders.
+Activate the handicap mode and the related following options: in this case, the evaluation function is always the classical one.
 
 #### UCI_Elo
 
