@@ -1274,7 +1274,7 @@ namespace {
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and value
-        Depth R = (1090 + 81 * depth) / 256 + std::min(int(eval - beta) / 205, 3);
+		Depth R = ((pos.this_thread()->shashinValue == SHASHIN_POSITION_CAPABLANCA)?(depth / 3 + 4):((1090 + 81 * depth) / 256)) +std::min(int(eval - beta) / 205, 3); //official with Shashin
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
@@ -1549,9 +1549,23 @@ moves_loop: // When in check, search starts from here
           else
           {
               // Continuation history based pruning (~20 Elo)
-              if (   lmrDepth < 5
-                  && (*contHist[0])[movedPiece][to_sq(move)] < 23 - 23 * depth * depth
-                  && (*contHist[1])[movedPiece][to_sq(move)] < 23 - 23 * depth * depth)
+			  if (lmrDepth < 5
+					 &&
+					 (	
+						 (
+							 (pos.this_thread()->shashinValue!=SHASHIN_POSITION_PETROSIAN) &&
+							 ((*contHist[0])[movedPiece][to_sq(move)] < 23 - 23 * depth * depth
+							 && (*contHist[1])[movedPiece][to_sq(move)] < 23 - 23 * depth * depth)				 
+						 )
+						 ||
+						 (
+						 (pos.this_thread()->shashinValue==SHASHIN_POSITION_PETROSIAN) &&
+						 ((*contHist[0])[movedPiece][to_sq(move)]
+						 + (*contHist[1])[movedPiece][to_sq(move)]
+						 + (*contHist[3])[movedPiece][to_sq(move)] < -4000 * depth + 4000)
+						 )
+					)	
+				 ) //cmhPt3
                   continue;
 
               // Futility pruning: parent node (~5 Elo)
@@ -1657,6 +1671,8 @@ moves_loop: // When in check, search starts from here
           }
       }
       //SPRT singExtNoTt5 end
+	  else if ((pos.this_thread()->shashinValue == SHASHIN_POSITION_CAPABLANCA)&&(   PvNode && captureOrPromotion && moveCount != 1))
+          extension = 1;
       else if (   givesCheck
                && depth > 6
                && abs(ss->staticEval) > Value(100))
@@ -1757,8 +1773,8 @@ moves_loop: // When in check, search starts from here
 
           // In general we want to cap the LMR depth search at newDepth. But if
           // reductions are really negative and movecount is low, we allow this move
-          // to be searched deeper than the first move, unless ttMove was extended by 2.
-          Depth d = std::clamp(newDepth - r, 1, newDepth + (r < -1 && moveCount <= 5 && !doubleExtension));
+		  // to be searched deeper than the first move in specific cases.
+          Depth d = std::clamp(newDepth - r, 1, newDepth + (r < -1 && (moveCount <= 5 || (depth > 6 && PvNode)) && !doubleExtension));
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true, mcts);//mcts
 
