@@ -989,7 +989,7 @@ namespace {
     // the position object (material + piece square tables) and the material
     // imbalance. Score is computed internally from the white point of view.
     //from handicap mode begin
-    Score score = pos.psq_score() + (imbalancesToEvaluate ? me->imbalance()+SCORE_ZERO:SCORE_ZERO);
+    Score score = pos.psq_score() + (imbalancesToEvaluate ? me->imbalance():0)+ pos.this_thread()->trend;
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
     if (pawnsToEvaluate)
@@ -1136,7 +1136,7 @@ Value Eval::evaluate(const Position& pos) {
          if (pos.is_chess960())
              nnue += fix_FRC(pos);
 
-         return(nnue*15/31);
+         return (nnue*19/22);
       };
 
       // If there is PSQ imbalance we use the classical eval, but we switch to
@@ -1155,7 +1155,7 @@ Value Eval::evaluate(const Position& pos) {
   // Guarantee evaluation does not hit the tablebase range
   v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
 
-  return v;
+  return (v*25/38);
 }
 
 /// trace() is like evaluate(), but instead of returning a value, it returns
@@ -1174,6 +1174,8 @@ std::string Eval::trace(Position& pos) {
   Value v;
 
   std::memset(scores, 0, sizeof(scores));
+
+  pos.this_thread()->trend = SCORE_ZERO; // Reset any dynamic contempt
 
   v = Evaluation<TRACE>(pos).value();
 

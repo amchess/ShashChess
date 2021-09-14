@@ -532,6 +532,7 @@ void Thread::search() {
   Depth lastBestMoveDepth = 0;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1, totBestMoveChanges = 0;
+  Color us = rootPos.side_to_move();
   int iterIdx = 0;
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
@@ -584,6 +585,8 @@ void Thread::search() {
   //from Shashin
   initShashinValues (rootPos);
   //end from Shashin
+
+  trend = SCORE_ZERO;
 
   int searchAgainCounter = 0;
   int failedAspirationsCurrentID = 0; //aspiration patch
@@ -651,11 +654,15 @@ void Thread::search() {
 	    // Reset aspiration window starting size
 	    if (rootDepth >= 4)
 	    {
-		Value prev = rootMoves[pvIdx].previousScore;
-		delta = Value(13 + 4 * failedAspirationsPrevID);//aspiration patch 
-		alpha = std::max(prev - delta,-VALUE_INFINITE);
-		beta  = std::min(prev + delta, VALUE_INFINITE);
-		    updateShashinValues(rootPos,prev);//from ShashChess
+			Value prev = rootMoves[pvIdx].previousScore;
+			delta = Value(13 + 4 * failedAspirationsPrevID);//aspiration patch 
+			alpha = std::max(prev - delta,-VALUE_INFINITE);
+			beta  = std::min(prev + delta, VALUE_INFINITE);
+			updateShashinValues(rootPos,prev);//from ShashChess
+			// Adjust trend based on root move's previousScore (dynamic contempt)
+            int tr = 113 * prev / (abs(prev) + 147);
+            trend = (us == WHITE ?  make_score(tr, tr / 2)
+                                 : -make_score(tr, tr / 2));
 	    }
 
 	    // Start with a small aspiration window and, in the case of a fail
@@ -1265,7 +1272,7 @@ namespace {
         && (ss-1)->statScore < 23767
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 20 * depth - 22 * improving + 168 * ss->ttPv + 159
+        &&  ss->staticEval >= beta - 20 * depth - 22 * improving + 168 * ss->ttPv + 177
     &&  pos.non_pawn_material(us)
 	&& ((pos.this_thread()->shashinQuiescentCapablancaMaxScore)||(!gameCycle)) //from Crystal
 	&&  !disableNMP //Kelly
@@ -1387,13 +1394,24 @@ namespace {
             }
          ss->ttPv = ttPv;
     }
-
-    // Step 10. If the position is not in TT, decrease depth by 2
-    if (   PvNode
-        && depth >= 6
-        && !ttMove)
-        depth -= 2;
-
+    //official by Shashin begin
+    // Step 10. 
+    if(!ttMove)
+	{
+		if(pos.this_thread()->shashinValue != SHASHIN_POSITION_CAPABLANCA)
+		{   //If the position is not in TT, decrease depth by 2
+			if (   PvNode
+				&& depth >= 6)
+				depth -= 2;
+		}
+		else
+		{   //If the position is not in TT, decrease depth by 2 or 1 depending on node type
+			if (   cutNode
+				&& depth >= 9)
+				depth--;		
+		}
+    }
+	//official by Shashin end	
 moves_loop: // When in check, search starts from here
 
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
@@ -1571,7 +1589,7 @@ moves_loop: // When in check, search starts from here
               // Futility pruning: parent node (~5 Elo)
               if (   !ss->inCheck
                   && lmrDepth < 7
-                  && ss->staticEval + 174 + 157 * lmrDepth <= alpha)
+                  && ss->staticEval + 172 + 157 * lmrDepth <= alpha)
                   continue;
 
               // Prune moves with negative SEE (~20 Elo)
@@ -1671,8 +1689,13 @@ moves_loop: // When in check, search starts from here
           }
       }
       //SPRT singExtNoTt5 end
-	  else if ((pos.this_thread()->shashinValue == SHASHIN_POSITION_CAPABLANCA)&&(   PvNode && captureOrPromotion && moveCount != 1))
+	  // Capture extensions for PvNodes and cutNodes
+	  else if ((pos.this_thread()->shashinValue == SHASHIN_POSITION_CAPABLANCA)&&
+				(   (PvNode || cutNode)
+				&& captureOrPromotion 
+				&& moveCount != 1)) //official with shashin
           extension = 1;
+	  // Check extensions	  
       else if (   givesCheck
                && depth > 6
                && abs(ss->staticEval) > Value(100))
@@ -1925,7 +1948,8 @@ moves_loop: // When in check, search starts from here
     // Bonus for prior countermove that caused the fail low
     else if (   (depth >= 3 || PvNode)
              && !priorCapture)
-        update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth));
+		update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth) * (1 + ((pos.this_thread()->shashinValue == SHASHIN_POSITION_CAPABLANCA)?
+		(PvNode || cutNode):0)));//official with Shashin		
 
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
