@@ -1,13 +1,13 @@
 /*
-  ShashChess, a UCI chess playing engine derived from Stockfish
+  Stockfish, a UCI chess playing engine derived from Glaurung 2.1
   Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
 
-  ShashChess is free software: you can redistribute it and/or modify
+  Stockfish is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  ShashChess is distributed in the hope that it will be useful,
+  Stockfish is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -68,6 +68,9 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
   TimePoint timeLeft =  std::max(TimePoint(1),
       limits.time[us] + limits.inc[us] * (mtg - 1) - moveOverhead * (2 + mtg));
 
+  // Use extra time with larger increments
+  double optExtra = std::clamp(1.0 + 12.0 * limits.inc[us] / limits.time[us], 1.0, 1.12);
+
   // A user may scale time usage by setting UCI option "Slow Mover"
   // Default is 100 and changing this value will probably lose elo.
   timeLeft = slowMover * timeLeft / 100;
@@ -78,15 +81,16 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
   if (limits.movestogo == 0)
   {
       optScale = std::min(0.0084 + std::pow(ply + 3.0, 0.5) * 0.0042,
-                           0.2 * limits.time[us] / double(timeLeft));
+                           0.2 * limits.time[us] / double(timeLeft))
+                 * optExtra;
       maxScale = std::min(7.0, 4.0 + ply / 12.0);
   }
 
   // x moves in y seconds (+ z increment)
   else
   {
-      optScale = std::min((0.8 + ply / 128.0) / mtg,
-                            0.8 * limits.time[us] / double(timeLeft));
+      optScale = std::min((0.88 + ply / 116.4) / mtg,
+                            0.88 * limits.time[us] / double(timeLeft));
       maxScale = std::min(6.3, 1.5 + 0.11 * mtg);
   }
 

@@ -34,6 +34,7 @@
 #include "thread.h"
 #include "timeman.h"
 #include "tt.h"
+#include "learn.h"
 #include "uci.h"
 #include "syzygy/tbprobe.h"
 
@@ -54,8 +55,10 @@ bool enabledLearningProbe;
 //Spinlocks
 Spinlock threadLock;
 
-std::vector<LearningFileEntry> gameLine;//Kelly
-//kelly end
+//Kelly begin
+std::vector<PersistedLearningMove> gameLine;
+//Kelly end
+
 namespace Search {
 
   LimitsType Limits;
@@ -85,9 +88,6 @@ namespace {
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
-  constexpr uint64_t TtHitAverageWindow     = 4096;
-  constexpr uint64_t TtHitAverageResolution = 1024;
-
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
     return Value(214 * (d - improving));
@@ -97,9 +97,9 @@ namespace {
   // Reductions lookup table, initialized at startup
   int Reductions[MAX_MOVES]; // [depth or moveNumber]
 
-  Depth reduction(bool i, Depth d, int mn) {
+  Depth reduction(bool i, Depth d, int mn, bool rangeReduction) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 534) / 1024 + (!i && r > 904);
+    return (r + 534) / 1024 + (!i && r > 904) + rangeReduction;
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -108,12 +108,36 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return d > 14 ? 73 : 6 * d * d + 229 * d - 215;
+    return std::min((6 * d + 229) * d - 215 , 2000);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
   Value value_draw(Thread* thisThread) {
     return VALUE_DRAW + Value(2 * (thisThread->nodes & 1) - 1);
+  }
+
+  // Check if the current thread is in a search explosion
+  ExplosionState search_explosion(Thread* thisThread) {
+
+    uint64_t nodesNow = thisThread->nodes;
+    bool explosive =    thisThread->doubleExtensionAverage[WHITE].is_greater(2, 100)
+                     || thisThread->doubleExtensionAverage[BLACK].is_greater(2, 100);
+
+    if (explosive)
+       thisThread->nodesLastExplosive = nodesNow;
+    else
+       thisThread->nodesLastNormal = nodesNow;
+
+    if (   explosive
+        && thisThread->state == EXPLOSION_NONE
+        && nodesNow - thisThread->nodesLastNormal > 6000000)
+        thisThread->state = MUST_CALM_DOWN;
+
+    if (   thisThread->state == MUST_CALM_DOWN
+        && nodesNow - thisThread->nodesLastExplosive > 6000000)
+        thisThread->state = EXPLOSION_NONE;
+
+    return thisThread->state;
   }
 
   // Skill structure is used to implement strength limit
@@ -213,7 +237,7 @@ void Search::set_livebook_depth(int book_depth) {
 void Search::init() {
 
   for (int i = 1; i < MAX_MOVES; ++i)
-      Reductions[i] = int(21.9 * std::log(i));
+      Reductions[i] = int((21.9 + std::log(Threads.size()) / 2) * std::log(i));
 
   //livebook begin
   curl_global_init(CURL_GLOBAL_DEFAULT);
@@ -225,8 +249,6 @@ void Search::init() {
   set_livebook_depth((int)Options["Live Book Depth"]);
   //livebook end
 }
-
-
 /// Search::clear() resets search state to its initial value
 
 void Search::clear() {
@@ -249,7 +271,6 @@ void Search::clear() {
 
 void MainThread::search() {
 
-  persistedLearning= (usePersistedLearning != PersistedLearningUsage::Off);//from Kelly
   if (Limits.perft)
   {
       nodes = perft<true>(rootPos, Limits.perft);
@@ -257,20 +278,21 @@ void MainThread::search() {
       return;
   }
   //from Sugar
-  limitStrength	    = Options["UCI_LimitStrength"];
+  limitStrength = Options["UCI_LimitStrength"] || Options["UCI_LimitStrength_CB"] ;
   //end from Sugar
   Color us = rootPos.side_to_move();
   Time.init(Limits, us, rootPos.game_ply());
   TT.new_search();
   //Kelly begin
   if(persistedLearning){
-      enabledLearningProbe = false;
-      int piecesCnt = rootPos.count<KNIGHT>(WHITE) + rootPos.count<BISHOP>(WHITE) + rootPos.count<ROOK>(WHITE) + rootPos.count<QUEEN>(WHITE) + rootPos.count<KING>(WHITE)
+	  enabledLearningProbe = false;
+	  int piecesCnt = rootPos.count<KNIGHT>(WHITE) + rootPos.count<BISHOP>(WHITE) + rootPos.count<ROOK>(WHITE) + rootPos.count<QUEEN>(WHITE) + rootPos.count<KING>(WHITE)
 		  + rootPos.count<KNIGHT>(BLACK) + rootPos.count<BISHOP>(BLACK) + rootPos.count<ROOK>(BLACK) + rootPos.count<QUEEN>(BLACK) + rootPos.count<KING>(BLACK);
-      if (piecesCnt <= PIECE_TYPE_NB)
-      {
-		useLearning = true;
-      }
+	
+	  if (piecesCnt <= PIECE_TYPE_NB)
+	  {
+	    useLearning = true;
+	  }
   }	
   //Kelly end
   openingVariety = Options["Opening variety"];//from Sugar
@@ -281,7 +303,7 @@ void MainThread::search() {
   petrosian=Options["Petrosian"];
   //end from Shashin
   //from handicap mode begin
-  uciElo=Options["UCI_Elo"];
+  uciElo=Options["UCI_LimitStrength"]?Options["UCI_Elo"]:Options["UCI_Elo_CB"];
   handicapDepth=limitStrength ? round(0.604686101*exp(1.399511228*pow(10,-3)*uciElo)):0;
   pawnsToEvaluate = limitStrength ? (uciElo >= 2000):1;
   winnableToEvaluate= limitStrength ? (uciElo>=2200):1;
@@ -374,27 +396,32 @@ void MainThread::search() {
   if (   int(Options["MultiPV"]) == 1
       && !Limits.depth
       && !(int(Options["UCI_LimitStrength"]))
+	  && !(int(Options["UCI_LimitStrength_CB"]))
       && rootMoves[0].pv[0] != MOVE_NONE)
       bestThread = Threads.get_best_thread();
 
   bestPreviousScore = bestThread->rootMoves[0].score;
   //kelly begin
   if(persistedLearning){
-	if (bestThread->completedDepth > 4 && !pauseExperience && !Options["Read only learning"])//from Khalid
+	  if (bestThread->completedDepth > 4 && !LD.is_paused() && !Options["Read only learning"])// from Khalid
 	  {
-	    LearningFileEntry currentLearningEntry;
-	    currentLearningEntry.depth = bestThread->completedDepth;
-	    currentLearningEntry.hashKey = rootPos.key();
-	    currentLearningEntry.move = bestThread->rootMoves[0].pv[0];
-	    currentLearningEntry.score = bestThread->rootMoves[0].score;
+	  	PersistedLearningMove plm;
+	    plm.key = rootPos.key();
+	    plm.learningMove.depth = bestThread->completedDepth;
+	    plm.learningMove.move = bestThread->rootMoves[0].pv[0];
+	    plm.learningMove.score = bestThread->rootMoves[0].score;
 	    if (usePersistedLearning == PersistedLearningUsage::Self)
 	    {
-			currentLearningEntry.score = makeExpValue(currentLearningEntry);
-			gameLine.push_back(currentLearningEntry);
+        	const LearningMove *existingMove = LD.probe_move(plm.key, plm.learningMove.move);
+
+          	if(existingMove)
+            	plm.learningMove.score = existingMove->score;
+
+          	gameLine.push_back(plm);
 	    }
 	    else
 	    {
-			insertIntoOrUpdateLearningTable(currentLearningEntry);
+			LD.add_new_learning(plm.key, plm.learningMove);
 	    }
 	  }
 	
@@ -425,12 +452,12 @@ void MainThread::search() {
 
       //Save to learning file
       if(!Options["Read only learning"])
-          writeLearningFile();
+          LD.persist();
 
       //Stop learning until we receive *ucinewgame* command
-      pauseExperience = true;
+      LD.pause();
   }
-  //Kelly Khalid end
+  //from Khalid end
   //livebook begin
   if (Options["Live Book"] && Options["Live Book Contribute"] && !g_inBook)
   {
@@ -581,11 +608,16 @@ void Thread::search() {
       multiPV = std::max(multiPV, (size_t)4);
 
   multiPV = std::min(multiPV, rootMoves.size());
-  ttHitAverage = TtHitAverageWindow * TtHitAverageResolution / 2;
   //from Shashin
   initShashinValues (rootPos);
   //end from Shashin
 
+  doubleExtensionAverage[WHITE].set(0, 100);  // initialize the running average at 0%
+  doubleExtensionAverage[BLACK].set(0, 100);  // initialize the running average at 0%
+
+  nodesLastExplosive = nodes;
+  nodesLastNormal    = nodes;
+  state = EXPLOSION_NONE;
   trend = SCORE_ZERO;
 
   int searchAgainCounter = 0;
@@ -820,6 +852,13 @@ namespace {
 
   template <NodeType nodeType>
   Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, bool cutNode, bool mcts) { //mcts
+    Thread* thisThread = pos.this_thread();
+
+    // Step 0. Limit search explosion
+    if (   ss->ply > 10
+        && search_explosion(thisThread) == MUST_CALM_DOWN
+        && depth > (ss-1)->depth)
+       depth = (ss-1)->depth;
 
     constexpr bool PvNode = nodeType != NonPV;
     constexpr bool rootNode = nodeType == Root;
@@ -863,17 +902,17 @@ namespace {
 
     TTEntry* tte;
     Key posKey;
-    Move ttMove, move, excludedMove=MOVE_NONE, bestMove,expTTMove=MOVE_NONE;//from kellykynyama
+    Move ttMove, move, excludedMove=MOVE_NONE, bestMove,expTTMove=MOVE_NONE;//from Kelly
     Depth extension, newDepth;
     //from Kelly begin
     Value bestValue, value, ttValue, eval=VALUE_NONE, maxValue, expTTValue=VALUE_NONE, probCutBeta;
     bool givesCheck, improving, didLMR, priorCapture, expTTHit=false, isMate; //from Crystal
     //from Kelly End
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, 
-		 ttCapture, singularQuietLMR, kingDanger; //from Crystal
+		 ttCapture, singularQuietLMR, noLMRExtension, kingDanger; //from Crystal + official from Shashin
 
     Piece movedPiece;
-    int moveCount, captureCount, quietCount, rootDepth; //from Crystal
+    int moveCount, captureCount, quietCount, bestMoveCount, improvement=0, rootDepth; //from Crystal
     //from Kelly begin
     bool updatedLearning = false;
 
@@ -883,11 +922,10 @@ namespace {
     int sibs = 0;
     //from Kelly end
     // Step 1. Initialize node
-    Thread* thisThread = pos.this_thread();
     ss->inCheck        = pos.checkers();
     priorCapture       = pos.captured_piece();
     Color us           = pos.side_to_move();
-    moveCount          = captureCount = quietCount = ss->moveCount = 0;
+    moveCount          = bestMoveCount = captureCount = quietCount = ss->moveCount = 0;
     bestValue          = -VALUE_INFINITE;
     //from Crystal begin
     kingDanger=false;
@@ -941,11 +979,15 @@ namespace {
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
-    (ss+1)->ttPv = false;
+    (ss+1)->ttPv         = false;
     (ss+1)->excludedMove = bestMove = MOVE_NONE;
     (ss+2)->killers[0]   = (ss+2)->killers[1] = MOVE_NONE;
     ss->doubleExtensions = (ss-1)->doubleExtensions;
+    ss->depth            = depth;
     Square prevSq        = to_sq((ss-1)->currentMove);
+
+    // Update the running average statistics for double extensions
+    thisThread->doubleExtensionAverage[us].update(ss->depth > (ss-1)->depth);
 
     // Initialize statScore to zero for the grandchildren of the current position.
     // So statScore is shared between all grandchildren and only the first grandchild
@@ -970,6 +1012,7 @@ namespace {
     ttValue = ss->ttHit ? value_from_tt(tte->value(), ss->ply, pos.rule50_count()) : VALUE_NONE;
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
             : ss->ttHit    ? tte->move() : MOVE_NONE;
+	ttCapture = ttMove && pos.capture_or_promotion(ttMove);		
     if (!excludedMove)
         ss->ttPv = PvNode || (ss->ttHit && tte->is_pv());
 
@@ -981,15 +1024,11 @@ namespace {
         && is_ok((ss-1)->currentMove))
         thisThread->lowPlyHistory[ss->ply - 1][from_to((ss-1)->currentMove)] << stat_bonus(depth - 5);
 
-    // thisThread->ttHitAverage can be used to approximate the running average of ttHit
-    thisThread->ttHitAverage =   (TtHitAverageWindow - 1) * thisThread->ttHitAverage / TtHitAverageWindow
-                                + TtHitAverageResolution * ss->ttHit;
-
     // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode
         && ss->ttHit
 	&& ((pos.this_thread()->shashinQuiescentCapablancaMaxScore)||(!gameCycle))
-        && tte->depth() >= depth
+        && tte->depth() > depth - (thisThread->id() % 2 == 1)
         && ttValue != VALUE_NONE // Possible in case of TT access race
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
                             : (tte->bound() & BOUND_UPPER)))
@@ -1000,7 +1039,7 @@ namespace {
             if (ttValue >= beta)
             {
                 // Bonus for a quiet ttMove that fails high
-                if (!pos.capture_or_promotion(ttMove))
+                 if (!ttCapture)
                     update_quiet_stats(pos, ss, ttMove, stat_bonus(depth), depth);
 
                 // Extra penalty for early quiet moves of the previous ply
@@ -1008,7 +1047,7 @@ namespace {
                     update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, -stat_bonus(depth + 1));
             }
             // Penalty for a quiet ttMove that fails low
-            else if (!pos.capture_or_promotion(ttMove))
+            else if (!ttCapture)
             {
                 int penalty = -stat_bonus(depth);
                 thisThread->mainHistory[us][from_to(ttMove)] << penalty;
@@ -1030,27 +1069,30 @@ namespace {
 	
 	    if (!excludedMove && useLearning)
         {
-            NodeInfo* node = getNodeFromHT(posKey);
-        	if (node != nullptr)
+	        const LearningMove *learningMove = nullptr;
+	        sibs = LD.probe(posKey, learningMove);
+	        if (learningMove)
 			{
-				MoveInfo moveInfo = node->latestMoveInfo;
-	            sibs = node->siblingMoveInfo.size();
+	            assert(sibs);
+	
 	            enabledLearningProbe = true;
 	            expTTHit = true;
 	            if (!ttMove)
 	            {
-	                ttMove = moveInfo.move;
+	                ttMove = learningMove->move;
 	            }
-	            if (moveInfo.depth >= depth)
+	
+	            if (learningMove->depth >= depth)
 	            {
-	                expTTMove = moveInfo.move;
-	                expTTValue = moveInfo.score;
+	                expTTMove = learningMove->move;
+	                expTTValue = learningMove->score;
 	                updatedLearning = true;
 	            }
-	            if ((moveInfo.depth == 0))
+	
+	            if ((learningMove->depth == 0))
 	                updatedLearning = false;
-	            if (updatedLearning
-	                && expTTValue != VALUE_NONE)
+
+	            if (updatedLearning && expTTValue != VALUE_NONE)
 	            {
 	                if (expTTValue < alpha)
 	                {
@@ -1062,17 +1104,18 @@ namespace {
 	                    improving = true;
 	                }
 	            }
+
 	            // At non-PV nodes we check for an early Global Learning Table cutoff
 	            // If expTTMove is quiet, update move sorting heuristics on global learning table hit
 	            if (!PvNode
 	                && updatedLearning
 	                && expTTValue != VALUE_NONE // Possible in case of Global Learning Table access race
-	                && (moveInfo.depth >= depth))
+	                && (learningMove->depth >= depth))
 	            {
 	                if (expTTValue >= beta)
 	                {
-	                    if (!pos.capture_or_promotion(moveInfo.move))
-	                        update_quiet_stats(pos, ss, moveInfo.move, stat_bonus(depth), depth);
+	                    if (!pos.capture_or_promotion(learningMove->move))
+	                        update_quiet_stats(pos, ss, learningMove->move, stat_bonus(depth), depth);
 	
 	                    // Extra penalty for early quiet moves of the previous ply
 	                    if ((ss - 1)->moveCount <= 2 && !priorCapture)
@@ -1088,12 +1131,13 @@ namespace {
 	                        update_continuation_histories(ss, pos.moved_piece(expTTMove), to_sq(expTTMove), penalty);
 	                    }
 	                }
+	
 	                //thisThread->tbHits.fetch_add(1, std::memory_order_relaxed);
 	                if (pos.rule50_count() < 90)
 	                    return expTTValue;
 	            }
 	        }
-		}
+	    }
     }
     //from Kelly end
 
@@ -1158,6 +1202,7 @@ namespace {
         ss->staticEval = eval = VALUE_NONE;
       	updateShashinValues(pos,ss->staticEval);//from ShashChess
         improving = false;
+		improvement = 0;
         goto moves_loop;
     }
     else if (ss->ttHit)
@@ -1181,20 +1226,11 @@ namespace {
       //from kelly begin
       if (!persistedLearning || !(expTTHit)|| !(updatedLearning) )
       {
-	    // In case of null move search use previous static eval with a different sign
-	    // and addition of two tempos
-		if ((ss-1)->currentMove != MOVE_NULL)
-		{
-		    ss->staticEval = eval = evaluate(pos);
-	
-		}
-		else
-		{
-		  ss->staticEval = eval = -(ss-1)->staticEval;
-		}
-    	// Save static evaluation into transposition table
-        if(!excludedMove)
-        tte->save(posKey, VALUE_NONE, ss->ttPv, BOUND_NONE, DEPTH_NONE, MOVE_NONE, eval);
+		ss->staticEval = eval = evaluate(pos);
+		
+        // Save static evaluation into transposition table
+        if (!excludedMove)
+            tte->save(posKey, VALUE_NONE, ss->ttPv, BOUND_NONE, DEPTH_NONE, MOVE_NONE, eval);
       }
       else //learning
       {
@@ -1225,13 +1261,15 @@ namespace {
     //from Kelly begin
     if(!expectedPVNode)
     {
-	    // Set up improving flag that is used in various pruning heuristics
-	    // We define position as improving if static evaluation of position is better
-	    // Than the previous static evaluation at our turn
-	    // In case of us being in check at our previous move we look at move prior to it
-	    improving =  (ss-2)->staticEval == VALUE_NONE
-	               ? ss->staticEval > (ss-4)->staticEval || (ss-4)->staticEval == VALUE_NONE
-	               : ss->staticEval > (ss-2)->staticEval;
+		// Set up the improvement variable, which is the difference between the current
+		// static evaluation and the previous static evaluation at our turn (if we were
+		// in check at our previous move we look at the move prior to it). The improvement
+		// margin and the improving flag are used in various pruning heuristics.
+		improvement =   (ss-2)->staticEval != VALUE_NONE ? ss->staticEval - (ss-2)->staticEval
+					  : (ss-4)->staticEval != VALUE_NONE ? ss->staticEval - (ss-4)->staticEval
+					  :                                    200;
+
+	    improving = improvement > 0;
     }
     //from Kelly end
     //from Crystal begin
@@ -1272,7 +1310,7 @@ namespace {
         && (ss-1)->statScore < 23767
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 20 * depth - 22 * improving + 168 * ss->ttPv + 177
+		&&  ss->staticEval >= beta - 20 * depth - 22 * improving + 168 * ss->ttPv + 177 //official by Shashin
     &&  pos.non_pawn_material(us)
 	&& ((pos.this_thread()->shashinQuiescentCapablancaMaxScore)||(!gameCycle)) //from Crystal
 	&&  !disableNMP //Kelly
@@ -1316,6 +1354,7 @@ namespace {
             thisThread->nmpColor = us;
 
             Value v = search<NonPV>(pos, ss, beta-1, beta, depth-R, false, mcts);//mcts
+
             thisThread->nmpMinPly = 0;
 
             if (v >= beta)
@@ -1344,19 +1383,16 @@ namespace {
         assert(probCutBeta < VALUE_INFINITE);
 
         MovePicker mp(pos, ttMove, probCutBeta - ss->staticEval, &captureHistory);
-        int probCutCount = 0;
         bool ttPv = ss->ttPv;
         ss->ttPv = false;
 
-        while (   (move = mp.next_move()) != MOVE_NONE
-               && probCutCount < 2 + 2 * cutNode)
+        while ((move = mp.next_move()) != MOVE_NONE)
             if (move != excludedMove && pos.legal(move))
             {
                 assert(pos.capture_or_promotion(move));
                 assert(depth >= 5);
 
                 captureOrPromotion = true;
-                probCutCount++;
 
                 ss->currentMove = move;
                 ss->continuationHistory = &thisThread->continuationHistory[ss->inCheck]
@@ -1414,7 +1450,7 @@ namespace {
 	//official by Shashin end	
 moves_loop: // When in check, search starts from here
 
-    ttCapture = ttMove && pos.capture_or_promotion(ttMove);
+    int rangeReduction = 0;
 
     // Step 11. A small Probcut idea, when we are in check
     probCutBeta = beta + 409;
@@ -1450,8 +1486,7 @@ moves_loop: // When in check, search starts from here
                                       ss->ply);
 
     value = bestValue;
-    singularQuietLMR = moveCountPruning = false;
-    bool doubleExtension = false;
+    singularQuietLMR = moveCountPruning = noLMRExtension = false;
 
     // Indicate PvNodes that will probably fail low if the node was searched
     // at a depth equal or greater than the current depth, and the result of this search was a fail low.
@@ -1548,7 +1583,7 @@ moves_loop: // When in check, search starts from here
 		  (pos.this_thread()->shashinQuiescentCapablancaMaxScore))?MCP_limit:futility_move_count(improving, depth));
           //goodStatic6 end
           // Reduced depth of the next LMR search
-          int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount), 0);
+          int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount, rangeReduction > 2), 0);
 
           if (   captureOrPromotion
               || givesCheck)
@@ -1588,8 +1623,8 @@ moves_loop: // When in check, search starts from here
 
               // Futility pruning: parent node (~5 Elo)
               if (   !ss->inCheck
-                  && lmrDepth < 7
-                  && ss->staticEval + 172 + 157 * lmrDepth <= alpha)
+                  && lmrDepth < 8
+                  && ss->staticEval + 172 + 145 * lmrDepth <= alpha)
                   continue;
 
               // Prune moves with negative SEE (~20 Elo)
@@ -1614,7 +1649,7 @@ moves_loop: // When in check, search starts from here
           && (tte->bound() & BOUND_LOWER)
           &&  tte->depth() >= depth - 3)
       {
-          Value singularBeta = ttValue - 2 * depth;
+          Value singularBeta = ttValue - 3 * depth;
           Depth singularDepth = (depth - 1) / 2;
 
           ss->excludedMove = move;
@@ -1626,13 +1661,13 @@ moves_loop: // When in check, search starts from here
               extension = 1;
               singularQuietLMR = !ttCapture;
 
-              // Avoid search explosion by limiting the number of double extensions to at most 3
+              // Avoid search explosion by limiting the number of double extensions
               if (   !PvNode
-                  && value < singularBeta - 93
-                  && ss->doubleExtensions < 3)
+                  && value < singularBeta - 75
+                  && ss->doubleExtensions <= 6)
               {
                   extension = 2;
-                  doubleExtension = true;
+                  noLMRExtension = true;
               }
           }
 
@@ -1645,16 +1680,24 @@ moves_loop: // When in check, search starts from here
               return singularBeta;
 
           // If the eval of ttMove is greater than beta we try also if there is another
-          // move that pushes it over beta, if so also produce a cutoff.
+          // move that pushes it over beta, if so the position also has probably multiple
+          // moves giving fail highs. We will then reduce the ttMove (negative extension).
           else if (ttValue >= beta)
-          {
-              ss->excludedMove = move;
-              value = search<NonPV>(pos, ss, beta - 1, beta, (depth + 3) / 2, cutNode, mcts);//mcts
-              ss->excludedMove = MOVE_NONE;
+		  {
+			  if(pos.this_thread()->shashinValue == SHASHIN_POSITION_CAPABLANCA)
+			  {
+				extension = -2;  
+			  }
+			  else
+			  {
+				  ss->excludedMove = move;
+				  value = search<NonPV>(pos, ss, beta - 1, beta, (depth + 3) / 2, cutNode, mcts);//mcts
+				  ss->excludedMove = MOVE_NONE;
 
-              if (value >= beta)
-                  return beta;
-          }
+				  if (value >= beta)
+					  extension = -2;				  
+			  }
+		  }
       }
 
       //SPRT singExtNoTt5 begin
@@ -1698,7 +1741,14 @@ moves_loop: // When in check, search starts from here
 	  // Check extensions	  
       else if (   givesCheck
                && depth > 6
-               && abs(ss->staticEval) > Value(100))
+               && abs(ss->staticEval) > 100)
+          extension = 1;
+
+      // Quiet ttMove extensions
+      else if (   PvNode
+               && move == ttMove
+               && move == ss->killers[0]
+               && (*contHist[0])[movedPiece][to_sq(move)] >= 10000)
           extension = 1;
 
       // Add extension to new depth
@@ -1737,13 +1787,11 @@ moves_loop: // When in check, search starts from here
               || !ss->ttPv)
           && (!PvNode || ss->ply > 1 || thisThread->id() % 4 != 3))
       {
-          Depth r = reduction(improving, depth, moveCount);
-          
-		  if (PvNode)
-              r--;
-          
-		  // Decrease reduction if the ttHit running average is large (~0 Elo)
-          if (thisThread->ttHitAverage > 537 * TtHitAverageResolution * TtHitAverageWindow / 1024)
+          Depth r = reduction(improving, depth, moveCount, rangeReduction > 2);
+
+          // Decrease reduction if on the PV (~2 Elo)
+          if (   PvNode
+              && bestMoveCount <= 3)
               r--;
 
           // Decrease reduction if position is or has been on the PV
@@ -1794,12 +1842,21 @@ moves_loop: // When in check, search starts from here
           // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
           r -= ss->statScore / 14721;
 
-          // In general we want to cap the LMR depth search at newDepth. But if
-          // reductions are really negative and movecount is low, we allow this move
-		  // to be searched deeper than the first move in specific cases.
-          Depth d = std::clamp(newDepth - r, 1, newDepth + (r < -1 && (moveCount <= 5 || (depth > 6 && PvNode)) && !doubleExtension));
+          // In general we want to cap the LMR depth search at newDepth. But if reductions
+          // are really negative and movecount is low, we allow this move to be searched
+          // deeper than the first move (this may lead to hidden double extensions).
+          int deeper =   r >= -1                   ? 0
+                       : moveCount <= 3            ? 2
+                       : moveCount <= 5            ? 1
+                       : PvNode && depth > 6       ? 1
+                       :                             0;
+
+          Depth d = std::clamp(newDepth - r, 1, newDepth + deeper);
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true, mcts);//mcts
+          // Range reductions (~3 Elo)
+          if (ss->staticEval - value < 30 && depth > 7)
+              rangeReduction++;
 
           // If the son is reduced and fails high it will be re-searched at full depth
           doFullDepthSearch = value > alpha && d < newDepth;
@@ -1819,7 +1876,7 @@ moves_loop: // When in check, search starts from here
           // If the move passed LMR update its stats
           if (didLMR && !captureOrPromotion)
           {
-              int bonus = value > alpha ?  stat_bonus(newDepth + doubleExtension)
+              int bonus = value > alpha ?  stat_bonus(newDepth + noLMRExtension)
                                         : -stat_bonus(newDepth);
 
               update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
@@ -1871,10 +1928,13 @@ moves_loop: // When in check, search starts from here
               for (Move* m = (ss+1)->pv; *m != MOVE_NONE; ++m)
                   rm.pv.push_back(*m);
 
-              // We record how often the best move has been changed in each
-              // iteration. This information is used for time management and LMR
+              // We record how often the best move has been changed in each iteration.
+              // This information is used for time management and LMR. In MultiPV mode,
+              // we must take care to only do this for the first PV line.
+              
               //bmMovecountR7 begin
-              if (moveCount > 1)
+              if (   moveCount > 1
+                  && !thisThread->pvIdx)
               {
                   ++thisThread->bestMoveChanges;
                   thisThread->bestMoveMc += moveCount - 1;
@@ -1900,7 +1960,10 @@ moves_loop: // When in check, search starts from here
                   update_pv(ss->pv, move, (ss+1)->pv);
 
               if (PvNode && value < beta) // Update alpha! Always alpha < beta
+              {
                   alpha = value;
+                  bestMoveCount++;
+              }
               else
               {
                   assert(value >= beta); // Fail high
@@ -2090,8 +2153,7 @@ moves_loop: // When in check, search starts from here
         else
         {
       // In case of null move search use previous static eval with a different sign
-      // and addition of two tempos
-	  if((ss-1)->currentMove != MOVE_NULL)
+      if((ss-1)->currentMove != MOVE_NULL)
 	  { //from ShashChess begin
 	      ss->staticEval = bestValue = evaluate(pos);
 	  } //from ShashChess end
@@ -2319,8 +2381,8 @@ moves_loop: // When in check, search starts from here
     PieceType captured = type_of(pos.piece_on(to_sq(bestMove)));
 
     bonus1 = stat_bonus(depth + 1);
-    bonus2 = bestValue > beta + PawnValueMg ? bonus1                                 // larger bonus
-                                            : std::min(bonus1, stat_bonus(depth));   // smaller bonus
+    bonus2 = bestValue > beta + PawnValueMg ? bonus1               // larger bonus
+                                            : stat_bonus(depth);   // smaller bonus
 
     if (!pos.capture_or_promotion(bestMove))
     {
@@ -2698,7 +2760,8 @@ void Tablebases::rank_root_moves(Position& pos, Search::RootMoves& rootMoves) {
             m.tbRank = 0;
     }
 }
-//from Kelly begin
+
+//Kelly begin
 void putGameLineIntoLearningTable()
 {
   double learning_rate = 0.5;
@@ -2706,27 +2769,28 @@ void putGameLineIntoLearningTable()
 
   if (gameLine.size() > 1)
   {
-    for (size_t index = gameLine.size() - 1; index > 0; index--)
-    {
-      int currentScore = gameLine[index - 1].score * 100 / PawnValueEg;
-      int nextScore = gameLine[index].score * 100 / PawnValueEg;
+      for (size_t index = gameLine.size() - 1; index > 0; index--)
+      {
+          int currentScore = gameLine[index - 1].learningMove.score * 100 / PawnValueEg;
+          int nextScore = gameLine[index].learningMove.score * 100 / PawnValueEg;
 
-      currentScore = currentScore * (1 - learning_rate) +
-        learning_rate * (gamma * nextScore);
+          currentScore = currentScore * (1 - learning_rate) +
+              learning_rate * (gamma * nextScore);
 
-      gameLine[index - 1].score = currentScore * PawnValueEg / 100;
+          gameLine[index - 1].learningMove.score = currentScore * PawnValueEg / 100;
 
-      insertIntoOrUpdateLearningTable(gameLine[index - 1]);
-    }
+          LD.add_new_learning(gameLine[index - 1].key, gameLine[index - 1].learningMove);
+      }
 
-    gameLine.clear();
+      gameLine.clear();
   }
 }
 
 void setStartPoint()
 {
   useLearning = true;
-  pauseExperience = false;
+  LD.resume();
 }
-//from Kelly end
+//Kelly end
+
 } // namespace Stockfish

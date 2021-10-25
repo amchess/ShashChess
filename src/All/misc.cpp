@@ -69,7 +69,7 @@ namespace {
 
 /// Version number. If Version is left empty, then compile date in the format
 /// DD-MM-YY and show in engine_info.
-const string Version = "18.2";
+const string Version = "19";
 
 /// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 /// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
@@ -415,7 +415,6 @@ void prefetch(void* addr) {
 /// std_aligned_alloc() must be freed with std_aligned_free().
 
 void* std_aligned_alloc(size_t alignment, size_t size) {
-
 #if defined(POSIXALIGNEDALLOC)
   void *mem;
   return posix_memalign(&mem, alignment, size) ? nullptr : mem;
@@ -427,7 +426,6 @@ void* std_aligned_alloc(size_t alignment, size_t size) {
 }
 
 void std_aligned_free(void* ptr) {
-
 #if defined(POSIXALIGNEDALLOC)
   free(ptr);
 #elif defined(_WIN32)

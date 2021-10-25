@@ -116,7 +116,7 @@ _Default 84, min 10, max 1000_
 
 Activate the handicap mode and the related following options: in this case, the evaluation function is always the classical one.
 
-#### UCI_Elo
+#### UCI_Elo (CB only for chessbase products users)
 
 _Default 2850, min 1350, max 2850_
 UCI-protocol compliant version of Strength parameter.

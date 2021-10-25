@@ -34,10 +34,10 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
-//kelly patch begin
+//Kelly begin
 extern void setStartPoint();
 extern void putGameLineIntoLearningTable();
-//kelly patch end
+//Kelly end
 
 /// StateInfo struct stores information needed to restore a Position object to
 /// its previous state when we retract a move. Whenever a move is made on the

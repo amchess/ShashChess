@@ -26,8 +26,9 @@
 #include "search.h"
 #include "syzygy/tbprobe.h"
 #include "thread.h"
-#include "tt.h"
+#include "learn.h"
 #include "uci.h"
+
 using namespace Stockfish;
 
 int main(int argc, char* argv[]) {
@@ -41,8 +42,7 @@ int main(int argc, char* argv[]) {
   //from Kelly begin
   if(!(Options["Persisted learning"]== "Off"))
   {
-  	Utility::init(argv[0]); //Khalid
-	initLearning ();//Kelly
+  	LD.init();//Kelly
   }
   //from Kelly end
   PSQT::init();

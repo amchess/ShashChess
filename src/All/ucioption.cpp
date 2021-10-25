@@ -25,6 +25,7 @@
 #include "misc.h"
 #include "search.h"
 #include "thread.h"
+#include "learn.h"
 #include "tt.h"
 #include "uci.h"
 #include "syzygy/tbprobe.h"
@@ -43,7 +44,7 @@ void on_hash_size(const Option& o) { TT.resize(size_t(o)); }
 void on_logger(const Option& o) { start_logger(o); }
 void on_threads(const Option& o) { Threads.set(size_t(o)); }
 void on_full_threads(const Option& o) { Threads.setFull(o); } //full threads patch
-void on_persisted_learning(const Option& o) { if (!(o == "Off")) initLearning();}//Kelly learning
+void on_persisted_learning(const Option& o) { if (!(o == "Off")) LD.init();}//Kelly learning
 void on_tb_path(const Option& o) { Tablebases::init(o); }
 void on_use_NNUE(const Option& ) { Eval::NNUE::init(); }
 void on_eval_file(const Option& ) { Eval::NNUE::init(); }
@@ -78,9 +79,10 @@ void init(OptionsMap& o) {
   o["Slow Mover"]            	   << Option(100, 10, 1000);
   o["UCI_Chess960"]          	   << Option(false);
   o["UCI_AnalyseMode"]       	   << Option(false);
-  //handicap mode
   o["UCI_LimitStrength"]     	   << Option(false);
-  o["UCI_Elo"]               << Option(2850, 1350, 2850); //from ShashChess
+  o["UCI_LimitStrength_CB"]        << Option(false);
+  o["UCI_Elo"]                     << Option(2850, 1350, 2850);//handicap mode from ShashChess 
+  o["UCI_Elo_CB"]                  << Option(2850, 1350, 2850);//handicap mode from ShashChess 
   o["UCI_ShowWDL"]           << Option(false);
   o["SyzygyPath"]            	   << Option("<empty>", on_tb_path);
   o["SyzygyProbeDepth"]            << Option(1, 1, 100);
@@ -162,7 +164,7 @@ Option::operator double() const {
 }
 
 Option::operator std::string() const {
-  assert(type == "string");
+  assert(type == "string" || type == "combo");
   return currentValue;
 }
 
