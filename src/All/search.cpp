@@ -278,7 +278,7 @@ void MainThread::search() {
       return;
   }
   //from Sugar
-  limitStrength = Options["UCI_LimitStrength"] || Options["UCI_LimitStrength_CB"] ;
+  limitStrength = Options["UCI_LimitStrength"] || Options["LimitStrength_CB"] ;
   //end from Sugar
   Color us = rootPos.side_to_move();
   Time.init(Limits, us, rootPos.game_ply());
@@ -303,7 +303,7 @@ void MainThread::search() {
   petrosian=Options["Petrosian"];
   //end from Shashin
   //from handicap mode begin
-  uciElo=Options["UCI_LimitStrength"]?Options["UCI_Elo"]:Options["UCI_Elo_CB"];
+  uciElo=Options["UCI_LimitStrength"]?Options["UCI_Elo"]:Options["ELO_CB"];
   handicapDepth=limitStrength ? round(0.604686101*exp(1.399511228*pow(10,-3)*uciElo)):0;
   pawnsToEvaluate = limitStrength ? (uciElo >= 2000):1;
   winnableToEvaluate= limitStrength ? (uciElo>=2200):1;
@@ -396,7 +396,7 @@ void MainThread::search() {
   if (   int(Options["MultiPV"]) == 1
       && !Limits.depth
       && !(int(Options["UCI_LimitStrength"]))
-	  && !(int(Options["UCI_LimitStrength_CB"]))
+	  && !(int(Options["LimitStrength_CB"]))
       && rootMoves[0].pv[0] != MOVE_NONE)
       bestThread = Threads.get_best_thread();
 

@@ -76,7 +76,7 @@ namespace Eval {
 
   void NNUE::init() {
 
-    useNNUE = Options["Use NNUE"]&&(!Options["UCI_LimitStrength"])&&(!Options["UCI_LimitStrength_CB"]);
+    useNNUE = Options["Use NNUE"]&&(!Options["UCI_LimitStrength"])&&(!Options["LimitStrength_CB"]);
     if (!useNNUE)
         return;
 

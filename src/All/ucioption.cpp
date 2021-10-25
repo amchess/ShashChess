@@ -80,9 +80,9 @@ void init(OptionsMap& o) {
   o["UCI_Chess960"]          	   << Option(false);
   o["UCI_AnalyseMode"]       	   << Option(false);
   o["UCI_LimitStrength"]     	   << Option(false);
-  o["UCI_LimitStrength_CB"]        << Option(false);
+  o["LimitStrength_CB"]        << Option(false);
   o["UCI_Elo"]                     << Option(2850, 1350, 2850);//handicap mode from ShashChess 
-  o["UCI_Elo_CB"]                  << Option(2850, 1350, 2850);//handicap mode from ShashChess 
+  o["ELO_CB"]                  << Option(2850, 1350, 2850);//handicap mode from ShashChess 
   o["UCI_ShowWDL"]           << Option(false);
   o["SyzygyPath"]            	   << Option("<empty>", on_tb_path);
   o["SyzygyProbeDepth"]            << Option(1, 1, 100);
