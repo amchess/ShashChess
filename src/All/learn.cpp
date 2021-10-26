@@ -55,7 +55,7 @@ bool LearningData::load(const std::string& filename)
     mainDataBuffers.push_back(fileData);
 
     //Loop the moves from this file
-    bool qLearning = (bool)Options["Self Q-learning"];
+    bool qLearning = (usePersistedLearning == PersistedLearningUsage::Self);
     PersistedLearningMove *persistedLearningMove = (PersistedLearningMove*)fileData;
     do
     {
@@ -330,7 +330,7 @@ void LearningData::add_new_learning(Key key, const LearningMove& lm)
     newPlm->learningMove = lm;
 
     //Add to HT
-    insert_or_update(newPlm, (bool)Options["Self Q-learning"]);
+    insert_or_update(newPlm, (usePersistedLearning == PersistedLearningUsage::Self));
 }
 
 int LearningData::probe(Key key, const LearningMove*& learningMove)

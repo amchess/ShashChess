@@ -271,6 +271,7 @@ void Search::clear() {
 
 void MainThread::search() {
 
+  persistedLearning= (usePersistedLearning != PersistedLearningUsage::Off);//from Kelly
   if (Limits.perft)
   {
       nodes = perft<true>(rootPos, Limits.perft);
