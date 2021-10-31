@@ -182,7 +182,6 @@ void LearningData::clear()
 
 void LearningData::init()
 {
-    setUsePersistedLearning();
 	clear();
 
     load(Utility::map_path("experience.bin"));
