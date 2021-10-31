@@ -40,9 +40,10 @@ int main(int argc, char* argv[]) {
   UCI::init(Options);
   Tune::init();
   //from Kelly begin
-  if(!(Options["Persisted learning"]== "Off"))
+  setUsePersistedLearning();
+  if (usePersistedLearning != PersistedLearningUsage::Off)
   {
-  	LD.init();//Kelly
+  	LD.init();
   }
   //from Kelly end
   PSQT::init();

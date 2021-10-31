@@ -918,7 +918,7 @@ namespace {
     bool updatedLearning = false;
 
     //flags to preserve node tyepes
-    bool disableNMP = false;
+    bool disableNMAndPC = false;
     bool expectedPVNode =  false;
     int sibs = 0;
     //from Kelly end
@@ -1097,7 +1097,7 @@ namespace {
 	            {
 	                if (expTTValue < alpha)
 	                {
-	                    disableNMP = true;
+	                    disableNMAndPC = true;
 	                }
 	                if (expTTValue > alpha && expTTValue < beta)
 	                {
@@ -1314,7 +1314,7 @@ namespace {
 		&&  ss->staticEval >= beta - 20 * depth - 22 * improving + 168 * ss->ttPv + 177 //official by Shashin
     &&  pos.non_pawn_material(us)
 	&& ((pos.this_thread()->shashinQuiescentCapablancaMaxScore)||(!gameCycle)) //from Crystal
-	&&  !disableNMP //Kelly
+	&&  !disableNMAndPC //Kelly
 	)
     {
         assert(eval - beta >= 0);
@@ -1369,7 +1369,7 @@ namespace {
     // If we have a good enough capture and a reduced search returns a value
     // much above beta, we can (almost) safely prune the previous move.
     if (   !PvNode		
-		&&  !disableNMP //Kelly
+		&&  !disableNMAndPC //Kelly
         &&  depth > 4
         &&  abs(beta) < VALUE_TB_WIN_IN_MAX_PLY
         // if value from transposition table is lower than probCutBeta, don't attempt probCut
@@ -1783,10 +1783,9 @@ moves_loop: // When in check, search starts from here
       // cases where we extend a son if it has good chances to be "interesting".
       if ( doLMRStep &&   depth >= 3 &&  moveCount > sibs //full threads patch + Kelly
 	  &&  moveCount > 1 + 2 * rootNode
-          && (  !captureOrPromotion
-              || (cutNode && (ss-1)->moveCount > 1)
-              || !ss->ttPv)
-          && (!PvNode || ss->ply > 1 || thisThread->id() % 4 != 3))
+          && (   !ss->ttPv
+              || !captureOrPromotion
+              || (cutNode && (ss-1)->moveCount > 1)))
       {
           Depth r = reduction(improving, depth, moveCount, rangeReduction > 2);
 
@@ -1846,11 +1845,10 @@ moves_loop: // When in check, search starts from here
           // In general we want to cap the LMR depth search at newDepth. But if reductions
           // are really negative and movecount is low, we allow this move to be searched
           // deeper than the first move (this may lead to hidden double extensions).
-          int deeper =   r >= -1                   ? 0
-                       : moveCount <= 3            ? 2
-                       : moveCount <= 5            ? 1
-                       : PvNode && depth > 6       ? 1
-                       :                             0;
+          int deeper =   r >= -1             ? 0
+                       : moveCount <= 5      ? 2
+                       : PvNode && depth > 6 ? 1
+                       :                       0;
 
           Depth d = std::clamp(newDepth - r, 1, newDepth + deeper);
 
