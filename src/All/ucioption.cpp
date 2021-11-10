@@ -29,6 +29,7 @@
 #include "tt.h"
 #include "uci.h"
 #include "syzygy/tbprobe.h"
+#include "polybook.h" //cerebellum
 
 using std::string;
 
@@ -48,12 +49,20 @@ void on_persisted_learning(const Option& o) { if (!(o == "Off")){ setUsePersiste
 void on_tb_path(const Option& o) { Tablebases::init(o); }
 void on_use_NNUE(const Option& ) { Eval::NNUE::init(); }
 void on_eval_file(const Option& ) { Eval::NNUE::init(); }
+void on_UCI_LimitStrength(const Option& ) { Eval::NNUE::init(); }
+void on_LimitStrength_CB(const Option& ) { Eval::NNUE::init(); }
 //livebook begin
 void on_livebook_url(const Option& o) { Search::setLiveBookURL(o); }
 void on_livebook_timeout(const Option& o) { Search::setLiveBookTimeout(o); }
 void on_live_book_retry(const Option& o) { Search::set_livebook_retry(o); }
 void on_livebook_depth(const Option& o) { Search::set_livebook_depth(o); }
 //livebook end
+//cerebellum+book begin
+void on_book_file(const Option& o) { polybook.init(o); }
+void on_book_file2(const Option& o) { polybook2.init(o); }
+void on_best_book_move(const Option& o) { polybook.set_best_book_move(o); }
+void on_book_depth(const Option& o) { polybook.set_book_depth(o); }
+//cerebellum+book end
 
 /// Our case insensitive less() function as required by UCI protocol
 bool CaseInsensitiveLess::operator() (const string& s1, const string& s2) const {
@@ -79,8 +88,9 @@ void init(OptionsMap& o) {
   o["Slow Mover"]            	   << Option(100, 10, 1000);
   o["UCI_Chess960"]          	   << Option(false);
   o["UCI_AnalyseMode"]       	   << Option(false);
-  o["UCI_LimitStrength"]     	   << Option(false);
-  o["LimitStrength_CB"]        << Option(false);
+  o["UCI_LimitStrength"]     	   << Option(false, on_UCI_LimitStrength);
+  o["Handicapped Depth"]     	   << Option(false);
+  o["LimitStrength_CB"]        << Option(false,on_LimitStrength_CB);
   o["UCI_Elo"]                     << Option(2850, 1350, 2850);//handicap mode from ShashChess 
   o["ELO_CB"]                  << Option(2850, 1350, 2850);//handicap mode from ShashChess 
   o["UCI_ShowWDL"]           << Option(false);
@@ -100,6 +110,12 @@ void init(OptionsMap& o) {
   o["Live Book Contribute"]  << Option(false);
   o["Live Book Depth"]       << Option(100, 1, 100, on_livebook_depth);
   //livebook end
+  //cerebellum book begin
+  o["BookFile"]              << Option("<empty>", on_book_file);
+  o["BookFile2"]             << Option("<empty>", on_book_file2);
+  o["BestBookMove"]          << Option(true, on_best_book_move);
+  o["BookDepth"]             << Option(255, 1, 255, on_book_depth);
+  //cerebellum book end  
   o["Full depth threads"]    << Option(0, 0, 512, on_full_threads); //if this is used, must be after #Threads is set.
   o["Opening variety"]       << Option (0, 0, 40);
   o["Persisted learning"]    << Option("Off var Off var Standard var Self", "Off", on_persisted_learning);

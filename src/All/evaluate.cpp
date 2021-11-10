@@ -999,7 +999,9 @@ namespace {
 
     // Early exit if score is high
     auto lazy_skip = [&](Value lazyThreshold) {
-        return abs(mg_value(score) + eg_value(score)) > lazyThreshold + pos.non_pawn_material() / 32;
+        return abs(mg_value(score) + eg_value(score)) >   lazyThreshold
+                                                        + std::abs(pos.this_thread()->bestValue) * 5 / 4
+                                                        + pos.non_pawn_material() / 32;
     };
     //LeafDepth7 begin
     if(pos.this_thread()->shashinValue==SHASHIN_POSITION_CAPABLANCA)
@@ -1126,7 +1128,6 @@ Value Eval::evaluate(const Position& pos) {
 
        if (pos.is_chess960())
            v += fix_FRC(pos);
-       v =(v*436/673);
   }
 
   // Damp down the evaluation linearly when shuffling
@@ -1135,7 +1136,7 @@ Value Eval::evaluate(const Position& pos) {
   // Guarantee evaluation does not hit the tablebase range
   v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
 
-  return (v * 5384/7085);
+  return (v * 32/65);
 }
 
 /// trace() is like evaluate(), but instead of returning a value, it returns
@@ -1156,6 +1157,7 @@ std::string Eval::trace(Position& pos) {
   std::memset(scores, 0, sizeof(scores));
 
   pos.this_thread()->trend = SCORE_ZERO; // Reset any dynamic contempt
+  pos.this_thread()->bestValue = VALUE_ZERO; // Reset bestValue for lazyEval
 
   v = Evaluation<TRACE>(pos).value();
 

@@ -132,6 +132,17 @@ Every school corresponds to a different evaluation function, more and more refin
 The UCI_Elo feature is controlled by the chess GUI, and usually doesn't appear in the configuration
 window.
 
+#### Handicapped Depth
+The engine stop calculating when it joins the handicapped depth, based on the following table:
+
+Elo range | Handicapped Depth |
+| ------ | ------ |
+| [0,1999] | [1,6] |
+| [2000,2199] | [7,9] |
+| [2200,2399] | [10,12] |
+| [2400,2850] | [13,20] |
+
+
 ### Sygyzy End Game table bases
 
 Download at [http://olympuschess.com/egtb/sbases](http://olympuschess.com/egtb/sbases) (by Ronald De Man)

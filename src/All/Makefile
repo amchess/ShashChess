@@ -39,7 +39,7 @@ endif
 
 ### Source and object files
 SRCS = benchmark.cpp bitbase.cpp bitboard.cpp endgame.cpp evaluate.cpp learn.cpp main.cpp \
-	material.cpp misc.cpp montecarlo.cpp movegen.cpp movepick.cpp pawns.cpp position.cpp psqt.cpp \
+	material.cpp misc.cpp montecarlo.cpp movegen.cpp movepick.cpp pawns.cpp polybook.cpp position.cpp psqt.cpp \
 	search.cpp thread.cpp timeman.cpp tt.cpp uci.cpp ucioption.cpp tune.cpp syzygy/tbprobe.cpp \
 	nnue/evaluate_nnue.cpp nnue/features/half_ka_v2_hm.cpp
 
@@ -751,7 +751,7 @@ profile-build: net config-sanity objclean profileclean
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) $(profile_make)
 	@echo ""
 	@echo "Step 2/4. Running benchmark for pgo-build ..."
-	$(PGOBENCH) > /dev/null
+	$(PGOBENCH) 2>&1 | tail -n 4
 	@echo ""
 	@echo "Step 3/4. Building optimized executable ..."
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) objclean

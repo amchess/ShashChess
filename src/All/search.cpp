@@ -24,6 +24,7 @@
 #include <sstream>
 #include <random>  //opening variety sugar
 #include <fstream> // kelly
+#include "polybook.h"//from BrainFish
 #include "evaluate.h"
 #include "misc.h"
 #include "montecarlo.h" //Montecarlo
@@ -51,18 +52,13 @@ bool pawnsToEvaluate, winnableToEvaluate, imbalancesToEvaluate; //from Shashin H
 //kelly begin
 bool useLearning = true;
 bool enabledLearningProbe;
-
-//Spinlocks
-Spinlock threadLock;
-
-//Kelly begin
 std::vector<PersistedLearningMove> gameLine;
 //Kelly end
 
 namespace Search {
 
   LimitsType Limits;
-  int uciElo, handicapDepth;//from handicap mode
+  int uciElo, depthLimit;//from handicap mode
   //from Shashin
   bool tal,capablanca,petrosian;
   //end from Shashin
@@ -92,7 +88,7 @@ namespace {
   Value futility_margin(Depth d, bool improving) {
     return Value(214 * (d - improving));
   }
-  int skillLevel;//from handicap mode
+  //int skillLevel;//from true handicap mode
 
   // Reductions lookup table, initialized at startup
   int Reductions[MAX_MOVES]; // [depth or moveNumber]
@@ -139,17 +135,27 @@ namespace {
 
     return thisThread->state;
   }
-
-  // Skill structure is used to implement strength limit
-  struct Skill {
-    explicit Skill(int l) : level(l) {}
-    bool enabled() const { return level < 20; }
-    bool time_to_pick(Depth depth) const { return depth == 1 + level; }
+  //from true handicap mode begin
+  // Skill structure is used to implement strength limit. If we have an uci_elo then
+  // we convert it to a suitable fractional skill level using anchoring to CCRL Elo
+  // (goldfish 1.13 = 2000) and a fit through Ordo derived Elo for match (TC 60+0.6)
+  // results spanning a wide range of k values.
+//from true handicap mode begin  
+/*  struct Skill {
+	Skill(int skill_level, int uci_elo) {
+        if (uci_elo)
+            level = std::clamp(std::pow((uci_elo - 1346.6) / 143.4, 1 / 0.806), 0.0, 20.0);
+        else
+            level = double(skill_level);
+    }
+    bool enabled() const { return level < 20.0; }
+    bool time_to_pick(Depth depth) const { return depth == 1 + int(level); } 
     Move pick_best(size_t multiPV);
 
-    int level;
+    double level;
     Move best = MOVE_NONE;
-  };
+  };*/
+  //from true handicap mode end
   bool limitStrength ;//from handicap mode
   int openingVariety;//from Sugar
 
@@ -265,7 +271,27 @@ void Search::clear() {
   Tablebases::init(Options["SyzygyPath"]); // Free mapped files
 }
 
-
+//handicapMode begin
+inline int getHandicapDepth(int elo){
+    if(elo<=1350)
+    {
+        return (int)(3*elo/1350 +1 );
+    }
+    if(elo<=1999)
+    {
+        return (int)((2*elo-104)/649 );
+    }    
+    if(elo<=2199)
+    {
+        return (int)((2*elo-2607)/199);
+    }
+    if(elo<=2399)
+    {
+        return (int)((2*elo-2410)/199);
+    }
+    return (int)((7*elo-10950)/450);
+}
+//handicapMode end
 /// MainThread::search() is started when the program receives the UCI 'go'
 /// command. It searches from the root position and outputs the "bestmove".
 
@@ -304,12 +330,12 @@ void MainThread::search() {
   petrosian=Options["Petrosian"];
   //end from Shashin
   //from handicap mode begin
-  uciElo=Options["UCI_LimitStrength"]?Options["UCI_Elo"]:Options["ELO_CB"];
-  handicapDepth=limitStrength ? round(0.604686101*exp(1.399511228*pow(10,-3)*uciElo)):0;
+  uciElo=Options["UCI_LimitStrength"] ? Options["UCI_Elo"]:Options["ELO_CB"];
+  depthLimit=limitStrength && Options["Handicapped Depth"] ? getHandicapDepth(uciElo):Limits.depth;//handicap mode
   pawnsToEvaluate = limitStrength ? (uciElo >= 2000):1;
   winnableToEvaluate= limitStrength ? (uciElo>=2200):1;
   imbalancesToEvaluate = limitStrength ? (uciElo>=2400):1;
-  skillLevel= ((int)((uciElo-1350)/75));
+  //skillLevel= ((int)((uciElo-1350)/75)); //from true handicap mode
   //end from handicap mode
 
   if (rootMoves.empty())
@@ -319,57 +345,65 @@ void MainThread::search() {
                 << UCI::value(rootPos.checkers() ? -VALUE_MATE : VALUE_DRAW)
                 << sync_endl;
   }
+  //Books management begin
   else
   {
-      //livebook begin
       Move bookMove = MOVE_NONE;
-      if (Options["Live Book"] && g_inBook && !Limits.infinite && !Limits.mate)
+      if(!Limits.infinite && !Limits.mate)
       {
-	if(rootPos.game_ply()==0)
-	  livebook_depth_count=0;
-        if(livebook_depth_count < max_book_depth)
-        {
-	  CURLcode res;
-	  char *szFen = curl_easy_escape(g_cURL, rootPos.fen().c_str(), 0);
-	  std::string szURL = g_livebookURL + "?action=" + (Options["Live Book Diversity"] ? "query" : "querybest") + "&board=" + szFen;
-	  curl_free(szFen);
-	  curl_easy_setopt(g_cURL, CURLOPT_URL, szURL.c_str());
-	  g_szRecv.clear();
-	  res = curl_easy_perform(g_cURL);
-	  if (res == CURLE_OK)
-	  //livebook end
+	  bookMove = polybook.probe(rootPos);
+          if (!bookMove)
+              bookMove = polybook2.probe(rootPos);
+	  if(!bookMove)
 	  {
-	    //livebook begin
-	    g_szRecv.erase(std::find(g_szRecv.begin(), g_szRecv.end(), '\0'), g_szRecv.end());
-	    if (g_szRecv.find("move:") != std::string::npos)
+	    //Live Book begin
+	    if (Options["Live Book"] && g_inBook)
 	    {
-	      std::string tmp = g_szRecv.substr(5);
-	      bookMove = UCI::to_move(rootPos, tmp);
-		  livebook_depth_count++;
+	      if(rootPos.game_ply()==0)
+		livebook_depth_count=0;
+	      if (livebook_depth_count < max_book_depth)
+	      {
+		CURLcode res;
+		char *szFen = curl_easy_escape(g_cURL, rootPos.fen().c_str(), 0);
+		std::string szURL = g_livebookURL + "?action=" + (Options["Live Book Diversity"] ? "query" : "querybest") + "&board=" + szFen;
+		curl_free(szFen);
+		curl_easy_setopt(g_cURL, CURLOPT_URL, szURL.c_str());
+		g_szRecv.clear();
+		res = curl_easy_perform(g_cURL);
+		if (res == CURLE_OK)
+		{
+		  g_szRecv.erase(std::find(g_szRecv.begin(), g_szRecv.end(), '\0'), g_szRecv.end());
+		  if (g_szRecv.find("move:") != std::string::npos)
+		  {
+		    std::string tmp = g_szRecv.substr(5);
+		    bookMove = UCI::to_move(rootPos, tmp);
+		    livebook_depth_count++;
+		  }
+		}
+	      }
 	    }
-	    //livebook end
+	    //Live Book end
 	  }
-        }
-        //livebook begin
       }
       if (bookMove && std::count(rootMoves.begin(), rootMoves.end(), bookMove))
       {
-        g_inBook = Options["Live Book Retry"];
-		for (Thread* th : Threads)
-          std::swap(th->rootMoves[0], *std::find(th->rootMoves.begin(), th->rootMoves.end(), bookMove));
+	  g_inBook = Options["Live Book Retry"];
+
+	  for (Thread* th : Threads)
+	    std::swap(th->rootMoves[0], *std::find(th->rootMoves.begin(), th->rootMoves.end(), bookMove));
       }
       else
       {
-		bookMove = MOVE_NONE;
-		g_inBook--;
+	  bookMove = MOVE_NONE;
+	  g_inBook--;
       }
       if (!bookMove)
       {
-		Threads.start_searching(); // start non-main threads
-		Thread::search();          // main thread start searching
+	Threads.start_searching(); // start non-main threads
+	Thread::search();          // main thread start searching
       }
   }
-  //livebook end
+  //Books management end
 
   // When we reach the maximum depth, we can arrive here without a raise of
   // Threads.stop. However, if we are pondering or in an infinite search,
@@ -393,11 +427,11 @@ void MainThread::search() {
       Time.availableNodes += Limits.inc[us] - Threads.nodes_searched();
 
   Thread* bestThread = this;
+  //Skill skill = Skill(skillLevel, (limitStrength) ? uciElo : 0); //from true handicap mode
 
   if (   int(Options["MultiPV"]) == 1
-      && !Limits.depth
-      && !(int(Options["UCI_LimitStrength"]))
-	  && !(int(Options["LimitStrength_CB"]))
+      && !depthLimit
+	  //&& !skill.enabled() //from true handicap mode
       && rootMoves[0].pv[0] != MOVE_NONE)
       bestThread = Threads.get_best_thread();
 
@@ -555,7 +589,7 @@ void Thread::search() {
   // The latter is needed for statScore and killer initialization.
   Stack stack[MAX_PLY+10], *ss = stack+7;
   Move  pv[MAX_PLY+1];
-  Value bestValue, alpha, beta, delta;
+  Value alpha, beta, delta;
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = 0;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
@@ -589,24 +623,15 @@ void Thread::search() {
   std::fill(&lowPlyHistory[MAX_LPH - 2][0], &lowPlyHistory.back().back() + 1, 0);
 
   size_t multiPV = size_t(Options["MultiPV"]);
-
-  // Pick integer skill levels, but non-deterministically round up or down
-  // such that the average integer skill corresponds to the input floating point one.
-  // UCI_Elo is converted to a suitable fractional skill level, using anchoring
-  // to CCRL Elo (goldfish 1.13 = 2000) and a fit through Ordo derived Elo
-  // for match (TC 60+0.6) results spanning a wide range of k values.
-  PRNG rng(now());
-  double floatLevel = limitStrength ?
-                        std::clamp(std::pow((uciElo - 1346.6) / 143.4, 1 / 0.806), 0.0, 20.0) :
-                        double(skillLevel);
-  int intLevel = int(floatLevel) +
-                 ((floatLevel - int(floatLevel)) * 1024 > rng.rand<unsigned>() % 1024  ? 1 : 0);
-  Skill skill(intLevel);
+  
+  //from true handicap mode begin 
+  //Skill skill(skillLevel, limitStrength ? uciElo : 0);
 
   // When playing with strength handicap enable MultiPV search that we will
   // use behind the scenes to retrieve a set of possible moves.
-  if (skill.enabled() && limitStrength)//from Shashin
-      multiPV = std::max(multiPV, (size_t)4);
+  /*if (skill.enabled() && limitStrength)//from Shashin
+      multiPV = std::max(multiPV, (size_t)4);*/
+  //from true handicap mode end
 
   multiPV = std::min(multiPV, rootMoves.size());
   //from Shashin
@@ -645,10 +670,9 @@ void Thread::search() {
   {
   //from mcts end
     // Iterative deepening loop until requested to stop or the target depth is reached
-    int iterationDepth=(limitStrength && Limits.depth) ? handicapDepth:Limits.depth;//handicap mode
-    while (   ++rootDepth < MAX_PLY
-	   && !Threads.stop
-	   && !(iterationDepth && mainThread && rootDepth > iterationDepth))
+    while (   ++rootDepth < MAX_PLY //handicap mode
+           && !Threads.stop
+           && !(depthLimit && mainThread && rootDepth > depthLimit))
     {
 	// Age out PV variability metric
 	if (mainThread)
@@ -687,8 +711,8 @@ void Thread::search() {
 	    // Reset aspiration window starting size
 	    if (rootDepth >= 4)
 	    {
-			Value prev = rootMoves[pvIdx].previousScore;
-			delta = Value(13 + 4 * failedAspirationsPrevID);//aspiration patch 
+			Value prev = rootMoves[pvIdx].averageScore;
+			delta = Value(13 + 4 * failedAspirationsPrevID)+ int(prev) * prev / 16384;//aspiration patch 
 			alpha = std::max(prev - delta,-VALUE_INFINITE);
 			beta  = std::min(prev + delta, VALUE_INFINITE);
 			updateShashinValues(rootPos,prev);//from ShashChess
@@ -779,11 +803,13 @@ void Thread::search() {
 
 	if (!mainThread)
 	    continue;
-
+	
+	//from true handicap mode begin
 	// If skill level is enabled and time is up, pick a sub-optimal best move
-	if (skill.enabled() && skill.time_to_pick(rootDepth) && limitStrength) //from handicap mode
-	    skill.pick_best(multiPV);
-
+	/*if (skill.enabled() && skill.time_to_pick(rootDepth) && limitStrength) //from handicap mode
+	    skill.pick_best(multiPV);*/
+	//from true handicap mode end
+	
 	// Do we have time for the next iteration? Can we stop searching now?
 	if (    Limits.use_time_management()
 	    && !Threads.stop
@@ -840,10 +866,12 @@ void Thread::search() {
 
   mainThread->previousTimeReduction = timeReduction;
 
+  //from true handicap mode begin
   // If skill level is enabled, swap best PV line with the sub-optimal one
-  if (skill.enabled() && limitStrength)//from Shashin
+  /*if (skill.enabled() && limitStrength)//from Shashin
       std::swap(rootMoves[0], *std::find(rootMoves.begin(), rootMoves.end(),
-                skill.best ? skill.best : skill.pick_best(multiPV)));
+                skill.best ? skill.best : skill.pick_best(multiPV)));*/
+  //from true handicap mode end	
 }
 
 
@@ -910,7 +938,7 @@ namespace {
     bool givesCheck, improving, didLMR, priorCapture, expTTHit=false, isMate; //from Crystal
     //from Kelly End
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, 
-		 ttCapture, singularQuietLMR, noLMRExtension, kingDanger; //from Crystal + official from Shashin
+		 ttCapture, singularQuietLMR, kingDanger; //from Crystal + official from Shashin
 
     Piece movedPiece;
     int moveCount, captureCount, quietCount, bestMoveCount, improvement=0, rootDepth; //from Crystal
@@ -977,6 +1005,8 @@ namespace {
         if (alpha >= beta)
             return alpha;
     }
+    else
+        thisThread->rootDelta = beta - alpha;
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
@@ -1286,7 +1316,7 @@ namespace {
 	//from Crystal end
 		&&  depth < 9
         &&  eval - futility_margin(depth, improving) >= beta
-        &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
+        &&  eval < 15000) // 50% larger than VALUE_KNOWN_WIN, but smaller than TB wins.
         return eval;
 
     // Step 8. Null move search with verification search (~40 Elo)
@@ -1311,7 +1341,7 @@ namespace {
         && (ss-1)->statScore < 23767
         &&  eval >= beta
         &&  eval >= ss->staticEval
-		&&  ss->staticEval >= beta - 20 * depth - 22 * improving + 168 * ss->ttPv + 177 //official by Shashin
+		&&  ss->staticEval >= beta - 20 * depth - improvement / 15 + 204
     &&  pos.non_pawn_material(us)
 	&& ((pos.this_thread()->shashinQuiescentCapablancaMaxScore)||(!gameCycle)) //from Crystal
 	&&  !disableNMAndPC //Kelly
@@ -1487,7 +1517,7 @@ moves_loop: // When in check, search starts from here
                                       ss->ply);
 
     value = bestValue;
-    singularQuietLMR = moveCountPruning = noLMRExtension = false;
+    singularQuietLMR = moveCountPruning = false;
 
     // Indicate PvNodes that will probably fail low if the node was searched
     // at a depth equal or greater than the current depth, and the result of this search was a fail low.
@@ -1642,7 +1672,7 @@ moves_loop: // When in check, search starts from here
       // a reduced search on all the other moves but the ttMove and if the
       // result is lower than ttValue minus a margin, then we will extend the ttMove.
       if (   !rootNode
-          &&  depth >= 7
+		  &&  depth >= 6 + ((pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore) ? (2 * PvNode):1) //pnSepExtRe3
           &&  move == ttMove
           && !excludedMove // Avoid recursive singular search
        /* &&  ttValue != VALUE_NONE Already implicit in the next condition */
@@ -1651,7 +1681,7 @@ moves_loop: // When in check, search starts from here
           &&  tte->depth() >= depth - 3)
       {
           Value singularBeta = ttValue - 3 * depth;
-          Depth singularDepth = (depth - 1) / 2;
+          Depth singularDepth = (depth - 1 +((pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore) ? (2 * PvNode):0)) / 2; //pnSepExtRe3
 
           ss->excludedMove = move;
           value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, singularDepth, cutNode, mcts);//mcts
@@ -1666,10 +1696,7 @@ moves_loop: // When in check, search starts from here
               if (   !PvNode
                   && value < singularBeta - 75
                   && ss->doubleExtensions <= 6)
-              {
                   extension = 2;
-                  noLMRExtension = true;
-              }
           }
 
           // Multi-cut pruning
@@ -1794,6 +1821,10 @@ moves_loop: // When in check, search starts from here
               && bestMoveCount <= 3)
               r--;
 
+          // Increases reduction for PvNodes that have small window
+          if ((pos.this_thread()->shashinQuiescentCapablancaMaxScore) && PvNode && beta - alpha < thisThread->rootDelta / 4)
+              r++;
+
           // Decrease reduction if position is or has been on the PV
           // and node is not likely to fail low. (~3 Elo)
           if (   ss->ttPv
@@ -1833,6 +1864,8 @@ moves_loop: // When in check, search starts from here
           if (ttCapture && (pos.this_thread()->shashinQuiescentCapablancaMaxScore))
               r++;
 
+		  bool noLMRExtension1 = thisThread->counterMoves[movedPiece][to_sq(move)] == (ss+1)->killers[0];//cmKill0Reply2
+
           ss->statScore =  thisThread->mainHistory[us][from_to(move)]
                          + (*contHist[0])[movedPiece][to_sq(move)]
                          + (*contHist[1])[movedPiece][to_sq(move)]
@@ -1845,10 +1878,11 @@ moves_loop: // When in check, search starts from here
           // In general we want to cap the LMR depth search at newDepth. But if reductions
           // are really negative and movecount is low, we allow this move to be searched
           // deeper than the first move (this may lead to hidden double extensions).
-          int deeper =   r >= -1             ? 0
-                       : moveCount <= 5      ? 2
-                       : PvNode && depth > 6 ? 1
-                       :                       0;
+          int deeper =   ((r >= -1)||(noLMRExtension1 && (pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore))) ? 0
+                       : moveCount <= 5            																		? 2
+                       : PvNode && depth > 6       																		? 1
+                       : cutNode && moveCount <= 7 																		? 1
+                       :                             																	0;
 
           Depth d = std::clamp(newDepth - r, 1, newDepth + deeper);
 
@@ -1875,7 +1909,7 @@ moves_loop: // When in check, search starts from here
           // If the move passed LMR update its stats
           if (didLMR && !captureOrPromotion)
           {
-              int bonus = value > alpha ?  stat_bonus(newDepth + noLMRExtension)
+              int bonus = value > alpha ?  stat_bonus(newDepth)
                                         : -stat_bonus(newDepth);
 
               update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
@@ -1914,6 +1948,8 @@ moves_loop: // When in check, search starts from here
       {
           RootMove& rm = *std::find(thisThread->rootMoves.begin(),
                                     thisThread->rootMoves.end(), move);
+
+          rm.averageScore = rm.averageScore != -VALUE_INFINITE ? (2 * value + rm.averageScore) / 3 : value;
 
           // PV move or new best move?
           if (moveCount == 1 || value > alpha)
@@ -2058,13 +2094,12 @@ moves_loop: // When in check, search starts from here
     Key posKey;
     Move ttMove, move, bestMove;
     Depth ttDepth;
-    Value bestValue, value, ttValue, futilityValue, futilityBase, oldAlpha;
+    Value bestValue, value, ttValue, futilityValue, futilityBase;
     bool pvHit, givesCheck, captureOrPromotion, gameCycle=false; //from Crystal
     int moveCount;
 
     if (PvNode)
     {
-        oldAlpha = alpha; // To flag BOUND_EXACT when eval above alpha and no available moves
         (ss+1)->pv = pv;
         ss->pv[0] = MOVE_NONE;
     }
@@ -2303,8 +2338,7 @@ moves_loop: // When in check, search starts from here
 
     // Save gathered info in transposition table
     tte->save(posKey, value_to_tt(bestValue, ss->ply), pvHit,
-              bestValue >= beta ? BOUND_LOWER :
-              PvNode && bestValue > oldAlpha  ? BOUND_EXACT : BOUND_UPPER,
+              bestValue >= beta ? BOUND_LOWER : BOUND_UPPER,
               ttDepth, bestMove, ss->staticEval);
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
@@ -2447,10 +2481,6 @@ moves_loop: // When in check, search starts from here
     thisThread->mainHistory[us][from_to(move)] << bonus;
     update_continuation_histories(ss, pos.moved_piece(move), to_sq(move), bonus);
 
-    // Penalty for reversed move in case of moved piece not being a pawn
-    if (type_of(pos.moved_piece(move)) != PAWN)
-        thisThread->mainHistory[us][from_to(reverse_move(move))] << -bonus;
-
     // Update countermove history
     if (is_ok((ss-1)->currentMove))
     {
@@ -2463,10 +2493,11 @@ moves_loop: // When in check, search starts from here
         thisThread->lowPlyHistory[ss->ply][from_to(move)] << stat_bonus(depth - 7);
   }
 
+  //from true handicap mode begin
   // When playing with strength handicap, choose best move among a set of RootMoves
   // using a statistical rule dependent on 'level'. Idea by Heinz van Saanen.
-
-  Move Skill::pick_best(size_t multiPV) {
+  
+  /*Move Skill::pick_best(size_t multiPV) {
 
     const RootMoves& rootMoves = Threads.main()->rootMoves;
     static PRNG rng(now()); // PRNG sequence should be non-deterministic
@@ -2474,7 +2505,7 @@ moves_loop: // When in check, search starts from here
     // RootMoves are already sorted by score in descending order
     Value topScore = rootMoves[0].score;
     int delta = std::min(topScore - rootMoves[multiPV - 1].score, PawnValueMg);
-    int weakness = 120 - 2 * level;
+    double weakness = 120 - 2 * level;
     int maxScore = -VALUE_INFINITE;
 
     // Choose best move. For each move score we add two terms, both dependent on
@@ -2483,8 +2514,8 @@ moves_loop: // When in check, search starts from here
     for (size_t i = 0; i < multiPV; ++i)
     {
         // This is our magic formula
-        int push = (  weakness * int(topScore - rootMoves[i].score)
-                    + delta * (rng.rand<unsigned>() % weakness)) / 128;
+        int push = int((  weakness * int(topScore - rootMoves[i].score)
+                        + delta * (rng.rand<unsigned>() % int(weakness))) / 128);
 
         if (rootMoves[i].score + push >= maxScore)
         {
@@ -2494,9 +2525,11 @@ moves_loop: // When in check, search starts from here
     }
 
     return best;
-  }
+  }*/
+  //from true handicap mode end
 
 } // namespace
+
 
 //mcts begin
 // minimax_value() is a wrapper around the search() and qsearch() functions
