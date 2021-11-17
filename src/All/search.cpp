@@ -50,8 +50,7 @@ extern "C" {
 //livebook end
 bool pawnsToEvaluate, winnableToEvaluate, imbalancesToEvaluate; //from Shashin Handicap mode
 //kelly begin
-bool useLearning = true;
-bool enabledLearningProbe;
+bool useLearning = false;
 std::vector<PersistedLearningMove> gameLine;
 //Kelly end
 
@@ -62,7 +61,6 @@ namespace Search {
   //from Shashin
   bool tal,capablanca,petrosian;
   //end from Shashin
-  bool persistedLearning;//kellykiniama persistedSelfLearning
 }
 
 namespace Tablebases {
@@ -297,7 +295,6 @@ inline int getHandicapDepth(int elo){
 
 void MainThread::search() {
 
-  persistedLearning= (usePersistedLearning != PersistedLearningUsage::Off);//from Kelly
   if (Limits.perft)
   {
       nodes = perft<true>(rootPos, Limits.perft);
@@ -307,21 +304,11 @@ void MainThread::search() {
   //from Sugar
   limitStrength = Options["UCI_LimitStrength"] || Options["LimitStrength_CB"] ;
   //end from Sugar
+
   Color us = rootPos.side_to_move();
   Time.init(Limits, us, rootPos.game_ply());
   TT.new_search();
-  //Kelly begin
-  if(persistedLearning){
-	  enabledLearningProbe = false;
-	  int piecesCnt = rootPos.count<KNIGHT>(WHITE) + rootPos.count<BISHOP>(WHITE) + rootPos.count<ROOK>(WHITE) + rootPos.count<QUEEN>(WHITE) + rootPos.count<KING>(WHITE)
-		  + rootPos.count<KNIGHT>(BLACK) + rootPos.count<BISHOP>(BLACK) + rootPos.count<ROOK>(BLACK) + rootPos.count<QUEEN>(BLACK) + rootPos.count<KING>(BLACK);
-	
-	  if (piecesCnt <= PIECE_TYPE_NB)
-	  {
-	    useLearning = true;
-	  }
-  }	
-  //Kelly end
+
   openingVariety = Options["Opening variety"];//from Sugar
   Eval::NNUE::verify();
   //from Shashin
@@ -436,36 +423,35 @@ void MainThread::search() {
       bestThread = Threads.get_best_thread();
 
   bestPreviousScore = bestThread->rootMoves[0].score;
+
   //kelly begin
-  if(persistedLearning){
-	  if (bestThread->completedDepth > 4 && !LD.is_paused() && !Options["Read only learning"])// from Khalid
-	  {
-	  	PersistedLearningMove plm;
-	    plm.key = rootPos.key();
-	    plm.learningMove.depth = bestThread->completedDepth;
-	    plm.learningMove.move = bestThread->rootMoves[0].pv[0];
-	    plm.learningMove.score = bestThread->rootMoves[0].score;
-	    if (usePersistedLearning == PersistedLearningUsage::Self)
-	    {
-        	const LearningMove *existingMove = LD.probe_move(plm.key, plm.learningMove.move);
+  if (LD.is_enabled())
+  {
+      if (bestThread->completedDepth > 4 && !LD.is_paused() && !LD.is_readonly())// from Khalid
+      {
+          PersistedLearningMove plm;
+          plm.key = rootPos.key();
+          plm.learningMove.depth = bestThread->completedDepth;
+          plm.learningMove.move = bestThread->rootMoves[0].pv[0];
+          plm.learningMove.score = bestThread->rootMoves[0].score;
 
-          	if(existingMove)
-            	plm.learningMove.score = existingMove->score;
+          if (LD.learning_mode() == LearningMode::Self)
+          {
+              const LearningMove* existingMove = LD.probe_move(plm.key, plm.learningMove.move);
 
-          	gameLine.push_back(plm);
-	    }
-	    else
-	    {
-			LD.add_new_learning(plm.key, plm.learningMove);
-	    }
-	  }
-	
-	  if (!enabledLearningProbe)
-	  {
-	      useLearning = false;
-	  }
+              if (existingMove)
+                  plm.learningMove.score = existingMove->score;
+
+              gameLine.push_back(plm);
+          }
+          else
+          {
+              LD.add_new_learning(plm.key, plm.learningMove);
+          }
+      }
   }
   //kelly end
+
   // Send again PV info if we have a new best thread
   if (bestThread != this)
       sync_cout << UCI::pv(bestThread->rootPos, bestThread->completedDepth, -VALUE_INFINITE, VALUE_INFINITE) << sync_endl;
@@ -479,15 +465,14 @@ void MainThread::search() {
 
   //Kelly Khalid begin
   //Save learning data if game is decided already
-  if (persistedLearning && (Utility::is_game_decided(rootPos, bestThread->rootMoves[0].score)))
+  if (LD.is_enabled() && (Utility::is_game_decided(rootPos, bestThread->rootMoves[0].score)) && !LD.is_readonly())
   {
       //Perform Q-learning if enabled
-      if (usePersistedLearning == PersistedLearningUsage::Self)
+      if (LD.learning_mode() == LearningMode::Self)
           putGameLineIntoLearningTable();
 
       //Save to learning file
-      if(!Options["Read only learning"])
-          LD.persist();
+      LD.persist();
 
       //Stop learning until we receive *ucinewgame* command
       LD.pause();
@@ -1092,83 +1077,79 @@ namespace {
             return ttValue;
     }
     //from Kelly begin
-    if(persistedLearning)
+    if (LD.is_enabled() && !excludedMove)
     {
-	    //Step 4Bis. Global Learning Table lookup
-	    expTTHit = false;
-	    updatedLearning = false;
-	
-	    if (!excludedMove && useLearning)
+        //Step 4Bis. Global Learning Table lookup
+        expTTHit = false;
+        updatedLearning = false;
+
+        const LearningMove* learningMove = nullptr;
+        sibs = LD.probe(posKey, learningMove);
+        if (learningMove)
         {
-	        const LearningMove *learningMove = nullptr;
-	        sibs = LD.probe(posKey, learningMove);
-	        if (learningMove)
-			{
-	            assert(sibs);
-	
-	            enabledLearningProbe = true;
-	            expTTHit = true;
-	            if (!ttMove)
-	            {
-	                ttMove = learningMove->move;
-	            }
-	
-	            if (learningMove->depth >= depth)
-	            {
-	                expTTMove = learningMove->move;
-	                expTTValue = learningMove->score;
-	                updatedLearning = true;
-	            }
-	
-	            if ((learningMove->depth == 0))
-	                updatedLearning = false;
+            assert(sibs);
 
-	            if (updatedLearning && expTTValue != VALUE_NONE)
-	            {
-	                if (expTTValue < alpha)
-	                {
-	                    disableNMAndPC = true;
-	                }
-	                if (expTTValue > alpha && expTTValue < beta)
-	                {
-	                    expectedPVNode = true;
-	                    improving = true;
-	                }
-	            }
+            expTTHit = true;
+            if (!ttMove)
+            {
+                ttMove = learningMove->move;
+            }
 
-	            // At non-PV nodes we check for an early Global Learning Table cutoff
-	            // If expTTMove is quiet, update move sorting heuristics on global learning table hit
-	            if (!PvNode
-	                && updatedLearning
-	                && expTTValue != VALUE_NONE // Possible in case of Global Learning Table access race
-	                && (learningMove->depth >= depth))
-	            {
-	                if (expTTValue >= beta)
-	                {
-	                    if (!pos.capture_or_promotion(learningMove->move))
-	                        update_quiet_stats(pos, ss, learningMove->move, stat_bonus(depth), depth);
-	
-	                    // Extra penalty for early quiet moves of the previous ply
-	                    if ((ss - 1)->moveCount <= 2 && !priorCapture)
-	                        update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -stat_bonus(depth + 1));
-	                }
-	                // Penalty for a quiet ttMove that fails low
-	                else
-	                {
-	                    if (!pos.capture_or_promotion(expTTMove))
-	                    {
-	                        int penalty = -stat_bonus(depth);
-	                        thisThread->mainHistory[us][from_to(expTTMove)] << penalty;
-	                        update_continuation_histories(ss, pos.moved_piece(expTTMove), to_sq(expTTMove), penalty);
-	                    }
-	                }
-	
-	                //thisThread->tbHits.fetch_add(1, std::memory_order_relaxed);
-	                if (pos.rule50_count() < 90)
-	                    return expTTValue;
-	            }
-	        }
-	    }
+            if (learningMove->depth >= depth)
+            {
+                expTTMove = learningMove->move;
+                expTTValue = learningMove->score;
+                updatedLearning = true;
+            }
+
+            if ((learningMove->depth == 0))
+                updatedLearning = false;
+
+            if (updatedLearning && expTTValue != VALUE_NONE)
+            {
+                if (expTTValue < alpha)
+                {
+                    disableNMAndPC = true;
+                }
+                if (expTTValue > alpha && expTTValue < beta)
+                {
+                    expectedPVNode = true;
+                    improving = true;
+                }
+            }
+
+            // At non-PV nodes we check for an early Global Learning Table cutoff
+            // If expTTMove is quiet, update move sorting heuristics on global learning table hit
+            if (   !PvNode
+                && updatedLearning
+                && expTTValue != VALUE_NONE // Possible in case of Global Learning Table access race
+                && (learningMove->depth >= depth))
+            {
+                if (expTTValue >= beta)
+                {
+                    if (!pos.capture_or_promotion(learningMove->move))
+                        update_quiet_stats(pos, ss, learningMove->move, stat_bonus(depth), depth);
+
+                    // Extra penalty for early quiet moves of the previous ply
+                    if ((ss - 1)->moveCount <= 2 && !priorCapture)
+                        update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, -stat_bonus(depth + 1));
+                }
+                // Penalty for a quiet ttMove that fails low
+                else
+                {
+                    if (!pos.capture_or_promotion(expTTMove))
+                    {
+                        int penalty = -stat_bonus(depth);
+                        thisThread->mainHistory[us][from_to(expTTMove)] << penalty;
+                        update_continuation_histories(ss, pos.moved_piece(expTTMove), to_sq(expTTMove), penalty);
+                    }
+                }
+
+                //thisThread->tbHits.fetch_add(1, std::memory_order_relaxed);
+                if (pos.rule50_count() < 90)
+                    return expTTValue;
+            }
+        }
     }
     //from Kelly end
 
@@ -1255,7 +1236,7 @@ namespace {
     else
     {
       //from kelly begin
-      if (!persistedLearning || !(expTTHit)|| !(updatedLearning) )
+      if (!LD.is_enabled() || !expTTHit|| !updatedLearning)
       {
 		ss->staticEval = eval = evaluate(pos);
 		
@@ -1816,14 +1797,11 @@ moves_loop: // When in check, search starts from here
       {
           Depth r = reduction(improving, depth, moveCount, rangeReduction > 2);
 
-          // Decrease reduction if on the PV (~2 Elo)
+          // Decrease reduction at some PvNodes (~2 Elo)
           if (   PvNode
-              && bestMoveCount <= 3)
+              && bestMoveCount <= 3
+              && ((!(pos.this_thread()->shashinQuiescentCapablancaMaxScore))||(beta - alpha >= thisThread->rootDelta / 4)))//official by Shashin
               r--;
-
-          // Increases reduction for PvNodes that have small window
-          if ((pos.this_thread()->shashinQuiescentCapablancaMaxScore) && PvNode && beta - alpha < thisThread->rootDelta / 4)
-              r++;
 
           // Decrease reduction if position is or has been on the PV
           // and node is not likely to fail low. (~3 Elo)

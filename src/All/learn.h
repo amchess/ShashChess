@@ -4,14 +4,12 @@
 #include <unordered_map>
 #include "types.h"
 
-enum class PersistedLearningUsage
+enum class LearningMode
 {
 	Off = 1,
 	Standard = 2,
 	Self = 3,
 };
-extern PersistedLearningUsage usePersistedLearning;
-void setUsePersistedLearning();
 
 struct LearningMove
 {
@@ -31,7 +29,10 @@ class LearningData
 {
 private:
     bool isPaused;
+    bool isReadOnly;
     bool needPersisting;
+    LearningMode learningMode;
+
     std::unordered_multimap<Stockfish::Key, LearningMove*> HT;
     std::vector<void*> mainDataBuffers;
     std::vector<void*> newMovesDataBuffers;
@@ -44,13 +45,20 @@ public:
     LearningData();
     ~LearningData();
 
+    void pause();
+    void resume();
+    inline bool is_paused() const { return isPaused; };
+
+    void set_learning_mode(const std::string &lm);
+    LearningMode learning_mode() const;
+    inline bool is_enabled() const { return learningMode != LearningMode::Off; }
+
+    void set_readonly(bool ro) { isReadOnly = ro; }
+    inline bool is_readonly() const { return isReadOnly; }
+
     void clear();
     void init();
     void persist();
-
-    void pause();
-    void resume();
-    bool is_paused();
 
     void add_new_learning(Stockfish::Key key, const LearningMove &lm);
 

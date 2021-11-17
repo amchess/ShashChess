@@ -75,26 +75,27 @@ namespace {
     while (is >> token && (m = UCI::to_move(pos, token)) != MOVE_NONE)
     {
 		//kelly begin
-		if (usePersistedLearning != PersistedLearningUsage::Off)
-		{
-		  plies++;
-		  if(plies > maximumPly)
-		  {
-			  if (usePersistedLearning != PersistedLearningUsage::Self)
-			  {
-                PersistedLearningMove persistedLearningMove;
-                persistedLearningMove.key = pos.key();
-                persistedLearningMove.learningMove.depth = 0;
-                persistedLearningMove.learningMove.move = m;
-                persistedLearningMove.learningMove.score = VALUE_NONE;
-                persistedLearningMove.learningMove.performance = 100;
+        if (LD.learning_mode() != LearningMode::Off && !LD.is_readonly())
+        {
+            plies++;
+            if (plies > maximumPly)
+            {
+                if (LD.learning_mode() != LearningMode::Self)
+                {
+                    PersistedLearningMove persistedLearningMove;
+                    persistedLearningMove.key = pos.key();
+                    persistedLearningMove.learningMove.depth = 0;
+                    persistedLearningMove.learningMove.move = m;
+                    persistedLearningMove.learningMove.score = VALUE_NONE;
+                    persistedLearningMove.learningMove.performance = 100;
 
-                LD.add_new_learning(persistedLearningMove.key, persistedLearningMove.learningMove);
-			  }
-			  maximumPly = plies;
-		  }
-		}
+                    LD.add_new_learning(persistedLearningMove.key, persistedLearningMove.learningMove);
+                }
+                maximumPly = plies;
+            }
+        }
 		//kelly end
+
         states->emplace_back();
         pos.do_move(m, states->back());
     }
@@ -208,11 +209,11 @@ namespace {
         else if (token == "position")   position(pos, is, states);
         else if (token == "ucinewgame") {
 	    	//Kelly begin
-            if (usePersistedLearning != PersistedLearningUsage::Off)
+            if (LD.learning_mode() != LearningMode::Off && !LD.is_readonly())
             {
         		maximumPly = 0;
         		setStartPoint();
-				if (usePersistedLearning == PersistedLearningUsage::Self)
+				if (LD.learning_mode() == LearningMode::Self)
 				{
 				    putGameLineIntoLearningTable();
 				}
@@ -290,14 +291,14 @@ void UCI::loop(int argc, char* argv[]) {
           Threads.stop = true;
 
           //Kelly begin	  
-          if ((usePersistedLearning != PersistedLearningUsage::Off) && token == "quit" && !Options["Read only learning"] && !LD.is_paused())
+          if (token == "quit" && LD.learning_mode() != LearningMode::Off && !LD.is_paused() && !LD.is_readonly())
           {
               //Wait for the current search operation (if any) to stop
               //before proceeding to save experience data
               Threads.main()->wait_for_search_finished();
 
               //Perform Q-learning if enabled
-              if (usePersistedLearning == PersistedLearningUsage::Self)
+              if (LD.learning_mode() == LearningMode::Self)
                   putGameLineIntoLearningTable();
 
               //Save to learning file
@@ -324,19 +325,19 @@ void UCI::loop(int argc, char* argv[]) {
 	  else if (token == "ucinewgame")
 	  {
 	      //Kelly and Khalid
-	      if (usePersistedLearning != PersistedLearningUsage::Off)
+          if (LD.learning_mode() != LearningMode::Off && !LD.is_readonly())
           {
-	          maximumPly = 0;
-	          setStartPoint();
-	
-	          //Perform Q-learning if enabled
-	          if (usePersistedLearning == PersistedLearningUsage::Self)
-	              putGameLineIntoLearningTable();
-	
-	          //Save to learning file
-	          if (!Options["Read only learning"])
-	              LD.persist();
+              maximumPly = 0;
+              setStartPoint();
+
+              //Perform Q-learning if enabled
+              if (LD.learning_mode() == LearningMode::Self)
+                  putGameLineIntoLearningTable();
+
+              //Save to learning file
+              LD.persist();
           }
+
           Search::clear();//Kelly and Khalid end
       }
       else if (token == "isready")    sync_cout << "readyok" << sync_endl;

@@ -40,11 +40,7 @@ int main(int argc, char* argv[]) {
   UCI::init(Options);
   Tune::init();
   //from Kelly begin
-  setUsePersistedLearning();
-  if (usePersistedLearning != PersistedLearningUsage::Off)
-  {
-  	LD.init();
-  }
+  LD.init();
   //from Kelly end
   PSQT::init();
   Bitboards::init();

@@ -45,7 +45,8 @@ void on_hash_size(const Option& o) { TT.resize(size_t(o)); }
 void on_logger(const Option& o) { start_logger(o); }
 void on_threads(const Option& o) { Threads.set(size_t(o)); }
 void on_full_threads(const Option& o) { Threads.setFull(o); } //full threads patch
-void on_persisted_learning(const Option& o) { if (!(o == "Off")){ setUsePersistedLearning(); LD.init();}}//Kelly learning
+void on_persisted_learning(const Option& o) { if (!(o == "Off")){ LD.set_learning_mode(o);}}//Kelly learning
+void on_readonly_learning(const Option& o) { if (!(o == "Off")) { LD.set_readonly(o); } }
 void on_tb_path(const Option& o) { Tablebases::init(o); }
 void on_use_NNUE(const Option& ) { Eval::NNUE::init(); }
 void on_eval_file(const Option& ) { Eval::NNUE::init(); }
@@ -119,7 +120,7 @@ void init(OptionsMap& o) {
   o["Full depth threads"]    << Option(0, 0, 512, on_full_threads); //if this is used, must be after #Threads is set.
   o["Opening variety"]       << Option (0, 0, 40);
   o["Persisted learning"]    << Option("Off var Off var Standard var Self", "Off", on_persisted_learning);
-  o["Read only learning"]    << Option(false);
+  o["Read only learning"]    << Option(false, on_readonly_learning);
   o["MCTS"]                  << Option("Off var Off var Single var Multi", "Off");
   o["Multi Strategy"]        << Option(20, 0, 100);
   o["Multi MinVisits"]       << Option(5, 0, 1000);  
