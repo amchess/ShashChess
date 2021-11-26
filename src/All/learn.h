@@ -60,7 +60,7 @@ public:
     void init();
     void persist();
 
-    void add_new_learning(Stockfish::Key key, const LearningMove &lm);
+	void add_new_learning(Stockfish::Key key, const LearningMove &lm);
 
     int probe(Stockfish::Key key, const LearningMove*& learningMove);
     const LearningMove *probe_move(Stockfish::Key key, Stockfish::Move move);
