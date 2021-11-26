@@ -84,10 +84,8 @@ namespace {
           && pos.count<PAWN>(~us) >= 1;
   }
 
-
   /// imbalance() calculates the imbalance by comparing the piece count of each
   /// piece type for both colors.
-
   template<Color Us>
   Score imbalance(const int pieceCount[][PIECE_TYPE_NB]) {
 
@@ -116,7 +114,6 @@ namespace {
 } // namespace
 
 namespace Material {
-
 
 /// Material::probe() looks up the current position's material configuration in
 /// the material hash table. It returns a pointer to the Entry if the position

@@ -38,7 +38,6 @@ namespace Stockfish {
 
 extern vector<string> setup_bench(const Position&, istream&);
 
-int maximumPly = 0; //Kelly
 namespace {
 
   // FEN string of the initial position, normal chess
@@ -69,32 +68,24 @@ namespace {
 
     states = StateListPtr(new std::deque<StateInfo>(1)); // Drop old and create a new one
     pos.set(fen, Options["UCI_Chess960"], &states->back(), Threads.main());
-    int plies = 0;//Kelly
 
     // Parse move list (if any)
     while (is >> token && (m = UCI::to_move(pos, token)) != MOVE_NONE)
     {
-		//kelly begin
-        if (LD.learning_mode() != LearningMode::Off && !LD.is_readonly())
+        //Kelly begin
+        if (LD.is_enabled() && LD.learning_mode() != LearningMode::Self && !LD.is_paused())
         {
-            plies++;
-            if (plies > maximumPly)
-            {
-                if (LD.learning_mode() != LearningMode::Self)
-                {
-                    PersistedLearningMove persistedLearningMove;
-                    persistedLearningMove.key = pos.key();
-                    persistedLearningMove.learningMove.depth = 0;
-                    persistedLearningMove.learningMove.move = m;
-                    persistedLearningMove.learningMove.score = VALUE_NONE;
-                    persistedLearningMove.learningMove.performance = 100;
+            PersistedLearningMove persistedLearningMove;
 
-                    LD.add_new_learning(persistedLearningMove.key, persistedLearningMove.learningMove);
-                }
-                maximumPly = plies;
-            }
+            persistedLearningMove.key = pos.key();
+            persistedLearningMove.learningMove.depth = 0;
+            persistedLearningMove.learningMove.move = m;
+            persistedLearningMove.learningMove.score = VALUE_NONE;
+            persistedLearningMove.learningMove.performance = 100;
+
+            LD.add_new_learning(persistedLearningMove.key, persistedLearningMove.learningMove);
         }
-		//kelly end
+        //Kelly end
 
         states->emplace_back();
         pos.do_move(m, states->back());
@@ -208,19 +199,19 @@ namespace {
         else if (token == "setoption")  setoption(is);
         else if (token == "position")   position(pos, is, states);
         else if (token == "ucinewgame") {
-	    	//Kelly begin
-            if (LD.learning_mode() != LearningMode::Off && !LD.is_readonly())
-            {
-        		maximumPly = 0;
-        		setStartPoint();
-				if (LD.learning_mode() == LearningMode::Self)
-				{
-				    putGameLineIntoLearningTable();
-				}
-            }
-	   //Kelly end
-	   Search::clear(); elapsed = now(); // Search::clear() may take some while
-	}
+            //Kelly begin            
+            if (LD.is_enabled())
+            { 
+	            if( LD.learning_mode() == LearningMode::Self && !LD.is_paused())
+	            {
+	                putGameLineIntoLearningTable();
+	        	}
+	            setStartPoint();
+			}
+			//Kelly end
+
+            Search::clear(); elapsed = now(); // Search::clear() may take some while
+        }
     }
 
     elapsed = now() - elapsed + 1; // Ensure positivity to avoid a 'divide by zero'
@@ -284,14 +275,13 @@ void UCI::loop(int argc, char* argv[]) {
       token.clear(); // Avoid a stale if getline() returns empty or blank line
       is >> skipws >> token;
 
-      
       if (    token == "quit"
           ||  token == "stop")
       {
           Threads.stop = true;
 
-          //Kelly begin	  
-          if (token == "quit" && LD.learning_mode() != LearningMode::Off && !LD.is_paused() && !LD.is_readonly())
+          //Kelly begin
+          if (token == "quit" && LD.is_enabled() && !LD.is_paused())
           {
               //Wait for the current search operation (if any) to stop
               //before proceeding to save experience data
@@ -299,14 +289,17 @@ void UCI::loop(int argc, char* argv[]) {
 
               //Perform Q-learning if enabled
               if (LD.learning_mode() == LearningMode::Self)
+              {
                   putGameLineIntoLearningTable();
-
-              //Save to learning file
-              LD.persist();
+			  }
+			  if(!LD.is_readonly())
+			  {
+              	//Save to learning file
+              	LD.persist();
+              }
           }
-		  //Kelly end
-      	}
-
+          //Kelly end
+      }
       // The GUI sends 'ponderhit' to tell us the user has played the expected move.
       // So 'ponderhit' will be sent if we were told to ponder on the same move the
       // user has played. We should continue searching but switch from pondering to
@@ -322,22 +315,24 @@ void UCI::loop(int argc, char* argv[]) {
       else if (token == "setoption")  setoption(is);
       else if (token == "go")         go(pos, is, states);
       else if (token == "position")   position(pos, is, states);
-	  else if (token == "ucinewgame")
-	  {
-	      //Kelly and Khalid
-          if (LD.learning_mode() != LearningMode::Off && !LD.is_readonly())
+      else if (token == "ucinewgame")
+      {
+          //Kelly and Khalid
+          if (LD.is_enabled())
           {
-              maximumPly = 0;
-              setStartPoint();
-
               //Perform Q-learning if enabled
               if (LD.learning_mode() == LearningMode::Self)
+              {
                   putGameLineIntoLearningTable();
+			  }
 
-              //Save to learning file
-              LD.persist();
+              if(!LD.is_readonly())
+              {
+	              //Save to learning file
+	              LD.persist();
+              }
+          	  setStartPoint();
           }
-
           Search::clear();//Kelly and Khalid end
       }
       else if (token == "isready")    sync_cout << "readyok" << sync_endl;
