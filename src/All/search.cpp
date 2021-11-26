@@ -430,7 +430,7 @@ void MainThread::search() {
   bestPreviousScore = bestThread->rootMoves[0].score;
 
   //kelly begin
-  if (bestThread->completedDepth > 4 && LD.is_enabled() && !LD.is_paused() && !LD.is_readonly())// from Khalid
+  if (bestThread->completedDepth > 4 && LD.is_enabled() && !LD.is_paused())// from Khalid
   {
       PersistedLearningMove plm;
       plm.key = rootPos.key();
