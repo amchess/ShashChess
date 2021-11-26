@@ -64,9 +64,6 @@ bool LearningData::load(const std::string& filename)
     //Close the input data file
     in.close();
 
-    //Save pointer to fileData to be freed later
-    mainDataBuffers.push_back(fileData);
-
     //Loop the moves from this file
     bool qLearning = (learningMode == LearningMode::Self);
     PersistedLearningMove *persistedLearningMove = (PersistedLearningMove*)fileData;
@@ -170,32 +167,14 @@ LearningData::LearningData() : isPaused(false), isReadOnly(false), needPersistin
 
 LearningData::~LearningData()
 {
-    clear();
-}
-
-void LearningData::clear()
-{
     //Clear hash table
     HT.clear();
-
-    //Release internal data buffers
-    for (void* p : mainDataBuffers)
-        free(p);
-
-    //Clear internal data buffers
-    mainDataBuffers.clear();
-
-    //Release internal new moves data buffers
-    for (void* p : newMovesDataBuffers)
-        free(p);
-
-    //Clear internal new moves data buffers
-    newMovesDataBuffers.clear();    
 }
 
 void LearningData::init()
 {
-	clear();
+    //Clear hash table
+    HT.clear();
 
     learningMode = identify_learning_mode(Options["Persisted learning"]);
     if (learningMode == LearningMode::Off)
@@ -337,9 +316,6 @@ void LearningData::add_new_learning(Key key, const LearningMove& lm)
         std::cerr << "info string Failed to allocate <" << sizeof(PersistedLearningMove) << "> bytes for new learning entry" << std::endl;
         return;
     }
-
-    //Save pointer to fileData to be freed later
-    newMovesDataBuffers.push_back(newPlm);
 
     //Assign
     newPlm->key = key;
