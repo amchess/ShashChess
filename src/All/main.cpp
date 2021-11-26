@@ -39,9 +39,7 @@ int main(int argc, char* argv[]) {
   Utility::init(argv[0]); //Khalid
   UCI::init(Options);
   Tune::init();
-  //from Kelly begin
-  LD.init();
-  //from Kelly end
+  LD.init();//Kelly
   PSQT::init();
   Bitboards::init();
   Position::init();

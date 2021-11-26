@@ -64,9 +64,6 @@ bool LearningData::load(const std::string& filename)
     //Close the input data file
     in.close();
 
-    //Save pointer to fileData to be freed later
-    mainDataBuffers.push_back(fileData);
-
     //Loop the moves from this file
     bool qLearning = (learningMode == LearningMode::Self);
     PersistedLearningMove *persistedLearningMove = (PersistedLearningMove*)fileData;
@@ -81,14 +78,14 @@ bool LearningData::load(const std::string& filename)
 
 void LearningData::insert_or_update(PersistedLearningMove *plm, bool qLearning)
 {
-    // We search in the range of all the hash table entries with key pmi
+    // We search in the range of all the hash table entries with plm's key
     auto range = HT.equal_range(plm->key);
 
-    //If the 'plm' belongs to a position that did not exist before in the 'LHT'
-    //then, we insert a new LearningPosition and LearningMove and return
+    //If the plm's key belongs to a position that did not exist before in the 'LHT'
+    //then, we insert this new key and LearningMove and return
     if (range.first == range.second)
     {
-        //Insert new vector and move
+        //Insert new key and learningMove
         HT.insert({plm->key, &plm->learningMove });
 
         //Flag for persisting
@@ -97,14 +94,14 @@ void LearningData::insert_or_update(PersistedLearningMove *plm, bool qLearning)
         //Nothing else to do
         return;
     }
-
-    //Check if this move already exists in LearningPosition
+	//The plm's key belongs to a position already existing in the 'LHT'
+    //Check if this move already exists for this position
     auto itr = std::find_if(
         range.first,
         range.second,
         [&plm](const auto &p) { return p.second->move == plm->learningMove.move; });
 
-    //If the move exists, check if it better than the move we already have
+	//If the move does not exist then insert it
     LearningMove* bestNewMoveCandidate = nullptr;
     if (itr == range.second)
     {
@@ -114,7 +111,7 @@ void LearningData::insert_or_update(PersistedLearningMove *plm, bool qLearning)
         //Flag for persisting
         needPersisting = true;
     }
-    else
+    else //If the move exists, check if it better than the move we already have
     {
         LearningMove* existingMove = itr->second;
         if (existingMove->depth < plm->learningMove.depth || (existingMove->depth == plm->learningMove.depth && existingMove->score < plm->learningMove.score))
@@ -156,7 +153,7 @@ void LearningData::insert_or_update(PersistedLearningMove *plm, bool qLearning)
         if (newBestMove)
         {
             //Boring and slow, but I can't think of an alternative at the moment
-            //This is not thread safe, but it is fine since this code will never be called from multiuple threads
+            //This is not thread safe, but it is fine since this code will never be called from multiple threads
             static LearningMove lm;
 
             lm = *bestNewMoveCandidate;
@@ -170,32 +167,14 @@ LearningData::LearningData() : isPaused(false), isReadOnly(false), needPersistin
 
 LearningData::~LearningData()
 {
-    clear();
-}
-
-void LearningData::clear()
-{
     //Clear hash table
     HT.clear();
-
-    //Release internal data buffers
-    for (void* p : mainDataBuffers)
-        free(p);
-
-    //Clear internal data buffers
-    mainDataBuffers.clear();
-
-    //Release internal new moves data buffers
-    for (void* p : newMovesDataBuffers)
-        free(p);
-
-    //Clear internal new moves data buffers
-    newMovesDataBuffers.clear();    
 }
 
 void LearningData::init()
 {
-	clear();
+    //Clear hash table
+    HT.clear();
 
     learningMode = identify_learning_mode(Options["Persisted learning"]);
     if (learningMode == LearningMode::Off)
@@ -330,13 +309,6 @@ void LearningData::resume()
 
 void LearningData::add_new_learning(Key key, const LearningMove& lm)
 {
-    if (isReadOnly)
-    {
-        //We should not be here if we are running in ReadOnly mode
-        assert(false);
-        return;
-    }
-
     //Allocate buffer to read the entire file
     PersistedLearningMove *newPlm = (PersistedLearningMove *)malloc(sizeof(PersistedLearningMove));
     if (!newPlm)
@@ -344,9 +316,6 @@ void LearningData::add_new_learning(Key key, const LearningMove& lm)
         std::cerr << "info string Failed to allocate <" << sizeof(PersistedLearningMove) << "> bytes for new learning entry" << std::endl;
         return;
     }
-
-    //Save pointer to fileData to be freed later
-    newMovesDataBuffers.push_back(newPlm);
 
     //Assign
     newPlm->key = key;

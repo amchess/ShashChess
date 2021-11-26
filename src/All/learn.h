@@ -34,8 +34,6 @@ private:
     LearningMode learningMode;
 
     std::unordered_multimap<Stockfish::Key, LearningMove*> HT;
-    std::vector<void*> mainDataBuffers;
-    std::vector<void*> newMovesDataBuffers;
 
 private:
     bool load(const std::string& filename);
@@ -60,7 +58,7 @@ public:
     void init();
     void persist();
 
-    void add_new_learning(Stockfish::Key key, const LearningMove &lm);
+	void add_new_learning(Stockfish::Key key, const LearningMove &lm);
 
     int probe(Stockfish::Key key, const LearningMove*& learningMove);
     const LearningMove *probe_move(Stockfish::Key key, Stockfish::Move move);
