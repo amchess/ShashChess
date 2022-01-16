@@ -1,6 +1,6 @@
 /*
   Stockfish, a UCI chess playing engine derived from Glaurung 2.1
-  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2004-2022 The Stockfish developers (see AUTHORS file)
 
   Stockfish is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
 
   TimePoint moveOverhead    = TimePoint(Options["Move Overhead"]);
   TimePoint slowMover       = TimePoint(Options["Slow Mover"]);
-  TimePoint npmsec          = TimePoint(Options["nodestime"]);
+  TimePoint npmsec          = NODES_TIME;
 
   // optScale is a percentage of available time to use for the current move.
   // maxScale is a multiplier applied to optimumTime.

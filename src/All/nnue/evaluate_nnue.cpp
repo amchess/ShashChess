@@ -1,6 +1,6 @@
 /*
   Stockfish, a UCI chess playing engine derived from Glaurung 2.1
-  Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2004-2022 The Stockfish developers (see AUTHORS file)
 
   Stockfish is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -165,12 +165,11 @@ namespace Stockfish::Eval::NNUE {
     const auto psqt = featureTransformer->transform(pos, transformedFeatures, bucket);
     const auto positional = network[bucket]->propagate(transformedFeatures, buffer)[0];
 
-    // Give more value to positional evaluation when material is balanced
-    if (   adjusted
-        && abs(pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK)) <= RookValueMg - BishopValueMg)
-      return  static_cast<Value>(((128 - delta) * psqt + (128 + delta) * positional) / 128 / OutputScale);
+    // Give more value to positional evaluation when adjusted flag is set
+    if (adjusted)
+        return static_cast<Value>(((128 - delta) * psqt + (128 + delta) * positional) / 128 / OutputScale);
     else
-      return static_cast<Value>((psqt + positional) / OutputScale);
+        return static_cast<Value>((psqt + positional) / OutputScale);
   }
 
   struct NnueEvalTrace {
@@ -234,7 +233,7 @@ namespace Stockfish::Eval::NNUE {
     {
         buffer[1] = '0' + cp / 10000; cp %= 10000;
         buffer[2] = '0' + cp / 1000; cp %= 1000;
-        buffer[3] = '0' + cp / 100; cp %= 100;
+        buffer[3] = '0' + cp / 100;
         buffer[4] = ' ';
     }
     else if (cp >= 1000)

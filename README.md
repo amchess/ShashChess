@@ -186,8 +186,13 @@ If the number is greater than threads number, all threads are for full depth bru
 ### MonteCarlo Tree Search section (experimental: thanks to original Stephan Nicolet work)
 #### MCTS
 
-Default is Off: no MonteCarlo Tree Search algorithm. The other values are "Single" and "Multi", 
-where "Single" means only main thread does MCTS and "Multi" means all threads but main one does MCTS
+_Boolean, Default: False_ If activated, the engine uses the livebook as primary choice.
+
+#### MCTSThreads
+
+_Integer, Default: 0, Min: 0, Max: 512_
+The number of settled threads to use for MCTS search except the first (main) one always for alpha-beta search. 
+In particular, if the number is greater than threads number, they will all do a montecarlo tree search, always except the first (main) for alpha-beta search.
 
 #### Multi Strategy 
 

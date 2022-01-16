@@ -1,5 +1,5 @@
 # ShashChess, a UCI chess playing engine derived from Stockfish
-# Copyright (C) 2004-2021 The Stockfish developers (see AUTHORS file)
+# Copyright (C) 2004-2022 The Stockfish developers (see AUTHORS file)
 #
 # ShashChess is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -39,13 +39,13 @@ endif
 
 ### Source and object files
 SRCS = benchmark.cpp bitbase.cpp bitboard.cpp endgame.cpp evaluate.cpp learn.cpp main.cpp \
-	material.cpp misc.cpp montecarlo.cpp movegen.cpp movepick.cpp pawns.cpp polybook.cpp position.cpp psqt.cpp \
+	material.cpp misc.cpp mcts/montecarlo.cpp movegen.cpp movepick.cpp pawns.cpp polybook.cpp position.cpp psqt.cpp \
 	search.cpp thread.cpp timeman.cpp tt.cpp uci.cpp ucioption.cpp tune.cpp syzygy/tbprobe.cpp \
 	nnue/evaluate_nnue.cpp nnue/features/half_ka_v2_hm.cpp
 
 OBJS = $(notdir $(SRCS:.cpp=.o))
 
-VPATH = syzygy:nnue:nnue/features
+VPATH = mcts:syzygy:nnue:nnue/features
 
 ### Establish the operating system name
 KERNEL = $(shell uname -s)
@@ -78,6 +78,7 @@ endif
 # ssse3 = yes/no      --- -mssse3          --- Use Intel Supplemental Streaming SIMD Extensions 3
 # sse41 = yes/no      --- -msse4.1         --- Use Intel Streaming SIMD Extensions 4.1
 # avx2 = yes/no       --- -mavx2           --- Use Intel Advanced Vector Extensions 2
+# avxvnni = yes/no    --- -mavxvnni        --- Use Intel Vector Neural Network Instructions AVX
 # avx512 = yes/no     --- -mavx512bw       --- Use Intel Advanced Vector Extensions 512
 # vnni256 = yes/no    --- -mavx512vnni     --- Use Intel Vector Neural Network Instructions 256
 # vnni512 = yes/no    --- -mavx512vnni     --- Use Intel Vector Neural Network Instructions 512
@@ -100,8 +101,8 @@ endif
 # explicitly check for the list of supported architectures (as listed with make help),
 # the user can override with `make ARCH=x86-32-vnni256 SUPPORTED_ARCH=true`
 ifeq ($(ARCH), $(filter $(ARCH), \
-                 x86-64-vnni512 x86-64-vnni256 x86-64-avx512 x86-64-bmi2 x86-64-avx2 \
-                 x86-64-sse41-popcnt x86-64-modern x86-64-ssse3 x86-64-sse3-popcnt \
+                 x86-64-vnni512 x86-64-vnni256 x86-64-avx512 x86-64-avxvnni x86-64-bmi2 \
+                 x86-64-avx2 x86-64-sse41-popcnt x86-64-modern x86-64-ssse3 x86-64-sse3-popcnt \
                  x86-64 x86-32-sse41-popcnt x86-32-sse2 x86-32 ppc-64 ppc-32 e2k \
                  armv7 armv7-neon armv8 apple-silicon general-64 general-32))
    SUPPORTED_ARCH=true
@@ -122,10 +123,12 @@ sse2 = no
 ssse3 = no
 sse41 = no
 avx2 = no
+avxvnni = no
 avx512 = no
 vnni256 = no
 vnni512 = no
 neon = no
+arm_version = 0
 STRIP = strip
 
 ### 2.2 Architecture specific
@@ -190,6 +193,17 @@ ifeq ($(findstring -avx2,$(ARCH)),-avx2)
 	ssse3 = yes
 	sse41 = yes
 	avx2 = yes
+endif
+
+ifeq ($(findstring -avxvnni,$(ARCH)),-avxvnni)
+	popcnt = yes
+	sse = yes
+	sse2 = yes
+	ssse3 = yes
+	sse41 = yes
+	avx2 = yes
+	avxvnni = yes
+	pext = yes
 endif
 
 ifeq ($(findstring -bmi2,$(ARCH)),-bmi2)
@@ -262,6 +276,7 @@ ifeq ($(ARCH),armv7)
 	arch = armv7
 	prefetch = yes
 	bits = 32
+	arm_version = 7
 endif
 
 ifeq ($(ARCH),armv7-neon)
@@ -270,6 +285,7 @@ ifeq ($(ARCH),armv7-neon)
 	popcnt = yes
 	neon = yes
 	bits = 32
+	arm_version = 7
 endif
 
 ifeq ($(ARCH),armv8)
@@ -277,6 +293,7 @@ ifeq ($(ARCH),armv8)
 	prefetch = yes
 	popcnt = yes
 	neon = yes
+	arm_version = 8
 endif
 
 ifeq ($(ARCH),apple-silicon)
@@ -284,6 +301,7 @@ ifeq ($(ARCH),apple-silicon)
 	prefetch = yes
 	popcnt = yes
 	neon = yes
+	arm_version = 8
 endif
 
 ifeq ($(ARCH),ppc-32)
@@ -441,6 +459,9 @@ else ifeq ($(comp),clang)
 else
 	profile_make = gcc-profile-make
 	profile_use = gcc-profile-use
+	ifeq ($(KERNEL),Darwin)
+		EXTRAPROFILEFLAGS = -fvisibility=hidden
+	endif
 endif
 
 ### Travis CI script uses COMPILER to overwrite CXX
@@ -501,11 +522,17 @@ ifeq ($(optimize),yes)
 		endif
 	endif
 
-	ifeq ($(comp),$(filter $(comp),gcc clang icc))
-		ifeq ($(KERNEL),Darwin)
-			CXXFLAGS += -mdynamic-no-pic
-		endif
-	endif
+    ifeq ($(KERNEL),Darwin)
+        ifeq ($(comp),$(filter $(comp),clang icc))
+            CXXFLAGS += -mdynamic-no-pic
+        endif
+
+        ifeq ($(comp),gcc)
+            ifneq ($(arch),arm64)
+                CXXFLAGS += -mdynamic-no-pic
+            endif
+        endif
+    endif
 
 	ifeq ($(comp),clang)
 		CXXFLAGS += -fexperimental-new-pass-manager
@@ -541,6 +568,13 @@ ifeq ($(avx2),yes)
 	CXXFLAGS += -DUSE_AVX2
 	ifeq ($(comp),$(filter $(comp),gcc clang mingw))
 		CXXFLAGS += -mavx2
+	endif
+endif
+
+ifeq ($(avxvnni),yes)
+	CXXFLAGS += -DUSE_VNNI -DUSE_AVXVNNI
+	ifeq ($(comp),$(filter $(comp),gcc clang mingw))
+		CXXFLAGS += -mavxvnni
 	endif
 endif
 
@@ -594,7 +628,7 @@ ifeq ($(mmx),yes)
 endif
 
 ifeq ($(neon),yes)
-	CXXFLAGS += -DUSE_NEON
+	CXXFLAGS += -DUSE_NEON=$(arm_version)
 	ifeq ($(KERNEL),Linux)
 	ifneq ($(COMP),ndk)
 	ifneq ($(arch),armv8)
@@ -689,6 +723,7 @@ help:
 	@echo "x86-64-vnni512          > x86 64-bit with vnni support 512bit wide"
 	@echo "x86-64-vnni256          > x86 64-bit with vnni support 256bit wide"
 	@echo "x86-64-avx512           > x86 64-bit with avx512 support"
+	@echo "x86-64-avxvnni          > x86 64-bit with avxvnni support"
 	@echo "x86-64-bmi2             > x86 64-bit with bmi2 support"
 	@echo "x86-64-avx2             > x86 64-bit with avx2 support"
 	@echo "x86-64-sse41-popcnt     > x86 64-bit with sse41 and popcnt support"
@@ -837,10 +872,12 @@ config-sanity: net
 	@echo "ssse3: '$(ssse3)'"
 	@echo "sse41: '$(sse41)'"
 	@echo "avx2: '$(avx2)'"
+	@echo "avxvnni: '$(avxvnni)'"
 	@echo "avx512: '$(avx512)'"
 	@echo "vnni256: '$(vnni256)'"
 	@echo "vnni512: '$(vnni512)'"
 	@echo "neon: '$(neon)'"
+	@echo "arm_version: '$(arm_version)'"
 	@echo ""
 	@echo "Flags:"
 	@echo "CXX: $(CXX)"
@@ -892,12 +929,14 @@ gcc-profile-make:
 	@mkdir -p profdir
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
 	EXTRACXXFLAGS='-fprofile-generate=profdir' \
+	EXTRACXXFLAGS+=$(EXTRAPROFILEFLAGS) \
 	EXTRALDFLAGS='-lgcov' \
 	all
 
 gcc-profile-use:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
 	EXTRACXXFLAGS='-fprofile-use=profdir -fno-peel-loops -fno-tracer' \
+	EXTRACXXFLAGS+=$(EXTRAPROFILEFLAGS) \
 	EXTRALDFLAGS='-lgcov' \
 	all
 
