@@ -88,7 +88,6 @@ void init(OptionsMap& o) {
   o["Move Overhead"]         	   << Option(10, 0, 5000);
   o["Slow Mover"]            	   << Option(100, 10, 1000);
   o["UCI_Chess960"]          	   << Option(false);
-  o["UCI_AnalyseMode"]       	   << Option(false);
   o["UCI_LimitStrength"]     	   << Option(false, on_UCI_LimitStrength);
   o["Handicapped Depth"]     	   << Option(false);
   o["LimitStrength_CB"]        << Option(false,on_LimitStrength_CB);
@@ -121,9 +120,10 @@ void init(OptionsMap& o) {
   o["Opening variety"]       << Option (0, 0, 40);
   o["Persisted learning"]    << Option("Off var Off var Standard var Self", "Off", on_persisted_learning);
   o["Read only learning"]    << Option(false, on_readonly_learning);
-  o["MCTS"]                  << Option("Off var Off var Single var Multi", "Off");
+  o["MCTS"]                  << Option(false);
+  o["MCTSThreads"]           << Option(1, 1, 512);
   o["Multi Strategy"]        << Option(20, 0, 100);
-  o["Multi MinVisits"]       << Option(5, 0, 1000);  
+  o["Multi MinVisits"]       << Option(5, 0, 1000);
   o["Concurrent Experience"] << Option (false);
   o["Tal"]                   << Option(false);
   o["Capablanca"]            << Option(false);
