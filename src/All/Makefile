@@ -19,11 +19,29 @@
 ### Section 1. General Configuration
 ### ==========================================================================
 
+### Establish the operating system name
+KERNEL = $(shell uname -s)
+ifeq ($(KERNEL),Linux)
+	OS = $(shell uname -o)
+endif
+
+### Target Windows OS
+ifeq ($(OS),Windows_NT)
+	ifneq ($(COMP),ndk)
+		target_windows = yes
+	endif
+else ifeq ($(COMP),mingw)
+	target_windows = yes
+	ifeq ($(WINE_PATH),)
+		WINE_PATH = $(shell which wine)
+	endif
+endif
+
 ### Executable name
-ifeq ($(COMP),mingw)
-EXE = shashchess.exe
+ifeq ($(target_windows),yes)
+	EXE = shashchess.exe
 else
-EXE = shashchess
+	EXE = shashchess
 endif
 
 ### Installation dir definitions
@@ -32,9 +50,9 @@ BINDIR = $(PREFIX)/bin
 
 ### Built-in benchmark for pgo-builds
 ifeq ($(SDE_PATH),)
-	PGOBENCH = ./$(EXE) bench
+	PGOBENCH = $(WINE_PATH) ./$(EXE) bench
 else
-	PGOBENCH = $(SDE_PATH) -- ./$(EXE) bench
+	PGOBENCH = $(SDE_PATH) -- $(WINE_PATH) ./$(EXE) bench
 endif
 
 ### Source and object files
@@ -46,12 +64,6 @@ SRCS = benchmark.cpp bitbase.cpp bitboard.cpp endgame.cpp evaluate.cpp learn.cpp
 OBJS = $(notdir $(SRCS:.cpp=.o))
 
 VPATH = mcts:syzygy:nnue:nnue/features
-
-### Establish the operating system name
-KERNEL = $(shell uname -s)
-ifeq ($(KERNEL),Linux)
-	OS = $(shell uname -o)
-endif
 
 ### ==========================================================================
 ### Section 2. High-level Configuration
@@ -140,7 +152,7 @@ ifeq ($(findstring x86,$(ARCH)),x86)
 ifeq ($(findstring x86-32,$(ARCH)),x86-32)
 	arch = i386
 	bits = 32
-	sse = yes
+	sse = no
 	mmx = yes
 else
 	arch = x86_64
@@ -365,29 +377,27 @@ ifeq ($(COMP),gcc)
 	endif
 endif
 
+ifeq ($(target_windows),yes)
+	LDFLAGS += -static
+endif
+
 ifeq ($(COMP),mingw)
 	comp=mingw
 
-	ifeq ($(KERNEL),Linux)
-		ifeq ($(bits),64)
-			ifeq ($(shell which x86_64-w64-mingw32-c++-posix),)
-				CXX=x86_64-w64-mingw32-c++
-			else
-				CXX=x86_64-w64-mingw32-c++-posix
-			endif
+	ifeq ($(bits),64)
+		ifeq ($(shell which x86_64-w64-mingw32-c++-posix 2> /dev/null),)
+			CXX=x86_64-w64-mingw32-c++
 		else
-			ifeq ($(shell which i686-w64-mingw32-c++-posix),)
-				CXX=i686-w64-mingw32-c++
-			else
-				CXX=i686-w64-mingw32-c++-posix
-			endif
+			CXX=x86_64-w64-mingw32-c++-posix
 		endif
 	else
-		CXX=g++
+		ifeq ($(shell which i686-w64-mingw32-c++-posix 2> /dev/null),)
+			CXX=i686-w64-mingw32-c++
+		else
+			CXX=i686-w64-mingw32-c++-posix
+		endif
 	endif
-
 	CXXFLAGS += -pedantic -Wextra -Wshadow
-	LDFLAGS += -static
 endif
 
 ifeq ($(COMP),icc)
@@ -399,14 +409,16 @@ endif
 ifeq ($(COMP),clang)
 	comp=clang
 	CXX=clang++
+	ifeq ($(target_windows),yes)
+		CXX=x86_64-w64-mingw32-clang++
+	endif
+
 	CXXFLAGS += -pedantic -Wextra -Wshadow
 
-	ifneq ($(KERNEL),Darwin)
-	ifneq ($(KERNEL),OpenBSD)
-	ifneq ($(KERNEL),FreeBSD)
+	ifeq ($(filter $(KERNEL),Darwin OpenBSD FreeBSD),)
+	ifeq ($(target_windows),)
 	ifneq ($(RTLIB),compiler-rt)
 		LDFLAGS += -latomic
-	endif
 	endif
 	endif
 	endif
@@ -441,11 +453,19 @@ ifeq ($(COMP),ndk)
 	ifeq ($(arch),armv7)
 		CXX=armv7a-linux-androideabi16-clang++
 		CXXFLAGS += -mthumb -march=armv7-a -mfloat-abi=softfp -mfpu=neon
-		STRIP=arm-linux-androideabi-strip
+		ifneq ($(shell which arm-linux-androideabi-strip 2>/dev/null),)
+			STRIP=arm-linux-androideabi-strip
+		else
+			STRIP=llvm-strip
+		endif
 	endif
 	ifeq ($(arch),armv8)
 		CXX=aarch64-linux-android21-clang++
-		STRIP=aarch64-linux-android-strip
+		ifneq ($(shell which aarch64-linux-android-strip 2>/dev/null),)
+			STRIP=aarch64-linux-android-strip
+		else
+			STRIP=llvm-strip
+		endif
 	endif
 	LDFLAGS += -static-libstdc++ -pie -lm -latomic
 endif
@@ -653,9 +673,7 @@ ifeq ($(optimize),yes)
 ifeq ($(debug), no)
 	ifeq ($(comp),clang)
 		CXXFLAGS += -flto
-		ifneq ($(findstring MINGW,$(KERNEL)),)
-			CXXFLAGS += -fuse-ld=lld
-		else ifneq ($(findstring MSYS,$(KERNEL)),)
+		ifeq ($(target_windows),yes)
 			CXXFLAGS += -fuse-ld=lld
 		endif
 		LDFLAGS += $(CXXFLAGS)
@@ -666,25 +684,17 @@ ifeq ($(debug), no)
 	ifeq ($(gccisclang),)
 		CXXFLAGS += -flto
 		LDFLAGS += $(CXXFLAGS) -flto=jobserver
-		ifneq ($(findstring MINGW,$(KERNEL)),)
-			LDFLAGS += -save-temps
-		else ifneq ($(findstring MSYS,$(KERNEL)),)
-			LDFLAGS += -save-temps
-		endif
 	else
 		CXXFLAGS += -flto
 		LDFLAGS += $(CXXFLAGS)
 	endif
 
-# To use LTO and static linking on windows, the tool chain requires a recent gcc:
-# gcc version 10.1 in msys2 or TDM-GCC version 9.2 are known to work, older might not.
-# So, only enable it for a cross from Linux by default.
+# To use LTO and static linking on Windows,
+# the tool chain requires gcc version 10.1 or later.
 	else ifeq ($(comp),mingw)
-	ifeq ($(KERNEL),Linux)
 	ifneq ($(arch),i386)
 		CXXFLAGS += -flto
-		LDFLAGS += $(CXXFLAGS) -flto=jobserver
-	endif
+		LDFLAGS += $(CXXFLAGS) -save-temps
 	endif
 	endif
 endif
@@ -801,7 +811,7 @@ strip:
 install:
 	-mkdir -p -m 755 $(BINDIR)
 	-cp $(EXE) $(BINDIR)
-	-strip $(BINDIR)/$(EXE)
+	$(STRIP) $(BINDIR)/$(EXE)
 
 # clean all
 clean: objclean profileclean
@@ -833,15 +843,16 @@ net:
 
 # clean binaries and objects
 objclean:
-	@rm -f $(EXE) *.o ./syzygy/*.o ./nnue/*.o ./nnue/features/*.o
+	@rm -f shashchess shashchess.exe *.o ./syzygy/*.o ./nnue/*.o ./nnue/features/*.o ./mcts/*.o
 
 # clean auxiliary profiling files
 profileclean:
 	@rm -rf profdir
 	@rm -f bench.txt *.gcda *.gcno ./syzygy/*.gcda ./nnue/*.gcda ./nnue/features/*.gcda *.s
 	@rm -f shashchess.profdata *.profraw
-	@rm -f shashchess.exe.lto_wrapper_args
-	@rm -f shashchess.exe.ltrans.out
+	@rm -f shashchess.*args*
+	@rm -f shashchess.*lt*
+	@rm -f shashchess.res
 	@rm -f ./-lstdc++.res
 
 default:

@@ -53,6 +53,8 @@ using namespace std;
 using std::string;
 
 COMPARE_PRIOR ComparePrior;
+COMPARE_VISITS CompareVisits;
+COMPARE_MEAN_ACTION CompareMeanAction;
 COMPARE_ROBUST_CHOICE CompareRobustChoice;
   
 MCTSHashTable MCTS;
@@ -135,7 +137,8 @@ void MonteCarlo::search() {
        if(AB_Rollout)
        {
 	       Value value = evaluate_with_minimax(std::min(node->deep, MAX_PLY-ply-2), node);
-
+		   if (Threads.stop)
+			   break;
 	       if(value == VALUE_ZERO)
 	       {
 		       value = node->ttValue;
@@ -729,6 +732,8 @@ void MonteCarlo::generate_moves() {
             {
                 stack[ply].moveCount = ++moveCount;
                 const Reward prior = calculate_prior(move);
+			    if (Threads.stop)
+					break;				
 				if(prior > bestPrior)
 				{
 					current_node()->ttValue = reward_to_value(prior);
@@ -1015,7 +1020,7 @@ void MonteCarlo::print_children() {
 		<< " "
 		<< UCI::move(children[k].move, pos.is_chess960())
 
-		<< std::setprecision(3)
+		<< std::setprecision(2)
 		<< " win% "
 		<< children[k].prior * 100
 

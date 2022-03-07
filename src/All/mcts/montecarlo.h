@@ -19,6 +19,7 @@
 #ifndef MONTECARLO_H_INCLUDED
 #define MONTECARLO_H_INCLUDED
 
+#include <cmath>
 #include <unordered_map>
 
 #include "../position.h"
@@ -136,20 +137,44 @@ struct Edge {
   Reward  prior;
   Reward  actionValue;
   Reward  meanActionValue;
-};
+	};
 
+	inline bool comp_float(const double a, const double b, const double epsilon = 0.005)
+	{
+		return fabs(a - b) < epsilon;
+	}
 // Comparison functions for edges
 struct COMPARE_PRIOR {
   bool operator()(Edge a, Edge b) const
-      { return a.prior > b.prior; }
+ {
+ 	return a.prior > b.prior;
+  }
 };
 
+	struct COMPARE_VISITS
+	{
+		bool operator()(const Edge a, const Edge b) const
+		{
+			return a.visits > b.visits || (comp_float(a.visits, b.visits, 0.005) && a.prior > b.prior);
+		}
+	};
+
+	struct COMPARE_MEAN_ACTION
+	{
+		bool operator()(const Edge a, const Edge b) const
+		{
+			return a.meanActionValue > b.meanActionValue;
+		}
+	};
+	
 struct COMPARE_ROBUST_CHOICE {
   bool operator()(Edge a, Edge b) const
       { return (10 * a.visits + a.prior > 10 * b.visits + b.prior); }
 };
 
 extern COMPARE_PRIOR ComparePrior;
+extern COMPARE_VISITS CompareVisits;
+extern COMPARE_MEAN_ACTION CompareMeanAction;
 extern COMPARE_ROBUST_CHOICE CompareRobustChoice;
 
 constexpr int MAX_CHILDREN = 128;

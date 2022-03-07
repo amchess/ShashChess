@@ -110,6 +110,12 @@ typedef uint64_t Bitboard;
 constexpr int MAX_MOVES = 256;
 constexpr int MAX_PLY   = 246;
 
+//align score begin
+constexpr float CAOS_MAX_EVAL = 71.;
+constexpr float GUI_CAOS_EVAL = 32.;
+constexpr float WEIGHTED_EVAL=CAOS_MAX_EVAL/GUI_CAOS_EVAL;
+//align score end
+
 /// A move needs 16 bits to be stored
 ///
 /// bit  0- 5: destination square (from 0 to 63)
@@ -174,11 +180,6 @@ enum Bound {
   BOUND_UPPER,
   BOUND_LOWER,
   BOUND_EXACT = BOUND_UPPER | BOUND_LOWER
-};
-
-enum ExplosionState {
-  EXPLOSION_NONE,
-  MUST_CALM_DOWN
 };
 
 enum Value : int {

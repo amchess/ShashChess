@@ -166,7 +166,11 @@ Choice a test position with a few pieces on the board (from 7 to 12). For exampl
 - Fen: _8/5r2/R7/8/1p5k/p3P3/4K3/8 w -- 0 1_ Solution : Ra4 (=)
 - Fen: _1R6/7k/1P5p/5p2/3K2p1/1r3P1P/8 b - - 1 1_ Solution: 1...h5 !! (=)
 
-
+#### Syzygy50MoveRule
+    
+Disable to let fifty-move rule draws detected by Syzygy tablebase probes count
+as wins or losses. This is useful for ICCF correspondence games.
+	
 #### SygyzyProbeLimit
 
 _Integer, Default: 6, Min: 0, Max: 6_
@@ -259,6 +263,10 @@ When this option is true, the saved experience file name will be modified to som
     Toggle between the NNUE and classical evaluation functions. If set to "true",
     the network parameters must be available to load from file (see also EvalFile),
     if they are not embedded in the binary.
+
+### GoldDigger
+
+_Boolean, Default: False_ If activated, the engine favors depth over the pruning of various selectivity techniques. In this way, it can uncover normally hidden possibilities. In this mode, it solves many more hard positions, although it loses slightly in absolute game strength.
 
 ### Persisted learning
 

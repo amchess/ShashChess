@@ -111,6 +111,7 @@ namespace Eval {
 
                 MemoryBuffer buffer(const_cast<char*>(reinterpret_cast<const char*>(gEmbeddedNNUEData)),
                                     size_t(gEmbeddedNNUESize));
+				(void) gEmbeddedNNUEEnd; // Silence warning on unused variable					
 
                 istream stream(&buffer);
                 if (load_eval(eval_file, stream))
@@ -426,7 +427,7 @@ namespace {
         else if (Pt == ROOK && (file_bb(s) & kingRing[Them]))
             score += RookOnKingRing;
 
-        else if ((pos.this_thread()->shashinValue != SHASHIN_POSITION_CAPABLANCA) && (Pt == BISHOP) && (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & kingRing[Them])) //from Official integrated with Shashin
+        else if (((Pt == BISHOP) && (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & kingRing[Them])&& (pos.this_thread()->shashinValue != SHASHIN_POSITION_CAPABLANCA))) //from Official integrated with Shashin
             score += BishopOnKingRing;
 
         int mob = popcount(b & mobilityArea[Us]);
@@ -989,7 +990,7 @@ namespace {
     // the position object (material + piece square tables) and the material
     // imbalance. Score is computed internally from the white point of view.
     //from handicap mode begin
-    Score score = pos.psq_score() + (imbalancesToEvaluate ? me->imbalance():0)+ pos.this_thread()->trend;
+    Score score = pos.psq_score() + (imbalancesToEvaluate ? me->imbalance():0);//+ pos.this_thread()->trend;
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
     if (pawnsToEvaluate)
@@ -1125,8 +1126,15 @@ Value Eval::evaluate(const Position& pos) {
   // If result of a classical evaluation is much lower than threshold fall back to NNUE
   if (useNNUE && !useClassical)
   {
+       Value nnue     = NNUE::evaluate(pos, true);     // NNUE
        int scale      = 1136 + 20 * pos.non_pawn_material() / 1024;
-	   v = NNUE::evaluate(pos, true) * scale / 1024;  // NNUE
+       //Color stm      = pos.side_to_move();
+       //Value optimism = pos.this_thread()->optimism[stm];
+       //Value psq      = (stm == WHITE ? 1 : -1) * eg_value(pos.psq_score());
+       //int complexity = 35 * abs(nnue - psq) / 256;
+
+       //optimism = optimism * (44 + complexity) / 32;
+       v = nnue * scale / 1024 ;
 
        if (pos.is_chess960())
            v += fix_FRC(pos);
@@ -1137,8 +1145,14 @@ Value Eval::evaluate(const Position& pos) {
 
   // Guarantee evaluation does not hit the tablebase range
   v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
-
-  return (v * 32/75);
+  //std::cout << pos.fen() ;
+  //printf("Value: %d",v);
+  bool goldDigger = Options["GoldDigger"];
+  if(goldDigger)
+  {
+      v = (Value)((float)(v) / WEIGHTED_EVAL);
+  }
+  return v; 
 }
 
 /// trace() is like evaluate(), but instead of returning a value, it returns
@@ -1157,9 +1171,11 @@ std::string Eval::trace(Position& pos) {
   Value v;
 
   std::memset(scores, 0, sizeof(scores));
-
-  pos.this_thread()->trend = SCORE_ZERO; // Reset any dynamic contempt
+  // Reset any global variable used in eval
+  //pos.this_thread()->trend = SCORE_ZERO; // Reset any dynamic contempt
   pos.this_thread()->bestValue = VALUE_ZERO; // Reset bestValue for lazyEval
+  //pos.this_thread()->optimism[WHITE] = VALUE_ZERO;
+  //pos.this_thread()->optimism[BLACK] = VALUE_ZERO;
 
   v = Evaluation<TRACE>(pos).value();
 

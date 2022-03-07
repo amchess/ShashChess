@@ -109,7 +109,7 @@ namespace Stockfish::Eval::NNUE {
   {
     write_little_endian<std::uint32_t>(stream, Version);
     write_little_endian<std::uint32_t>(stream, hashValue);
-    write_little_endian<std::uint32_t>(stream, desc.size());
+    write_little_endian<std::uint32_t>(stream, (std::uint32_t)desc.size());
     stream.write(&desc[0], desc.size());
     return !stream.fail();
   }
@@ -148,22 +148,18 @@ namespace Stockfish::Eval::NNUE {
 #if defined(ALIGNAS_ON_STACK_VARIABLES_BROKEN)
     TransformedFeatureType transformedFeaturesUnaligned[
       FeatureTransformer::BufferSize + alignment / sizeof(TransformedFeatureType)];
-    char bufferUnaligned[Network::BufferSize + alignment];
 
     auto* transformedFeatures = align_ptr_up<alignment>(&transformedFeaturesUnaligned[0]);
-    auto* buffer = align_ptr_up<alignment>(&bufferUnaligned[0]);
 #else
     alignas(alignment)
       TransformedFeatureType transformedFeatures[FeatureTransformer::BufferSize];
-    alignas(alignment) char buffer[Network::BufferSize];
 #endif
 
     ASSERT_ALIGNED(transformedFeatures, alignment);
-    ASSERT_ALIGNED(buffer, alignment);
 
-    const std::size_t bucket = (pos.count<ALL_PIECES>() - 1) / 4;
+    const int bucket = (pos.count<ALL_PIECES>() - 1) / 4;
     const auto psqt = featureTransformer->transform(pos, transformedFeatures, bucket);
-    const auto positional = network[bucket]->propagate(transformedFeatures, buffer)[0];
+    const auto positional = network[bucket]->propagate(transformedFeatures);
 
     // Give more value to positional evaluation when adjusted flag is set
     if (adjusted)
@@ -190,27 +186,20 @@ namespace Stockfish::Eval::NNUE {
 #if defined(ALIGNAS_ON_STACK_VARIABLES_BROKEN)
     TransformedFeatureType transformedFeaturesUnaligned[
       FeatureTransformer::BufferSize + alignment / sizeof(TransformedFeatureType)];
-    char bufferUnaligned[Network::BufferSize + alignment];
 
     auto* transformedFeatures = align_ptr_up<alignment>(&transformedFeaturesUnaligned[0]);
-    auto* buffer = align_ptr_up<alignment>(&bufferUnaligned[0]);
 #else
     alignas(alignment)
       TransformedFeatureType transformedFeatures[FeatureTransformer::BufferSize];
-    alignas(alignment) char buffer[Network::BufferSize];
 #endif
 
     ASSERT_ALIGNED(transformedFeatures, alignment);
-    ASSERT_ALIGNED(buffer, alignment);
 
     NnueEvalTrace t{};
     t.correctBucket = (pos.count<ALL_PIECES>() - 1) / 4;
-    for (std::size_t bucket = 0; bucket < LayerStacks; ++bucket) {
-      const auto psqt = featureTransformer->transform(pos, transformedFeatures, bucket);
-      const auto output = network[bucket]->propagate(transformedFeatures, buffer);
-
-      int materialist = psqt;
-      int positional  = output[0];
+    for (IndexType bucket = 0; bucket < LayerStacks; ++bucket) {
+      const auto materialist = featureTransformer->transform(pos, transformedFeatures, bucket);
+      const auto positional = network[bucket]->propagate(transformedFeatures);
 
       t.psqt[bucket] = static_cast<Value>( materialist / OutputScale );
       t.positional[bucket] = static_cast<Value>( positional / OutputScale );
