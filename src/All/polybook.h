@@ -23,7 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "position.h"
 #include "string.h"
 
-namespace Stockfish {
 typedef struct {
     uint64_t key;
     uint16_t move;
@@ -39,55 +38,28 @@ public:
     ~PolyBook();
 
     void init(const std::string& bookfile);
-    void set_best_book_move(bool best_book_move);
-    void set_book_depth(int book_depth);
-
-    Move probe(Position& pos);
+    Stockfish::Move probe(Stockfish::Position& pos, bool bestBookMove);
 
 private:
 
-    Key polyglot_key(const Position& pos);
-    Move pg_move_to_sf_move(const Position & pos, unsigned short pg_move);
+    Stockfish::Key polyglot_key(const Stockfish::Position& pos);
+    Stockfish::Move pg_move_to_sf_move(const Stockfish::Position & pos, unsigned short pg_move);
 
     int find_first_key(uint64_t key);
     int get_key_data();
 
-    bool check_do_search(const Position & pos);
-    bool check_draw(Move m, Position& pos);
-
-    void byteswap_polyhash(PolyHash *ph);
-    uint64_t rand64();
-
-    bool is_little_endian();
-    uint64_t swap_uint64(uint64_t d);
-    uint32_t swap_uint32(uint32_t d);
-    uint16_t swap_uint16(uint16_t d);
+    bool check_draw(Stockfish::Position& pos, Stockfish::Move m);
 
     int keycount;
     PolyHash *polyhash;
-
-    bool use_best_book_move;
-    int max_book_depth;
-    int book_depth_count;
+    bool enabled;
 
     int index_first;
-    int index_count;
     int index_best;
     int index_rand;
+    int index_count;
     int index_weight_count;
-
-    uint64_t sr;
-
-    Bitboard last_position;
-    Bitboard akt_position;
-    int last_anz_pieces;
-    int akt_anz_pieces;
-    int search_counter;
-
-    bool enabled, do_search;
 };
 
-extern PolyBook polybook;
-extern PolyBook polybook2;
-} // namespace Stockfish
+extern PolyBook polybook[2];
 #endif // #ifndef POLYBOOK_H_INCLUDED

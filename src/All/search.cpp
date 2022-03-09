@@ -318,6 +318,7 @@ void MainThread::search() {
   imbalancesToEvaluate = limitStrength ? (uciElo>=2400):1;
   //skillLevel= ((int)((uciElo-1350)/75)); //from true handicap mode
   //end from handicap mode
+  Move bookMove = MOVE_NONE;
 
   if (rootMoves.empty())
   {
@@ -329,60 +330,62 @@ void MainThread::search() {
   //Books management begin
   else
   {
-      Move bookMove = MOVE_NONE;
-      if(!Limits.infinite && !Limits.mate)
+      if (!Limits.infinite && !Limits.mate)
       {
-	  bookMove = polybook.probe(rootPos);
-          if (!bookMove)
-              bookMove = polybook2.probe(rootPos);
-	  if(!bookMove)
-	  {
-	    //Live Book begin
-	    if (Options["Live Book"] && g_inBook)
-	    {
-	      if(rootPos.game_ply()==0)
-		livebook_depth_count=0;
-	      if (livebook_depth_count < max_book_depth)
-	      {
-		CURLcode res;
-		char *szFen = curl_easy_escape(g_cURL, rootPos.fen().c_str(), 0);
-		std::string szURL = g_livebookURL + "?action=" + (Options["Live Book Diversity"] ? "query" : "querybest") + "&board=" + szFen;
-		curl_free(szFen);
-		curl_easy_setopt(g_cURL, CURLOPT_URL, szURL.c_str());
-		g_szRecv.clear();
-		res = curl_easy_perform(g_cURL);
-		if (res == CURLE_OK)
-		{
-		  g_szRecv.erase(std::find(g_szRecv.begin(), g_szRecv.end(), '\0'), g_szRecv.end());
-		  if (g_szRecv.find("move:") != std::string::npos)
-		  {
-		    std::string tmp = g_szRecv.substr(5);
-		    bookMove = UCI::to_move(rootPos, tmp);
-		    livebook_depth_count++;
-		  }
-		}
-	      }
-	    }
-	    //Live Book end
-	  }
-      }
-      if (bookMove && std::count(rootMoves.begin(), rootMoves.end(), bookMove))
-      {
-	  g_inBook = Options["Live Book Retry"];
+         //Check polyglot books first
+          if ((bool)Options["Book1"] && rootPos.game_ply() / 2 < (int)Options["Book1 Depth"])
+              bookMove = polybook[0].probe(rootPos, (bool)Options["Book1 BestBookMove"]);
 
-	  for (Thread* th : Threads)
-	    std::swap(th->rootMoves[0], *std::find(th->rootMoves.begin(), th->rootMoves.end(), bookMove));
-      }
-      else
-      {
-	  bookMove = MOVE_NONE;
-	  g_inBook--;
-      }
-      if (!bookMove)
-      {
-	Threads.start_searching(); // start non-main threads
-	Thread::search();          // main thread start searching
-      }
+          if(bookMove == MOVE_NONE && (bool)Options["Book2"] && rootPos.game_ply() / 2 < (int)Options["Book2 Depth"])
+              bookMove = polybook[1].probe(rootPos, (bool)Options["Book1 BestBookMove"]);
+		  if(!bookMove)
+		  {
+		    //Live Book begin
+		    if (Options["Live Book"] && g_inBook)
+		    {
+		      if(rootPos.game_ply()==0)
+			livebook_depth_count=0;
+		      if (livebook_depth_count < max_book_depth)
+		      {
+			CURLcode res;
+			char *szFen = curl_easy_escape(g_cURL, rootPos.fen().c_str(), 0);
+			std::string szURL = g_livebookURL + "?action=" + (Options["Live Book Diversity"] ? "query" : "querybest") + "&board=" + szFen;
+			curl_free(szFen);
+			curl_easy_setopt(g_cURL, CURLOPT_URL, szURL.c_str());
+			g_szRecv.clear();
+			res = curl_easy_perform(g_cURL);
+			if (res == CURLE_OK)
+			{
+			  g_szRecv.erase(std::find(g_szRecv.begin(), g_szRecv.end(), '\0'), g_szRecv.end());
+			  if (g_szRecv.find("move:") != std::string::npos)
+			  {
+			    std::string tmp = g_szRecv.substr(5);
+			    bookMove = UCI::to_move(rootPos, tmp);
+			    livebook_depth_count++;
+			  }
+			}
+		      }
+		    }
+		    //Live Book end
+		  }
+	      }
+	      if (bookMove && std::count(rootMoves.begin(), rootMoves.end(), bookMove))
+	      {
+		  g_inBook = Options["Live Book Retry"];
+	
+		  for (Thread* th : Threads)
+		    std::swap(th->rootMoves[0], *std::find(th->rootMoves.begin(), th->rootMoves.end(), bookMove));
+	      }
+	      else
+	      {
+		  bookMove = MOVE_NONE;
+		  g_inBook--;
+	      }
+	      if (!bookMove)
+	      {
+			Threads.start_searching(); // start non-main threads
+			Thread::search();          // main thread start searching
+	      }
   }
   //Books management end
 
