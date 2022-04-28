@@ -30,6 +30,10 @@ namespace Stockfish {
 class Position;
 
 namespace Search {
+//nodeTypeHistory begin
+// Different node types, used as a template parameter
+enum NodeType { NonPV, PV, Root };
+//nodeTypeHistory end
 
 /// Threshold used for countermoves based pruning
 constexpr int CounterMovePruneThreshold = 0;
@@ -55,6 +59,7 @@ struct Stack {
   bool ttPv;
   bool ttHit;
   int doubleExtensions;
+  NodeType nodeType; //nodeTypeHistory
 };
 
 

@@ -633,10 +633,10 @@ void MonteCarlo::do_move(const Move m) {
     stack[ply].ply         = ply;
     stack[ply].currentMove = m;
 	stack[ply].inCheck = pos.checkers();
-    const bool captureOrPromotion = pos.capture_or_promotion(m);
+    const bool capture = pos.capture(m);
 	
     stack[ply].continuationHistory = &pos.this_thread()->continuationHistory[stack[ply].inCheck]
-	    [captureOrPromotion]
+	    [capture]
 	    [pos.moved_piece(m)]
 	    [to_sq(m)];
 

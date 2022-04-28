@@ -66,11 +66,12 @@ public:
   int selDepth, nmpMinPly;
   Color nmpColor;
   Value bestValue;//, optimism[COLOR_NB];
-
+  
+  bool nmpGuard; //from Crystal
   Position rootPos;
   StateInfo rootState;
   Search::RootMoves rootMoves;
-  Depth rootDepth, completedDepth;
+  Depth rootDepth, completedDepth, depth;
   Value rootDelta;
   CounterMoveHistory counterMoves;
   ButterflyHistory mainHistory;

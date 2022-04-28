@@ -48,7 +48,7 @@ extern "C" {
 #undef min
 #undef max
 //livebook end
-bool pawnsToEvaluate, winnableToEvaluate, imbalancesToEvaluate; //from Shashin Handicap mode
+bool pawnsToEvaluate, winnableToEvaluate, imbalancesToEvaluate; //from Handicap mode
 //Kelly begin
 bool useLearning = true;
 bool enabledLearningProbe=false;
@@ -81,18 +81,21 @@ using namespace Search;
 
 namespace {
 
-  // Different node types, used as a template parameter
-  enum NodeType { NonPV, PV, Root };
-  //snScaling3 begin
+  static int global_stage = -1; //depth^^^
+  
+  //nodeTypeHistory
+
+  //depth^^^ begin
   // Search stage (useful for parameters which are sensitive to "time scaling")
   int search_stage(Thread* thisThread) {
-      uint64_t nodes = thisThread->nodes;
 
-      return nodes <  300000 ? 5 :
-             nodes < 2400000 ? 4 :
-                               3 ;
+     int rootDepth = thisThread->rootDepth;
+     int stage = rootDepth < 14 ? 0 :
+                 rootDepth < 20 ? 1 :
+                                  2 ;
+     return stage;
   }
-  //snScaling3 end
+  //depth^^^ end
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
@@ -230,6 +233,7 @@ void Search::set_livebook_depth(int book_depth) {
 }
 //livebook end
 void Search::init() {
+
   for (int i = 1; i < MAX_MOVES; ++i)
       Reductions[i] = int((20.81 + std::log(Threads.size()) / 2) * std::log(i));
 
@@ -596,6 +600,8 @@ void Thread::search() {
   //Color us = rootPos.side_to_move();
   int iterIdx = 0;
 
+  global_stage = -1;//depth^^^
+
   std::memset(ss-7, 0, 10 * sizeof(Stack));
   for (int i = 7; i > 0; i--)
       (ss-i)->continuationHistory = &this->continuationHistory[0][0][NO_PIECE][0]; // Use as a sentinel
@@ -919,7 +925,7 @@ namespace {
         && !rootNode
         && pos.has_game_cycle(ss->ply))
     {
-	gameCycle = true;
+	    gameCycle = true;
     }
     //from Crystal end
     // Dive into quiescence search when the depth reaches zero
@@ -943,11 +949,11 @@ namespace {
     Value bestValue, value, ttValue, eval=VALUE_NONE, maxValue, expTTValue=VALUE_NONE, probCutBeta;
     bool givesCheck, improving, didLMR, priorCapture, expTTHit=false, isMate; //from Crystal
     //from Kelly End
-    bool captureOrPromotion, doFullDepthSearch, moveCountPruning, 
-		 ttCapture, kingDanger; //from Crystal + official from Shashin
+    bool capture, captureOrPromotion, doFullDepthSearch, moveCountPruning, 
+		 ttCapture, kingDanger, ourMove; //from Crystal + official from Shashin
 
     Piece movedPiece;
-    int moveCount, captureCount, quietCount, bestMoveCount, improvement=0, rootDepth, complexity=0; //from Crystal
+    int moveCount, captureCount, quietCount, improvement=0, rootDepth, complexity=0, stage; //from Crystal + depth^^^
     //from Kelly begin
     bool updatedLearning = false;
 
@@ -958,14 +964,18 @@ namespace {
     //from Kelly end
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
+    stage              = search_stage(thisThread); //depth^^^
+    thisThread->depth  = depth;
     ss->inCheck        = pos.checkers();
+    ss->nodeType       = nodeType;//nodeTypeHistory
     priorCapture       = pos.captured_piece();
     Color us           = pos.side_to_move();
-    moveCount          = bestMoveCount = captureCount = quietCount = ss->moveCount = 0;
+    moveCount          = captureCount = quietCount = ss->moveCount = 0;
     bestValue          = -VALUE_INFINITE;
     //from Crystal begin
     kingDanger=false;
     rootDepth = thisThread->rootDepth;
+    ourMove             = !(ss->ply & 1);
     //from Crystal end
     maxValue           = VALUE_INFINITE;
 	ss->distanceFromPv = (PvNode ? 0 : ss->distanceFromPv);//dd^^
@@ -1051,14 +1061,14 @@ namespace {
     ttValue = ss->ttHit ? value_from_tt(tte->value(), ss->ply, pos.rule50_count()) : VALUE_NONE;
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
             : ss->ttHit    ? tte->move() : MOVE_NONE;
-	ttCapture = ttMove && pos.capture_or_promotion(ttMove);		
+    ttCapture = ttMove && pos.capture(ttMove);
     if (!excludedMove)
         ss->ttPv = PvNode || (ss->ttHit && tte->is_pv());
 
     // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode
         && ss->ttHit
-	&& ((!gameCycle)||(pos.this_thread()->shashinQuiescentCapablancaMaxScore))
+	&& ((!gameCycle)||(pos.this_thread()->shashinQuiescentCapablancaMaxScore)) //from Crystal
         && tte->depth() > depth - (thisThread->id() % 2 == 1)
         && ttValue != VALUE_NONE // Possible in case of TT access race
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
@@ -1143,7 +1153,7 @@ namespace {
             {
                 if (expTTValue >= beta)
                 {
-                    if (!pos.capture_or_promotion(learningMove->move))
+                    if (!pos.capture(learningMove->move))
                         update_quiet_stats(pos, ss, learningMove->move, stat_bonus(depth));
 
                     // Extra penalty for early quiet moves of the previous ply
@@ -1153,7 +1163,7 @@ namespace {
                 // Penalty for a quiet ttMove that fails low
                 else
                 {
-                    if (!pos.capture_or_promotion(expTTMove))
+                    if (!pos.capture(expTTMove))
                     {
                         int penalty = -stat_bonus(depth);
                         thisThread->mainHistory[us][from_to(expTTMove)] << penalty;
@@ -1234,8 +1244,8 @@ namespace {
       	    updateShashinValues(pos,ss->staticEval);//from ShashChess
         }
         improving = false;
-		improvement = 0;
-		complexity = 0;
+        improvement = 0;
+        complexity = 0;
         goto moves_loop;
     }
     else if (ss->ttHit)
@@ -1257,7 +1267,7 @@ namespace {
             eval = value_draw(thisThread);
             updateShashinValues(pos,eval);
         }
-        // Can ttValue be used as a better position evaluation (~4 Elo)
+        // ttValue can be used as a better position evaluation (~4 Elo)
         if (    ttValue != VALUE_NONE
             && (tte->bound() & (ttValue > eval ? BOUND_LOWER : BOUND_UPPER)))
         {
@@ -1332,21 +1342,30 @@ namespace {
 		thisThread->complexityAverage.update(complexity);
     }
     //from Kelly end
-    // Step 7. Razoring.
-    // If eval is really low check with qsearch if it can exceed alpha, if it can't,
-    // return a fail low.
-    if (   !PvNode
-        && depth <= 7
-        && eval < alpha - 348 - 258 * depth * depth + ((pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore) ? ((ss-1)->statScore / 1024):0)) //rzrPrevSs4
-    {
-        value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
-        if (value < alpha)
-            return value;
-    }    
     //from Crystal begin
-    if (rootDepth > 10)
-        kingDanger = pos.king_danger();
-    //end from Crystal
+    if (!PvNode)
+    {
+        bool razoringFromCrystal= (ourMove || !excludedMove)
+                    && !gameCycle
+                    && !thisThread->nmpGuard
+                    &&  abs(eval) < 26305;
+        if (razoringFromCrystal && (rootDepth > 10) && !ourMove)
+            kingDanger = pos.king_danger();
+        // Step 7. Razoring.
+        // If eval is really low check with qsearch if it can exceed alpha, if it can't,
+        // return a fail low.               
+        if (
+            (depth <= 7)
+            && eval < alpha - 348 - 258 * depth * depth + ((pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore) ? ((ss-1)->statScore / 1024):0)) //rzrPrevSs4
+        {
+            value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
+            if (value < alpha)
+                return value;
+        }    
+    }
+    
+    //from Crystal end   
+ 
     // Step 8. Futility pruning: child node (~25 Elo).
     // The depth condition is important for mate finding.
     if (//from Crystal begin
@@ -1391,7 +1410,7 @@ namespace {
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth, eval and complexity of position
-		Depth R = ((pos.this_thread()->shashinValue == SHASHIN_POSITION_CAPABLANCA)?(depth / 3 + 4)- (complexity > 753):((1090 + 81 * depth) / 256)) +std::min(int((eval - beta)) / 147, 5); //official with Shashin
+        Depth R = std::min(int(eval - beta) / 147, 5) + depth / 3 + 4 - (complexity > 753);
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
@@ -1425,7 +1444,14 @@ namespace {
             thisThread->nmpMinPly = ss->ply + 3 * (depth-R) / 4;
             thisThread->nmpColor = us;
 
+            //From Crystal begin
+            // Do verification search at high depths
+            thisThread->nmpGuard = true;
+            //From Crystal end
+
             Value v = search<NonPV>(pos, ss, beta-1, beta, depth-R, false, mcts);//mcts
+
+            thisThread->nmpGuard = false; //from Crystal
 
             thisThread->nmpMinPly = 0;
 
@@ -1461,7 +1487,7 @@ namespace {
         while ((move = mp.next_move()) != MOVE_NONE)
             if (move != excludedMove && pos.legal(move))
             {
-                assert(pos.capture_or_promotion(move));
+                assert(pos.capture(move) || promotion_type(move) == QUEEN);
 
                 captureOrPromotion = true;
 
@@ -1502,24 +1528,16 @@ namespace {
             }
          ss->ttPv = ttPv;
     }
-    //official by Shashin begin
     // Step 11. If the position is not in TT, decrease depth by 2 or 1 depending on node type (~3 Elo)
-    if(!ttMove)
-	{
-		if(pos.this_thread()->shashinValue != SHASHIN_POSITION_CAPABLANCA)
-		{   //If the position is not in TT, decrease depth by 2
-			if (   PvNode
-				&& depth >= 3)
-				depth -= 2;
-		}
-		else
-		{   //If the position is not in TT, decrease depth by 2 or 1 depending on node type
-			if (   cutNode
-				&& depth >= 8)
-				depth--;		
-		}
-    }
-	//official by Shashin end	
+    if (   PvNode
+        && depth >= 3
+        && !ttMove)
+        depth -= 2;
+
+    if (   cutNode
+        && depth >= 8
+        && !ttMove)
+        depth--;
 moves_loop: // When in check, search starts from here
 
     // Step 12. A small Probcut idea, when we are in check (~0 Elo)
@@ -1535,7 +1553,6 @@ moves_loop: // When in check, search starts from here
         && abs(beta) <= VALUE_KNOWN_WIN
        )
         return probCutBeta;
-
 
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
                                           nullptr                   , (ss-4)->continuationHistory,
@@ -1563,7 +1580,7 @@ moves_loop: // When in check, search starts from here
                          && (tte->bound() & BOUND_UPPER)
                          && tte->depth() >= depth;
 
-    int stage          = search_stage(thisThread);//snScaling3
+    bool negExt = false; //negExtR4
     // Step 13. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
     while ((move = mp.next_move(moveCountPruning)) != MOVE_NONE)
@@ -1596,6 +1613,7 @@ moves_loop: // When in check, search starts from here
 
       extension = 0;
       captureOrPromotion = pos.capture_or_promotion(move);
+      capture = pos.capture(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
 	  //from Crystal begin
@@ -1647,16 +1665,17 @@ moves_loop: // When in check, search starts from here
           && bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold (~7 Elo)
-	  	  //goodStatic6 begin
-          moveCountPruning = moveCount >=
-              (((pos.this_thread()->shashinValue!=SHASHIN_POSITION_PETROSIAN)
-        	  ||
-		  (pos.this_thread()->shashinQuiescentCapablancaMaxScore))?MCP_limit:futility_move_count(improving, depth));
-          //goodStatic6 end
+	  	  //goodStatic6 + nodeTypeHistory begin
+          if (!PvNode && (ss-1)->nodeType == NonPV)
+            moveCountPruning = moveCount >=
+                (((pos.this_thread()->shashinValue!=SHASHIN_POSITION_PETROSIAN)
+                ||
+            (pos.this_thread()->shashinQuiescentCapablancaMaxScore))?MCP_limit:futility_move_count(improving, depth));
+          //goodStatic6 + nodeTypeHistory end
           // Reduced depth of the next LMR search
           int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount, delta, thisThread->rootDelta), 0);
 
-          if (   captureOrPromotion
+          if (   capture
               || givesCheck)
           {
               // Futility pruning for captures (~0 Elo)
@@ -1708,7 +1727,7 @@ moves_loop: // When in check, search starts from here
           // a reduced search on all the other moves but the ttMove and if the
           // result is lower than ttValue minus a margin, then we will extend the ttMove.
           if (   !rootNode
-              &&  depth >= stage + 2 * (PvNode && tte->is_pv()) //snScaling3
+              &&  depth >= 6 - stage + 2 * (PvNode && tte->is_pv()) //depth^^^
               &&  move == ttMove
               && !excludedMove // Avoid recursive singular search
            /* &&  ttValue != VALUE_NONE Already implicit in the next condition */
@@ -1716,8 +1735,8 @@ moves_loop: // When in check, search starts from here
               && (tte->bound() & BOUND_LOWER)
               &&  tte->depth() >= depth - 3)
           {
-              Value singularBeta = ttValue - 3 * depth;
-              Depth singularDepth = (depth - 1) / 2;
+              Value singularBeta = ttValue - (8 - stage) * depth / 2; //depth^^^
+              Depth singularDepth = (depth - 1 + (!ss->inCheck && eval - ss->staticEval < -250)) / 2;//sextDepthEval2
 
               ss->excludedMove = move;
               value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, singularDepth, cutNode, mcts);//mcts
@@ -1729,7 +1748,7 @@ moves_loop: // When in check, search starts from here
 
                   // Avoid search explosion by limiting the number of double extensions
                   if (  !PvNode
-                      && value < singularBeta - 26
+                      && value < singularBeta - 52 + 13 * stage //depth^^^
                       && ss->doubleExtensions <= 8)
                       extension = 2;
               }
@@ -1743,42 +1762,13 @@ moves_loop: // When in check, search starts from here
                   return singularBeta;
 
               // If the eval of ttMove is greater than beta, we reduce it (negative extension)
-              else if (ttValue >= beta)
-                  extension = -2;
+              else if (ttValue >= beta && ((goldDigger ||(pos.this_thread()->shashinQuiescentCapablancaMaxScore))||(((ss-1)->moveCount > 1) && (!gameCycle)))) //from Crystal
+                  extension = std::max(-4, -(newDepth - 3)), negExt = true; //negExtR4 negExtTw12
+
+              // If the eval of ttMove is less than alpha and value, we reduce it (negative extension)
+              else if (ttValue <= alpha && ttValue <= value)
+                  extension = -1;
       	  }
-	      //SPRT singExtNoTt5 begin
-	      else if (depth >= 9
-	            && captureOrPromotion
-	            && moveCount == 1
-	            && !rootNode
-	            && PvNode
-	            && !ttMove
-	            && !excludedMove)
-	      {
-			  //from Shashin begin
-			  lastShashinValue=pos.this_thread()->shashinValue,
-			  lastShashinQuiescentCapablancaMiddleHighScore=pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore,
-			  lastShashinQuiescentCapablancaMaxScore=pos.this_thread()->shashinQuiescentCapablancaMaxScore;
-              lastShashinPosKey=pos.this_thread()->shashinPosKey;
-			  //from Shashin end		  
-	          pos.do_move(move, st, givesCheck);
-			  updateShashinValues(pos,- ss->staticEval); //from Shashin
-	          Value singularBeta = beta + 2 * depth;
-	          Value singValue = -search<NonPV>(pos, ss+1, -singularBeta, -singularBeta + 1, depth - 4, true, mcts);
-	          pos.undo_move(move);
-			  revertShashinValues(pos,lastShashinValue, lastShashinQuiescentCapablancaMiddleHighScore, lastShashinQuiescentCapablancaMaxScore,lastShashinPosKey);//from Shashin
-	          if (singValue >= beta)
-	          {
-	              Depth singularDepth = depth / 2;
-	              ss->excludedMove = move;
-	              value = search<NonPV>(pos, ss, beta - 1, beta, singularDepth, cutNode, mcts);
-	              ss->excludedMove = MOVE_NONE;
-	              if (value < beta)
-	                  extension = 1;
-	              else return beta;
-	          }
-	      }
-	      //SPRT singExtNoTt5 end
           // Check extensions (~1 Elo)	  
           else if (   givesCheck
                    && depth > 9
@@ -1805,7 +1795,7 @@ moves_loop: // When in check, search starts from here
       // Update the current move (this must be done after singular extension search)
       ss->currentMove = move;
       ss->continuationHistory = &thisThread->continuationHistory[ss->inCheck]
-                                                                [captureOrPromotion]
+                                                                [capture]
                                                                 [movedPiece]
                                                                 [to_sq(move)];
 
@@ -1821,23 +1811,18 @@ moves_loop: // When in check, search starts from here
       bool doLMRStep = !(thisThread->fullSearch);//full threads patch
 	  bool doDeeperSearch = false;
 	  (ss+1)->distanceFromPv = ss->distanceFromPv + moveCount - 1;//dd^^
+
       // Step 17. Late moves reduction / extension (LMR, ~98 Elo)
       // We use various heuristics for the sons of a node after the first son has
       // been searched. In general we would like to reduce them, but there are many
       // cases where we extend a son if it has good chances to be "interesting".
       if ( doLMRStep &&   depth >= 2 &&  moveCount > sibs //full threads patch + Kelly
 	   &&  moveCount > 1 + (PvNode && ss->ply <= 1)
-          && (   !ss->ttPv
-              || !captureOrPromotion
-              || (cutNode && (ss-1)->moveCount > 1)))
+       &&  (   !ss->ttPv
+            || !capture
+            || (cutNode && (ss-1)->moveCount > 1)))
       {
           Depth r = reduction(improving, depth, moveCount, delta, thisThread->rootDelta);
-
-          // Decrease reduction at some PvNodes (~2 Elo)
-          if (   PvNode
-              && bestMoveCount <= 3
-			  &&((!(pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore))||(depth > 6))) //LMR176
-              r--;
 
           // Decrease reduction if position is or has been on the PV
           // and node is not likely to fail low. (~3 Elo)
@@ -1857,7 +1842,7 @@ moves_loop: // When in check, search starts from here
 
 
           // Increase reduction for cut nodes (~3 Elo)
-          if (cutNode && move != ss->killers[0] && (pos.this_thread()->shashinQuiescentCapablancaMaxScore))
+          if (cutNode && move != ss->killers[0] && (pos.this_thread()->shashinQuiescentCapablancaMaxScore))//official from Shashin
               r += 2;
 		  
           //bmMovecountR7 begin
@@ -1866,11 +1851,28 @@ moves_loop: // When in check, search starts from here
           //bmMovecountR7 end
 
           // Increase reduction if ttMove is a capture (~3 Elo)
-          if (ttCapture && (pos.this_thread()->shashinQuiescentCapablancaMaxScore))
+          if (ttCapture && (pos.this_thread()->shashinQuiescentCapablancaMaxScore)) //official from Shashin
               r++;
 
 		  bool noLMRExtension1 = thisThread->counterMoves[movedPiece][to_sq(move)] == (ss+1)->killers[0];//cmKill0Reply2
 
+          // Decrease reduction at PvNodes if bestvalue
+          // is vastly different from static evaluation
+          if (PvNode && !ss->inCheck && abs(ss->staticEval - bestValue) > 250)
+              r--;
+
+          //negExtR4 begin
+          if (negExt && !PvNode)
+              r += 2;
+          //negExtR4 end
+
+          // Decrease reduction for PvNodes based on depth
+          //official with Shashin begin
+          if (PvNode && pos.this_thread()->shashinValue!=SHASHIN_POSITION_CAPABLANCA)
+          {
+              r -= 1 + 15 / ( 3 + depth );
+          }
+          //official with Shashin end
           ss->statScore =  thisThread->mainHistory[us][from_to(move)]
                          + (*contHist[0])[movedPiece][to_sq(move)]
                          + (*contHist[1])[movedPiece][to_sq(move)]
@@ -1888,15 +1890,13 @@ moves_loop: // When in check, search starts from here
           // In general we want to cap the LMR depth search at newDepth. But if reductions
           // are really negative and movecount is low, we allow this move to be searched
           // deeper than the first move (this may lead to hidden double extensions).
-          int deeper =   ((r >= -1)||(noLMRExtension1 && (pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore))) ? 0
+          int deeper =   ((r >= -1)||(noLMRExtension1 && (pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore))) ? 0 //cmKill0Reply2
 					   : ((pos.this_thread()->shashinQuiescentCapablancaMaxScore)&&((ss+1)->distanceFromPv <= 4)) 		? 1 //dd^^
                        : moveCount <= 4            																		? 2
                        : PvNode && depth > 4       																		? 1
                        : cutNode && moveCount <= 8 																		? 1
                        :                             																	0;
 
-		  r = std::min(3 + ss->ply, r); //limitLMR03
-          
 		  Depth d = std::clamp(newDepth - r, 1, newDepth + deeper);
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true, mcts);//mcts
@@ -1911,6 +1911,17 @@ moves_loop: // When in check, search starts from here
       else
       {
           doFullDepthSearch = !doLMRStep ||  !PvNode || moveCount > 1;//full threads patch
+          //deeperPvS12 begin
+          if(!(((pos.this_thread()->shashinValue==SHASHIN_POSITION_TAL)&&(!(pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore))
+                &&(pos.this_thread()->shashinQuiescentCapablancaMaxScore))
+                ||
+                (pos.this_thread()->shashinValue==SHASHIN_POSITION_CAPABLANCA_PETROSIAN)
+                ||
+                ((pos.this_thread()->shashinValue==SHASHIN_POSITION_PETROSIAN)&&(pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore))))
+          {
+              doDeeperSearch = PvNode && captureOrPromotion && captureHistory[movedPiece][to_sq(move)][type_of(pos.captured_piece())] > 0;
+          }
+          //deeperPvS12 end
           didLMR = false;
       }
 
@@ -1926,7 +1937,7 @@ moves_loop: // When in check, search starts from here
               int bonus = value > alpha ?  stat_bonus(newDepth + (pos.this_thread()->shashinQuiescentCapablancaMaxScore)?doDeeperSearch:0)
                                         : -stat_bonus(newDepth + (pos.this_thread()->shashinQuiescentCapablancaMaxScore)?doDeeperSearch:0);
 			  //end deepContHist
-              if (captureOrPromotion)
+              if (capture)
                   bonus /= 6;
 
               update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
@@ -1940,7 +1951,6 @@ moves_loop: // When in check, search starts from here
       {
           (ss+1)->pv = pv;
           (ss+1)->pv[0] = MOVE_NONE;
-
           value = -search<PV>(pos, ss+1, -beta, -alpha,
 							  std::min(maxNextDepth, newDepth + (rootNode && moveCount > 1 && value >= beta + 88)), false, mcts);//mcts+rnPseudofh3
       }
@@ -2012,10 +2022,7 @@ moves_loop: // When in check, search starts from here
                   update_pv(ss->pv, move, (ss+1)->pv);
 
               if (PvNode && value < beta) // Update alpha! Always alpha < beta
-              {
                   alpha = value;
-                  bestMoveCount++;
-              }
               else
               {
                   assert(value >= beta); // Fail high
@@ -2027,10 +2034,10 @@ moves_loop: // When in check, search starts from here
       // If the move is worse than some previously searched move, remember it to update its stats later
       if (move != bestMove)
       {
-          if (captureOrPromotion && captureCount < 32)
+          if (capture && captureCount < 32)
               capturesSearched[captureCount++] = move;
 
-          else if (!captureOrPromotion && quietCount < 64)
+          else if (!capture && quietCount < 64)
               quietsSearched[quietCount++] = move;
       }
     }
@@ -2080,10 +2087,6 @@ moves_loop: // When in check, search starts from here
     // opponent move is probably good and the new position is added to the search tree.
     if (bestValue <= alpha)
         ss->ttPv = ss->ttPv || ((ss-1)->ttPv && depth > 3);
-    // Otherwise, a counter move has been found and if the position is the last leaf
-    // in the search tree, remove the position from the search tree.
-    else if (depth > 3)
-        ss->ttPv = ss->ttPv && (ss+1)->ttPv;
 
     // Write gathered information in transposition table
     if (!excludedMove && !(rootNode && thisThread->pvIdx))
@@ -2119,7 +2122,7 @@ moves_loop: // When in check, search starts from here
     Move ttMove, move, bestMove;
     Depth ttDepth;
     Value bestValue, value, ttValue, futilityValue, futilityBase;
-    bool pvHit, givesCheck, captureOrPromotion, gameCycle=false; //from Crystal
+    bool pvHit, givesCheck, capture, gameCycle=false; //from Crystal
     int moveCount;
 
     if (PvNode)
@@ -2132,6 +2135,13 @@ moves_loop: // When in check, search starts from here
     bestMove = MOVE_NONE;
     ss->inCheck = pos.checkers();
     moveCount = 0;
+
+    //from Crystal begin
+    if (pos.has_game_cycle(ss->ply))
+    {
+		gameCycle = true;
+    }
+    //from Crystal end
 
     // Check for an immediate draw or maximum ply reached
     if (   pos.is_draw(ss->ply)
@@ -2152,13 +2162,6 @@ moves_loop: // When in check, search starts from here
       return VALUE_DRAW;
       //from ShashChess end
     }
-    //from Crystal begin
-    if (pos.has_game_cycle(ss->ply))
-    {
-		gameCycle = true;
-    }
-    //from Crystal end
-
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
     // Decide whether or not to include checks: this fixes also the type of
@@ -2279,7 +2282,7 @@ moves_loop: // When in check, search starts from here
           continue;
 
       givesCheck = pos.gives_check(move);
-      captureOrPromotion = pos.capture_or_promotion(move);
+      capture = pos.capture(move);
 
       moveCount++;
 
@@ -2319,12 +2322,12 @@ moves_loop: // When in check, search starts from here
 
       ss->currentMove = move;
       ss->continuationHistory = &thisThread->continuationHistory[ss->inCheck]
-                                                                [captureOrPromotion]
+                                                                [capture]
                                                                 [pos.moved_piece(move)]
                                                                 [to_sq(move)];
 
       // Continuation history based pruning (~2 Elo)
-      if (  !captureOrPromotion
+      if (  !capture
           && bestValue > VALUE_TB_LOSS_IN_MAX_PLY
           && (*contHist[0])[pos.moved_piece(move)][to_sq(move)] < CounterMovePruneThreshold
           && (*contHist[1])[pos.moved_piece(move)][to_sq(move)] < CounterMovePruneThreshold)
@@ -2333,11 +2336,11 @@ moves_loop: // When in check, search starts from here
       // movecount pruning for quiet check evasions
       if (  bestValue > VALUE_TB_LOSS_IN_MAX_PLY
           && quietCheckEvasions > 1
-          && !captureOrPromotion
+          && !capture
           && ss->inCheck)
           continue;
 
-      quietCheckEvasions += !captureOrPromotion && ss->inCheck;
+      quietCheckEvasions += !capture && ss->inCheck;
       
       //from Shashin begin
       int lastShashinValue=pos.this_thread()->shashinValue,
@@ -2476,7 +2479,7 @@ moves_loop: // When in check, search starts from here
     bonus2 = bestValue > beta + PawnValueMg ? bonus1               // larger bonus
                                             : stat_bonus(depth);   // smaller bonus
 
-    if (!pos.capture_or_promotion(bestMove))
+    if (!pos.capture(bestMove))
     {
         // Increase stats for the best move in case it was a quiet move
         update_quiet_stats(pos, ss, bestMove, bonus2);

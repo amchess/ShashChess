@@ -111,7 +111,7 @@ constexpr int MAX_MOVES = 256;
 constexpr int MAX_PLY   = 246;
 
 //align score begin
-constexpr float CAOS_MAX_EVAL = 71.;
+constexpr float CAOS_MAX_EVAL = 49.;
 constexpr float GUI_CAOS_EVAL = 32.;
 constexpr float WEIGHTED_EVAL=CAOS_MAX_EVAL/GUI_CAOS_EVAL;
 //align score end
