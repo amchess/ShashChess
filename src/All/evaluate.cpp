@@ -1077,74 +1077,47 @@ make_v:
     return v;
   }
 
-
-  /// Fisher Random Chess: correction for cornered bishops, to fix chess960 play with NNUE
-
-  Value fix_FRC(const Position& pos) {
-
-    constexpr Bitboard Corners =  1ULL << SQ_A1 | 1ULL << SQ_H1 | 1ULL << SQ_A8 | 1ULL << SQ_H8;
-
-    if (!(pos.pieces(BISHOP) & Corners))
-        return VALUE_ZERO;
-
-    int correction = 0;
-
-    if (   pos.piece_on(SQ_A1) == W_BISHOP
-        && pos.piece_on(SQ_B2) == W_PAWN)
-        correction -= CorneredBishop;
-
-    if (   pos.piece_on(SQ_H1) == W_BISHOP
-        && pos.piece_on(SQ_G2) == W_PAWN)
-        correction -= CorneredBishop;
-
-    if (   pos.piece_on(SQ_A8) == B_BISHOP
-        && pos.piece_on(SQ_B7) == B_PAWN)
-        correction += CorneredBishop;
-
-    if (   pos.piece_on(SQ_H8) == B_BISHOP
-        && pos.piece_on(SQ_G7) == B_PAWN)
-        correction += CorneredBishop;
-
-    return pos.side_to_move() == WHITE ?  Value(3 * correction)
-                                       : -Value(3 * correction);
-  }
-
 } // namespace Eval
 
 
 /// evaluate() is the evaluator for the outer world. It returns a static
 /// evaluation of the position from the point of view of the side to move.
 
-Value Eval::evaluate(const Position& pos) {
+Value Eval::evaluate(const Position& pos, int* complexity) {
 
   Value v;
-  bool useClassical = false;
+  Value psq = pos.psq_eg_stm();
+  // Deciding between classical and NNUE eval (~10 Elo): for high PSQ imbalance we use classical,
+  // but we switch to NNUE during long shuffling or with high material on the board.
+  bool useClassical =    (pos.this_thread()->depth > 9 || pos.count<ALL_PIECES>() > 7)
+                      && abs(psq) * 5 > (856 + pos.non_pawn_material() / 64) * (10 + pos.rule50_count());
 
   // Deciding between classical and NNUE eval (~10 Elo): for high PSQ imbalance we use classical,
   // but we switch to NNUE during long shuffling or with high material on the board.
-  if (  !useNNUE
-      || ((pos.this_thread()->depth > 9 || pos.count<ALL_PIECES>() > 7) &&
-          abs(eg_value(pos.psq_score())) * 5 > (856 + pos.non_pawn_material() / 64) * (10 + pos.rule50_count())))
+  if (!useNNUE || useClassical)
   {
-      v = Evaluation<NO_TRACE>(pos).value();          // classical
+      v = Evaluation<NO_TRACE>(pos).value();
       useClassical = abs(v) >= 297;
   }
 
   // If result of a classical evaluation is much lower than threshold fall back to NNUE
   if (useNNUE && !useClassical)
   {
-       Value nnue     = NNUE::evaluate(pos, true);     // NNUE
-       int scale      = 1036 + 22 * pos.non_pawn_material() / 1024;
+       int nnueComplexity;
+       int scale = 1064 + 106 * pos.non_pawn_material() / 5120;
        //Color stm      = pos.side_to_move();
        //Value optimism = pos.this_thread()->optimism[stm];
        //Value psq      = (stm == WHITE ? 1 : -1) * eg_value(pos.psq_score());
        //int complexity = 35 * abs(nnue - psq) / 256;
 
        //optimism = optimism * (44 + complexity) / 32;
+       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
+       // Blend nnue complexity with (semi)classical complexity
+       nnueComplexity = (104 * nnueComplexity + 131 * abs(nnue - psq)) / 256;
+       if (complexity) // Return hybrid NNUE complexity to caller
+           *complexity = nnueComplexity;
        v = nnue * scale / 1024 ;
 
-       if (pos.is_chess960())
-           v += fix_FRC(pos);
   }
 
   // Damp down the evaluation linearly when shuffling
@@ -1154,6 +1127,9 @@ Value Eval::evaluate(const Position& pos) {
   v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
   //std::cout << pos.fen() ;
   //printf("Value: %d",v);
+  // When not using NNUE, return classical complexity to caller
+  if (complexity && (!useNNUE || useClassical))
+       *complexity = abs(v - psq);
   bool goldDigger = Options["GoldDigger"];
   if(goldDigger)
   {
