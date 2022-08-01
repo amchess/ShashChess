@@ -190,7 +190,7 @@ If the number is greater than threads number, all threads are for full depth bru
 ### MonteCarlo Tree Search section (experimental: thanks to original Stephan Nicolet work)
 #### MCTS
 
-_Boolean, Default: False_ If activated, the engine uses the livebook as primary choice.
+_Boolean, Default: False_ If activated, the engine uses the MonteCarlo Tree Search in the manner specified by the following parameters.
 
 #### MCTSThreads
 
@@ -324,7 +324,7 @@ Defense position/algorithm (the "reversed colors" Tal)
 
 ## Acknowledgments
 
-- Sergey Aleksandrovitch Kozlov for his very interesting patch and code on Sugar engine
+- Kozlov Sergey Aleksandrovitsch for his very interesting patch and code on Sugar engine
 - Omar Khalid for his great experience in microsoft c/cpp programming environment
 - Alexei Chernakoff for his pretious suggestions about the android version and its contribution to it
 - Dariusz Domagala for the Mac version
