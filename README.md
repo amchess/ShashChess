@@ -307,8 +307,20 @@ If activated, the learning file is only read.
 _Default: no option settled_
 The engine will determine dynamically the position's type starting from a "Capablanca/default
 positions".
-If one or more (mixed algorithms/positions types at the boundaries) of the three following options
+If one or more (mixed algorithms/positions types at the boundaries) of the seven following options
 are settled, it will force the initial position/algorithm understanding
+
+Centipawns range | Shashin position’s type        |
+| ---------------| ------------------------------ |
+| < -140         | High Petrosian                 |
+| [-140, -70)    | Medium Petrosian               |
+| [-70, -35)     | Low Petrosian                  |
+| [-35, -15]     | Caos: Capablanca-Low Petrosian |
+| (-15,15)       | Capablanca                     |
+| [15, 35]       | Caos: Capablanca-Low Tal       |
+| (35,70]        | Low Tal                        |
+| (70,140]       | Middle Tal                     |
+| > 140          | High Tal                       |
 
 #### Tal
 

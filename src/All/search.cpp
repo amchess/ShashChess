@@ -61,7 +61,7 @@ namespace Search {
   LimitsType Limits;
   int uciElo, depthLimit;//from handicap mode
   //from Shashin
-  bool tal,capablanca,petrosian;
+  bool highTal,mediumTal, lowTal, capablanca,highPetrosian,mediumPetrosian,lowPetrosian;
   //end from Shashin
 }
 
@@ -297,9 +297,13 @@ void MainThread::search() {
   openingVariety = Options["Opening variety"];//from Sugar
   Eval::NNUE::verify();
   //from Shashin
-  tal=Options["Tal"];
+  highTal=Options["High Tal"];
+  mediumTal=Options["Medium Tal"];
+  lowTal=Options["Low Tal"];
   capablanca=Options["Capablanca"];
-  petrosian=Options["Petrosian"];
+  highPetrosian=Options["High Petrosian"];
+  mediumPetrosian=Options["Medium Petrosian"];
+  lowPetrosian=Options["Low Petrosian"];
   //end from Shashin
   //from handicap mode begin
   uciElo=Options["UCI_LimitStrength"] ? Options["UCI_Elo"]:Options["ELO_CB"];
@@ -523,27 +527,31 @@ inline int getShashinQuiescentCapablanca(Value score,int refScore) {
 }
 
 inline uint8_t getInitialShashinValue() {
-  if (!tal && !capablanca && !petrosian)
+  if (!highTal && !mediumTal && !lowTal && !capablanca && !highPetrosian && !mediumPetrosian && !lowPetrosian)
     return SHASHIN_POSITION_DEFAULT;
-  if (tal && capablanca && !petrosian)
+  if (lowTal && capablanca && !highPetrosian && !mediumPetrosian && !lowPetrosian)
     return SHASHIN_POSITION_TAL_CAPABLANCA;
-  if (tal && !capablanca && !petrosian)
+  if ((highTal || mediumTal ||lowTal)&& !capablanca && !highPetrosian && !mediumPetrosian && !lowPetrosian)
     return SHASHIN_POSITION_TAL;
-  if (!tal && capablanca && !petrosian)
+  if (!highTal && !mediumTal && !lowTal && capablanca && !highPetrosian && !mediumPetrosian && !lowPetrosian)
     return SHASHIN_POSITION_CAPABLANCA;
-  if (!tal && capablanca && petrosian)
+  if (!highTal && !mediumTal && !lowTal && capablanca && lowPetrosian)
     return SHASHIN_POSITION_CAPABLANCA_PETROSIAN;
-  if (!tal && !capablanca && petrosian)
+  if (!highTal && !mediumTal && !lowTal && !capablanca && (highPetrosian || mediumPetrosian || lowPetrosian))
     return SHASHIN_POSITION_PETROSIAN;
-  if (tal && capablanca && petrosian)
+  if (highTal && mediumTal && lowTal && capablanca && highPetrosian && mediumPetrosian && lowPetrosian)
     return SHASHIN_POSITION_TAL_CAPABLANCA_PETROSIAN;
-  return SHASHIN_POSITION_TAL_PETROSIAN;
+  return SHASHIN_POSITION_DEFAULT;
 }
 
-inline int getInitialShashinQuiescent(){
-  if ((!tal && !capablanca && !petrosian)
-      ||
-      (!tal && capablanca && !petrosian))
+inline int getInitialShashinQuiescentMiddleHighScore(){
+  if(lowPetrosian||capablanca||lowTal)
+	  return 1;
+  return 0;
+}
+
+inline int getInitialShashinQuiescentMaxScore(){
+  if(mediumPetrosian||lowPetrosian||capablanca||lowTal||mediumTal)
 	  return 1;
   return 0;
 }
@@ -551,9 +559,10 @@ inline int getInitialShashinQuiescent(){
 inline void initShashinValues (Position& pos)
 {
   pos.this_thread()->shashinValue = getInitialShashinValue ();
-  pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore = getInitialShashinQuiescent ();
-  pos.this_thread()->shashinQuiescentCapablancaMaxScore = getInitialShashinQuiescent ();
+  pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore = getInitialShashinQuiescentMiddleHighScore ();
+  pos.this_thread()->shashinQuiescentCapablancaMaxScore = getInitialShashinQuiescentMaxScore ();
 }
+
 inline void updateShashinValues (Position& pos,Value score)
 {
   pos.this_thread()->shashinValue = getShashinValue (score);

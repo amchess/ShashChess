@@ -130,9 +130,13 @@ void init(OptionsMap& o) {
   o["Multi MinVisits"]       << Option(5, 0, 1000);
   o["Concurrent Experience"] << Option (false);
   o["GoldDigger"]            << Option(false); 
-  o["Tal"]                   << Option(false);
+  o["High Tal"]              << Option(false);
+  o["Middle Tal"]            << Option(false);
+  o["Low Tal"]               << Option(false);
   o["Capablanca"]            << Option(false);
-  o["Petrosian"]             << Option(false);
+  o["Low Petrosian"]         << Option(false);
+  o["Middle Petrosian"]      << Option(false);
+  o["High Petrosian"]        << Option(false);
 }
 
 
