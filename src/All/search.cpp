@@ -545,13 +545,16 @@ inline uint8_t getInitialShashinValue() {
 }
 
 inline int getInitialShashinQuiescentMiddleHighScore(){
-  if(lowPetrosian||capablanca||lowTal)
+  if((!highTal && !mediumTal && !lowTal && !capablanca && !highPetrosian && !mediumPetrosian && !lowPetrosian)
+        ||
+    (lowPetrosian||capablanca||lowTal))
 	  return 1;
   return 0;
 }
 
 inline int getInitialShashinQuiescentMaxScore(){
-  if(mediumPetrosian||lowPetrosian||capablanca||lowTal||mediumTal)
+  if((!highTal && !mediumTal && !lowTal && !capablanca && !highPetrosian && !mediumPetrosian && !lowPetrosian)
+     ||(mediumPetrosian||lowPetrosian||capablanca||lowTal||mediumTal))
 	  return 1;
   return 0;
 }
