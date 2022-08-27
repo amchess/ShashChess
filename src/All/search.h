@@ -30,6 +30,7 @@ namespace Stockfish {
 class Position;
 
 namespace Search {
+
 //nodeTypeHistory begin
 // Different node types, used as a template parameter
 enum NodeType { NonPV, PV, Root };
@@ -60,6 +61,7 @@ struct Stack {
   bool ttHit;
   int doubleExtensions;
   int cutoffCnt;
+  int currentReduction;//useRinSMS
   NodeType nodeType; //nodeTypeHistory
 };
 

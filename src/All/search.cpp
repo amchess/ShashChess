@@ -81,6 +81,12 @@ using namespace Search;
 
 namespace {
 
+  //s20red4c4_t4 begin
+  int cpx_margin[7] = { 3214, 	1230, 428, 563, 946, 3501, 217};
+  int cpx_mult[7] = { 0, 0, 0, 1, 0 ,2, 2 };
+  int s20const[7] = { 0, 0, 0, 0, 1 ,2, 2 };
+  //s20red4c4_t4 end
+  
   //nodeTypeHistory
 
   // Futility margin
@@ -107,7 +113,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min((9 * d + 270) * d - 311 , 2145);
+    return std::min((8 * d + 240) * d - 276 , 1907);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -566,7 +572,7 @@ inline void initShashinValues (Position& pos)
   pos.this_thread()->shashinQuiescentCapablancaMaxScore = getInitialShashinQuiescentMaxScore ();
 }
 
-inline void updateShashinValues (Position& pos,Value score)
+inline void updateShashinValues (const Position& pos,Value score)
 {
   pos.this_thread()->shashinValue = getShashinValue (score);
   pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore = getShashinQuiescentCapablanca (score, SHASHIN_MIDDLE_HIGH_SCORE);
@@ -738,7 +744,6 @@ void Thread::search() {
         // four searchAgain steps (see issue #2717).
         Depth adjustedDepth = std::max(1, rootDepth - failedHighCnt - 3 * (searchAgainCounter + 1) / 4);
 		bestValue = Stockfish::search<Root>(rootPos, ss, alpha, beta, adjustedDepth, false, false);//mcts
-        //updateShashinValues(rootPos,bestValue);//from ShashChess
 
 		// Bring the best move to the front. It is critical that sorting
 		// is done with a stable algorithm because all the values but the
@@ -943,7 +948,7 @@ namespace {
     Depth extension, newDepth;
     //from Kelly begin
     Value bestValue, value, ttValue, eval=VALUE_NONE, maxValue, expTTValue=VALUE_NONE, probCutBeta;
-    bool givesCheck, improving, didLMR, priorCapture, expTTHit=false, isMate; //from Crystal
+    bool givesCheck, improving, didLMR, priorCapture, singularQuietLMR, expTTHit=false, isMate; //from Crystal
     //from Kelly End
     bool capture, captureOrPromotion, doFullDepthSearch, moveCountPruning, 
 		 ttCapture, kingDanger, ourMove; //from Crystal + official from Shashin
@@ -960,7 +965,6 @@ namespace {
     //from Kelly end
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
-    thisThread->depth  = depth;
     ss->inCheck        = pos.checkers();
     ss->nodeType       = nodeType;//nodeTypeHistory
     priorCapture       = pos.captured_piece();
@@ -1033,6 +1037,7 @@ namespace {
     ss->doubleExtensions = (ss-1)->doubleExtensions;
     //qs_update_end
     Square prevSq        = to_sq((ss-1)->currentMove);
+    ss->currentReduction = 0; //useRinSMS
 
     // Initialize statScore to zero for the grandchildren of the current position.
     // So statScore is shared between all grandchildren and only the first grandchild
@@ -1065,7 +1070,7 @@ namespace {
     if (  !PvNode
         && ss->ttHit
 	&& ((!gameCycle)||(pos.this_thread()->shashinQuiescentCapablancaMaxScore)) //from Crystal
-        && tte->depth() > depth - ((int)thisThread->id() & 0x1)
+        && tte->depth() > depth - ((int)thisThread->id() & 0x1) - (tte->bound() == BOUND_EXACT)
         && ttValue != VALUE_NONE // Possible in case of TT access race
         && (tte->bound() & (ttValue >= beta ? BOUND_LOWER : BOUND_UPPER)))
     {
@@ -1229,15 +1234,16 @@ namespace {
     CapturePieceToHistory& captureHistory = thisThread->captureHistory;
 
     // Step 6. Static evaluation of the position
-    //from ShashChess begin
     if (ss->inCheck)
     {
         // Skip early pruning when in check
         ss->staticEval = eval = VALUE_NONE;
+        //from ShashChess begin
         if(pos.key()!=pos.this_thread()->shashinPosKey)
         {
       	    updateShashinValues(pos,ss->staticEval);//from ShashChess
         }
+        //from ShashChess end
         improving = false;
         improvement = 0;
         complexity = 0;
@@ -1247,17 +1253,20 @@ namespace {
     {
         // Never assume anything about values stored in TT
         ss->staticEval = eval = tte->eval();
-        if (eval == VALUE_NONE)
-            ss->staticEval = eval = evaluate(pos, &complexity);
+		if (eval == VALUE_NONE)
+		{ 
+		  ss->staticEval = eval = evaluate(pos, &complexity);
+          //from ShashChess begin
+          if(pos.key()!=pos.this_thread()->shashinPosKey)
+          {
+            updateShashinValues(pos,eval);     
+          }          
+          //from ShashChess end
+		}
         else // Fall back to (semi)classical complexity for TT hits, the NNUE complexity is lost
             complexity = abs(ss->staticEval - pos.psq_eg_stm());
 
-        // Randomize draw evaluation
-        if (eval == VALUE_DRAW)
-        {
-            eval = value_draw(thisThread);
-            updateShashinValues(pos,eval);
-        }
+
         // ttValue can be used as a better position evaluation (~4 Elo)
         if (    ttValue != VALUE_NONE
             && (tte->bound() & (ttValue > eval ? BOUND_LOWER : BOUND_UPPER)))
@@ -1558,7 +1567,7 @@ moves_loop: // When in check, search starts from here
                                       ss->killers);
 
     value = bestValue;
-    moveCountPruning = false;
+    moveCountPruning = singularQuietLMR = false;
 
     // Indicate PvNodes that will probably fail low if the node was searched
     // at a depth equal or greater than the current depth, and the result of this search was a fail low.
@@ -1690,7 +1699,7 @@ moves_loop: // When in check, search starts from here
                   && history < -3875 * (depth - 1))
                   continue;
 
-              history += thisThread->mainHistory[us][from_to(move)];
+               history += 2 * thisThread->mainHistory[us][from_to(move)];
 
               // Futility pruning: parent node (~9 Elo)
               if (   !ss->inCheck
@@ -1722,7 +1731,11 @@ moves_loop: // When in check, search starts from here
               && (tte->bound() & BOUND_LOWER)
               &&  tte->depth() >= depth - 3)
           {
-              Value singularBeta = ttValue - 3 * depth;
+              //useRinSMS begin
+              int singularBetaConstant = (ss-1)->currentReduction > 3 ? 2 :
+                                         (ss-1)->currentReduction > 0 ? 3 : 4; 
+              Value singularBeta = ttValue - singularBetaConstant * depth;                                        
+              //useRinSMS end
               Depth singularDepth = (depth - 1 + (!ss->inCheck && eval - ss->staticEval < -250)) / 2;//sextDepthEval2
 
               ss->excludedMove = move;
@@ -1732,7 +1745,8 @@ moves_loop: // When in check, search starts from here
               if (value < singularBeta)
               {
                   extension = 1;
-
+                  singularQuietLMR = !ttCapture;
+                  
                   // Avoid search explosion by limiting the number of double extensions
                   if (  !PvNode
                       && value < singularBeta - 26
@@ -1834,12 +1848,19 @@ moves_loop: // When in check, search starts from here
           if ((ss-1)->moveCount > 7 && ((pos.this_thread()->shashinValue!=SHASHIN_POSITION_TAL)||(ss->moveCount <= (ss-1)->moveCount + 5))) //mcLMRint2
             r -= 1 + (captureOrPromotion && depth < 12); //lmr_moveCountCapt
 
-
+		  //clcnlmr2b3d2+cnlmr14 begin
           // Increase reduction for cut nodes (~3 Elo)
-          if (cutNode && (pos.this_thread()->shashinQuiescentCapablancaMaxScore))//official from Shashin + clcnlmr2b3d2
+		  if(cutNode){
+			if(move == ss->killers[0]){
+				r += 1;
+			}
+			else{
                r += std::clamp(!ss->ttPv - ss->ttPv 
                 + !capture - capture 
-                + (move != ss->killers[0]) - (move == ss->killers[0]), 1, complexity > 650 ? 2 : 3);
+                + (move != ss->killers[0]) - (move == ss->killers[0]), 1, complexity > 650 ? 2 : 3);			
+			}
+		  }
+		  //clcnlmr2b3d2+cnlmr14 end
 		  
           // Increase reduction if ttMove is a capture (~3 Elo)
           if (ttCapture && (pos.this_thread()->shashinQuiescentCapablancaMaxScore)) //official from Shashin
@@ -1865,12 +1886,19 @@ moves_loop: // When in check, search starts from here
               r -= 1 + 15 / (3 + depth);
           }       
           //official with Shashin end
+          
+          //official with Shashin begin
+          // Decrease reduction if ttMove has been singularly extended (~1 Elo)
+          if (singularQuietLMR && pos.this_thread()->shashinValue!=SHASHIN_POSITION_CAPABLANCA)
+              r--;
+          //official with Shashin end
+
           // Increase reduction if next ply has a lot of fail high else reset count to 0
           //official with Shashin begin
           if ((ss+1)->cutoffCnt > 3 && !PvNode && (pos.this_thread()->shashinQuiescentCapablancaMaxScore) )
               r++;
           //official with Shashin end
-          ss->statScore =  thisThread->mainHistory[us][from_to(move)]
+          ss->statScore =  2 * thisThread->mainHistory[us][from_to(move)]
                          + (*contHist[0])[movedPiece][to_sq(move)]
                          + (*contHist[1])[movedPiece][to_sq(move)]
                          + (*contHist[3])[movedPiece][to_sq(move)]
@@ -1888,9 +1916,13 @@ moves_loop: // When in check, search starts from here
           // reduction is negative, we allow this move a limited search extension
           // beyond the first move depth. This may lead to hidden double extensions.
           Depth d = std::clamp(newDepth - r, 1, newDepth + 1);
-
+          
+          ss->currentReduction = newDepth - d;//useRinSMS
+          
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true, mcts);//mcts
 
+          ss->currentReduction = 0;//useRinSMS
+          
 		  thisThread->lmrAverage.update(value > alpha);//lmr_average2
           
 		  // If the son is reduced and fails high it will be re-searched at full depth
@@ -2019,7 +2051,7 @@ moves_loop: // When in check, search starts from here
                      if ((complexity > 650) && (pos.this_thread()->shashinQuiescentCapablancaMaxScore))
                           depth /= 2;
                      else
-                          depth -= 1;
+                          depth -= s20const[depth] + (complexity <= cpx_margin[depth]) * cpx_mult[depth];//s20red4c4_t4
                   }
                   //redDepCmp end
                  assert(depth > 0);                
