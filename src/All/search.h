@@ -36,8 +36,6 @@ namespace Search {
 enum NodeType { NonPV, PV, Root };
 //nodeTypeHistory end
 
-/// Threshold used for countermoves based pruning
-constexpr int CounterMovePruneThreshold = 0;
 
 
 /// Stack struct keeps track of the information we need to remember from nodes

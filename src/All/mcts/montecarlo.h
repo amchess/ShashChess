@@ -27,14 +27,93 @@
 
 namespace Stockfish {
 // The data structures for the Monte Carlo algorithm
-
-struct mctsNodeInfo;
-struct Edge;
-
 typedef double Reward;
-typedef mctsNodeInfo* mctsNode;
+
+constexpr Reward REWARD_NONE = 0.0;
+constexpr Reward REWARD_MATED = 0.0;
+constexpr Reward REWARD_DRAW = 0.5;
+constexpr Reward REWARD_MATE = 1.0;
 
 enum EdgeStatistic {STAT_UCB, STAT_VISITS, STAT_MEAN, STAT_PRIOR};
+
+/// Edge struct stores the statistics of one edge between nodes in the Monte-Carlo tree
+struct Edge {
+	//Default constructor
+	Edge() : move(MOVE_NONE), visits(0), prior(REWARD_NONE), actionValue(REWARD_NONE), meanActionValue(REWARD_NONE) {}
+
+	//Prevent copying of this struct type
+	Edge(const Edge&) = delete;
+	Edge& operator=(const Edge&) = delete;
+
+	Move    move;
+	double  visits;
+	Reward  prior;
+	Reward  actionValue;
+	Reward  meanActionValue;
+};
+
+constexpr int MAX_CHILDREN = 128;
+
+typedef std::array<Edge*, MAX_CHILDREN> EdgeArray;
+
+/// NodeInfo struct stores information in a node of the Monte-Carlo tree
+struct mctsNodeInfo {
+  //Default constructor
+  mctsNodeInfo()
+  {
+	  for (size_t i = 0; i < children.size(); ++i)
+		  children[i] = new Edge();
+  }
+
+  ~mctsNodeInfo()
+  {
+	  for (size_t i = 0; i < children.size(); ++i)
+		  delete children[i];
+  }
+
+  //Prevent copying of this struct type
+  mctsNodeInfo(const mctsNodeInfo&) = delete;
+  mctsNodeInfo& operator=(const mctsNodeInfo&) = delete;
+
+  Move        last_move()     const { return lastMove; }
+  EdgeArray  &children_list()       { return children; }
+  Spinlock lock;
+
+  // Data members
+  Key         key1            = 0;         // Zobrist hash of all pieces, including pawns
+  Key         key2            = 0;         // Zobrist hash of pawns
+  long        node_visits     = 0;         // number of visits by the Monte-Carlo algorithm
+  int         number_of_sons  = 0;         // total number of legal moves
+  int         expandedSons    = 0;         // number of sons expanded by the Monte-Carlo algorithm
+  Move        lastMove        = MOVE_NONE; // the move between the parent and this node
+  Depth       deep            = 1;
+  Value       ttValue         = VALUE_NONE;
+  bool        AB              = false;
+  EdgeArray   children;
+};
+
+// The Monte-Carlo tree is stored implicitly in one big hash table
+typedef std::unordered_multimap<Key, mctsNodeInfo*> MCTS_MAP_BASE;
+class MCTSHashTable : public MCTS_MAP_BASE
+{
+public:
+	~MCTSHashTable()
+	{
+		clear();
+	}
+
+	void clear()
+	{
+		for (unsigned i = 0; i < bucket_count(); ++i)
+		{
+			for (auto it = begin(i); it != end(i); ++it)
+				delete it->second;
+		}
+
+		MCTS_MAP_BASE::clear();
+	}
+};
+extern MCTSHashTable MCTS;
 
 class MonteCarlo {
 public:
@@ -42,24 +121,28 @@ public:
   // Constructors
   MonteCarlo(Position& p);
 
+  //Prevent copying of this class type
+  MonteCarlo(const MonteCarlo&) = delete;
+  MonteCarlo& operator=(const MonteCarlo&) = delete;
+
   // The main function of the class
   void search();
 
   // The high-level description of the Monte-Carlo algorithm
   void create_root();
-  [[nodiscard]] bool computational_budget() const;
-  mctsNode tree_policy();
-  Reward playout_policy(mctsNode node);
+  bool computational_budget();
+  mctsNodeInfo* tree_policy();
+  Reward playout_policy(mctsNodeInfo* node);
   void backup(Reward r, bool AB_Mode);
-  Edge* best_child(mctsNode node, EdgeStatistic statistic);
+  Edge* best_child(mctsNodeInfo* node, EdgeStatistic statistic);
 
   // The UCB formula
-  double ucb(mctsNode node, const Edge& edge, bool priorMode);
+  double ucb(mctsNodeInfo* node, const Edge *edge, bool priorMode);
 
   // Playing moves
-  [[nodiscard]] mctsNode current_node() const;
-  bool is_root(mctsNode node) const;
-  bool is_terminal(mctsNode node) const;
+  mctsNodeInfo* current_node();
+  bool is_root(mctsNodeInfo* node);
+  bool is_terminal(mctsNodeInfo* node);
   void do_move(Move m);
   void undo_move();
   void generate_moves();
@@ -68,10 +151,10 @@ public:
   [[nodiscard]] Reward value_to_reward(Value v) const;
   [[nodiscard]] Value reward_to_value(Reward r) const;
   [[nodiscard]] Value evaluate_with_minimax(Depth d) const;
-  Value evaluate_with_minimax(Depth d, mctsNode node) const;
-  [[nodiscard]] Reward evaluate_terminal() const;
+  Value evaluate_with_minimax(Depth d, mctsNodeInfo* node) const;
+  [[nodiscard]] Reward evaluate_terminal();
   Reward calculate_prior(Move m);
-  static void add_prior_to_node(mctsNode node, Move m, Reward prior);
+  static void add_prior_to_node(mctsNodeInfo* node, Move m, Reward prior);
 
   // Tweaking the exploration algorithm
   void default_parameters();
@@ -94,7 +177,7 @@ public:
 
   // Data members
   Position&       pos;                  // The current position of the tree
-  mctsNode            root{};                 // A pointer to the root
+  mctsNodeInfo*   root{};                 // A pointer to the root
 
   // Counters and statistics
   int             ply{};
@@ -106,10 +189,10 @@ public:
   TimePoint       startTime{};
   TimePoint       lastOutputTime{};
   
-  double max_epsilon = 0.99;
-  double min_epsilon = 0.00;
-  double decay_rate = 0.8;
-  bool AB_Rollout{};
+  double          max_epsilon = 0.99;
+  double          min_epsilon = 0.00;
+  double          decay_rate = 0.8;
+  bool            AB_Rollout{};
 
   // Flags and limits to tweak the algorithm
   long            MAX_DESCENTS{};
@@ -124,82 +207,11 @@ public:
 
   // Some stacks to do/undo the moves: for compatibility with the alpha-beta search
   // implementation, we want to be able to reference from stack[-4] to stack[MAX_PLY+2].
-  mctsNode            nodesBuffer [MAX_PLY+10]{},  *nodes   = nodesBuffer  + 7;
+  mctsNodeInfo*   nodesBuffer [MAX_PLY+10]{},  **nodes  = nodesBuffer  + 7;
   Edge*           edgesBuffer [MAX_PLY+10]{},  **edges  = edgesBuffer  + 7;
   Search::Stack   stackBuffer [MAX_PLY+10]{},  *stack   = stackBuffer  + 7;
   StateInfo       statesBuffer[MAX_PLY+10]{},  *states  = statesBuffer + 7;
+  int             mctsThreads;
 };
-
-/// Edge struct stores the statistics of one edge between nodes in the Monte-Carlo tree
-struct Edge {
-  Move    move;
-  double  visits;
-  Reward  prior;
-  Reward  actionValue;
-  Reward  meanActionValue;
-	};
-
-	inline bool comp_float(const double a, const double b, const double epsilon = 0.005)
-	{
-		return fabs(a - b) < epsilon;
-	}
-// Comparison functions for edges
-struct COMPARE_PRIOR {
-  bool operator()(Edge a, Edge b) const
- {
- 	return a.prior > b.prior;
-  }
-};
-
-	struct COMPARE_VISITS
-	{
-		bool operator()(const Edge a, const Edge b) const
-		{
-			return a.visits > b.visits || (comp_float(a.visits, b.visits, 0.005) && a.prior > b.prior);
-		}
-	};
-
-	struct COMPARE_MEAN_ACTION
-	{
-		bool operator()(const Edge a, const Edge b) const
-		{
-			return a.meanActionValue > b.meanActionValue;
-		}
-	};
-	
-struct COMPARE_ROBUST_CHOICE {
-  bool operator()(Edge a, Edge b) const
-      { return (10 * a.visits + a.prior > 10 * b.visits + b.prior); }
-};
-
-extern COMPARE_PRIOR ComparePrior;
-extern COMPARE_VISITS CompareVisits;
-extern COMPARE_MEAN_ACTION CompareMeanAction;
-extern COMPARE_ROBUST_CHOICE CompareRobustChoice;
-
-constexpr int MAX_CHILDREN = 128;
-
-/// NodeInfo struct stores information in a node of the Monte-Carlo tree
-struct mctsNodeInfo {
-  Move  last_move() const { return lastMove; }
-  Edge* children_list()  { return &(children[0]); }
-  Spinlock lock;
-  // Data members
-  Key         key1            = 0;         // Zobrist hash of all pieces, including pawns
-  Key         key2            = 0;         // Zobrist hash of pawns
-  long        node_visits     = 0;         // number of visits by the Monte-Carlo algorithm
-  int         number_of_sons  = 0;         // total number of legal moves
-  int         expandedSons    = 0;         // number of sons expanded by the Monte-Carlo algorithm
-  Move        lastMove        = MOVE_NONE; // the move between the parent and this node
-  Edge        children[MAX_CHILDREN] = {};
-  Depth deep = 1;
-  Value ttValue = VALUE_NONE;
-  bool AB = false;
-};
-
-// The Monte-Carlo tree is stored implicitly in one big hash table
-typedef std::unordered_multimap<Key, mctsNodeInfo> MCTSHashTable;
-mctsNode get_node(const Position& pos, bool createMode);
-extern MCTSHashTable MCTS;
 }
 #endif // #ifndef MONTECARLO_H_INCLUDED

@@ -78,7 +78,7 @@ void init(OptionsMap& o) {
   constexpr int MaxHashMB = Is64Bit ? 33554432 : 2048;
 
   o["Debug Log File"]        << Option("", on_logger);
-  o["Threads"]               << Option(1, 1, 512, on_threads);
+  o["Threads"]               << Option(1, 1, 1024, on_threads);
   o["Hash"]                  << Option(16, 1, MaxHashMB, on_hash_size);
   o["Clear Hash"]            << Option(on_clear_hash);
   o["Ponder"]                << Option(false);
@@ -124,8 +124,7 @@ void init(OptionsMap& o) {
   o["Opening variety"]       << Option (0, 0, 40);
   o["Persisted learning"]    << Option("Off var Off var Standard var Self", "Off", on_persisted_learning);
   o["Read only learning"]    << Option(false, on_readonly_learning);
-  o["MCTS"]                  << Option(false);
-  o["MCTSThreads"]           << Option(1, 1, 512);
+  o["MCTS by Shashin"]       << Option(false);
   o["Multi Strategy"]        << Option(20, 0, 100);
   o["Multi MinVisits"]       << Option(5, 0, 1000);
   o["Concurrent Experience"] << Option (false);

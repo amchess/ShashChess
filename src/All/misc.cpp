@@ -71,7 +71,7 @@ namespace {
 
 /// Version number. If Version is left empty, then compile date in the format
 /// DD-MM-YY and show in engine_info.
-const string Version = "24";
+const string Version = "25";
 
 /// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 /// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
@@ -443,10 +443,9 @@ void std_aligned_free(void* ptr) {
 
 #if defined(_WIN32)
 
-static void* aligned_large_pages_alloc_windows(size_t allocSize) {
+static void* aligned_large_pages_alloc_windows([[maybe_unused]] size_t allocSize) {
 
   #if !defined(_WIN64)
-    (void)allocSize; // suppress unused-parameter compiler warning
     return nullptr;
   #else
 
@@ -691,8 +690,7 @@ string argv0;            // path+name of the executable binary, as given by argv
 string binaryDirectory;  // path of the executable directory
 string workingDirectory; // path of the working directory
 
-void init(int argc, char* argv[]) {
-    (void)argc;
+void init([[maybe_unused]] int argc, char* argv[]) {
     string pathSeparator;
 
     // extract the path+name of the executable binary

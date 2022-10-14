@@ -80,7 +80,7 @@ public:
   //Score trend;
   bool fullSearch;//full threads patch
   //begin from Shashin
-  int shashinValue, shashinQuiescentCapablancaMiddleHighScore, shashinQuiescentCapablancaMaxScore;
+  int shashinValue=0, shashinQuiescentCapablancaMiddleHighScore, shashinQuiescentCapablancaMaxScore;
   Key shashinPosKey;
   //end from Shashin
  };
