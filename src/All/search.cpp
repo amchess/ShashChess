@@ -678,10 +678,13 @@ void Thread::search() {
   int failedAspirationsCurrentID = 0; //aspiration patch
   //mcts begin
   bool maybeDraw = rootPos.rule50_count() >= 90 || rootPos.has_game_cycle(2);
+  int mctsThreads = round((float)(Options["Threads"]*16/22));
   if (
 		(
 			(!mainThread)
             && mcts
+            &&(((mctsThreads==1)&&(idx == 1))||
+	 		((mctsThreads > 1)&& (idx<=(size_t)mctsThreads*3/4)&&(!mainThread)))
             &&
 			(
 			 (rootPos.this_thread()->shashinValue == SHASHIN_POSITION_CAPABLANCA)
@@ -1388,17 +1391,16 @@ namespace {
     //from Crystal end
     // Step 7. Razoring.
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
-    // return a fail low.               
-    if (
-        (depth <= 7)
-        && eval < alpha - 369 - 254 * depth * depth + ((pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore) ? ((ss-1)->statScore / 1024):0)) //rzrPrevSs4
+    // return a fail low. 
+    if (   (depth <= 7) 
+        && (eval < alpha - 369 - 254 * depth * depth + ((pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore) ? ((ss-1)->statScore / 1024):0))
+       ) //rzrPrevSs4              
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha || ((depth == 1) && (pos.this_thread()->shashinQuiescentCapablancaMaxScore) )) //razFullReturn1
             return value;
     }    
-    
-    //from Crystal end   
+
  
     // Step 8. Futility pruning: child node (~25 Elo).
     // The depth condition is important for mate finding.
@@ -1860,7 +1862,8 @@ moves_loop: // When in check, search starts here
 	   &&  moveCount > 1 + (PvNode && ss->ply <= 1)
        &&  (   !ss->ttPv
             || !capture
-            || (cutNode && (ss-1)->moveCount > 1)))
+            || (cutNode && (ss-1)->moveCount > 1)
+            || (bestValue >= VALUE_TB_WIN_IN_MAX_PLY)))//lmr_mate
       {
           Depth r = reduction(improving, depth, moveCount, delta, thisThread->rootDelta);
 
@@ -1937,6 +1940,10 @@ moves_loop: // When in check, search starts here
               r--;         
           //official with Shashin end
 
+          //lmr_mate begin
+          if (bestValue >= VALUE_TB_WIN_IN_MAX_PLY)
+              r++;
+          //lmr_mate end
           // Increase reduction if next ply has a lot of fail high
           //official with Shashin begin
           if ((ss+1)->cutoffCnt > 3 && !PvNode && (pos.this_thread()->shashinQuiescentCapablancaMaxScore) )

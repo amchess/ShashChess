@@ -189,7 +189,9 @@ If the number is greater than threads number, all threads are for full depth bru
 
 ### MonteCarlo Tree Search section (experimental: thanks to original Stephan Nicolet work)
 
-_Boolean, Default: False_ If activated, thanks to Shashin theory, the engine will use the MonteCarlo Tree Search for Capablanca quiescent type positions and also for caos ones, in the manner specified by the following parameters. The idea is to exploit Lc0 best results in those positions types, because Lc0 uses mcts in the search.
+#### MCTS by Shashin
+
+_Boolean, Default: False_ If activated, thanks to Shashin theory, the engine will use the MonteCarlo Tree Search for Capablanca quiescent type positions and also for caos ones, in the manner specified by the following parameters. The idea is to exploit Lc0 best results in those positions types, because Lc0 uses mcts in the search. The main thread will always be A/B. The mcts ones, based on our tests, will be the nearest integer value to the following one: Threads * 16 /22
 
 #### Multi Strategy 
 
