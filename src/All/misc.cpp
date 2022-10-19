@@ -71,7 +71,7 @@ namespace {
 
 /// Version number. If Version is left empty, then compile date in the format
 /// DD-MM-YY and show in engine_info.
-const string Version = "25";
+const string Version = "25.1";
 
 /// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 /// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We

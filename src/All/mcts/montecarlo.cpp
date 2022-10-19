@@ -198,7 +198,7 @@ void MonteCarlo::search() {
 }
 
 /// MonteCarlo::MonteCarlo() is the constructor for the MonteCarlo class
-MonteCarlo::MonteCarlo(Position& p) : pos(p), mctsThreads((int)Options["Threads"] - 1) {
+MonteCarlo::MonteCarlo(Position& p) : pos(p), mctsThreads(round((float)(Options["Threads"]*16/22))) {
     default_parameters();
     create_root();
 }
