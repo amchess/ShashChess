@@ -34,3 +34,6 @@
 #Eclipse files
 .cproject
 .project
+
+#VSCode files
+.vscode

@@ -117,10 +117,12 @@ void init();
 void clear();
 
 //livebook begin
+#ifdef USE_LIVEBOOK
 void setLiveBookURL(const std::string &newURL);
 void setLiveBookTimeout(size_t newTimeoutMS);
 void set_livebook_retry(int retry);
 void set_livebook_depth(int book_depth);
+#endif
 //livebook end
 
 } // namespace Search

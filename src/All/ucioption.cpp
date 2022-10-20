@@ -53,10 +53,12 @@ void on_eval_file(const Option& ) { Eval::NNUE::init(); }
 void on_UCI_LimitStrength(const Option& ) { Eval::NNUE::init(); }
 void on_LimitStrength_CB(const Option& ) { Eval::NNUE::init(); }
 //livebook begin
+#ifdef USE_LIVEBOOK
 void on_livebook_url(const Option& o) { Search::setLiveBookURL(o); }
 void on_livebook_timeout(const Option& o) { Search::setLiveBookTimeout(o); }
 void on_live_book_retry(const Option& o) { Search::set_livebook_retry(o); }
 void on_livebook_depth(const Option& o) { Search::set_livebook_depth(o); }
+#endif
 //livebook end
 //cerebellum+book begin
 void on_book1_file(const Option& o) { polybook[0].init(o); }
@@ -101,6 +103,7 @@ void init(OptionsMap& o) {
   // for the build process (profile-build and fishtest) to work.
   o["EvalFile"]              << Option(EvalFileDefaultName, on_eval_file);
   //livebook begin
+  #ifdef USE_LIVEBOOK
   o["Live Book"]             << Option(false);
   o["Live Book URL"]         << Option("http://www.chessdb.cn/cdb.php", on_livebook_url);
   o["Live Book Timeout"]     << Option(5000, 0, 10000, on_livebook_timeout);
@@ -108,6 +111,7 @@ void init(OptionsMap& o) {
   o["Live Book Diversity"]   << Option(false);
   o["Live Book Contribute"]  << Option(false);
   o["Live Book Depth"]       << Option(100, 1, 100, on_livebook_depth);
+  #endif
   //livebook end
   //cerebellum book begin
   o["Book1"]                             << Option(false);

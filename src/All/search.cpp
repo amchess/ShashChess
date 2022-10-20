@@ -40,6 +40,7 @@
 #include "syzygy/tbprobe.h"
 
 namespace Stockfish {
+#ifdef USE_LIVEBOOK
 //livebook begin
 #define CURL_STATICLIB
 extern "C" {
@@ -47,6 +48,7 @@ extern "C" {
 }
 #undef min
 #undef max
+#endif
 //livebook end
 bool pawnsToEvaluate, winnableToEvaluate, imbalancesToEvaluate; //from Handicap mode
 //Kelly begin
@@ -191,6 +193,7 @@ namespace {
 
 /// Search::init() is called at startup to initialize various lookup tables
 //livebook begin
+#ifdef USE_LIVEBOOK
 CURL *g_cURL;
 std::string g_szRecv;
 std::string g_livebookURL = "http://www.chessdb.cn/cdb.php";
@@ -224,6 +227,7 @@ void Search::set_livebook_retry(int retry) {
 void Search::set_livebook_depth(int book_depth) {
     max_book_depth = book_depth;
 }
+#endif
 //livebook end
 void Search::init() {
 
@@ -231,6 +235,7 @@ void Search::init() {
       Reductions[i] = int((20.26 + std::log(Threads.size()) / 2) * std::log(i));
 
   //livebook begin
+  #ifdef USE_LIVEBOOK
   curl_global_init(CURL_GLOBAL_DEFAULT);
   g_cURL = curl_easy_init();
   curl_easy_setopt(g_cURL, CURLOPT_TIMEOUT_MS, 1000L);
@@ -238,6 +243,7 @@ void Search::init() {
   curl_easy_setopt(g_cURL, CURLOPT_WRITEDATA, &g_szRecv);
   set_livebook_retry((int)Options["Live Book Retry"]);
   set_livebook_depth((int)Options["Live Book Depth"]);
+  #endif
   //livebook end
 }
 
@@ -248,8 +254,10 @@ void Search::clear() {
 
   Threads.main()->wait_for_search_finished();
   //livebook begin
+  #ifdef USE_LIVEBOOK
   set_livebook_retry((int)Options["Live Book Retry"]);
   set_livebook_depth((int)Options["Live Book Depth"]);
+  #endif
   //livebook end
   Time.availableNodes = 0;
   TT.clear();
@@ -344,45 +352,54 @@ void MainThread::search() {
 		  if(!bookMove)
 		  {
 		    //Live Book begin
-		    if (Options["Live Book"] && g_inBook)
+		    #ifdef USE_LIVEBOOK
+            if (Options["Live Book"] && g_inBook)
 		    {
 		      if(rootPos.game_ply()==0)
 			livebook_depth_count=0;
-		      if (livebook_depth_count < max_book_depth)
-		      {
-			CURLcode res;
-			char *szFen = curl_easy_escape(g_cURL, rootPos.fen().c_str(), 0);
-			std::string szURL = g_livebookURL + "?action=" + (Options["Live Book Diversity"] ? "query" : "querybest") + "&board=" + szFen;
-			curl_free(szFen);
-			curl_easy_setopt(g_cURL, CURLOPT_URL, szURL.c_str());
-			g_szRecv.clear();
-			res = curl_easy_perform(g_cURL);
-			if (res == CURLE_OK)
-			{
-			  g_szRecv.erase(std::find(g_szRecv.begin(), g_szRecv.end(), '\0'), g_szRecv.end());
-			  if (g_szRecv.find("move:") != std::string::npos)
-			  {
-			    std::string tmp = g_szRecv.substr(5);
-			    bookMove = UCI::to_move(rootPos, tmp);
-			    livebook_depth_count++;
-			  }
-			}
+		    if (livebook_depth_count < max_book_depth)
+		    {
+                CURLcode res;
+                char *szFen = curl_easy_escape(g_cURL, rootPos.fen().c_str(), 0);
+                std::string szURL = g_livebookURL + "?action=" + (Options["Live Book Diversity"] ? "query" : "querybest") + "&board=" + szFen;
+                curl_free(szFen);
+                curl_easy_setopt(g_cURL, CURLOPT_URL, szURL.c_str());
+                g_szRecv.clear();
+                res = curl_easy_perform(g_cURL);
+                if (res == CURLE_OK)
+                {
+                g_szRecv.erase(std::find(g_szRecv.begin(), g_szRecv.end(), '\0'), g_szRecv.end());
+                if (g_szRecv.find("move:") != std::string::npos)
+                {
+                    std::string tmp = g_szRecv.substr(5);
+                    bookMove = UCI::to_move(rootPos, tmp);
+                    livebook_depth_count++;
+                }
+                }
 		      }
 		    }
+            #endif
 		    //Live Book end
 		  }
 	      }
 	      if (bookMove && std::count(rootMoves.begin(), rootMoves.end(), bookMove))
 	      {
-		  g_inBook = Options["Live Book Retry"];
-	
-		  for (Thread* th : Threads)
-		    std::swap(th->rootMoves[0], *std::find(th->rootMoves.begin(), th->rootMoves.end(), bookMove));
+		    //Live Book begin
+            #ifdef USE_LIVEBOOK
+                g_inBook = Options["Live Book Retry"];
+            #endif
+            //Live Book end
+            for (Thread* th : Threads)
+                std::swap(th->rootMoves[0], *std::find(th->rootMoves.begin(), th->rootMoves.end(), bookMove));
 	      }
 	      else
 	      {
-		  bookMove = MOVE_NONE;
-		  g_inBook--;
+            bookMove = MOVE_NONE;
+            //Live Book begin
+            #ifdef USE_LIVEBOOK
+                g_inBook--;
+            #endif
+            //Live Book end
 	      }
 	      if (!bookMove)
 	      {
@@ -488,6 +505,7 @@ void MainThread::search() {
   //from Khalid end
 
   //livebook begin
+  #ifdef USE_LIVEBOOK
   if (Options["Live Book"] && Options["Live Book Contribute"] && !g_inBook)
   {
     char *szFen = curl_easy_escape(g_cURL, rootPos.fen().c_str(), 0);
@@ -496,6 +514,7 @@ void MainThread::search() {
     curl_easy_setopt(g_cURL, CURLOPT_URL, szURL.c_str());
     curl_easy_perform(g_cURL);
   }
+  #endif
   //livebook end
 }
 
@@ -684,7 +703,7 @@ void Thread::search() {
 			(!mainThread)
             && mcts
             &&(((mctsThreads==1)&&(idx == 1))||
-	 		((mctsThreads > 1)&& (idx<=(size_t)mctsThreads*3/4)&&(!mainThread)))
+	 		((mctsThreads > 1)&& (idx<=(size_t)mctsThreads)&&(!mainThread)))
             &&
 			(
 			 (rootPos.this_thread()->shashinValue == SHASHIN_POSITION_CAPABLANCA)
