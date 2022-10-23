@@ -11,13 +11,13 @@ Title "x86-32-old"
 make clean
 mingw32-make -f MakeFile profile-build ARCH=x86-32-old COMP=mingw
 strip shashchess.exe
-ren shashchess.exe "ShashChess25.1-x86-32-old.exe"
+ren shashchess.exe "ShashChess25.2-x86-32-old.exe"
 
 Title "general-32"
 make clean
 mingw32-make -f MakeFile profile-build ARCH=general-32 COMP=mingw
 strip shashchess.exe
-ren shashchess.exe "ShashChess25.1-general-32.exe"
+ren shashchess.exe "ShashChess25.2-general-32.exe"
 
 make clean
 REM x32 builds end

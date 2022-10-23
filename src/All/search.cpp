@@ -147,7 +147,7 @@ namespace {
   int openingVariety;//from Sugar
 
   template <NodeType nodeType>
-  Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, bool cutNode, bool mcts);//mcts
+  Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, bool cutNode);
 
   template <NodeType nodeType>
   Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth = 0);
@@ -291,7 +291,7 @@ inline int getHandicapDepth(int elo){
 /// command. It searches from the root position and outputs the "bestmove".
 
 void MainThread::search() {
-  goldDigger = Options["GoldDigger"];//from ShashChess
+
   if (Limits.perft)
   {
       nodes = perft<true>(rootPos, Limits.perft);
@@ -321,6 +321,9 @@ void MainThread::search() {
   middlePetrosian=Options["Middle Petrosian"];
   lowPetrosian=Options["Low Petrosian"];
   //end from Shashin
+  
+  Eval::goldDigger = Options["GoldDigger"];//from ShashChess
+
   //from handicap mode begin
   uciElo=Options["UCI_LimitStrength"] ? Options["UCI_Elo"]:Options["ELO_CB"];
   depthLimit=limitStrength && Options["Handicapped Depth"] ? getHandicapDepth(uciElo):Limits.depth;//handicap mode
@@ -717,6 +720,8 @@ void Thread::search() {
 		)
 	 )
   {
+      isMCTS = true;
+
       MonteCarlo *monteCarlo = new MonteCarlo(rootPos);
 	  if (!monteCarlo)
 	  {
@@ -731,6 +736,8 @@ void Thread::search() {
   }
   else
   {
+    isMCTS = false;
+
     //from mcts end
     // Iterative deepening loop until requested to stop or the target depth is reached
     while (   ++rootDepth < MAX_PLY //handicap mode
@@ -798,7 +805,7 @@ void Thread::search() {
         // Adjust the effective depth searched, but ensuring at least one effective increment for every
         // four searchAgain steps (see issue #2717).
         Depth adjustedDepth = std::max(1, rootDepth - failedHighCnt - 3 * (searchAgainCounter + 1) / 4);
-		bestValue = Stockfish::search<Root>(rootPos, ss, alpha, beta, adjustedDepth, false, false);//mcts
+		bestValue = Stockfish::search<Root>(rootPos, ss, alpha, beta, adjustedDepth, false);
 
 		// Bring the best move to the front. It is critical that sorting
 		// is done with a stable algorithm because all the values but the
@@ -951,7 +958,7 @@ namespace {
   // search<>() is the main search function for both PV and non-PV nodes
 
   template <NodeType nodeType>
-  Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, bool cutNode, bool mcts) { //mcts
+  Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, bool cutNode) {
 
     constexpr bool PvNode = nodeType != NonPV;
     constexpr bool rootNode = nodeType == Root;
@@ -1478,7 +1485,7 @@ namespace {
         //end from Shashin
         pos.do_null_move(st);
         updateShashinValues(pos,- ss->staticEval); //from Shashin
-        Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, depth-R, !cutNode, mcts);//mcts
+        Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, depth-R, !cutNode);
 
         pos.undo_null_move();
 
@@ -1504,7 +1511,7 @@ namespace {
             thisThread->nmpGuard = true;
             //From Crystal end
 
-            Value v = search<NonPV>(pos, ss, beta-1, beta, depth-R, false, mcts);//mcts
+            Value v = search<NonPV>(pos, ss, beta-1, beta, depth-R, false);
 
             thisThread->nmpGuard = false; //from Crystal
 
@@ -1562,7 +1569,7 @@ namespace {
 
                 // If the qsearch held, perform the regular search
                 if (value >= probCutBeta)
-                    value = -search<NonPV>(pos, ss+1, -probCutBeta, -probCutBeta+1, depth - 4, !cutNode, mcts);//mcts
+                    value = -search<NonPV>(pos, ss+1, -probCutBeta, -probCutBeta+1, depth - 4, !cutNode);
 
                 pos.undo_move(move);
                 revertShashinValues(pos,lastShashinValue, lastShashinQuiescentCapablancaMiddleHighScore, lastShashinQuiescentCapablancaMaxScore,lastShashinPosKey);//from Shashin
@@ -1571,6 +1578,7 @@ namespace {
                 {
                     // Save ProbCut data into transposition table
                     tte->save(posKey, value_to_tt(value, ss->ply), ss->ttPv, BOUND_LOWER, depth - 3, move, ss->staticEval);
+
                     return value;
                 }
             }
@@ -1584,6 +1592,7 @@ namespace {
 
     if (depth <= 0)
         return qsearch<PV>(pos, ss, alpha, beta);
+
     //cnRedNorm4 begin
     if (    cutNode
         &&  depth >= 7
@@ -1792,7 +1801,7 @@ moves_loop: // When in check, search starts here
               Depth singularDepth = (depth - 1 + (!ss->inCheck && eval - ss->staticEval < -250)) / 2;//sextDepthEval2
 
               ss->excludedMove = move;
-              value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, singularDepth, cutNode, mcts);//mcts
+              value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, singularDepth, cutNode);
               ss->excludedMove = MOVE_NONE;
 
               if (value < singularBeta)
@@ -1989,7 +1998,7 @@ moves_loop: // When in check, search starts here
           
           ss->currentReduction = newDepth - d;//useRinSMS
           
-          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true, mcts);//mcts
+          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
           ss->currentReduction = 0;//useRinSMS
           
@@ -2020,7 +2029,7 @@ moves_loop: // When in check, search starts here
       // Step 18. Full depth search when LMR is skipped or fails high
       if (doFullDepthSearch)
       {
-          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth + doDeeperSearch, !cutNode, mcts);//mcts
+          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth + doDeeperSearch, !cutNode);
 
           // If the move passed LMR update its stats
           if (didLMR)
@@ -2044,7 +2053,7 @@ moves_loop: // When in check, search starts here
           (ss+1)->pv = pv;
           (ss+1)->pv[0] = MOVE_NONE;
           value = -search<PV>(pos, ss+1, -beta, -alpha,
-							  std::min(maxNextDepth, newDepth + (rootNode && moveCount > 1 && value >= beta + 88)), false, mcts);//mcts+rnPseudofh3
+							  std::min(maxNextDepth, newDepth + (rootNode && moveCount > 1 && value >= beta + 88)), false);//rnPseudofh3
       }
 
       // Step 19. Undo move
@@ -2506,8 +2515,8 @@ moves_loop: // When in check, search starts here
 	
     // Save gathered info in transposition table
     tte->save(posKey, value_to_tt(bestValue, ss->ply), pvHit,
-              bestValue >= beta ? BOUND_LOWER : BOUND_UPPER,
-              ttDepth, bestMove, ss->staticEval);
+                bestValue >= beta ? BOUND_LOWER : BOUND_UPPER,
+                ttDepth, bestMove, ss->staticEval);
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 
@@ -2716,7 +2725,7 @@ Value minimax_value(Position& pos, Search::Stack* ss, Depth depth) {
       hit_any_key();
   }*/
 
-  Value value = search<PV>(pos, ss, alpha, beta, depth, false, true);
+  Value value = search<PV>(pos, ss, alpha, beta, depth, false);
 
   // Have we found a "mate in x"?
   if (   Limits.mate
@@ -2759,7 +2768,7 @@ Value minimax_value(Position& pos, Search::Stack* ss, Depth depth, Value alpha, 
 
   while (!Threads.stop.load(std::memory_order_relaxed))
   {
-      value = search<PV>(pos, ss, alpha, beta, depth, false, false);
+      value = search<PV>(pos, ss, alpha, beta, depth, false);
       if (value <= alpha)
       {
           beta = (alpha + beta) / 2;

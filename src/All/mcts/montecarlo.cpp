@@ -222,6 +222,9 @@ void MonteCarlo::create_root() {
     for (int i = -7; i <= MAX_PLY + 10; i++)
       stack[i].continuationHistory = &pos.this_thread()->continuationHistory[0][0][NO_PIECE][0]; // Use as a sentinel
 
+    for (int i = 0; i <= MAX_PLY + 2; ++i)
+        stack[i].ply = i;
+
     // TODO : what to do with killers ???
 
     // Erase the list of nodes, and set the current node to the root node
@@ -1028,15 +1031,15 @@ void MonteCarlo::print_children() {
 
 	//debug << "Entering print_children() ..." << endl;
 
-	assert(is_root(current_node()));
+	//assert(is_root(current_node()));
 
 	EdgeArray &children = root->children_list();
 
 	// Sort the moves according to their prior value
-	if (const int n = number_of_sons(current_node()); n > 0)
+	if (const int n = number_of_sons(root); n > 0)
 		std::sort(children.begin(), children.begin() + n, CompareRobustChoice);
 
-	for (int k = number_of_sons(current_node()) - 1; k >= 0; k--)
+	for (int k = number_of_sons(root) - 1; k >= 0; k--)
 	{
 		std::cout << "info string move "
 		<< k + 1

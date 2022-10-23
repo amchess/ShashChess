@@ -56,6 +56,7 @@ public:
   void start_searching();
   void wait_for_search_finished();
   size_t id() const { return idx; }
+  bool is_mcts() const { return isMCTS; }
 
   Pawns::Table pawnsTable;
   Material::Table materialTable;
@@ -83,6 +84,7 @@ public:
   int shashinValue=0, shashinQuiescentCapablancaMiddleHighScore, shashinQuiescentCapablancaMaxScore;
   Key shashinPosKey;
   //end from Shashin
+  bool isMCTS;
  };
 
 

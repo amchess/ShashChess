@@ -65,6 +65,7 @@ namespace Eval {
 
   bool useNNUE;
   string currentEvalFileName = "None";
+  bool goldDigger;
 
   /// NNUE::init() tries to load a NNUE network at startup time, or when the engine
   /// receives a UCI command "setoption name EvalFile value nn-[a-z0-9]{12}.nnue"
@@ -1125,7 +1126,7 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
   // When not using NNUE, return classical complexity to caller
   if (complexity && (!useNNUE || useClassical))
       *complexity = abs(v - psq);
-  bool goldDigger = Options["GoldDigger"];
+
   if(goldDigger)
   {
       v = (Value)((float)(v) / WEIGHTED_EVAL);

@@ -381,8 +381,7 @@ string UCI::value(Value v) {
 
   if (abs(v) < VALUE_MATE_IN_MAX_PLY)
   {
-      bool goldDigger = Options["GoldDigger"];
-      if(!goldDigger)
+      if(!Eval::goldDigger)
       {
 	     v = (Value)((float)(v) / WEIGHTED_EVAL);
       }
