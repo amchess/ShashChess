@@ -1,0 +1,601 @@
+﻿[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "closed"]
+[Black "?"]
+[Result "*"]
+[ECO "C03"]
+[PlyCount "10"]
+
+1. d4 e6 2. e4 d5 3. Nd2 Be7 4. Bd3 Nf6 5. e5 Nfd7 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "closed"]
+[Black "?"]
+[Result "*"]
+[ECO "C05"]
+[PlyCount "14"]
+
+1. d4 e6 2. e4 d5 3. Nd2 Nf6 4. e5 Nfd7 5. Ngf3 h6 6. Bd3 c5 7. c3 Nc6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "closed"]
+[Black "?"]
+[Result "*"]
+[ECO "E11"]
+[PlyCount "16"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 Bb4+ 4. Nbd2 O-O 5. a3 Be7 6. e4 d6 7. Be2 c5 8. d5 e5 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "closed"]
+[Black "?"]
+[Result "*"]
+[ECO "E32"]
+[PlyCount "12"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 O-O 5. e4 d5 6. e5 Ne4 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "closed"]
+[Black "?"]
+[Result "*"]
+[ECO "E90"]
+[PlyCount "16"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 O-O 5. Nf3 c6 6. Bd3 d6 7. h3 e5 8. d5 Na6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "open"]
+[Black "?"]
+[Result "*"]
+[ECO "E60"]
+[PlyCount "18"]
+[EventDate "2018.02.01"]
+
+1. d4 Nf6 2. c4 g6 3. Nf3 Bg7 4. g3 O-O 5. Bg2 d6 6. O-O e5 7. dxe5 dxe5 8. Nxe5 Qe7 9. Nd3 Ne4 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "open"]
+[Black "?"]
+[Result "*"]
+[ECO "A03"]
+[PlyCount "22"]
+
+1. f4 d5 2. Nf3 g6 3. g3 Bg7 4. Bg2 Nf6 5. O-O O-O 6. d3 c5 7. Ne5 Nc6 8. Nxc6 bxc6 9. c4 Rb8 10. Nc3 dxc4 11. dxc4 Ba6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "open"]
+[Black "?"]
+[Result "*"]
+[ECO "B01"]
+[PlyCount "14"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. d4 e5 5. dxe5 Qxe5+ 6. Qe2 Qxe2+ 7. Ngxe2 Bd7 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "open"]
+[Black "?"]
+[Result "*"]
+[ECO "C40"]
+[PlyCount "14"]
+
+1. e4 e5 2. Nf3 d5 3. exd5 e4 4. Qe2 Nf6 5. d3 Qxd5 6. Nbd2 Nc6 7. dxe4 Qe6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "open"]
+[Black "?"]
+[Result "*"]
+[ECO "A10"]
+[PlyCount "10"]
+
+1. c4 d5 2. cxd5 Nf6 3. Nc3 e6 4. dxe6 Bxe6 5. e3 c5 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "mobile"]
+[Black "?"]
+[Result "*"]
+[ECO "D30"]
+[PlyCount "16"]
+
+1. d4 d5 2. c4 e6 3. Nf3 c6 4. Qc2 Nf6 5. Bg5 Nbd7 6. e3 Qa5+ 7. Nbd2 Ne4 8. Bh4 Bb4 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "mobile"]
+[Black "?"]
+[Result "*"]
+[ECO "E13"]
+[PlyCount "16"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. Nc3 Bb4 5. Bg5 Bb7 6. e3 O-O 7. Bd3 h6 8. Bh4 d5 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "mobile"]
+[Black "?"]
+[Result "*"]
+[ECO "E33"]
+[PlyCount "12"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 Nc6 5. Nf3 d5 6. e3 Ne4 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "mobile"]
+[Black "?"]
+[Result "*"]
+[ECO "C84"]
+[PlyCount "16"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. d3 d6 7. c3 Bg4 8. Nbd2 Qd7 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "mobile"]
+[Black "?"]
+[Result "*"]
+[ECO "C53"]
+[PlyCount "14"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Qe7 5. O-O d6 6. Re1 Nf6 7. d3 h6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "static"]
+[Black "?"]
+[Result "*"]
+[ECO "D47"]
+[PlyCount "14"]
+
+1. d4 d5 2. c4 c6 3. Nf3 Nf6 4. Nc3 e6 5. e3 Nbd7 6. Bd3 dxc4 7. Bxc4 Bd6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "static"]
+[Black "?"]
+[Result "*"]
+[ECO "C01"]
+[PlyCount "12"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. exd5 exd5 5. Bd3 c6 6. Nge2 Qf6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "static"]
+[Black "?"]
+[Result "*"]
+[ECO "C41"]
+[PlyCount "12"]
+
+1. e4 d6 2. d4 e5 3. Nf3 Nd7 4. Bc4 c6 5. dxe5 dxe5 6. O-O Be7 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "static"]
+[Black "?"]
+[Result "*"]
+[ECO "E71"]
+[PlyCount "30"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. h3 O-O 6. Be3 Na6 7. g4 c6 8. Nge2 Nc7 9. Bg2 e5 10. Qd2 b5 11. cxb5 cxb5 12. dxe5 dxe5 13. Rd1 Bb7 14. a3 a6 15. O-O Re8 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "static"]
+[Black "?"]
+[Result "*"]
+[ECO "E97"]
+[PlyCount "22"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6 8. Be3 Re8 9. dxe5 dxe5 10. h3 h6 11. c5 Nh7 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "sawtooth"]
+[Black "?"]
+[Result "*"]
+[ECO "B19"]
+[PlyCount "18"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5 5. Ng3 Bg6 6. h4 h6 7. Nf3 e6 8. Ne5 Bh7 9. Bd3 Nf6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "sawtooth"]
+[Black "?"]
+[Result "*"]
+[ECO "B01"]
+[PlyCount "14"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nc3 Qd6 4. d4 Nf6 5. Nf3 c6 6. Bd3 Bg4 7. Be3 e6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "sawtooth"]
+[Black "?"]
+[Result "*"]
+[ECO "B04"]
+[PlyCount "14"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. Nf3 dxe5 5. Nxe5 c6 6. Be2 Bf5 7. O-O e6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "sawtooth"]
+[Black "?"]
+[Result "*"]
+[ECO "C10"]
+[PlyCount "12"]
+
+1. e4 e6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nd7 5. Nf3 Ngf6 6. Bd3 c6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "sawtooth"]
+[Black "?"]
+[Result "*"]
+[ECO "D47"]
+[PlyCount "14"]
+
+1. d4 d5 2. c4 c6 3. Nf3 Nf6 4. Nc3 e6 5. e3 Nbd7 6. Bd3 dxc4 7. Bxc4 Bd6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "hanging"]
+[Black "?"]
+[Result "*"]
+[ECO "D58"]
+[PlyCount "24"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 h6 7. Bh4 b6 8. Rc1 Bb7 9. cxd5 exd5 10. Bd3 c5 11. dxc5 bxc5 12. O-O a6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "hanging"]
+[Black "?"]
+[Result "*"]
+[ECO "B22"]
+[PlyCount "18"]
+
+1. e4 c5 2. c3 Nf6 3. e5 Nd5 4. d4 cxd4 5. Qxd4 e6 6. Nf3 Nc6 7. Qe4 f5 8. exf6 Nxf6 9. Qh4 d5 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "hanging"]
+[Black "?"]
+[Result "*"]
+[ECO "D04"]
+[PlyCount "32"]
+
+1. d4 d5 2. e3 Nf6 3. Nf3 c5 4. b3 cxd4 5. exd4 Nc6 6. Bb2 Bg4 7. Be2 e6 8. h3 Bf5 9. O-O Be7 10. c4 dxc4 11. bxc4 O-O 12. a4 h6 13. Qc1 Rc8 14. Re1 a6 15. Qe3 Qc7 16. Rd1 Nb4 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "hanging"]
+[Black "?"]
+[Result "*"]
+[ECO "C42"]
+[PlyCount "32"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d4 d5 6. Bd3 Be7 7. O-O Nc6 8. c4 Nb4 9. Be2 O-O 10. Nc3 Bf5 11. a3 Nxc3 12. bxc3 Nc6 13. cxd5 Qxd5 14. Bf4 Bd6 15. c4 Qe4 16. Be3 Rad8 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "hanging"]
+[Black "?"]
+[Result "*"]
+[ECO "D59"]
+[PlyCount "36"]
+
+1. c4 e6 2. Nf3 d5 3. d4 Nf6 4. Nc3 Be7 5. Bg5 O-O 6. e3 h6 7. Bh4 b6 8. cxd5 Nxd5 9. Bxe7 Qxe7 10. Nxd5 exd5 11. Rc1 Be6 12. Qa4 c5 13. Qa3 Rc8 14. Bb5 a6 15. dxc5 bxc5 16. O-O Ra7 17. Be2 Nd7 18. Nd4 Qf8 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "small"]
+[Black "?"]
+[Result "*"]
+[ECO "B90"]
+[PlyCount "16"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Be3 h6 7. f3 Qc7 8. g4 e6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "small"]
+[Black "?"]
+[Result "*"]
+[ECO "B62"]
+[PlyCount "12"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 Nc6 6. Bg5 e6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "small"]
+[Black "?"]
+[Result "*"]
+[ECO "B54"]
+[PlyCount "10"]
+
+1. e4 c5 2. Nf3 e6 3. d4 d6 4. Nc3 cxd4 5. Nxd4 Nc6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "small"]
+[Black "?"]
+[Result "*"]
+[ECO "B42"]
+[PlyCount "16"]
+
+1. e4 c5 2. Nf3 e6 3. d4 cxd4 4. Nxd4 a6 5. Bd3 Bc5 6. Nb3 Be7 7. Qg4 g6 8. Qe2 d6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "small"]
+[Black "?"]
+[Result "*"]
+[ECO "E11"]
+[PlyCount "20"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 Bb4+ 4. Nbd2 b6 5. a3 Bxd2+ 6. Bxd2 Bb7 7. e3 O-O 8. Be2 d6 9. O-O Nbd7 10. b4 Ne4 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "classic"]
+[Black "?"]
+[Result "*"]
+[ECO "D85"]
+[PlyCount "14"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. cxd5 Nxd5 5. e4 Nxc3 6. bxc3 Bg7 7. Nf3 O-O *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "classic"]
+[Black "?"]
+[Result "*"]
+[ECO "D70"]
+[PlyCount "18"]
+
+1. d4 Nf6 2. c4 g6 3. f3 d5 4. cxd5 Nxd5 5. e4 Nb6 6. Nc3 Bg7 7. Be3 O-O 8. Qd2 Nc6 9. O-O-O e5 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "classic"]
+[Black "?"]
+[Result "*"]
+[ECO "C92"]
+[PlyCount "20"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 8. c3 O-O 9. d4 Re8 10. h3 Qd7 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "classic"]
+[Black "?"]
+[Result "*"]
+[ECO "C54"]
+[PlyCount "30"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. d3 d6 6. Nbd2 a6 7. Bb3 Ba7 8. O-O O-O 9. h3 Ne7 10. Re1 Ng6 11. Nf1 h6 12. Ng3 b5 13. d4 Re8 14. a4 Bb7 15. Bc2 c5 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "classic"]
+[Black "?"]
+[Result "*"]
+[ECO "D17"]
+[PlyCount "24"]
+
+1. d4 d5 2. c4 c6 3. Nf3 Nf6 4. Nc3 dxc4 5. a4 Bf5 6. Ne5 Nbd7 7. Nxc4 Nb6 8. Ne5 a5 9. f3 Nfd7 10. Nxd7 Nxd7 11. e4 Bg6 12. Be2 f6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "isolated"]
+[Black "?"]
+[Result "*"]
+[ECO "B28"]
+[PlyCount "16"]
+
+1. e4 c5 2. c3 d5 3. exd5 Qxd5 4. d4 Nf6 5. Nf3 e6 6. Be3 cxd4 7. cxd4 a6 8. Nc3 Bb4 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "isolated"]
+[Black "?"]
+[Result "*"]
+[ECO "C08"]
+[PlyCount "16"]
+
+1. e4 e6 2. d4 d5 3. Nd2 c5 4. Ngf3 Nf6 5. exd5 exd5 6. Bb5+ Nc6 7. O-O Be7 8. dxc5 Bxc5 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "isolated"]
+[Black "?"]
+[Result "*"]
+[ECO "E06"]
+[PlyCount "18"]
+
+1. d4 d5 2. c4 e6 3. g3 Nf6 4. Bg2 Be7 5. Nf3 O-O 6. Qc2 c5 7. dxc5 Qa5+ 8. Nc3 Nc6 9. cxd5 exd5 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "isolated"]
+[Black "?"]
+[Result "*"]
+[ECO "E06"]
+[PlyCount "18"]
+
+1. e4 c6 2. d4 d5 3. exd5 cxd5 4. c4 Nf6 5. Nc3 e6 6. Nf3 Bb4 7. cxd5 Nxd5 8. Qc2 Nc6 9. Bd3 Nf6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "isolated"]
+[Black "?"]
+[Result "*"]
+[ECO "C42"]
+[PlyCount "26"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d4 d5 6. Bd3 Nc6 7. O-O Be7 8. c4 Nf6 9. Nc3 Be6 10. cxd5 Nxd5 11. a3 O-O 12. Re1 Bf6 13. Be4 Nce7 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "dragon"]
+[Black "?"]
+[Result "*"]
+[ECO "B70"]
+[PlyCount "10"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 g6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "keres attack"]
+[Black "?"]
+[Result "*"]
+[ECO "B81"]
+[PlyCount "12"]
+
+1. e4 c5 2. Nf3 e6 3. d4 cxd4 4. Nxd4 d6 5. Nc3 Nf6 6. g4 h6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "Boleslavsky wall"]
+[Black "?"]
+[Result "*"]
+[ECO "B33"]
+[PlyCount "10"]
+
+1. e4 c5 2. Nf3 Nc6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 e5 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "carlsbad"]
+[Black "?"]
+[Result "*"]
+[ECO "D36"]
+[PlyCount "14"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 d5 4. cxd5 exd5 5. Bg5 c6 6. e3 Bd6 7. Qc2 Be6 *
+
+[Event "?"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "stonewall"]
+[Black "?"]
+[Result "*"]
+[ECO "A90"]
+[PlyCount "14"]
+
+1. d4 e6 2. c4 f5 3. g3 Nf6 4. Bg2 d5 5. Nh3 Bd6 6. O-O O-O 7. Bf4 Be7 *
+

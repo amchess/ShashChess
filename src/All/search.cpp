@@ -697,10 +697,12 @@ void Thread::search() {
   //optimism[us] = optimism[~us] = VALUE_ZERO;
 
   int searchAgainCounter = 0;
+  int stabilityCount = 0; //stabilityCount3
+
   int failedAspirationsCurrentID = 0; //aspiration patch
   //mcts begin
   bool maybeDraw = rootPos.rule50_count() >= 90 || rootPos.has_game_cycle(2);
-  int mctsThreads = round((float)(Options["Threads"]*16/22));
+  mctsThreads = round((float)(Options["Threads"]*16/22));
   if (
 		(
 			(!mainThread)
@@ -748,7 +750,9 @@ void Thread::search() {
 	if (mainThread)
 	    totBestMoveChanges /= 2;
 
-	// Save the last iteration's scores before first PV line is searched and
+    rootDepth += (stabilityCount > 4);//stabilityCount3
+	
+    // Save the last iteration's scores before first PV line is searched and
 	// all the move scores except the (new) PV are set to -VALUE_INFINITE.
 	for (RootMove& rm : rootMoves)
 	    rm.previousScore = rm.score;
@@ -837,6 +841,7 @@ void Thread::search() {
 		    alpha = std::max(bestValue - delta, -VALUE_INFINITE);
 
 		    failedHighCnt = 0;
+            stabilityCount = 0;//stabilityCount3
 			failedAspirationsCurrentID++;//aspiration patch
 		    if (mainThread)
 			mainThread->stopOnPonderhit = false;
@@ -845,10 +850,15 @@ void Thread::search() {
 		{
 		    beta = std::min(bestValue + delta, VALUE_INFINITE);
 		    ++failedHighCnt;
+            stabilityCount = 0;//stabilityCount3
 			failedAspirationsCurrentID++; //aspiration patch
 		}
 		else
-		    break;
+        {
+           stabilityCount++;//stabilityCount3
+           break; 
+        }
+		    
 
 		delta += delta / 4 + 2;
 
@@ -1418,9 +1428,10 @@ namespace {
     // Step 7. Razoring.
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low. 
-    if (   (depth <= 7) 
-        && (eval < alpha - 369 - 254 * depth * depth + ((pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore) ? ((ss-1)->statScore / 1024):0))
-       ) //rzrPrevSs4              
+    if (
+            (eval < alpha - 369 - 254 * depth * depth + 
+            ((pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore) ? ((ss-1)->statScore / 1024):0)) //rzrPrevSs4
+       )               
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha || ((depth == 1) && (pos.this_thread()->shashinQuiescentCapablancaMaxScore) )) //razFullReturn1
@@ -1947,13 +1958,12 @@ moves_loop: // When in check, search starts here
           //official with Shashin begin
           if (PvNode && pos.this_thread()->shashinValue!=SHASHIN_POSITION_CAPABLANCA)
           {
-              r -= 1 + 11 / (3 + depth);
+               r -= depth <= 12 ? 2 : 1; //pvLmrTw9
           }       
           //official with Shashin end
           
           //official with Shashin begin
           // Decrease reduction if ttMove has been singularly extended (~1 Elo)
-          // Decrease reduction if we move a threatened piece (~1 Elo)
           if (((singularQuietLMR) && pos.this_thread()->shashinValue!=SHASHIN_POSITION_CAPABLANCA)
               || 
               ((depth > 9 && (mp.threatenedPieces & from_sq(move)))  
@@ -1983,9 +1993,15 @@ moves_loop: // When in check, search starts here
                          + (*contHist[3])[movedPiece][to_sq(move)]
                          - 4433;
 
+         //official by Shashin begin
           // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-          r -= ss->statScore / 13628;
-		  
+          r -= ss->statScore / (13628 + 4000 * ((depth > 7 && depth < 19)
+		        &&(
+					(((ss->statScore)>0)&& (!(pos.this_thread()->shashinQuiescentCapablancaMaxScore)))
+					||
+					(((ss->statScore)<0)&& (pos.this_thread()->shashinValue==SHASHIN_POSITION_CAPABLANCA) )
+				)));
+		  //official by Shashin end
 		  //lmr_average2+excludedLMR+less_lmr2 begin
           if (thisThread->lmrAverage.is_greater(11, 100) || moveCountPruning || excludedMove)
               r--;		  
