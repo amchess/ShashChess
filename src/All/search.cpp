@@ -702,7 +702,7 @@ void Thread::search() {
   int failedAspirationsCurrentID = 0; //aspiration patch
   //mcts begin
   bool maybeDraw = rootPos.rule50_count() >= 90 || rootPos.has_game_cycle(2);
-  mctsThreads = round((float)(Options["Threads"]*16/22));
+  mctsThreads = Options["MCTSThreads"];
   if (
 		(
 			(!mainThread)

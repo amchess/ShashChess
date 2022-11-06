@@ -189,9 +189,13 @@ If the number is greater than threads number, all threads are for full depth bru
 
 ### MonteCarlo Tree Search section (experimental: thanks to original Stephan Nicolet work)
 
-#### MCTS by Shashin
+_Boolean, Default: False_ If activated, thanks to Shashin theory, the engine will use the MonteCarlo Tree Search for Capablanca quiescent type positions and also for caos ones, in the manner specified by the following parameters. The idea is to exploit Lc0 best results in those positions types, because Lc0 uses mcts in the search.
 
-_Boolean, Default: False_ If activated, thanks to Shashin theory, the engine will use the MonteCarlo Tree Search for Capablanca quiescent type positions and also for caos ones, in the manner specified by the following parameters. The idea is to exploit Lc0 best results in those positions types, because Lc0 uses mcts in the search. The main thread will always be A/B. The mcts ones, based on our tests, will be the nearest integer value to the following one: Threads * 16 /22
+#### MCTSThreads
+
+_Integer, Default: 0, Min: 0, Max: 512_
+The number of settled threads to use for MCTS search except the first (main) one always for alpha-beta search. 
+In particular, if the number is greater than threads number, they will all do a montecarlo tree search, always except the first (main) for alpha-beta search. As a golden rule, for best results, do not exceed 8/11 of the threads set
 
 #### Multi Strategy 
 
@@ -299,11 +303,27 @@ If activated, the learning file is only read.
 
 ### Shashin section
 
+### Shashin section
+
+### Shashin section
+
 _Default: no option settled_
 The engine will determine dynamically the position's type starting from a "Capablanca/default
 positions".
-If one or more (mixed algorithms/positions types at the boundaries) of the three following options
+If one or more (mixed algorithms/positions types at the boundaries) of the seven following options
 are settled, it will force the initial position/algorithm understanding
+
+Centipawns range | Shashin position’s type        |
+| ---------------| ------------------------------ |
+| < -140         | High Petrosian                 |
+| [-140, -70)    | Medium Petrosian               |
+| [-70, -35)     | Low Petrosian                  |
+| [-35, -15]     | Caos: Capablanca-Low Petrosian |
+| (-15,15)       | Capablanca                     |
+| [15, 35]       | Caos: Capablanca-Low Tal       |
+| (35,70]        | Low Tal                        |
+| (70,140]       | Middle Tal                     |
+| > 140          | High Tal                       |
 
 #### Tal
 

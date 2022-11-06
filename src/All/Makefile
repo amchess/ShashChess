@@ -361,7 +361,11 @@ LDFLAGS = $(ENV_LDFLAGS) $(EXTRALDFLAGS)
 
 ifneq ($(OS),Android)
 	CXXFLAGS += -DUSE_LIVEBOOK
-	LDFLAGS += -DUSE_LIVEBOOK -lcurl -lws2_32
+	ifeq ($(target_windows),yes)
+		LDFLAGS += -DUSE_LIVEBOOK -lcurl -lws2_32
+	else
+		LDFLAGS += -DUSE_LIVEBOOK -lcurl	
+	endif
 endif
 
 ifeq ($(COMP),)

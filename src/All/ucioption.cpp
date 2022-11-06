@@ -129,6 +129,7 @@ void init(OptionsMap& o) {
   o["Persisted learning"]    << Option("Off var Off var Standard var Self", "Off", on_persisted_learning);
   o["Read only learning"]    << Option(false, on_readonly_learning);
   o["MCTS by Shashin"]       << Option(false);
+  o["MCTSThreads"]           << Option(1, 1, 512);
   o["Multi Strategy"]        << Option(20, 0, 100);
   o["Multi MinVisits"]       << Option(5, 0, 1000);
   o["Concurrent Experience"] << Option (false);
