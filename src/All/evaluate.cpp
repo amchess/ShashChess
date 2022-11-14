@@ -991,7 +991,7 @@ namespace {
     // the position object (material + piece square tables) and the material
     // imbalance. Score is computed internally from the white point of view.
     //from handicap mode begin
-    Score score = pos.psq_score() + (imbalancesToEvaluate ? me->imbalance():0);//+ pos.this_thread()->trend;
+    Score score = pos.psq_score() + (imbalancesToEvaluate ? me->imbalance():0);
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
     if (pawnsToEvaluate)
@@ -1098,22 +1098,27 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       v = Evaluation<NO_TRACE>(pos).value();
   else
   {
-       int nnueComplexity;
-       int scale = 1064 + 106 * pos.non_pawn_material() / 5120;
-       //Color stm      = pos.side_to_move();
-       //Value optimism = pos.this_thread()->optimism[stm];
-       //Value psq      = (stm == WHITE ? 1 : -1) * eg_value(pos.psq_score());
-       //int complexity = 35 * abs(nnue - psq) / 256;
+      int nnueComplexity;
+      int scale = 1064 + 106 * pos.non_pawn_material() / 5120;
 
-       //optimism = optimism * (44 + complexity) / 32;
-       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
-       // Blend nnue complexity with (semi)classical complexity
-       nnueComplexity = (  416 * nnueComplexity + 424 * abs(psq - nnue)) / 1024;
+      Color stm = pos.side_to_move();
+      Value optimism = pos.this_thread()->optimism[stm];
+
+      Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
+
+      // Blend nnue complexity with (semi)classical complexity
+      nnueComplexity = (  416 * nnueComplexity
+                        + 424 * abs(psq - nnue)
+                        + (optimism  > 0 ? int(optimism) * int(psq - nnue) : 0)
+                        ) / 1024;
+
       // Return hybrid NNUE complexity to caller
       if (complexity)
           *complexity = nnueComplexity;
-       v = nnue * scale / 1024 ;
 
+      optimism = (pos.this_thread()->shashinValue==SHASHIN_POSITION_CAPABLANCA)? 
+                    (Value)0: (optimism * (269 + nnueComplexity) / 256); //optimism by Shashin
+      v = (nnue * scale + optimism * (scale - 754)) / 1024;
   }
 
   // Damp down the evaluation linearly when shuffling
@@ -1131,7 +1136,7 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
   {
       v = (Value)((float)(v) / WEIGHTED_EVAL);
   }
-  return v; 
+  return v;
 }
 
 /// trace() is like evaluate(), but instead of returning a value, it returns
@@ -1151,10 +1156,9 @@ std::string Eval::trace(Position& pos) {
 
   std::memset(scores, 0, sizeof(scores));
   // Reset any global variable used in eval
-  //pos.this_thread()->trend = SCORE_ZERO; // Reset any dynamic contempt
   pos.this_thread()->bestValue = VALUE_ZERO; // Reset bestValue for lazyEval
-  //pos.this_thread()->optimism[WHITE] = VALUE_ZERO;
-  //pos.this_thread()->optimism[BLACK] = VALUE_ZERO;
+  pos.this_thread()->optimism[WHITE] = VALUE_ZERO;
+  pos.this_thread()->optimism[BLACK] = VALUE_ZERO;
 
   v = Evaluation<TRACE>(pos).value();
 

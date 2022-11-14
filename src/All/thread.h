@@ -66,7 +66,7 @@ public:
   std::atomic<uint64_t> nodes, tbHits, bestMoveChanges, bestMoveMc;//bmMovecountR7
   int selDepth, nmpMinPly;
   Color nmpColor;
-  Value bestValue;//, optimism[COLOR_NB];
+  Value bestValue, optimism[COLOR_NB];
   
   bool nmpGuard; //from Crystal
   Position rootPos;
@@ -78,7 +78,6 @@ public:
   ButterflyHistory mainHistory;
   CapturePieceToHistory captureHistory;
   ContinuationHistory continuationHistory[2][2];
-  //Score trend;
   bool fullSearch;//full threads patch
   //begin from Shashin
   int shashinValue=0, shashinQuiescentCapablancaMiddleHighScore, shashinQuiescentCapablancaMaxScore;

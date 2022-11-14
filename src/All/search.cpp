@@ -649,7 +649,7 @@ void Thread::search() {
   Depth lastBestMoveDepth = 0;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1, totBestMoveChanges = 0;
-  //Color us = rootPos.side_to_move();
+  Color us = rootPos.side_to_move();
   int iterIdx = 0;
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
@@ -693,8 +693,7 @@ void Thread::search() {
 
   complexityAverage.set(155, 1);
   lmrAverage.set(6, 100);//lmr_average2
-  //trend = SCORE_ZERO;
-  //optimism[us] = optimism[~us] = VALUE_ZERO;
+  optimism[us] = optimism[~us] = VALUE_ZERO;
 
   int searchAgainCounter = 0;
   int stabilityCount = 0; //stabilityCount3
@@ -791,13 +790,10 @@ void Thread::search() {
 			beta  = std::min(prev + delta, VALUE_INFINITE);
 			updateShashinValues(rootPos,prev);//from ShashChess
 			
-			// Adjust trend based on root move's previousScore
-            /*int tr = 116 * prev / (std::abs(prev) + 89);
-            trend = (us == WHITE ?  make_score(tr, tr / 2)
-                                 : -make_score(tr, tr / 2));*/
-            //int opt = 118 * prev / (std::abs(prev) + 169);
-            //optimism[ us] = Value(opt);
-            //optimism[~us] = -optimism[us];                                 
+			// Adjust optimism based on root move's previousScore
+            int opt = 118 * prev / (std::abs(prev) + 169);
+            optimism[ us] = Value(opt);
+            optimism[~us] = -optimism[us];                                 
 	    }
 
 	    // Start with a small aspiration window and, in the case of a fail
