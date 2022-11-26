@@ -557,7 +557,7 @@ namespace Stockfish {
 			assert(is_root(current_node()));
 			// debug << "Before calling UCI::pv()" << endl;
 
-			pv = UCI::pv(pos, maximumPly, -VALUE_INFINITE, VALUE_INFINITE);
+			pv = UCI::pv(pos, maximumPly);
 		}
 		else
 		{

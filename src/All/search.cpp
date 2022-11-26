@@ -22,7 +22,6 @@
 #include <cstring>   // For std::memset
 #include <iostream>
 #include <sstream>
-#include <random>  //opening variety sugar
 #include <fstream> // kelly
 #include "polybook.h"//from BrainFish
 #include "evaluate.h"
@@ -115,7 +114,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min((12 * d + 282) * d - 349 , 1594);
+    return std::min((12 * d + 282) * d - 349 , 1400); //statbonus1
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -455,7 +454,7 @@ void MainThread::search() {
       plm.key = rootPos.key();
       plm.learningMove.depth = bestThread->completedDepth;
       plm.learningMove.move = bestThread->rootMoves[0].pv[0];
-      plm.learningMove.score = goldDigger? (bestThread->rootMoves[0].score):((Value)((float)(bestThread->rootMoves[0].score) / WEIGHTED_EVAL));
+      plm.learningMove.score = goldDigger? (bestThread->rootMoves[0].score):(getShashinInternalValue(bestThread->rootMoves[0].score));
 
       if (LD.learning_mode() == LearningMode::Self)
       {
@@ -479,7 +478,7 @@ void MainThread::search() {
   
   // Send again PV info if we have a new best thread
   if (bestThread != this)
-      sync_cout << UCI::pv(bestThread->rootPos, bestThread->completedDepth, -VALUE_INFINITE, VALUE_INFINITE) << sync_endl;
+      sync_cout << UCI::pv(bestThread->rootPos, bestThread->completedDepth) << sync_endl;
 
   sync_cout << "bestmove " << UCI::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());
 
@@ -490,7 +489,8 @@ void MainThread::search() {
 
   //from Khalid begin
   //Save learning data if game is already decided
-  if (Utility::is_game_decided(rootPos, (goldDigger? (bestThread->rootMoves[0].score):((Value)((float)(bestThread->rootMoves[0].score)/ WEIGHTED_EVAL)))) && LD.is_enabled() && !LD.is_paused())
+  
+  if (Utility::is_game_decided(rootPos, (goldDigger? (bestThread->rootMoves[0].score):((getShashinInternalValue(bestThread->rootMoves[0].score))))) && LD.is_enabled() && !LD.is_paused())
   {
       //Perform Q-learning if enabled
       if(LD.learning_mode() == LearningMode::Self)
@@ -544,7 +544,7 @@ inline int getShashinValue(Value score)
 {
   if(!goldDigger)
   {
-    score = (Value)((float)(score) / WEIGHTED_EVAL);
+    score = getShashinInternalValue(score);
   }
   
   if ((int)score < -SHASHIN_TAL_THRESHOLD) {
@@ -570,7 +570,7 @@ inline int getShashinValue(Value score)
 inline int getShashinQuiescentCapablanca(Value score,int refScore) {
   if(!goldDigger)
   {
-    score = (Value)((float)(score) / WEIGHTED_EVAL);
+    score = getShashinInternalValue(score);
   }
   return abs(score) > refScore ? 0 : 1;
 }
@@ -827,7 +827,7 @@ void Thread::search() {
 		    && multiPV == 1
 		    && (bestValue <= alpha || bestValue >= beta)
 		    && Time.elapsed() > 3000)
-		    sync_cout << UCI::pv(rootPos, rootDepth, alpha, beta) << sync_endl;
+		    sync_cout << UCI::pv(rootPos, rootDepth) << sync_endl;
 
 		// In case of failing low/high increase aspiration window and
 		// re-search, otherwise exit the loop.
@@ -866,7 +866,7 @@ void Thread::search() {
 
 	    if (    mainThread
 		&& (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 3000))
-		sync_cout << UCI::pv(rootPos, rootDepth, alpha, beta) << sync_endl;
+		sync_cout << UCI::pv(rootPos, rootDepth) << sync_endl;
 	}
 
 	if (!Threads.stop)
@@ -1013,7 +1013,7 @@ namespace {
     TTEntry* tte;
     Key posKey;
     Move ttMove, move, excludedMove=MOVE_NONE, bestMove,expTTMove=MOVE_NONE;//from Kelly
-    Depth extension, newDepth;
+    Depth extension, newDepth;//official with Shashin
     //from Kelly begin
     Value bestValue, value, ttValue, eval=VALUE_NONE, maxValue, expTTValue=VALUE_NONE, probCutBeta;
     bool givesCheck, improving, didLMR, priorCapture, singularQuietLMR, expTTHit=false, isMate; //from Crystal
@@ -1192,7 +1192,7 @@ namespace {
             if (learningMove->depth >= depth)
             {
                 expTTMove = learningMove->move;
-                expTTValue = (goldDigger? (learningMove->score) : ((Value)(((float)(learningMove->score)) * WEIGHTED_EVAL)));
+                expTTValue = (goldDigger? (learningMove->score) : getShashinInternalValue(learningMove->score));
                 updatedLearning = true;
             }
 
@@ -1886,7 +1886,8 @@ moves_loop: // When in check, search starts here
       pos.do_move(move, st, givesCheck);
       updateShashinValues(pos,- ss->staticEval); //from Shashin
       bool doLMRStep = !(thisThread->fullSearch);//full threads patch
-      bool doDeeperSearch = false;      
+      bool doDeeperSearch = false;    
+      bool doShallowerSearch = false;  
 	  (ss+1)->distanceFromPv = ss->distanceFromPv + moveCount - 1;//dd^^
 
       // Step 17. Late moves reduction / extension (LMR, ~98 Elo)
@@ -2018,7 +2019,15 @@ moves_loop: // When in check, search starts here
           
 		  // If the son is reduced and fails high it will be re-searched at full depth
           doFullDepthSearch = value > alpha && d < newDepth;
+          // Adjust full depth search based on LMR results - if result
+          // was good enough search deeper, if it was bad enough search shallower
           doDeeperSearch = value > (alpha + 64 + 11 * (newDepth - d));
+          //official by Shashin begin
+          if(pos.this_thread()->shashinValue==SHASHIN_POSITION_CAPABLANCA) //no official adjDepth2
+          {
+            doShallowerSearch = value < bestValue + newDepth;
+          }
+          //official by Shashin end
           didLMR = true;
       }
       else
@@ -2041,7 +2050,8 @@ moves_loop: // When in check, search starts here
       // Step 18. Full depth search when LMR is skipped or fails high
       if (doFullDepthSearch)
       {
-          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth + doDeeperSearch, !cutNode);
+          
+          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth + doDeeperSearch - doShallowerSearch , !cutNode);
 
           // If the move passed LMR update its stats
           if (didLMR)
@@ -2096,6 +2106,8 @@ moves_loop: // When in check, search starts here
           {
               rm.score = value;
               rm.selDepth = thisThread->selDepth;
+              rm.scoreLowerbound = value >= beta;
+              rm.scoreUpperbound = value <= alpha;
               rm.pv.resize(1);
 
               assert((ss+1)->pv);
@@ -2155,8 +2167,6 @@ moves_loop: // When in check, search starts here
               }
           }
       }
-      else
-        ss->cutoffCnt = 0;
 
       // If the move is worse than some previously searched move, remember it to update its stats later
       if (move != bestMove)
@@ -2460,12 +2470,11 @@ moves_loop: // When in check, search starts here
           && (*contHist[1])[pos.moved_piece(move)][to_sq(move)] < 0)
           continue;
 
-      // movecount pruning for quiet check evasions
+      // We prune after 2nd quiet check evasion where being 'in check' is implicitly checked through the counter
+      // and being a 'quiet' apart from being a tt move is assumed after an increment because captures are pushed ahead.
       if (   bestValue > VALUE_TB_LOSS_IN_MAX_PLY
-          && quietCheckEvasions > 1
-          && !capture
-          && ss->inCheck)
-          continue;
+          && quietCheckEvasions > 1)
+          break;
 
       quietCheckEvasions += !capture && ss->inCheck;
       
@@ -2507,8 +2516,8 @@ moves_loop: // When in check, search starts here
        }
     }
     //from Sugar
-    if (openingVariety && (bestValue + (openingVariety * PawnValueEg / 100) >= 0 ) && (pos.count<PAWN>() > 12))
-	  bestValue += rand() % (openingVariety + 1);
+    if (openingVariety && bestValue + (openingVariety * UCI::NormalizeToPawnValue / 100) >= 0 && pos.count<PAWN>() > 12)
+        bestValue += thisThread->nodes % (openingVariety + 1);
     //end from Sugar
     // All legal moves have been searched. A special case: if we're in check
     // and no legal moves were found, it is checkmate.
@@ -2852,7 +2861,7 @@ void MainThread::check_time() {
 /// UCI::pv() formats PV information according to the UCI protocol. UCI requires
 /// that all (if any) unsearched PV lines are sent using a previous search score.
 
-string UCI::pv(const Position& pos, Depth depth, Value alpha, Value beta) {
+string UCI::pv(const Position& pos, Depth depth) {
 
   std::stringstream ss;
   TimePoint elapsed = Time.elapsed() + 1;
@@ -2890,8 +2899,8 @@ string UCI::pv(const Position& pos, Depth depth, Value alpha, Value beta) {
       if (Options["UCI_ShowWDL"])
           ss << UCI::wdl(v, pos.game_ply());
 
-      if (!tb && i == pvIdx)
-          ss << (v >= beta ? " lowerbound" : v <= alpha ? " upperbound" : "");
+      if (i == pvIdx && !tb && updated) // tablebase- and previous-scores are exact
+         ss << (rootMoves[i].scoreLowerbound ? " lowerbound" : (rootMoves[i].scoreUpperbound ? " upperbound" : ""));
 
       ss << " nodes "    << nodesSearched
          << " nps "      << nodesSearched * 1000 / elapsed

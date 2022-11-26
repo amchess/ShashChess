@@ -110,12 +110,6 @@ typedef uint64_t Bitboard;
 constexpr int MAX_MOVES = 256;
 constexpr int MAX_PLY   = 246;
 
-//align score begin
-constexpr float CAOS_MAX_EVAL = 89.;
-constexpr float GUI_CAOS_EVAL = 32.;
-constexpr float WEIGHTED_EVAL=CAOS_MAX_EVAL/GUI_CAOS_EVAL;
-//align score end
-
 /// A move needs 16 bits to be stored
 ///
 /// bit  0- 5: destination square (from 0 to 63)
@@ -296,7 +290,39 @@ enum {
   SHASHIN_POSITION_TAL,SHASHIN_POSITION_TAL_CAPABLANCA
 };
 enum { SHASHIN_TAL_THRESHOLD = 35 * PawnValueEg/100, SHASHIN_CAPABLANCA_THRESHOLD = 15 * PawnValueEg/100};
+//align score begin
+constexpr float CAOS_MAX_EVAL = 89.;
+constexpr float GUI_CAOS_EVAL_TAL = 52.;
+constexpr float GUI_CAOS_EVAL_TAL_CAPABLANCA = 42.;
+constexpr float GUI_CAOS_EVAL_CAPABLANCA = 32.;
+constexpr float WEIGHTED_EVAL_TAL = CAOS_MAX_EVAL/GUI_CAOS_EVAL_TAL;
+constexpr float WEIGHTED_EVAL_TAL_CAPABLANCA = CAOS_MAX_EVAL/GUI_CAOS_EVAL_TAL_CAPABLANCA;
+constexpr float WEIGHTED_EVAL_CAPABLANCA = CAOS_MAX_EVAL/GUI_CAOS_EVAL_CAPABLANCA;
 
+inline Value getShashinInternalValue(Value score) 
+{
+   Value internalScore = (Value)((float)(score) / WEIGHTED_EVAL_CAPABLANCA);
+ 
+  if ((int)internalScore < -SHASHIN_TAL_THRESHOLD) {
+	  return (Value)((float)(score) / WEIGHTED_EVAL_TAL);
+  }
+  if (((int)internalScore >= -SHASHIN_TAL_THRESHOLD)
+		  && ((int)internalScore <= -SHASHIN_CAPABLANCA_THRESHOLD)) {
+	  return (Value)((float)(score) / WEIGHTED_EVAL_TAL_CAPABLANCA);
+  }
+  if (((int)internalScore < SHASHIN_CAPABLANCA_THRESHOLD)) {
+	  return (Value)((float)(score) / WEIGHTED_EVAL_CAPABLANCA);
+  }
+  if (((int)internalScore >= SHASHIN_CAPABLANCA_THRESHOLD)
+		  && ((int)internalScore <= SHASHIN_TAL_THRESHOLD)) {
+	  return (Value)((float)(score) / WEIGHTED_EVAL_TAL_CAPABLANCA);
+  }
+  if ((int)internalScore > SHASHIN_TAL_THRESHOLD) {
+	  return (Value)((float)(score) / WEIGHTED_EVAL_TAL);
+  }
+  return internalScore;
+}
+//align score end
 //End Shashin section
 
 
