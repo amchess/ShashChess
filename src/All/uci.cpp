@@ -385,10 +385,6 @@ string UCI::value(Value v) {
 
   if (abs(v) < VALUE_MATE_IN_MAX_PLY)
   {
-      if(!Eval::goldDigger)
-      {
-      	 v = getShashinInternalValue(v);
-      }
 	  ss << "cp " << v * 100 / PawnValueEg;
   }
   else

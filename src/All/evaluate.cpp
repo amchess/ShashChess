@@ -65,8 +65,7 @@ namespace Eval {
 
   bool useNNUE;
   string currentEvalFileName = "None";
-  bool goldDigger; //from Shashin
-
+  
   /// NNUE::init() tries to load a NNUE network at startup time, or when the engine
   /// receives a UCI command "setoption name EvalFile value nn-[a-z0-9]{12}.nnue"
   /// The name of the NNUE network is always retrieved from the EvalFile option.
@@ -1131,11 +1130,7 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
   // When not using NNUE, return classical complexity to caller
   if (complexity && (!useNNUE || useClassical))
       *complexity = abs(v - psq);
-
-  if(goldDigger)
-  {
-      v = getShashinInternalValue(v);
-  }
+  v = getShashinInternalValue(v);
   return v;
 }
 
