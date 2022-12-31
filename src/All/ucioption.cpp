@@ -133,6 +133,7 @@ void init(OptionsMap& o) {
   o["Multi Strategy"]        << Option(20, 0, 100);
   o["Multi MinVisits"]       << Option(5, 0, 1000);
   o["Concurrent Experience"] << Option (false); 
+  o["GoldDigger"]            << Option(false); 
   o["High Tal"]              << Option(false);
   o["Middle Tal"]            << Option(false);
   o["Low Tal"]               << Option(false);
@@ -193,7 +194,7 @@ Option::operator double() const {
 }
 
 Option::operator std::string() const {
-  assert(type == "string" || type == "combo");
+  assert(type == "string" || type == "combo"); //ShashChess uci options
   return currentValue;
 }
 

@@ -53,13 +53,11 @@ struct Stack {
   Depth depth;
   int statScore;
   int moveCount;
-  int distanceFromPv;//from Shashin
   bool inCheck;
   bool ttPv;
   bool ttHit;
   int doubleExtensions;
   int cutoffCnt;
-  int currentReduction;//useRinSMS
   NodeType nodeType; //nodeTypeHistory
 };
 
@@ -81,6 +79,7 @@ struct RootMove {
   Value score = -VALUE_INFINITE;
   Value previousScore = -VALUE_INFINITE;
   Value averageScore = -VALUE_INFINITE;
+  Value uciScore = -VALUE_INFINITE;
   bool scoreLowerbound = false;
   bool scoreUpperbound = false;
   int selDepth = 0;

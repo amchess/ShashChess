@@ -212,7 +212,7 @@ void ThreadPool::start_thinking(Position& pos, StateListPtr& states,
   // since they are read-only.
   for (Thread* th : *this)
   {
-      th->nodes = th->tbHits = th->nmpMinPly = th->nmpGuard = th->bestMoveChanges = 0;
+      th->nodes = th->tbHits = th->nmpMinPly = th->nmpGuard = th->bestMoveChanges = 0; //from Crystal
       th->rootDepth = th->completedDepth = 0;
       th->rootMoves = rootMoves;
       th->rootPos.set(pos.fen(), pos.is_chess960(), &th->rootState, th);
@@ -251,7 +251,8 @@ Thread* ThreadPool::get_best_thread() const {
                  || (   th->rootMoves[0].score > VALUE_TB_LOSS_IN_MAX_PLY
                      && (   votes[th->rootMoves[0].pv[0]] > votes[bestThread->rootMoves[0].pv[0]]
                          || (   votes[th->rootMoves[0].pv[0]] == votes[bestThread->rootMoves[0].pv[0]]
-                             && thread_value(th) > thread_value(bestThread)))))
+                             &&   thread_value(th) * int(th->rootMoves[0].pv.size() > 2)
+                                > thread_value(bestThread) * int(bestThread->rootMoves[0].pv.size() > 2)))))
             bestThread = th;
 
     return bestThread;

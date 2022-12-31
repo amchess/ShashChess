@@ -239,7 +239,7 @@ namespace {
      constexpr double bs[] = {  -2.65734562,   15.96509799,  -20.69040836,   73.61029937 };
 
      // Enforce that NormalizeToPawnValue corresponds to a 50% win rate at ply 64
-     static_assert(UCI::NormalizeToPawnValue == int(as[0] + as[1] + as[2] + as[3]));
+     static_assert(NormalizeToPawnValue == int(as[0] + as[1] + as[2] + as[3]));
 
      double a = (((as[0] * m + as[1]) * m + as[2]) * m) + as[3];
      double b = (((bs[0] * m + bs[1]) * m + bs[2]) * m) + bs[3];
@@ -305,12 +305,12 @@ void UCI::loop(int argc, char* argv[]) {
           }
           //Kelly end
       }
-      // The GUI sends 'ponderhit' to tell us the user has played the expected move.
-      // So 'ponderhit' will be sent if we were told to ponder on the same move the
-      // user has played. We should continue searching but switch from pondering to
-      // normal search.
+      // The GUI sends 'ponderhit' to tell that the user has played the expected move.
+      // So, 'ponderhit' is sent if pondering was done on the same move that the user
+      // has played. The search should continue, but should also switch from pondering
+      // to the normal search.
       else if (token == "ponderhit")
-          Threads.main()->ponder = false; // Switch to normal search
+          Threads.main()->ponder = false; // Switch to the normal search
 
       else if (token == "uci")
           sync_cout << "id name " << engine_info(true)
@@ -385,7 +385,11 @@ string UCI::value(Value v) {
 
   if (abs(v) < VALUE_MATE_IN_MAX_PLY)
   {
-	  ss << "cp " << v * 100 / PawnValueEg;
+	  if(Eval::goldDigger)
+      {
+      	 v = (Value)((float)(v) * (float)(WEIGHTED_EVAL));
+      }
+      ss << "cp " << v * 100 / NormalizeToPawnValue;
   }
   else
       ss << "mate " << (v > 0 ? VALUE_MATE - v + 1 : -VALUE_MATE - v) / 2;

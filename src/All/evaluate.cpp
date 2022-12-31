@@ -65,7 +65,8 @@ namespace Eval {
 
   bool useNNUE;
   string currentEvalFileName = "None";
-  
+  bool goldDigger; //from Shashin
+
   /// NNUE::init() tries to load a NNUE network at startup time, or when the engine
   /// receives a UCI command "setoption name EvalFile value nn-[a-z0-9]{12}.nnue"
   /// The name of the NNUE network is always retrieved from the EvalFile option.
@@ -162,7 +163,7 @@ namespace Trace {
 
   Score scores[TERM_NB][COLOR_NB];
 
-  double to_cp(Value v) { return double(v) / UCI::NormalizeToPawnValue; }
+  double to_cp(Value v) { return double(v) / NormalizeToPawnValue; }
 
   void add(int idx, Color c, Score s) {
     scores[idx][c] = s;
@@ -1098,7 +1099,7 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
   else
   {
       int nnueComplexity;
-      int scale = 1064 + 106 * pos.non_pawn_material() / 5120;
+      int scale = 1076 + 96 * pos.non_pawn_material() / 5120;
 
       Color stm = pos.side_to_move();
       Value optimism = pos.this_thread()->optimism[stm];
@@ -1106,8 +1107,8 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
 
       // Blend nnue complexity with (semi)classical complexity
-      nnueComplexity = (  416 * nnueComplexity
-                        + 424 * abs(psq - nnue)
+      nnueComplexity = (  412 * nnueComplexity
+                        + 428 * abs(psq - nnue)
                         + (optimism  > 0 ? int(optimism) * int(psq - nnue) : 0)
                         ) / 1024;
 
@@ -1116,21 +1117,25 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
           *complexity = nnueComplexity;
 
       optimism = (pos.this_thread()->shashinValue==SHASHIN_POSITION_CAPABLANCA)? 
-                    (Value)0: (optimism * (269 + nnueComplexity) / 256); //optimism by Shashin
-      v = (nnue * scale + optimism * (scale - 754)) / 1024;
+                    (Value)0: (optimism * (278 + nnueComplexity) / 256); //optimism by Shashin
+      v = (nnue * scale + optimism * (scale - 755)) / 1024;
   }
 
   // Damp down the evaluation linearly when shuffling
-  v = v * (195 - pos.rule50_count()) / 211;
+  v = v * (195 - pos.rule50_count()) / 214;
 
   // Guarantee evaluation does not hit the tablebase range
   v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
   //std::cout << pos.fen() ;
   //printf("Value: %d",v);
   // When not using NNUE, return classical complexity to caller
-  if (complexity && (!useNNUE || useClassical))
+  if (complexity && useClassical)
       *complexity = abs(v - psq);
-  v = getShashinInternalValue(v);
+
+  if(goldDigger)
+  {
+      v = (Value)((float)(v) / WEIGHTED_EVAL);
+  }
   return v;
 }
 
@@ -1150,8 +1155,9 @@ std::string Eval::trace(Position& pos) {
   Value v;
 
   std::memset(scores, 0, sizeof(scores));
+
   // Reset any global variable used in eval
-  pos.this_thread()->bestValue = VALUE_ZERO; // Reset bestValue for lazyEval
+  pos.this_thread()->bestValue       = VALUE_ZERO;
   pos.this_thread()->optimism[WHITE] = VALUE_ZERO;
   pos.this_thread()->optimism[BLACK] = VALUE_ZERO;
 

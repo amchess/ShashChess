@@ -138,7 +138,7 @@ enum Color {
   WHITE, BLACK, COLOR_NB = 2
 };
 
-constexpr Color Colors[2] = { WHITE, BLACK };
+constexpr Color Colors[2] = {WHITE, BLACK};
 
 enum CastlingRights {
   NO_CASTLING,
@@ -189,13 +189,22 @@ enum Value : int {
   VALUE_MATE_IN_MAX_PLY  =  VALUE_MATE - MAX_PLY,
   VALUE_MATED_IN_MAX_PLY = -VALUE_MATE_IN_MAX_PLY,
 
+  // In the code, we make the assumption that these values
+  // are such that non_pawn_material() can be used to uniquely
+  // identify the material on the board.
   PawnValueMg   = 126,   PawnValueEg   = 208,
   KnightValueMg = 781,   KnightValueEg = 854,
   BishopValueMg = 825,   BishopValueEg = 915,
   RookValueMg   = 1276,  RookValueEg   = 1380,
   QueenValueMg  = 2538,  QueenValueEg  = 2682,
 
-  MidgameLimit  = 15258, EndgameLimit  = 3915
+  MidgameLimit  = 15258, EndgameLimit  = 3915,
+  // Normalizes the internal value as reported by evaluate or search
+  // to the UCI centipawn result used in output. This value is derived from
+  // the win_rate_model() such that Stockfish outputs an advantage of
+  // "100 centipawns" for a position if the engine has a 50% probability to win
+  // from this position in selfplay at fishtest LTC time control.
+  NormalizeToPawnValue = 361 // from official here
 };
 
 enum PieceType {
@@ -265,6 +274,7 @@ enum Rank : int {
   RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8, RANK_NB
 };
 
+
 // Keep track of what a move changes on the board (used by NNUE)
 struct DirtyPiece {
 
@@ -281,50 +291,50 @@ struct DirtyPiece {
   Square to[3];
 };
 
-//Shashin section
-enum {
-  SHASHIN_MAX_SCORE = 139 * PawnValueEg/100, SHASHIN_MIDDLE_HIGH_SCORE = 69 * PawnValueEg/100, SHASHIN_MIDDLE_LOW_SCORE=25 * PawnValueEg/100};
-//Positions-algorithms types
-enum {
-  SHASHIN_POSITION_TAL_CAPABLANCA_PETROSIAN, SHASHIN_POSITION_PETROSIAN, SHASHIN_POSITION_CAPABLANCA, SHASHIN_POSITION_CAPABLANCA_PETROSIAN,
-  SHASHIN_POSITION_TAL,SHASHIN_POSITION_TAL_CAPABLANCA
-};
-enum { SHASHIN_TAL_THRESHOLD = 35 * PawnValueEg/100, SHASHIN_CAPABLANCA_THRESHOLD = 15 * PawnValueEg/100};
-//align score begin
-constexpr float CAOS_MAX_EVAL = 89.;
-constexpr float GUI_CAOS_EVAL_TAL = 52.;
-constexpr float GUI_CAOS_EVAL_TAL_CAPABLANCA = 42.;
-constexpr float GUI_CAOS_EVAL_CAPABLANCA = 32.;
-constexpr float WEIGHTED_EVAL_TAL = CAOS_MAX_EVAL/GUI_CAOS_EVAL_TAL;
-constexpr float WEIGHTED_EVAL_TAL_CAPABLANCA = CAOS_MAX_EVAL/GUI_CAOS_EVAL_TAL_CAPABLANCA;
-constexpr float WEIGHTED_EVAL_CAPABLANCA = CAOS_MAX_EVAL/GUI_CAOS_EVAL_CAPABLANCA;
-
-inline Value getShashinInternalValue(Value score) 
+// Shashin section
+//to eliminate in the future begin
+enum
 {
-   Value internalScore = (Value)((float)(score) / WEIGHTED_EVAL_CAPABLANCA);
- 
-  if ((int)internalScore < -SHASHIN_TAL_THRESHOLD) {
-	  return (Value)((float)(score) / WEIGHTED_EVAL_TAL);
-  }
-  if (((int)internalScore >= -SHASHIN_TAL_THRESHOLD)
-		  && ((int)internalScore <= -SHASHIN_CAPABLANCA_THRESHOLD)) {
-	  return (Value)((float)(score) / WEIGHTED_EVAL_TAL_CAPABLANCA);
-  }
-  if (((int)internalScore < SHASHIN_CAPABLANCA_THRESHOLD)) {
-	  return (Value)((float)(score) / WEIGHTED_EVAL_CAPABLANCA);
-  }
-  if (((int)internalScore >= SHASHIN_CAPABLANCA_THRESHOLD)
-		  && ((int)internalScore <= SHASHIN_TAL_THRESHOLD)) {
-	  return (Value)((float)(score) / WEIGHTED_EVAL_TAL_CAPABLANCA);
-  }
-  if ((int)internalScore > SHASHIN_TAL_THRESHOLD) {
-	  return (Value)((float)(score) / WEIGHTED_EVAL_TAL);
-  }
-  return internalScore;
-}
-//align score end
-//End Shashin section
+SHASHIN_QUIESCENT_MAX_SCORE = 289,
+SHASHIN_QUIESCENT_MIDDLE_HIGH_SCORE = 143
+};
+//to eliminate in the future end
+// Positions-algorithms types
+enum
+{
+  SHASHIN_POSITION_TAL_CAPABLANCA_PETROSIAN,
+  SHASHIN_POSITION_HIGH_PETROSIAN,
+  SHASHIN_POSITION_MIDDLE_HIGH_PETROSIAN,
+  SHASHIN_POSITION_MIDDLE_PETROSIAN,
+  SHASHIN_POSITION_MIDDLE_LOW_PETROSIAN,
+  SHASHIN_POSITION_LOW_PETROSIAN,
+  SHASHIN_POSITION_CAPABLANCA_PETROSIAN,
+  SHASHIN_POSITION_CAPABLANCA,
+  SHASHIN_POSITION_CAPABLANCA_TAL,
+  SHASHIN_POSITION_LOW_TAL,
+  SHASHIN_POSITION_MIDDLE_LOW_TAL,
+  SHASHIN_POSITION_MIDDLE_TAL,
+  SHASHIN_POSITION_MIDDLE_HIGH_TAL,
+  SHASHIN_POSITION_HIGH_TAL
+};
+enum
+{
+  SHASHIN_CAPABLANCA_THRESHOLD = 31,
+  SHASHIN_LOW_TAL_THRESHOLD = 73,
+  SHASHIN_MIDDLE_LOW_TAL_THRESHOLD = 148,
+  SHASHIN_MIDDLE_TAL_THRESHOLD = 212,
+  SHASHIN_MIDDLE_HIGH_TAL_THRESHOLD = 335,
+  SHASHIN_HIGH_TAL_THRESHOLD = 577
 
+};
+
+//align score begin for GD
+constexpr float CAOS_MAX_EVAL = 98.;
+constexpr float GUI_CAOS_EVAL = 32.;
+constexpr float WEIGHTED_EVAL=CAOS_MAX_EVAL/GUI_CAOS_EVAL;
+//align score end for GD
+
+// End Shashin section
 
 /// Score enum stores a middlegame and an endgame value in a single integer (enum).
 /// The least significant 16 bits are used to store the middlegame value and the

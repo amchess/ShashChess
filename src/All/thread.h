@@ -83,7 +83,7 @@ public:
   int shashinValue=0, shashinQuiescentCapablancaMiddleHighScore, shashinQuiescentCapablancaMaxScore;
   Key shashinPosKey;
   //end from Shashin
-  bool isMCTS;
+  bool isMCTS; //from montecarlo
  };
 
 

@@ -263,6 +263,10 @@ When this option is true, the saved experience file name will be modified to som
     the network parameters must be available to load from file (see also EvalFile),
     if they are not embedded in the binary.
 
+### GoldDigger
+
+_Boolean, Default: False_ If activated, the engine favors depth over the pruning of various selectivity techniques. In this way, it can uncover normally hidden possibilities. In this mode, it solves many more hard positions, although it loses slightly in absolute game strength.
+
 ### Persisted learning
 
 Default is Off: no learning algorithm. The other values are "Standard" and "Self", this last to activate the [Q-learning](https://youtu.be/qhRNvCVVJaA?list=PLZbbT5o_s2xoWNVdDudn51XM8lOuZ_Njv), optimized for self play. Some GUIs don't write the experience file in some game's modes because the uci protocol is differently implemented
@@ -311,15 +315,19 @@ are settled, it will force the initial position/algorithm understanding
 
 Centipawns range | Shashin position’s type        |
 | ---------------| ------------------------------ |
-| < -140         | High Petrosian                 |
-| [-140, -70)    | Medium Petrosian               |
-| [-70, -35)     | Low Petrosian                  |
-| [-35, -15]     | Caos: Capablanca-Low Petrosian |
-| (-15,15)       | Capablanca                     |
-| [15, 35]       | Caos: Capablanca-Low Tal       |
-| (35,70]        | Low Tal                        |
-| (70,140]       | Middle Tal                     |
-| > 140          | High Tal                       |
+| <= -160        | High Petrosian                 |
+| [-159, -93]    | Middle-High Petrosian          |
+| [-92, -59]     | Middle Petrosian               |
+| [-58, -41]     | Middle-Low Petrosian           |
+| [-40, -20]     | Low Petrosian                  |
+| [-19, -9]      | Caos: Capablanca-Low Petrosian |
+| [-8,8]         | Capablanca                     |
+| [9, 19]        | Caos: Capablanca-Low Tal       |
+| [20,40]        | Low Tal                        |
+| [41,58]        | Low-Middle Tal                 |
+| [59,92]        | Middle Tal                     |
+| [93,159]       | Middle-High Tal                |
+| >= 160         | High Tal                       |
 
 #### Tal
 
