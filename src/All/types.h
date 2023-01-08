@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2022 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2004-2023 The Stockfish developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -329,8 +329,8 @@ enum
 };
 
 //align score begin for GD
-constexpr float CAOS_MAX_EVAL = 98.;
-constexpr float GUI_CAOS_EVAL = 32.;
+constexpr float CAOS_MAX_EVAL = 89.;
+constexpr float GUI_CAOS_EVAL = 41.;
 constexpr float WEIGHTED_EVAL=CAOS_MAX_EVAL/GUI_CAOS_EVAL;
 //align score end for GD
 
