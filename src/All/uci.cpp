@@ -22,6 +22,7 @@
 #include <sstream>
 #include <string>
 
+#include "benchmark.h"
 #include "evaluate.h"
 #include "movegen.h"
 #include "position.h"
@@ -35,8 +36,6 @@
 using namespace std;
 
 namespace Stockfish {
-
-extern vector<string> setup_bench(const Position&, istream&);
 
 namespace {
 
@@ -176,7 +175,7 @@ namespace {
     uint64_t num, nodes = 0, cnt = 1;
 
     vector<string> list = setup_bench(pos, args);
-    num = count_if(list.begin(), list.end(), [](string s) { return s.find("go ") == 0 || s.find("eval") == 0; });
+    num = count_if(list.begin(), list.end(), [](const string& s) { return s.find("go ") == 0 || s.find("eval") == 0; });
 
     TimePoint elapsed = now();
 
@@ -385,10 +384,6 @@ string UCI::value(Value v) {
 
   if (abs(v) < VALUE_MATE_IN_MAX_PLY)
   {
-	  if(Eval::goldDigger)
-      {
-      	 v = (Value)((float)(v) * (float)(WEIGHTED_EVAL));
-      }
       ss << "cp " << v * 100 / NormalizeToPawnValue;
   }
   else

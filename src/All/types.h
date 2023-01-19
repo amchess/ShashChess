@@ -328,12 +328,6 @@ enum
 
 };
 
-//align score begin for GD
-constexpr float CAOS_MAX_EVAL = 89.;
-constexpr float GUI_CAOS_EVAL = 41.;
-constexpr float WEIGHTED_EVAL=CAOS_MAX_EVAL/GUI_CAOS_EVAL;
-//align score end for GD
-
 // End Shashin section
 
 /// Score enum stores a middlegame and an endgame value in a single integer (enum).

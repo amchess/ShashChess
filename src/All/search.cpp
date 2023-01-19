@@ -56,8 +56,6 @@ namespace Stockfish {
     bool enabledLearningProbe = false;
     std::vector<PersistedLearningMove> gameLine;
     // Kelly end
-	bool goldDigger = false; //from ShashChess
-    
 namespace Search {
 
   LimitsType Limits;
@@ -322,8 +320,6 @@ void MainThread::search() {
   lowPetrosian = Options["Low Petrosian"];
   // end from Shashin
 
-  Eval::goldDigger = Options["GoldDigger"];//from ShashChess
-      
   // from handicap mode begin
   uciElo = Options["UCI_LimitStrength"] ? Options["UCI_Elo"] : Options["ELO_CB"];
   depthLimit = limitStrength && Options["Handicapped Depth"] ? getHandicapDepth(uciElo) : Limits.depth; // handicap mode
@@ -457,7 +453,7 @@ void MainThread::search() {
       plm.key = rootPos.key();
       plm.learningMove.depth = bestThread->completedDepth;
       plm.learningMove.move = bestThread->rootMoves[0].pv[0];
-      plm.learningMove.score = (!goldDigger)? (bestThread->rootMoves[0].score):((Value)((float)(bestThread->rootMoves[0].score) * WEIGHTED_EVAL));
+      plm.learningMove.score = bestThread->rootMoves[0].score;
       plm.learningMove.score = bestThread->rootMoves[0].score;
       if (LD.learning_mode() == LearningMode::Self)
       {
@@ -491,7 +487,7 @@ void MainThread::search() {
   // from Khalid begin
   // Save learning data if game is already decided
 
-  if (Utility::is_game_decided(rootPos, ((!goldDigger)? (bestThread->rootMoves[0].score):((Value)((float)(bestThread->rootMoves[0].score) * WEIGHTED_EVAL)))) 
+  if (Utility::is_game_decided(rootPos, (bestThread->rootMoves[0].score)) 
   && LD.is_enabled() && !LD.is_paused())
   {
     // Perform Q-learning if enabled
@@ -542,10 +538,6 @@ Value static_value(Position &pos, Stack *ss)
 
 inline int getShashinValue(Value score)
 {
-    if(goldDigger)
-    {
-        score = (Value)((float)(score) * WEIGHTED_EVAL);
-    }
     if ((int)score <= -SHASHIN_HIGH_TAL_THRESHOLD)
     {
         return SHASHIN_POSITION_HIGH_PETROSIAN;
@@ -603,10 +595,6 @@ inline int getShashinValue(Value score)
 
 inline int getShashinQuiescentCapablanca(Value score, int refScore)
 {
-    if(goldDigger)
-    {
-        score = (Value)((float)(score) * WEIGHTED_EVAL);
-    }
     return abs(score) > refScore ? 0 : 1;
 }
 inline void updateShashinValues(Position &pos, Value score)
@@ -1272,7 +1260,7 @@ namespace {
 	        if (learningMove->depth >= depth)
 	        {
 	            expTTMove = learningMove->move;
-	            expTTValue = (!goldDigger? (learningMove->score) : ((Value)(((float)(learningMove->score)) * WEIGHTED_EVAL)));
+	            expTTValue = learningMove->score;
 	            updatedLearning = true;
 	        }
 	
@@ -1926,7 +1914,7 @@ moves_loop: // When in check, search starts here
                   return singularBeta;
 
               // If the eval of ttMove is greater than beta, we reduce it (negative extension)
-              else if (ttValue >= beta && ((goldDigger ||(pos.this_thread()->shashinQuiescentCapablancaMaxScore))||(((ss-1)->moveCount > 1) && (!gameCycle)))) // from Crystal
+              else if (ttValue >= beta && ((pos.this_thread()->shashinQuiescentCapablancaMaxScore)||(((ss-1)->moveCount > 1) && (!gameCycle)))) // from Crystal
                   extension = std::max(-4, -(newDepth - 3)), negExt = true;            // negExtR4 negExtTw12
 
               // If the eval of ttMove is less than alpha and value, we reduce it (negative extension)
@@ -2111,6 +2099,9 @@ moves_loop: // When in check, search starts here
       // Step 18. Full depth search when LMR is skipped. If expected reduction is high, reduce its depth by 1.
       else if (!PvNode || moveCount > 1)
       {
+               // Increase reduction for cut nodes and not ttMove (~1 Elo) based on Shashin theory
+               if (!ttMove && cutNode &&(pos.this_thread()->shashinQuiescentCapablancaMaxScore))
+                         r += 2;
                value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth - (((r > 4) && newDepth > 1)&&(pos.this_thread()->shashinQuiescentCapablancaMaxScore)), !cutNode); //official by Shashin+lmrLogic
       }
 
@@ -2260,14 +2251,9 @@ moves_loop: // When in check, search starts here
     else if (   (depth >= 5 || (PvNode && pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore) || bestValue < alpha - 65 * depth)  // official with Shashin
              && !priorCapture)
     {
-        //Assign extra bonus if current node is PvNode or cutNode
-        //or fail low was really bad
-        bool extraBonus =    PvNode
-                          || cutNode;
-        bool doubleExtraBonus = extraBonus && bestValue < alpha - 88 * depth;
-
-        update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth) * (1 + ((pos.this_thread()->shashinValue == SHASHIN_POSITION_CAPABLANCA) ? extraBonus : 0) 
-                                                                                                 + ((pos.this_thread()->shashinQuiescentCapablancaMiddleHighScore)?doubleExtraBonus:0))); // official with Shashin
+        // Extra bonuses for PV/Cut nodes or bad fail lows
+        int bonus = 1 + (PvNode || cutNode) + (bestValue < alpha - 88 * depth);
+        update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth) * bonus);
     }
 
     if (PvNode)

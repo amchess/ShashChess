@@ -263,10 +263,6 @@ When this option is true, the saved experience file name will be modified to som
     the network parameters must be available to load from file (see also EvalFile),
     if they are not embedded in the binary.
 
-### GoldDigger
-
-_Boolean, Default: False_ If activated, the engine favors depth over the pruning of various selectivity techniques. In this way, it can uncover normally hidden possibilities. In this mode, it solves many more hard positions, although it loses slightly in absolute game strength.
-
 ### Persisted learning
 
 Default is Off: no learning algorithm. The other values are "Standard" and "Self", this last to activate the [Q-learning](https://youtu.be/qhRNvCVVJaA?list=PLZbbT5o_s2xoWNVdDudn51XM8lOuZ_Njv), optimized for self play. Some GUIs don't write the experience file in some game's modes because the uci protocol is differently implemented

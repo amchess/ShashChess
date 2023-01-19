@@ -35,7 +35,7 @@ namespace Stockfish {
 	constexpr Reward REWARD_MATE = 1.0;
 
 	enum EdgeStatistic { STAT_UCB, STAT_VISITS, STAT_MEAN, STAT_PRIOR };
-
+    int intRand(const int& min, const int& max);
 	///////////////////////////////////////////////////////////////////////////////////////
 	/// Edge struct stores the statistics of one edge between nodes in the Monte-Carlo tree
 	///////////////////////////////////////////////////////////////////////////////////////
@@ -138,7 +138,8 @@ namespace Stockfish {
 		std::atomic<bool>        AB = false;
 		EdgeArray   children;
 	};
-
+	mctsNodeInfo* create_node(Key key1, Key key2);
+	mctsNodeInfo* get_node(const Position& pos);
 	///////////////////////////////////////////////////////////////////////////////////////
 	// The Monte-Carlo tree is stored implicitly in one big hash table
 	///////////////////////////////////////////////////////////////////////////////////////

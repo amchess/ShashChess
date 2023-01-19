@@ -40,29 +40,29 @@ UCI::OptionsMap Options; // Global object
 namespace UCI {
 
 /// 'On change' actions, triggered by an option's value change
-void on_clear_hash(const Option&) { Search::clear(); }
-void on_hash_size(const Option& o) { TT.resize(size_t(o)); }
-void on_logger(const Option& o) { start_logger(o); }
-void on_threads(const Option& o) { Threads.set(size_t(o)); }
-void on_full_threads(const Option& o) { Threads.setFull(o); } //full threads patch
-void on_persisted_learning(const Option& o) { if (!(o == "Off")){ LD.set_learning_mode(o);}}//Kelly learning
-void on_readonly_learning(const Option& o) { if (!(o == "Off")) { LD.set_readonly(o); } }
-void on_tb_path(const Option& o) { Tablebases::init(o); }
-void on_use_NNUE(const Option& ) { Eval::NNUE::init(); }
-void on_eval_file(const Option& ) { Eval::NNUE::init(); }
-void on_UCI_LimitStrength(const Option& ) { Eval::NNUE::init(); }
-void on_LimitStrength_CB(const Option& ) { Eval::NNUE::init(); }
+static void on_clear_hash(const Option&) { Search::clear(); }
+static void on_hash_size(const Option& o) { TT.resize(size_t(o)); }
+static void on_logger(const Option& o) { start_logger(o); }
+static void on_threads(const Option& o) { Threads.set(size_t(o)); }
+static void on_full_threads(const Option& o) { Threads.setFull(o); } //full threads patch
+static void on_persisted_learning(const Option& o) { if (!(o == "Off")){ LD.set_learning_mode(o);}}//Kelly learning
+static void on_readonly_learning(const Option& o) { if (!(o == "Off")) { LD.set_readonly(o); } }
+static void on_tb_path(const Option& o) { Tablebases::init(o); }
+static void on_use_NNUE(const Option&) { Eval::NNUE::init(); }
+static void on_eval_file(const Option&) { Eval::NNUE::init(); }
+static void on_UCI_LimitStrength(const Option& ) { Eval::NNUE::init(); }
+static void on_LimitStrength_CB(const Option& ) { Eval::NNUE::init(); }
 //livebook begin
 #ifdef USE_LIVEBOOK
-void on_livebook_url(const Option& o) { Search::setLiveBookURL(o); }
-void on_livebook_timeout(const Option& o) { Search::setLiveBookTimeout(o); }
-void on_live_book_retry(const Option& o) { Search::set_livebook_retry(o); }
-void on_livebook_depth(const Option& o) { Search::set_livebook_depth(o); }
+static void on_livebook_url(const Option& o) { Search::setLiveBookURL(o); }
+static void on_livebook_timeout(const Option& o) { Search::setLiveBookTimeout(o); }
+static void on_live_book_retry(const Option& o) { Search::set_livebook_retry(o); }
+static void on_livebook_depth(const Option& o) { Search::set_livebook_depth(o); }
 #endif
 //livebook end
 //cerebellum+book begin
-void on_book1_file(const Option& o) { polybook[0].init(o); }
-void on_book2_file(const Option& o) { polybook[1].init(o); }
+static void on_book1_file(const Option& o) { polybook[0].init(o); }
+static void on_book2_file(const Option& o) { polybook[1].init(o); }
 //cerebellum+book end
 
 /// Our case insensitive less() function as required by UCI protocol
@@ -133,7 +133,6 @@ void init(OptionsMap& o) {
   o["Multi Strategy"]        << Option(20, 0, 100);
   o["Multi MinVisits"]       << Option(5, 0, 1000);
   o["Concurrent Experience"] << Option (false); 
-  o["GoldDigger"]            << Option(false); 
   o["High Tal"]              << Option(false);
   o["Middle Tal"]            << Option(false);
   o["Low Tal"]               << Option(false);
