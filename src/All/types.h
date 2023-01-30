@@ -292,11 +292,16 @@ struct DirtyPiece {
 };
 
 // Shashin section
+//align score begin for GD
+constexpr float CAOS_MAX_EVAL = 71.;
+constexpr float GUI_CAOS_EVAL = 19.;
+constexpr float WEIGHTED_EVAL=CAOS_MAX_EVAL/GUI_CAOS_EVAL;
+//align score end for GD
 //to eliminate in the future begin
 enum
 {
-SHASHIN_QUIESCENT_MAX_SCORE = 289,
-SHASHIN_QUIESCENT_MIDDLE_HIGH_SCORE = 143
+SHASHIN_QUIESCENT_MAX_SCORE = (int)((float)289 * WEIGHTED_EVAL),
+SHASHIN_QUIESCENT_MIDDLE_HIGH_SCORE = (int)((float)143 * WEIGHTED_EVAL)
 };
 //to eliminate in the future end
 // Positions-algorithms types
@@ -319,12 +324,12 @@ enum
 };
 enum
 {
-  SHASHIN_CAPABLANCA_THRESHOLD = 31,
-  SHASHIN_LOW_TAL_THRESHOLD = 73,
-  SHASHIN_MIDDLE_LOW_TAL_THRESHOLD = 148,
-  SHASHIN_MIDDLE_TAL_THRESHOLD = 212,
-  SHASHIN_MIDDLE_HIGH_TAL_THRESHOLD = 335,
-  SHASHIN_HIGH_TAL_THRESHOLD = 577
+  SHASHIN_CAPABLANCA_THRESHOLD = (int)((float)31 * WEIGHTED_EVAL),
+  SHASHIN_LOW_TAL_THRESHOLD = (int)((float)73 * WEIGHTED_EVAL),
+  SHASHIN_MIDDLE_LOW_TAL_THRESHOLD = (int)((float)148 * WEIGHTED_EVAL),
+  SHASHIN_MIDDLE_TAL_THRESHOLD = (int)((float)212 * WEIGHTED_EVAL),
+  SHASHIN_MIDDLE_HIGH_TAL_THRESHOLD = (int)((float)335 * WEIGHTED_EVAL),
+  SHASHIN_HIGH_TAL_THRESHOLD = (int)((float)577 * WEIGHTED_EVAL)
 
 };
 

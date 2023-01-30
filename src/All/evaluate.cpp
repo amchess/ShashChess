@@ -391,10 +391,10 @@ namespace {
   template<Tracing T> template<Color Us, PieceType Pt>
   Score Evaluation<T>::pieces() {
 
-    constexpr Color     Them = ~Us;
-    constexpr Direction Down = -pawn_push(Us);
-    constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
-                                                   : Rank5BB | Rank4BB | Rank3BB);
+    constexpr Color Them = ~Us;
+    [[maybe_unused]] constexpr Direction Down = -pawn_push(Us);
+    [[maybe_unused]] constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
+                                                                    : Rank5BB | Rank4BB | Rank3BB);
     Bitboard b1 = pos.pieces(Us, Pt);
     Bitboard b, bb;
     Score score = SCORE_ZERO;
@@ -433,7 +433,7 @@ namespace {
         int mob = popcount(b & mobilityArea[Us]);
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 
-        if (Pt == BISHOP || Pt == KNIGHT)
+        if constexpr (Pt == BISHOP || Pt == KNIGHT)
         {
             // Bonus if the piece is on an outpost square or can reach one
             // Bonus for knights (UncontestedOutpost) if few relevant targets
@@ -1130,6 +1130,7 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
   // When not using NNUE, return classical complexity to caller
   if (complexity && useClassical)
       *complexity = abs(v - psq);
+
   return v;
 }
 

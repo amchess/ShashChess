@@ -64,7 +64,7 @@ public:
   RunningAverage complexityAverage;
   RunningAverage lmrAverage;//lmr_average2
   std::atomic<uint64_t> nodes, tbHits, bestMoveChanges, bestMoveMc;//bmMovecountR7
-  int selDepth, nmpMinPly;
+  int selDepth, nmpMinPly, failedHighCnt;//fhcRnNegExt
   Color nmpColor;
   Value bestValue, optimism[COLOR_NB];
   
@@ -72,7 +72,7 @@ public:
   Position rootPos;
   StateInfo rootState;
   Search::RootMoves rootMoves;
-  Depth rootDepth, completedDepth, previousDepth;
+  Depth rootDepth, completedDepth;
   Value rootDelta;
   CounterMoveHistory counterMoves;
   ButterflyHistory mainHistory;
