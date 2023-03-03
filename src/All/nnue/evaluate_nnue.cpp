@@ -136,6 +136,11 @@ namespace Stockfish::Eval::NNUE {
     return (bool)stream;
   }
 
+  void hint_common_parent_position(const Position& pos) {
+    if (Eval::useNNUE)
+        featureTransformer->hint_common_access(pos);
+  }
+
   // Evaluation function. Perform differential calculation.
   Value evaluate(const Position& pos, bool adjusted, int* complexity) {
 
@@ -220,7 +225,7 @@ namespace Stockfish::Eval::NNUE {
 
     buffer[0] = (v < 0 ? '-' : v > 0 ? '+' : ' ');
 
-    int cp = std::abs(100 * v / NormalizeToPawnValue);
+    int cp = std::abs(100 * v / UCI::NormalizeToPawnValue);
     if (cp >= 10000)
     {
         buffer[1] = '0' + cp / 10000; cp %= 10000;
@@ -247,7 +252,7 @@ namespace Stockfish::Eval::NNUE {
 
   // format_cp_aligned_dot() converts a Value into (centi)pawns, always keeping two decimals.
   static void format_cp_aligned_dot(Value v, std::stringstream &stream) {
-    const double cp = 1.0 * std::abs(int(v)) / NormalizeToPawnValue;
+    const double cp = 1.0 * std::abs(int(v)) / UCI::NormalizeToPawnValue;
 
     stream << (v < 0 ? '-' : v > 0 ? '+' : ' ')
            << std::setiosflags(std::ios::fixed)

@@ -234,11 +234,11 @@ namespace {
      // The coefficients of a third-order polynomial fit is based on the fishtest data
      // for two parameters that need to transform eval to the argument of a logistic
      // function.
-     constexpr double as[] = {  -0.58270499,    2.68512549,   15.24638015,  344.49745382};
-     constexpr double bs[] = {  -2.65734562,   15.96509799,  -20.69040836,   73.61029937 };
+     constexpr double as[] = {   0.33677609,   -4.30175627,   33.08810557,  365.60223431};
+     constexpr double bs[] = {  -2.50471102,   14.23235405,  -14.33066859,   71.42705250 };
 
      // Enforce that NormalizeToPawnValue corresponds to a 50% win rate at ply 64
-     static_assert(NormalizeToPawnValue == int(as[0] + as[1] + as[2] + as[3]));
+     static_assert(UCI::NormalizeToPawnValue == int(as[0] + as[1] + as[2] + as[3]));
 
      double a = (((as[0] * m + as[1]) * m + as[2]) * m) + as[3];
      double b = (((bs[0] * m + bs[1]) * m + bs[2]) * m) + bs[3];
@@ -394,8 +394,14 @@ string UCI::value(Value v) {
 
   return ss.str();
 }
-
-
+//for Shashin theory begin
+int UCI::getWinProbability(Value v, int ply) {
+  double winrateToMove=double(0.5 + 1000 / (1 + std::exp((((((0.3367760 * (std::min(240, ply) / 64.0) + -4.30175627) * (std::min(240, ply) / 64.0) + 33.08810557) * (std::min(240, ply) / 64.0)) + 365.60223431) - (std::clamp(double(v), -4000.0, 4000.0))) / ((((-2.50471102 * (std::min(240, ply) / 64.0) + 15.96509799) * (std::min(240, ply) / 64.0) + -14.33066859) * (std::min(240, ply) / 64.0)) + 71.42705250))));
+  double winrateOpponent=double(0.5 + 1000 / (1 + std::exp((((((0.3367760 * (std::min(240, ply) / 64.0) + -4.30175627) * (std::min(240, ply) / 64.0) + 33.08810557) * (std::min(240, ply) / 64.0)) + 365.60223431) - (std::clamp(double(-v), -4000.0, 4000.0))) / ((((-2.50471102 * (std::min(240, ply) / 64.0) + 15.96509799) * (std::min(240, ply) / 64.0) + -14.33066859) * (std::min(240, ply) / 64.0)) + 71.42705250))));
+  double winrateDraw=1000-winrateToMove-winrateOpponent;
+  return round((winrateToMove + winrateDraw/2.0)/10.0);
+}    
+//for Shashin theory end
 /// UCI::wdl() reports the win-draw-loss (WDL) statistics given an evaluation
 /// and a game ply based on the data gathered for fishtest LTC games.
 

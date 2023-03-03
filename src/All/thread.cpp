@@ -211,8 +211,9 @@ void ThreadPool::start_thinking(Position& pos, StateListPtr& states,
   // since they are read-only.
   for (Thread* th : threads)
   {
-      th->nodes = th->tbHits = th->nmpMinPly = th->bestMoveChanges = 0;
+      th->nodes = (th->tbHits = (th->nmpGuardV = (th->nmpGuard = (th->nmpMinPly = th->bestMoveChanges = 0))));//from crystal
       th->rootDepth = th->completedDepth = 0;
+      th->nmpSide = 0;//from crystal
       th->rootMoves = rootMoves;
       th->rootPos.set(pos.fen(), pos.is_chess960(), &th->rootState, th);
       th->rootState = setupStates->back();

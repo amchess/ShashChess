@@ -20,6 +20,7 @@
 
 #include "movegen.h"
 #include "position.h"
+#include "thread.h"
 
 namespace Stockfish {
 
@@ -169,9 +170,16 @@ namespace {
         // To check, you either move freely a blocker or make a direct check.
         if (Checks && (Pt == QUEEN || !(pos.blockers_for_king(~Us) & from)))
             b &= pos.check_squares(Pt);
+        //from crystal begin by shashin
+        Square ksq = pos.square<KING>(Us); 
 
         while (b)
-            *moveList++ = make_move(from, pop_lsb(b));
+        {
+            Square to = pop_lsb(b); //from crystal
+            if (!(pos.blockers_for_king(Us) & from) || aligned(from, to, ksq) || pos.this_thread()->shashinQuiescentCapablancaMaxScore )            
+                *moveList++ = make_move(from, to);
+        }
+        //from crystal end by shashin
     }
 
     return moveList;
@@ -207,10 +215,14 @@ namespace {
         Bitboard b = attacks_bb<KING>(ksq) & (Type == EVASIONS ? ~pos.pieces(Us) : target);
         if (Checks)
             b &= ~attacks_bb<QUEEN>(pos.square<KING>(~Us));
-
+        //from crystal begin by shashin
         while (b)
-            *moveList++ = make_move(ksq, pop_lsb(b));
-
+        {
+            Square to = pop_lsb(b); //from crystal
+            if(((pos.attackers_to(to) & pos.pieces(~Us)) == 0)|| (pos.this_thread()->shashinQuiescentCapablancaMaxScore))
+                *moveList++ = make_move(ksq, to);
+        }
+        //from crystal end by shashin
         if ((Type == QUIETS || Type == NON_EVASIONS) && pos.can_castle(Us & ANY_CASTLING))
             for (CastlingRights cr : { Us & KING_SIDE, Us & QUEEN_SIDE } )
                 if (!pos.castling_impeded(cr) && pos.can_castle(cr))
@@ -264,7 +276,7 @@ ExtMove* generate<LEGAL>(const Position& pos, ExtMove* moveList) {
   moveList = pos.checkers() ? generate<EVASIONS    >(pos, moveList)
                             : generate<NON_EVASIONS>(pos, moveList);
   while (cur != moveList)
-      if (  ((pinned && pinned & from_sq(*cur)) || from_sq(*cur) == ksq || type_of(*cur) == EN_PASSANT)
+      if (  ((pinned & from_sq(*cur)) || from_sq(*cur) == ksq || type_of(*cur) == EN_PASSANT)
           && !pos.legal(*cur))
           *cur = (--moveList)->move;
       else

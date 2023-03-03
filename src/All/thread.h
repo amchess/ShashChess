@@ -64,11 +64,11 @@ public:
   RunningAverage complexityAverage;
   RunningAverage lmrAverage;//lmr_average2
   std::atomic<uint64_t> nodes, tbHits, bestMoveChanges, bestMoveMc;//bmMovecountR7
-  int selDepth, nmpMinPly, failedHighCnt;//fhcRnNegExt
+  int selDepth, nmpMinPly, failedHighCnt,nmpSide;//fhcRnNegExt+s11fhrn3+crystal
   Color nmpColor;
   Value bestValue, optimism[COLOR_NB];
   
-  bool nmpGuard; //from Crystal
+  bool nmpGuard,nmpGuardV; //from Crystal
   Position rootPos;
   StateInfo rootState;
   Search::RootMoves rootMoves;
@@ -80,8 +80,9 @@ public:
   ContinuationHistory continuationHistory[2][2];
   bool fullSearch;//full threads patch
   //begin from Shashin
-  int shashinValue=0, shashinQuiescentCapablancaMiddleHighScore, shashinQuiescentCapablancaMaxScore;
+  int shashinWinProbabilityRange=0, shashinQuiescentCapablancaMiddleHighScore, shashinQuiescentCapablancaMaxScore;
   Key shashinPosKey;
+  Depth shashinDepth=0;
   //end from Shashin
   bool isMCTS; //from montecarlo
  };

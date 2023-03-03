@@ -135,12 +135,12 @@ window.
 #### Handicapped Depth
 The engine stop calculating when it joins the handicapped depth, based on the following table:
 
-Elo range | Handicapped Depth |
-| ------ | ------ |
-| [0,1999] | [1,6] |
-| [2000,2199] | [7,9] |
-| [2200,2399] | [10,12] |
-| [2400,2850] | [13,20] |
+Elo range     | Handicapped Depth |
+| ----------- | ----------------- |
+| [0,1999]    | [1,6]             |
+| [2000,2199] | [7,9]             |
+| [2200,2399] | [10,12]           |
+| [2400,3190] | [13,20]           |
 
 
 ### Sygyzy End Game table bases
@@ -308,22 +308,28 @@ The engine will determine dynamically the position's type starting from a "Capab
 positions".
 If one or more (mixed algorithms/positions types at the boundaries) of the seven following options
 are settled, it will force the initial position/algorithm understanding
+If, in the wdl model, we define wdl_w=Win percentage, wdl_d=Drawn percentage and Win probability=(2*wdl_w+wdl_d)/10, 
+we have the following mapping:
 
-Centipawns range | Shashin position’s type        |
-| ---------------| ------------------------------ |
-| <= -160        | High Petrosian                 |
-| [-159, -93]    | Middle-High Petrosian          |
-| [-92, -59]     | Middle Petrosian               |
-| [-58, -41]     | Middle-Low Petrosian           |
-| [-40, -20]     | Low Petrosian                  |
-| [-19, -9]      | Caos: Capablanca-Low Petrosian |
-| [-8,8]         | Capablanca                     |
-| [9, 19]        | Caos: Capablanca-Low Tal       |
-| [20,40]        | Low Tal                        |
-| [41,58]        | Low-Middle Tal                 |
-| [59,92]        | Middle Tal                     |
-| [93,159]       | Middle-High Tal                |
-| >= 160         | High Tal                       |
+Win probability range | Shashin position’s type        | Informator symbols    | 
+| --------------------| ------------------------------ | ----------------------|
+| [0, 4]              | High Petrosian                 | -+                    | 
+| [5, 9]              | Middle-High Petrosian          | -+ \ -/+              |
+| [10,12]             | Middle Petrosian               | -/+                   |  
+| [13,19]             | Middle-Low Petrosian           | -/+ \ =/+             |
+| [20,24]             | Low Petrosian                  | =/+                   |
+| [25,49]             | Caos: Capablanca-Low Petrosian | =/+ \ =               |
+| [50]                | Capablanca                     | =                     |
+| [51,75]             | Caos: Capablanca-Low Tal       | = \ +/=               | 
+| [76,80]             | Low Tal                        | +/=                   |
+| [81,87]             | Low-Middle Tal                 | +/= | +/-             |
+| [88,90]             | Middle Tal                     | +/-                   |
+| [91,95]             | Middle-High Tal                | +/- \ +-              |
+| [96,100]            | High Tal                       | +-                    | 
+
+N.B.
+The winProbability also take into account the depth at which a move has been calculated.
+So, it's more effective than the cp. 
 
 #### Tal
 

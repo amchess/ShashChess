@@ -162,7 +162,7 @@ namespace Trace {
 
   Score scores[TERM_NB][COLOR_NB];
 
-  static double to_cp(Value v) { return double(v) / NormalizeToPawnValue; }
+  static double to_cp(Value v) { return double(v) / UCI::NormalizeToPawnValue; }
 
   static void add(int idx, Color c, Score s) {
     scores[idx][c] = s;
@@ -196,8 +196,8 @@ using namespace Trace;
 namespace {
 
   // Threshold for lazy and space evaluation
-  constexpr Value LazyThreshold1    =  Value(3631);
-  constexpr Value LazyThreshold2    =  Value(2084);
+  constexpr Value LazyThreshold1    =  Value(3622);
+  constexpr Value LazyThreshold2    =  Value(1962);
   constexpr Value SpaceThreshold    =  Value(11551);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
@@ -427,7 +427,7 @@ namespace {
         else if (Pt == ROOK && (file_bb(s) & kingRing[Them]))
             score += RookOnKingRing;
 
-        else if (((Pt == BISHOP) && (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & kingRing[Them])&& (pos.this_thread()->shashinValue != SHASHIN_POSITION_CAPABLANCA))) //from Official integrated with Shashin
+        else if (((Pt == BISHOP) && (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & kingRing[Them])&& (pos.this_thread()->shashinWinProbabilityRange != SHASHIN_POSITION_CAPABLANCA))) //from Official integrated with Shashin
             score += BishopOnKingRing;
 
         int mob = popcount(b & mobilityArea[Us]);
@@ -1005,7 +1005,7 @@ namespace {
                                                         + pos.non_pawn_material() / 32;
     };
     //LeafDepth7 begin
-    if(pos.this_thread()->shashinValue==SHASHIN_POSITION_CAPABLANCA)
+    if(pos.this_thread()->shashinWinProbabilityRange==SHASHIN_POSITION_CAPABLANCA)
     {
 	    if (lazy_skip(LazyThreshold1))
 	        goto make_v;
@@ -1098,7 +1098,7 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
   else
   {
       int nnueComplexity;
-      int scale = 1076 + 96 * pos.non_pawn_material() / 5120;
+      int scale = 1001 + 5 * pos.count<PAWN>() + 61 * pos.non_pawn_material() / 4096;
 
       Color stm = pos.side_to_move();
       Value optimism = pos.this_thread()->optimism[stm];
@@ -1107,15 +1107,14 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
 
       // Blend nnue complexity with (semi)classical complexity
       nnueComplexity = (  406 * nnueComplexity
-                        + 424 * abs(psq - nnue)
-                        + (optimism  > 0 ? int(optimism) * int(psq - nnue) : 0)
+                        + (424 + optimism) * abs(psq - nnue)
                         ) / 1024;
 
       // Return hybrid NNUE complexity to caller
       if (complexity)
           *complexity = nnueComplexity;
 
-      optimism = (pos.this_thread()->shashinValue==SHASHIN_POSITION_CAPABLANCA)? 
+      optimism = (pos.this_thread()->shashinWinProbabilityRange==SHASHIN_POSITION_CAPABLANCA)? 
                     (Value)0: (optimism * (272 + nnueComplexity) / 256); //optimism by Shashin
       v = (nnue * scale + optimism * (scale - 748)) / 1024;
   }
