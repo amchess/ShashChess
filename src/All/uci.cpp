@@ -395,12 +395,42 @@ string UCI::value(Value v) {
   return ss.str();
 }
 //for Shashin theory begin
-int UCI::getWinProbability(Value v, int ply) {
-  double winrateToMove=double(0.5 + 1000 / (1 + std::exp((((((0.3367760 * (std::min(240, ply) / 64.0) + -4.30175627) * (std::min(240, ply) / 64.0) + 33.08810557) * (std::min(240, ply) / 64.0)) + 365.60223431) - (std::clamp(double(v), -4000.0, 4000.0))) / ((((-2.50471102 * (std::min(240, ply) / 64.0) + 15.96509799) * (std::min(240, ply) / 64.0) + -14.33066859) * (std::min(240, ply) / 64.0)) + 71.42705250))));
-  double winrateOpponent=double(0.5 + 1000 / (1 + std::exp((((((0.3367760 * (std::min(240, ply) / 64.0) + -4.30175627) * (std::min(240, ply) / 64.0) + 33.08810557) * (std::min(240, ply) / 64.0)) + 365.60223431) - (std::clamp(double(-v), -4000.0, 4000.0))) / ((((-2.50471102 * (std::min(240, ply) / 64.0) + 15.96509799) * (std::min(240, ply) / 64.0) + -14.33066859) * (std::min(240, ply) / 64.0)) + 71.42705250))));
-  double winrateDraw=1000-winrateToMove-winrateOpponent;
-  return round((winrateToMove + winrateDraw/2.0)/10.0);
-}    
+int UCI::getWinProbability(Value v, int ply)
+{
+  double correctionFactor = (std::min(240, ply) / 64.0);
+  double forExp1 =
+      ((((0.3367760 * correctionFactor +
+          -4.30175627) *
+             correctionFactor +
+         33.08810557) *
+        correctionFactor) +
+       365.60223431);
+  double forExp2 =
+      (((-2.50471102 * correctionFactor +
+         15.96509799) *
+            correctionFactor +
+        -14.33066859) *
+       correctionFactor);
+  double forExp3 = forExp2 + 71.42705250;
+  double winrateToMove =
+      double(0.5 +
+             1000 / (1 +
+                     std::
+                         exp((forExp1 -
+                              (std::clamp(double(v), -4000.0,
+                                          4000.0))) /
+                             forExp3)));
+  double winrateOpponent =
+      double(0.5 +
+             1000 / (1 +
+                     std::
+                         exp((forExp1 -
+                              (std::clamp(double(-v), -4000.0,
+                                          4000.0))) /
+                             forExp3)));
+  double winrateDraw = 1000 - winrateToMove - winrateOpponent;
+  return round((winrateToMove + winrateDraw / 2.0) / 10.0);
+}
 //for Shashin theory end
 /// UCI::wdl() reports the win-draw-loss (WDL) statistics given an evaluation
 /// and a game ply based on the data gathered for fishtest LTC games.

@@ -131,7 +131,7 @@ public:
   // Properties of moves
   bool legal(Move m) const;
   bool pseudo_legal(const Move m) const;
-  bool capture(Move m) const;
+  bool capture_stage(Move m) const;
   bool capture_or_promotion(Move m) const;//for Shashchess captureOrPromotion and deeperPvS12 
   bool gives_check(Move m) const;
   Piece moved_piece(Move m) const;
@@ -413,10 +413,14 @@ inline bool Position::capture_or_promotion(Move m) const {
   return type_of(m) != NORMAL ? type_of(m) != CASTLING : !empty(to_sq(m));
 }
 
-inline bool Position::capture(Move m) const {
+// returns true if a move is generated from the capture stage
+// having also queen promotions covered, i.e. consistency with the capture stage move generation
+// is needed to avoid the generation of duplicate moves.
+inline bool Position::capture_stage(Move m) const {
   assert(is_ok(m));
-  // Castling is encoded as "king captures rook"
-  return ((!empty(to_sq(m)) || (type_of(m) == PROMOTION && promotion_type(m) == QUEEN)) && type_of(m) != CASTLING) || type_of(m) == EN_PASSANT; //	buckFix1
+  return     (!empty(to_sq(m)) && type_of(m) != CASTLING)
+          || (type_of(m) == PROMOTION && promotion_type(m) == QUEEN)
+          ||  type_of(m) == EN_PASSANT;
 }
 
 inline Piece Position::captured_piece() const {

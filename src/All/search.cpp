@@ -37,6 +37,7 @@
 #include "learn.h"
 #include "uci.h"
 #include "syzygy/tbprobe.h"
+#include <unordered_map>
 
 namespace Stockfish {
 // livebook begin
@@ -91,6 +92,8 @@ namespace {
 
   // Reductions lookup table, initialized at startup
   int Reductions[MAX_MOVES]; // [depth or moveNumber]
+
+  std::unordered_map<std::string,int> winProbabilityMap; //from ShashChess
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
@@ -231,6 +234,7 @@ namespace {
 // livebook end
 void Search::init() {
 
+  //from ShashChess end
   for (int i = 1; i < MAX_MOVES; ++i)
       Reductions[i] = int((19.47 + std::log(Threads.size()) / 2) * std::log(i));
 
@@ -247,6 +251,16 @@ void Search::init() {
 // livebook end
 }
 
+//from ShashChess begin
+inline void initWinProbabilityMap() {
+  for (int value = -4000; value <= 4000; value++) { 
+    for (int depth = 0; depth <= 240; depth++) {
+        string key = std::to_string(value) + "_" + std::to_string(depth); 
+        winProbabilityMap[key] = UCI::getWinProbability((Value)value, depth); 
+    }
+  }
+}
+//from ShashChess end
 
 /// Search::clear() resets search state to its initial value
 
@@ -264,7 +278,10 @@ void Search::clear() {
   MCTS.clear(); // mcts
   Threads.clear();
   Tablebases::init(Options["SyzygyPath"]); // Free mapped files
+  initWinProbabilityMap();
 }
+
+
 
 // handicapMode begin
 inline int getHandicapDepth(int elo) {
@@ -309,7 +326,15 @@ Value static_value(Position &pos, Stack *ss)
 
 inline int getShashinRange(Value value, Depth depth)
 {
-    int winProbability=UCI::getWinProbability(value,depth);
+    if(value<-4000){
+        return SHASHIN_POSITION_HIGH_PETROSIAN;
+    }
+    if(value>4000){
+        return SHASHIN_POSITION_HIGH_TAL;
+    }
+    string key = std::to_string(value) + "_" + std::to_string(depth);
+    int winProbability= winProbabilityMap[key];
+
     if (winProbability <= SHASHIN_HIGH_PETROSIAN_THRESHOLD)
     {
         return SHASHIN_POSITION_HIGH_PETROSIAN;
@@ -1223,7 +1248,7 @@ namespace {
     ttValue = ss->ttHit ? value_from_tt(tte->value(), ss->ply, pos.rule50_count()) : VALUE_NONE;
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
             : ss->ttHit    ? tte->move() : MOVE_NONE;
-    ttCapture = ttMove && pos.capture(ttMove);
+    ttCapture = ttMove && pos.capture_stage(ttMove);
 
     // At this point, if excluded, skip straight to step 6, static eval. However,
     // to save indentation, we list the condition in all code between here and there.
@@ -1322,7 +1347,7 @@ namespace {
 	        {
 	            if (expTTValue >= beta)
 	            {
-	                if (!pos.capture(learningMove->move))
+	                if (!pos.capture_stage(learningMove->move))
 	                    update_quiet_stats(pos, ss, learningMove->move, stat_bonus(depth));
 	
 	                // Extra penalty for early quiet moves of the previous ply
@@ -1332,7 +1357,7 @@ namespace {
 	            // Penalty for a quiet ttMove that fails low
 	            else
 	            {
-	                if (!pos.capture(expTTMove))
+	                if (!pos.capture_stage(expTTMove))
 	                {
 	                    int penalty = -stat_bonus(depth);
 	                    thisThread->mainHistory[us][from_to(expTTMove)] << penalty;
@@ -1554,7 +1579,7 @@ namespace {
 	        tte = TT.probe(posKey, ss->ttHit);
 	        ttValue = ss->ttHit ? value_from_tt(tte->value(), ss->ply, pos.rule50_count()) : VALUE_NONE;
 	        ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0] : ss->ttHit    ? tte->move() : MOVE_NONE;
-	        ttCapture = ttMove && pos.capture(ttMove);
+	        ttCapture = ttMove && pos.capture_stage(ttMove);
 	        if (!excludedMove)
 	            ss->ttPv = PvNode || (ss->ttHit && tte->is_pv());
 	    }
@@ -1670,7 +1695,7 @@ namespace {
     probCutBeta = beta + 186 - 54 * improving;
 
     // Step 10. ProbCut (~10 Elo)
-    // If we have a good enough capture and a reduced search returns a value
+    // If we have a good enough capture (or queen promotion) and a reduced search returns a value
     // much above beta, we can (almost) safely prune the previous move.
     if (   (!PvNode || (!pos.this_thread()->shashinQuiescentCapablancaMaxScore)) 
         && !disableNMAndPC // Kelly
@@ -1692,7 +1717,7 @@ namespace {
         while ((move = mp.next_move()) != MOVE_NONE)
             if (move != excludedMove && pos.legal(move))
             {
-                assert(pos.capture(move) || promotion_type(move) == QUEEN);
+                assert(pos.capture_stage(move));
 
                 captureOrPromotion = true; //capture or promotion
                 ss->currentMove = move;
@@ -1878,7 +1903,7 @@ moves_loop: // When in check, search starts here
 
       extension = 0;
       captureOrPromotion = pos.capture_or_promotion(move);
-      capture = pos.capture(move);
+      capture = pos.capture_stage(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
       // from Crystal begin
@@ -2654,7 +2679,7 @@ moves_loop: // When in check, search starts here
           continue;
 
       givesCheck = pos.gives_check(move);
-      capture = pos.capture(move);
+      capture = pos.capture_stage(move);
 
       moveCount++;
 
@@ -2849,7 +2874,7 @@ moves_loop: // When in check, search starts here
     PieceType captured = type_of(pos.piece_on(to_sq(bestMove)));
     int bonus1 = stat_bonus(depth + 1);
 
-    if (!pos.capture(bestMove))
+    if (!pos.capture_stage(bestMove))
     {
         int bonus2 = bestValue > beta + 153 ? bonus1               // larger bonus
                                             : stat_bonus(depth);   // smaller bonus
