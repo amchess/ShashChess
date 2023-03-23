@@ -131,6 +131,7 @@ public:
   // Properties of moves
   bool legal(Move m) const;
   bool pseudo_legal(const Move m) const;
+  bool capture(Move m) const;
   bool capture_stage(Move m) const;
   bool capture_or_promotion(Move m) const;//for Shashchess captureOrPromotion and deeperPvS12 
   bool gives_check(Move m) const;
@@ -194,8 +195,8 @@ public:
 private:
   // Initialization helpers (used while setting up a position)
   void set_castling_right(Color c, Square rfrom);
-  void set_state(StateInfo* si) const;
-  void set_check_info(StateInfo* si) const;
+  void set_state() const;
+  void set_check_info() const;
 
   // Other helpers
   void move_piece(Square from, Square to);
@@ -408,6 +409,12 @@ inline bool Position::is_chess960() const {
   return chess960;
 }
 
+inline bool Position::capture(Move m) const {
+  assert(is_ok(m));
+  return     (!empty(to_sq(m)) && type_of(m) != CASTLING)
+          ||  type_of(m) == EN_PASSANT;
+}
+
 inline bool Position::capture_or_promotion(Move m) const {
   assert(is_ok(m));
   return type_of(m) != NORMAL ? type_of(m) != CASTLING : !empty(to_sq(m));
@@ -418,9 +425,7 @@ inline bool Position::capture_or_promotion(Move m) const {
 // is needed to avoid the generation of duplicate moves.
 inline bool Position::capture_stage(Move m) const {
   assert(is_ok(m));
-  return     (!empty(to_sq(m)) && type_of(m) != CASTLING)
-          || (type_of(m) == PROMOTION && promotion_type(m) == QUEEN)
-          ||  type_of(m) == EN_PASSANT;
+  return  capture(m) || promotion_type(m) == QUEEN;
 }
 
 inline Piece Position::captured_piece() const {

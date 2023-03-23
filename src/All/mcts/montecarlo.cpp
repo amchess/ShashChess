@@ -623,7 +623,7 @@ namespace Stockfish {
 		stack[ply].ply = ply;
 		stack[ply].currentMove = m;
 		stack[ply].inCheck = pos.checkers();
-		const bool capture = pos.capture_stage(m);
+		const bool capture = pos.capture(m);
 
 		stack[ply].continuationHistory = &pos.this_thread()->continuationHistory[stack[ply].inCheck]
 		                                                                        [capture]
@@ -813,7 +813,7 @@ namespace Stockfish {
 
 		priorCnt++;
 
-		const Depth depth = ply <= 2 || pos.capture_stage(m) || pos.gives_check(m) ? PRIOR_SLOW_EVAL_DEPTH : PRIOR_FAST_EVAL_DEPTH;
+		const Depth depth = ply <= 2 || pos.capture(m) || pos.gives_check(m) ? PRIOR_SLOW_EVAL_DEPTH : PRIOR_FAST_EVAL_DEPTH;
 
 		do_move(m);
 		const Reward prior = value_to_reward(-evaluate_with_minimax(depth));

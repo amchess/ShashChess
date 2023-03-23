@@ -32,6 +32,7 @@
 #include "learn.h"
 #include "uci.h"
 #include "syzygy/tbprobe.h"
+#include "nnue/evaluate_nnue.h"
 
 using namespace std;
 
@@ -395,7 +396,7 @@ string UCI::value(Value v) {
   return ss.str();
 }
 //for Shashin theory begin
-int UCI::getWinProbability(Value v, int ply)
+uint8_t UCI::getWinProbability(Value v, int ply)
 {
   double correctionFactor = (std::min(240, ply) / 64.0);
   double forExp1 =
@@ -429,7 +430,7 @@ int UCI::getWinProbability(Value v, int ply)
                                           4000.0))) /
                              forExp3)));
   double winrateDraw = 1000 - winrateToMove - winrateOpponent;
-  return round((winrateToMove + winrateDraw / 2.0) / 10.0);
+  return static_cast<uint8_t>(round((winrateToMove + winrateDraw / 2.0) / 10.0));
 }
 //for Shashin theory end
 /// UCI::wdl() reports the win-draw-loss (WDL) statistics given an evaluation
@@ -462,14 +463,14 @@ std::string UCI::square(Square s) {
 
 string UCI::move(Move m, bool chess960) {
 
-  Square from = from_sq(m);
-  Square to = to_sq(m);
-
   if (m == MOVE_NONE)
       return "(none)";
 
   if (m == MOVE_NULL)
       return "0000";
+
+  Square from = from_sq(m);
+  Square to = to_sq(m);
 
   if (type_of(m) == CASTLING && !chess960)
       to = make_square(to > from ? FILE_G : FILE_C, rank_of(from));

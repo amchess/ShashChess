@@ -36,7 +36,7 @@
 #include "timeman.h"
 #include "uci.h"
 #include "incbin/incbin.h"
-
+#include "nnue/evaluate_nnue.h"
 
 // Macro to embed the default efficiently updatable neural network (NNUE) file
 // data in the engine binary (using incbin.h, by Dale Weiler).
@@ -98,7 +98,7 @@ namespace Eval {
             if (directory != "<internal>")
             {
                 ifstream stream(directory + eval_file, ios::binary);
-                if (load_eval(eval_file, stream))
+                if (NNUE::load_eval(eval_file, stream))
                     currentEvalFileName = eval_file;
             }
 
@@ -114,7 +114,7 @@ namespace Eval {
                 (void) gEmbeddedNNUEEnd; // Silence warning on unused variable
 
                 istream stream(&buffer);
-                if (load_eval(eval_file, stream))
+                if (NNUE::load_eval(eval_file, stream))
                     currentEvalFileName = eval_file;
             }
         }
