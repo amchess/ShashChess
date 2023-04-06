@@ -61,10 +61,8 @@ public:
   Pawns::Table pawnsTable;
   Material::Table materialTable;
   size_t pvIdx, pvLast;
-  RunningAverage complexityAverage;
-  RunningAverage lmrAverage;//lmr_average2
   std::atomic<uint64_t> nodes, tbHits, bestMoveChanges, bestMoveMc;//bmMovecountR7
-  int selDepth, nmpMinPly, failedHighCnt,nmpSide;//fhcRnNegExt+s11fhrn3+crystal
+  int selDepth, nmpMinPly, nmpSide;//fhcRnNegExt+crystal
   Color nmpColor;
   Value bestValue, optimism[COLOR_NB];
   
@@ -97,6 +95,7 @@ struct MainThread : public Thread {
   void search() override;
   void check_time();
 
+  double complexity;
   double previousTimeReduction;
   Value bestPreviousScore;
   Value bestPreviousAverageScore;

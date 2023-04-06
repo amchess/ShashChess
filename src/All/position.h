@@ -133,7 +133,6 @@ public:
   bool pseudo_legal(const Move m) const;
   bool capture(Move m) const;
   bool capture_stage(Move m) const;
-  bool capture_or_promotion(Move m) const;//for Shashchess captureOrPromotion and deeperPvS12 
   bool gives_check(Move m) const;
   Piece moved_piece(Move m) const;
   Piece captured_piece() const;
@@ -151,8 +150,8 @@ public:
   void undo_null_move();
 
   // Static Exchange Evaluation
+  bool see_ge(Move m, Bitboard& occupied, Value threshold = VALUE_ZERO) const;
   bool see_ge(Move m, Value threshold = VALUE_ZERO) const;
-
   //leafDepth7 begin
   //leaf position
   bool is_leaf() const;
@@ -413,11 +412,6 @@ inline bool Position::capture(Move m) const {
   assert(is_ok(m));
   return     (!empty(to_sq(m)) && type_of(m) != CASTLING)
           ||  type_of(m) == EN_PASSANT;
-}
-
-inline bool Position::capture_or_promotion(Move m) const {
-  assert(is_ok(m));
-  return type_of(m) != NORMAL ? type_of(m) != CASTLING : !empty(to_sq(m));
 }
 
 // returns true if a move is generated from the capture stage

@@ -31,13 +31,6 @@ class Position;
 
 namespace Search {
 
-//nodeTypeHistory begin
-// Different node types, used as a template parameter
-enum NodeType { NonPV, PV, Root };
-//nodeTypeHistory end
-
-
-
 /// Stack struct keeps track of the information we need to remember from nodes
 /// shallower and deeper in the tree during the search. Each search thread has
 /// its own array of Stack objects, indexed by the current ply.
@@ -50,7 +43,6 @@ struct Stack {
   Move excludedMove;
   Move killers[2];
   Value staticEval;
-  Depth depth; // qs_update_end
   int statScore;
   int moveCount;
   bool inCheck;
@@ -58,7 +50,6 @@ struct Stack {
   bool ttHit;
   int doubleExtensions;
   int cutoffCnt;
-  NodeType nodeType; //nodeTypeHistory
 };
 
 

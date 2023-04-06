@@ -85,8 +85,6 @@ namespace Eval {
         eval_file = EvalFileDefaultName;
 
     #if defined(DEFAULT_NNUE_DIRECTORY)
-    #define stringify2(x) #x
-    #define stringify(x) stringify2(x)
     vector<string> dirs = { "<internal>" , "" , CommandLine::binaryDirectory , stringify(DEFAULT_NNUE_DIRECTORY) };
     #else
     vector<string> dirs = { "<internal>" , "" , CommandLine::binaryDirectory };
@@ -1090,8 +1088,8 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
 
   // We use the much less accurate but faster Classical eval when the NNUE
   // option is set to false. Otherwise we use the NNUE eval unless the
-  // PSQ advantage is decisive and several pieces remain. (~3 Elo)
-  bool useClassical = !useNNUE || (pos.count<ALL_PIECES>() > 7 && abs(psq) > 1781);
+  // PSQ advantage is decisive. (~4 Elo at STC, 1 Elo at LTC)
+  bool useClassical = !useNNUE || abs(psq) > 2048;
 
   if (useClassical)
       v = Evaluation<NO_TRACE>(pos).value();
