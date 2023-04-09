@@ -425,7 +425,7 @@ namespace {
         else if (Pt == ROOK && (file_bb(s) & kingRing[Them]))
             score += RookOnKingRing;
 
-        else if (((Pt == BISHOP) && (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & kingRing[Them])&& (pos.this_thread()->shashinWinProbabilityRange != SHASHIN_POSITION_CAPABLANCA))) //from Official integrated with Shashin
+        else if (Pt == BISHOP && (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & kingRing[Them]))
             score += BishopOnKingRing;
 
         int mob = popcount(b & mobilityArea[Us]);
@@ -795,13 +795,11 @@ namespace {
                 if (!(pos.pieces(Them) & bb))
                     unsafeSquares &= attackedBy[Them][ALL_PIECES] | pos.pieces(Them);
 
-                constexpr Bitboard Goal = Rank1BB | Rank8BB; //secured-passer
-
                 // If there are no enemy pieces or attacks on passed pawn span, assign a big bonus.
                 // Or if there is some, but they are all attacked by our pawns, assign a bit smaller bonus.
                 // Otherwise assign a smaller bonus if the path to queen is not attacked
                 // and even smaller bonus if it is attacked but block square is not.
-                int k = !unsafeSquares                    ? (attackedBy[Us][ALL_PIECES] & squaresToQueen & Goal) ? 42 : 36 : //secured-passer
+                int k = !unsafeSquares                    ? 36 :
                 !(unsafeSquares & ~attackedBy[Us][PAWN])  ? 30 :
                         !(unsafeSquares & squaresToQueen) ? 17 :
                         !(unsafeSquares & blockSq)        ?  7 :
@@ -1002,25 +1000,9 @@ namespace {
                                                         + std::abs(pos.this_thread()->bestValue) * 5 / 4
                                                         + pos.non_pawn_material() / 32;
     };
-    //LeafDepth7 begin
-    if(pos.this_thread()->shashinWinProbabilityRange==SHASHIN_POSITION_CAPABLANCA)
-    {
-	    if (lazy_skip(LazyThreshold1))
-	        goto make_v;
 
-    }
-    else
-    {
-	if(!T)
-	{
-	    //No lazy eval from UCI
-	    if( pos.is_leaf()){
-		    if (lazy_skip(LazyThreshold1))
-		        goto make_v;
-		}
-	}
-    }
-    //LeafDepth7 end
+    if (lazy_skip(LazyThreshold1))
+        goto make_v;
 
     // Main evaluation begins here
     initialize<WHITE>();

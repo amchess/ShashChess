@@ -152,11 +152,6 @@ public:
   // Static Exchange Evaluation
   bool see_ge(Move m, Bitboard& occupied, Value threshold = VALUE_ZERO) const;
   bool see_ge(Move m, Value threshold = VALUE_ZERO) const;
-  //leafDepth7 begin
-  //leaf position
-  bool is_leaf() const;
-  void set_leaf(bool b);
-  //leafDepth7 end
 
   // Accessing hash keys
   Key key() const;
@@ -218,7 +213,6 @@ private:
   Color sideToMove;
   Score psq;
   bool chess960;
-  bool isLeaf; //LeafDepth7
 };
 
 std::ostream& operator<<(std::ostream& os, const Position& pos);
@@ -387,16 +381,6 @@ inline int Position::game_ply() const {
 inline int Position::rule50_count() const {
   return st->rule50;
 }
-
-//LeafDepth7 begin
-inline bool Position::is_leaf() const {
-  return isLeaf;
-}
-
-inline void Position::set_leaf(bool b) {
-  isLeaf = b;
-}
-//LeafDepth7 end
 
 inline bool Position::opposite_bishops() const {
   return   count<BISHOP>(WHITE) == 1

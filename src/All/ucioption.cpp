@@ -46,7 +46,7 @@ static void on_logger(const Option& o) { start_logger(o); }
 static void on_threads(const Option& o) { Threads.set(size_t(o)); }
 static void on_full_threads(const Option& o) { Threads.setFull(o); } //full threads patch
 static void on_persisted_learning(const Option& o) { if (!(o == "Off")){ LD.set_learning_mode(o);}}//Kelly learning
-static void on_readonly_learning(const Option& o) { if (!(o == "Off")) { LD.set_readonly(o); } }
+static void on_readonly_learning(const Option& o) { if (!(o == "Off")) { LD.set_readonly(o); } }//Kelly learning
 static void on_tb_path(const Option& o) { Tablebases::init(o); }
 static void on_use_NNUE(const Option&) { Eval::NNUE::init(); }
 static void on_eval_file(const Option&) { Eval::NNUE::init(); }
@@ -193,7 +193,7 @@ Option::operator double() const {
 }
 
 Option::operator std::string() const {
-  assert(type == "string" || type == "combo"); //ShashChess uci options
+  assert(type == "string" || type == "combo");//combo uci options
   return currentValue;
 }
 

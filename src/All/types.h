@@ -138,7 +138,7 @@ enum Color {
   WHITE, BLACK, COLOR_NB = 2
 };
 
-constexpr Color Colors[2] = {WHITE, BLACK};
+constexpr Color Colors[2] = {WHITE, BLACK};//kelly
 
 enum CastlingRights {
   NO_CASTLING,
@@ -267,7 +267,6 @@ enum File : int {
 enum Rank : int {
   RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8, RANK_NB
 };
-
 
 // Keep track of what a move changes on the board (used by NNUE)
 struct DirtyPiece {

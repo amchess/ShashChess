@@ -1847,15 +1847,13 @@ bool Position::see_ge(Move m, Bitboard& occupied, Value threshold) const {
 
   assert(is_ok(m));
 
-  // Assume castling passes a simple SEE
-  if (type_of(m) == CASTLING) //SEEPromotions
+  // Only deal with normal moves, assume others pass a simple SEE
+  if (type_of(m) != NORMAL)
       return VALUE_ZERO >= threshold;
 
   Square from = from_sq(m), to = to_sq(m);
-  //SEEPromotions begin
-  int swap =  PieceValue[MG][piece_on(to)] - threshold
-        + (type_of(m) == EN_PASSANT) * PawnValueMg;
-  //SEEPromotions end
+
+  int swap = PieceValue[MG][piece_on(to)] - threshold;
   if (swap < 0)
       return false;
 

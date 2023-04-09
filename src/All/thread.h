@@ -61,8 +61,8 @@ public:
   Pawns::Table pawnsTable;
   Material::Table materialTable;
   size_t pvIdx, pvLast;
-  std::atomic<uint64_t> nodes, tbHits, bestMoveChanges, bestMoveMc;//bmMovecountR7
-  int selDepth, nmpMinPly, nmpSide;//fhcRnNegExt+crystal
+  std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
+  int selDepth, nmpMinPly, nmpSide;//crystal
   Color nmpColor;
   Value bestValue, optimism[COLOR_NB];
   
