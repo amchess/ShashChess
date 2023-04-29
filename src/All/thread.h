@@ -63,7 +63,6 @@ public:
   size_t pvIdx, pvLast;
   std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
   int selDepth, nmpMinPly, nmpSide;//crystal
-  Color nmpColor;
   Value bestValue, optimism[COLOR_NB];
   
   bool nmpGuard,nmpGuardV; //from Crystal
