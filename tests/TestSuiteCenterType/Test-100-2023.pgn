@@ -6,11 +6,10 @@
 [Black "?"]
 [Result "*"]
 [ECO "C16"]
-[Annotator "_"]
-[PlyCount "10"]
+[PlyCount "12"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,10,30,12,39,44,25,32,40,34,86,79,126]} 1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 b6 5. a3 Bf8 *
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 b6 5. Qg4 Bf8 6. Nf3 Qd7 *
 
 [Event "?"]
 [Site "?"]
@@ -20,10 +19,10 @@
 [Black "?"]
 [Result "*"]
 [ECO "B12"]
-[PlyCount "18"]
+[PlyCount "14"]
 [EventDate "2023.??.??"]
 
-1. e4 c6 2. d4 d5 3. e5 Bf5 4. Nf3 e6 5. Be2 Nd7 6. O-O h6 7. a4 Ne7 8. a5 g5 9. a6 b6 *
+1. e4 c6 2. d4 d5 3. e5 Bf5 4. h4 h6 5. g4 Bd7 6. Nc3 e6 7. Be3 Qc7 *
 
 [Event "?"]
 [Site "?"]
@@ -34,10 +33,10 @@
 [Result "*"]
 [ECO "E87"]
 [Annotator "_"]
-[PlyCount "16"]
+[PlyCount "14"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,16,28,30,30,-16,-14,1,26,14,32,31,24,18,26,9,27,13,34]} 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. f3 O-O 6. Be3 e5 7. d5 Nh5 8. Qd2 Nd7 *
+{[%evp 0,16,28,30,30,-16,-14,1,26,14,32,31,24,18,26,9,27,13,34]} 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. f3 O-O 6. Be3 e5 7. d5 Nbd7 *
 
 [Event "?"]
 [Site "?"]
@@ -46,12 +45,12 @@
 [White "Closed-e4d5"]
 [Black "?"]
 [Result "*"]
-[ECO "E98"]
+[ECO "E99"]
 [Annotator "_"]
-[PlyCount "28"]
+[PlyCount "24"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,28,29,22,22,-4,63,37,35,45,49,49,25,46,30,25,65,61,58,55,71,78,68,50,69,68,61,42,59,67,85]} 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6 8. d5 Ne7 9. Ne1 Ne8 10. f3 f5 11. Be3 f4 12. Bf2 g5 13. a4 h5 14. a5 Ng6 *
+{[%evp 0,28,29,22,22,-4,63,37,35,45,49,49,25,46,30,25,65,61,58,55,71,78,68,50,69,68,61,42,59,67,85]} 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6 8. d5 Ne7 9. Ne1 Nd7 10. f3 f5 11. Bd2 Nf6 12. Nd3 f4 *
 
 [Event "?"]
 [Site "?"]
@@ -60,11 +59,12 @@
 [White "Classic"]
 [Black "?"]
 [Result "*"]
-[ECO "A41"]
-[PlyCount "14"]
+[ECO "B00"]
+[Annotator "_"]
+[PlyCount "8"]
 [EventDate "2023.??.??"]
 
-1. Nf3 d6 2. d4 Bg4 3. e4 Nf6 4. Nc3 e6 5. h3 Bh5 6. Qe2 Bg6 7. h4 h6 *
+{[%evp 0,14,30,26,88,64,74,53,83,74,88,88,126,77,117,75,94]} 1. Nf3 d6 2. d4 Bg4 3. e4 Nf6 4. Nc3 Nc6 *
 
 [Event "?"]
 [Site "?"]
@@ -74,10 +74,11 @@
 [Black "?"]
 [Result "*"]
 [ECO "B06"]
+[Annotator "_"]
 [PlyCount "18"]
 [EventDate "2023.??.??"]
 
-1. e4 g6 2. d4 Bg7 3. c3 d6 4. Nf3 a6 5. Bd3 Nd7 6. O-O e6 7. Re1 Ne7 8. a4 b6 9. Nbd2 O-O *
+{[%evp 0,18,25,35,104,73,80,17,53,42,84,72,71,61,89,58,63,43,40,40,54]} 1. e4 g6 2. d4 Bg7 3. c3 d6 4. Nf3 a6 5. Bd3 Nd7 6. O-O e6 7. Re1 Ne7 8. a4 b6 9. Nbd2 Bb7 *
 
 [Event "?"]
 [Site "?"]
@@ -113,11 +114,11 @@
 [White "Classical f3"]
 [Black "?"]
 [Result "*"]
-[ECO "B06"]
-[PlyCount "18"]
+[ECO "B07"]
+[PlyCount "12"]
 [EventDate "2023.??.??"]
 
-1. d4 d6 2. e4 g6 3. Be3 Bg7 4. Nc3 a6 5. f3 Nd7 6. Qd2 b5 7. h4 h5 8. Nh3 Bb7 9. O-O-O Rc8 *
+1. d4 d6 2. e4 g6 3. Nc3 Bg7 4. Be3 a6 5. Qd2 Nf6 6. f3 Nc6 *
 
 [Event "?"]
 [Site "?"]
@@ -126,11 +127,11 @@
 [White "Mobile d3 e4"]
 [Black "?"]
 [Result "*"]
-[ECO "C65"]
-[PlyCount "26"]
+[ECO "C87"]
+[PlyCount "24"]
 [EventDate "2023.??.??"]
 
-1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. d3 d6 5. O-O Be7 6. c3 O-O 7. Nbd2 Bg4 8. h3 Bh5 9. Re1 Nd7 10. Nf1 a6 11. Ba4 b5 12. Bc2 Bg6 13. Ng3 Nb6 *
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. d3 d6 6. c3 Be7 7. O-O Bg4 8. Re1 Qd7 9. Nbd2 b5 10. Bc2 O-O 11. h3 Bh5 12. Nf1 Rfe8 *
 
 [Event "?"]
 [Site "?"]
@@ -180,11 +181,10 @@
 [Black "?"]
 [Result "*"]
 [ECO "C10"]
-[Annotator "_"]
 [PlyCount "16"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,16,20,20,51,43,43,29,45,46,61,45,41,37,70,75,74,71,79]} 1. e4 e6 2. d4 d5 3. Nd2 dxe4 4. Nxe4 Bd7 5. Nf3 Bc6 6. Bd3 Bxe4 7. Bxe4 c6 8. Qe2 Qc7 *
+1. e4 e6 2. d4 d5 3. Nd2 dxe4 4. Nxe4 Bd7 5. Nf3 Bc6 6. Bd3 Nd7 7. O-O Bxe4 8. Bxe4 c6 *
 
 [Event "?"]
 [Site "?"]
@@ -194,10 +194,10 @@
 [Black "?"]
 [Result "*"]
 [ECO "B17"]
-[PlyCount "12"]
+[PlyCount "10"]
 [EventDate "2023.??.??"]
 
-1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nd7 5. Nf3 e6 6. Bd3 Ngf6 *
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nd7 5. Nf3 e6 *
 
 [Event "?"]
 [Site "?"]
@@ -206,11 +206,11 @@
 [White "Sawtooth Slav"]
 [Black "?"]
 [Result "*"]
-[ECO "D18"]
-[PlyCount "22"]
+[ECO "D11"]
+[PlyCount "14"]
 [EventDate "2023.??.??"]
 
-1. d4 d5 2. c4 c6 3. Nf3 Nf6 4. Nc3 dxc4 5. a4 Bf5 6. e3 Nbd7 7. Bxc4 e6 8. O-O Be7 9. Qe2 Bg4 10. h3 Bxf3 11. Qxf3 O-O *
+1. d4 d5 2. c4 c6 3. Nf3 dxc4 4. e3 Bg4 5. Bxc4 e6 6. O-O Bd6 7. Nc3 Nf6 *
 
 [Event "?"]
 [Site "?"]
@@ -219,12 +219,11 @@
 [White "Sawtooth Slav"]
 [Black "?"]
 [Result "*"]
-[ECO "D46"]
-[Annotator "_"]
-[PlyCount "26"]
+[ECO "D16"]
+[PlyCount "18"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,26,20,17,18,6,6,6,46,41,41,41,38,25,30,36,40,37,39,35,68,16,11,21,21,22,50,18,69]} 1. d4 d5 2. c4 e6 3. Nc3 c6 4. e3 Nf6 5. Nf3 Nbd7 6. Qc2 Bd6 7. Bd3 O-O 8. O-O dxc4 9. Bxc4 a6 10. Rd1 Qc7 11. Ne4 Nxe4 12. Qxe4 Nf6 13. Qh4 b5 *
+1. d4 d5 2. c4 e6 3. Nc3 c6 4. Nf3 dxc4 5. a4 Bb4 6. e3 Nf6 7. Bxc4 O-O 8. O-O Nbd7 9. Qc2 Qc7 *
 
 [Event "?"]
 [Site "?"]
@@ -233,11 +232,11 @@
 [White "Static d4 d5"]
 [Black "?"]
 [Result "*"]
-[ECO "C01"]
-[PlyCount "16"]
+[ECO "C42"]
+[PlyCount "18"]
 [EventDate "2023.??.??"]
 
-1. e4 e6 2. d4 d5 3. exd5 exd5 4. Bd3 Nf6 5. Nf3 Bg4 6. O-O Nc6 7. c3 Qd7 8. Re1+ Be7 *
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d4 d5 6. Bd3 Be7 7. O-O O-O 8. Re1 Nd6 9. Bf4 Bg4 *
 
 [Event "?"]
 [Site "?"]
@@ -265,7 +264,7 @@
 [PlyCount "20"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,20,27,21,66,66,66,66,74,81,65,60,93,58,115,74,85,71,60,76,78,53,95]} 1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Nf3 Bg7 5. h3 c6 6. a4 Qc7 7. Be3 Nbd7 8. Qd2 O-O 9. Be2 e5 10. dxe5 dxe5 *
+{[%evp 0,20,31,15,83,77,88,74,91,88,78,67,111,57,92,100,84,79,69,72,64,72,85]} 1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Nf3 Bg7 5. h3 c6 6. a4 Qc7 7. Be3 Nbd7 8. Qd2 O-O 9. Be2 e5 10. dxe5 dxe5 *
 
 [Event "?"]
 [Site "?"]
@@ -278,7 +277,7 @@
 [PlyCount "18"]
 [EventDate "2023.??.??"]
 
-1. e4 c5 2. Nf3 e6 3. d4 cxd4 4. Nxd4 a6 5. Bd3 Nc6 6. Nxc6 dxc6 7. O-O e5 8. Nd2 Qc7 9. a4 Be6 *
+1. e4 c5 2. Nf3 e6 3. d4 cxd4 4. Nxd4 a6 5. Bd3 Nc6 6. Nxc6 dxc6 7. O-O e5 8. Nd2 Ne7 9. Nc4 Ng6 *
 
 [Event "?"]
 [Site "?"]
@@ -287,11 +286,11 @@
 [White "Isolated"]
 [Black "?"]
 [Result "*"]
-[ECO "B45"]
-[PlyCount "26"]
+[ECO "B22"]
+[PlyCount "18"]
 [EventDate "2023.??.??"]
 
-1. e4 c5 2. Nf3 e6 3. d4 cxd4 4. Nxd4 Nc6 5. Nc3 Nf6 6. Ndb5 Bb4 7. a3 Bxc3+ 8. Nxc3 d5 9. exd5 exd5 10. Bd3 O-O 11. O-O Bg4 12. f3 Qb6+ 13. Kh1 Be6 *
+1. e4 c5 2. Nf3 e6 3. c3 d5 4. exd5 Qxd5 5. d4 cxd4 6. cxd4 Nf6 7. Nc3 Qd6 8. Bc4 a6 9. O-O Nc6 *
 
 [Event "?"]
 [Site "?"]
@@ -315,11 +314,10 @@
 [Black "?"]
 [Result "*"]
 [ECO "E42"]
-[Annotator "_"]
-[PlyCount "24"]
+[PlyCount "20"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,22,26,26,26,6,6,6,10,20,31,34,21,40,36,28,35,35,85,61,43,41,49,49,72]} 1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. e3 c5 5. Nge2 d5 6. a3 Bxc3+ 7. Nxc3 cxd4 8. exd4 dxc4 9. Bxc4 Nc6 10. Be3 O-O 11. O-O Ne7 12. Bg5 Bd7 *
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. e3 c5 5. Nge2 d5 6. a3 Bxc3+ 7. Nxc3 cxd4 8. exd4 dxc4 9. Bxc4 O-O 10. O-O Nbd7 *
 
 [Event "?"]
 [Site "?"]
@@ -355,10 +353,10 @@
 [Black "?"]
 [Result "*"]
 [ECO "A87"]
-[PlyCount "26"]
+[PlyCount "24"]
 [EventDate "2023.??.??"]
 
-1. d4 f5 2. Nf3 Nf6 3. g3 g6 4. c4 Bg7 5. Nc3 O-O 6. Bg2 d6 7. O-O Qe8 8. b3 e5 9. dxe5 dxe5 10. e4 Nc6 11. Nd5 Qd7 12. exf5 gxf5 13. Nh4 Qf7 *
+1. d4 f5 2. Nf3 Nf6 3. g3 g6 4. c4 Bg7 5. Nc3 O-O 6. Bg2 d6 7. O-O Qe8 8. b3 e5 9. dxe5 dxe5 10. e4 Nc6 11. Nd5 Qd7 12. exf5 gxf5 *
 
 [Event "?"]
 [Site "?"]
@@ -371,7 +369,7 @@
 [PlyCount "16"]
 [EventDate "2023.??.??"]
 
-1. d4 d5 2. c4 c6 3. Nc3 e6 4. Nf3 f5 5. Bf4 Nf6 6. e3 Be7 7. Be2 O-O 8. O-O Nh5 *
+1. d4 d5 2. c4 c6 3. Nc3 e6 4. Nf3 f5 5. Bf4 Nf6 6. e3 Be7 7. Qc2 O-O 8. Bd3 Nh5 *
 
 [Event "?"]
 [Site "?"]
@@ -394,11 +392,11 @@
 [White "Stonewall"]
 [Black "?"]
 [Result "*"]
-[ECO "A92"]
+[ECO "A95"]
 [PlyCount "18"]
 [EventDate "2023.??.??"]
 
-1. d4 f5 2. c4 e6 3. Nf3 Nf6 4. g3 d5 5. Bg2 c6 6. O-O Be7 7. Nbd2 O-O 8. Ne5 Bd7 9. Ndf3 Be8 *
+1. d4 f5 2. c4 e6 3. Nf3 Nf6 4. g3 d5 5. Bg2 c6 6. O-O Be7 7. Nc3 O-O 8. Qc2 Qe8 9. Bf4 Qh5 *
 
 [Event "?"]
 [Site "?"]
@@ -407,24 +405,24 @@
 [White "Panov Structure"]
 [Black "?"]
 [Result "*"]
-[ECO "E38"]
+[ECO "B14"]
 [PlyCount "24"]
 [EventDate "2023.??.??"]
 
-1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 d6 5. Nf3 c5 6. e3 Nc6 7. Bd2 O-O 8. a3 Bxc3 9. Bxc3 cxd4 10. exd4 d5 11. c5 a5 12. Bd3 a4 *
+1. e4 c6 2. d4 d5 3. exd5 cxd5 4. c4 Nf6 5. Nc3 e6 6. Nf3 Bb4 7. Bd2 O-O 8. c5 Bxc3 9. Bxc3 Nc6 10. Bd3 a5 11. a3 Ne4 12. Qc2 f5 *
 
 [Event "?"]
 [Site "?"]
 [Date "2023.03.01"]
 [Round "?"]
-[White "Panov structure"]
+[White "Panov Structure"]
 [Black "?"]
 [Result "*"]
 [ECO "B14"]
-[PlyCount "20"]
+[PlyCount "22"]
 [EventDate "2023.??.??"]
 
-1. e4 c6 2. d4 d5 3. exd5 cxd5 4. c4 Nf6 5. Nc3 Nc6 6. Nf3 e6 7. c5 a6 8. Bd3 g6 9. O-O Bg7 10. Bf4 O-O *
+1. e4 c6 2. d4 d5 3. exd5 cxd5 4. c4 Nf6 5. Nc3 Nc6 6. Nf3 e6 7. c5 Be7 8. Bf4 O-O 9. Bb5 Ne4 10. Rc1 Bd7 11. O-O Bf6 *
 
 [Event "?"]
 [Site "?"]
@@ -540,11 +538,10 @@
 [Black "?"]
 [Result "*"]
 [ECO "E75"]
-[Annotator "_"]
-[PlyCount "20"]
+[PlyCount "18"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,20,20,18,18,-8,36,27,37,40,40,23,22,23,44,33,67,55,50,27,75,72,92]} 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Be2 O-O 6. Bg5 c5 7. d5 e6 8. Qd2 exd5 9. exd5 Nbd7 10. Nf3 Re8 *
+1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Be2 O-O 6. Bg5 c5 7. d5 e6 8. Qd2 exd5 9. exd5 Bf5 *
 
 [Event "?"]
 [Site "?"]
@@ -555,10 +552,10 @@
 [Result "*"]
 [ECO "A67"]
 [Annotator "_"]
-[PlyCount "20"]
+[PlyCount "16"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,7,28,21,20,-16,20,37,61,66]} 1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 g6 7. f4 Bg7 8. Bb5+ Nfd7 9. a4 Qh4+ 10. g3 Qd8 *
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 g6 7. f4 Bg7 8. Bb5+ Nfd7 *
 
 [Event "?"]
 [Site "?"]
@@ -624,10 +621,10 @@
 [Result "*"]
 [ECO "A57"]
 [Annotator "_"]
-[PlyCount "24"]
+[PlyCount "22"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,24,27,13,35,0,45,41,61,54,54,76,72,72,91,67,58,51,62,62,56,57,63,24,63,70,51]} 1. d4 Nf6 2. c4 c5 3. d5 b5 4. Nf3 bxc4 5. Nc3 g6 6. e4 d6 7. Bxc4 Nbd7 8. O-O Bg7 9. h3 O-O 10. Re1 Rb8 11. Qc2 Ne8 12. Bf4 Nc7 *
+1. d4 Nf6 2. c4 c5 3. d5 b5 4. Nf3 bxc4 5. Nc3 g6 6. e4 d6 7. Bxc4 Nbd7 8. O-O Bg7 9. h3 O-O 10. Re1 Rb8 11. Qc2 Ne8 *
 
 [Event "?"]
 [Site "?"]
@@ -637,11 +634,10 @@
 [Black "?"]
 [Result "*"]
 [ECO "A58"]
-[Annotator "_"]
 [PlyCount "18"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,18,20,18,20,-8,42,42,63,66,71,53,88,56,82,82,75,70,70,66,93]} 1. d4 Nf6 2. c4 c5 3. d5 b5 4. cxb5 a6 5. bxa6 g6 6. Nc3 Bg7 7. e4 O-O 8. Nf3 d6 9. Be2 Nxa6 *
+1. d4 Nf6 2. c4 c5 3. d5 b5 4. cxb5 a6 5. bxa6 g6 6. Nc3 Bg7 7. e4 O-O 8. Nf3 d6 9. a7 Rxa7 *
 
 [Event "?"]
 [Site "?"]
@@ -651,11 +647,10 @@
 [Black "?"]
 [Result "*"]
 [ECO "E10"]
-[Annotator "_"]
-[PlyCount "16"]
+[PlyCount "12"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,16,20,18,18,-8,4,14,54,27,35,37,37,23,63,58,42,52,78]} 1. d4 Nf6 2. c4 e6 3. Nf3 c5 4. d5 b5 5. dxe6 fxe6 6. cxb5 a6 7. e3 d5 8. Nc3 Bd6 *
+1. d4 Nf6 2. c4 e6 3. Nf3 c5 4. d5 b5 5. dxe6 fxe6 6. cxb5 Bb7 *
 
 [Event "?"]
 [Site "?"]
@@ -665,11 +660,10 @@
 [Black "?"]
 [Result "*"]
 [ECO "B90"]
-[Annotator "_"]
-[PlyCount "18"]
+[PlyCount "22"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,18,20,20,52,42,81,58,49,38,38,30,53,46,41,42,55,57,47,46,44]} 1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Be3 e5 7. Nb3 Nbd7 8. f3 Be7 9. Qd2 Qc7 *
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Be3 e5 7. Nb3 Be6 8. f3 Be7 9. Qd2 O-O 10. O-O-O Nbd7 11. g4 Rc8 *
 
 [Event "?"]
 [Site "?"]
@@ -710,7 +704,7 @@
 [PlyCount "28"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,28,20,20,52,62,71,19,23,17,17,11,11,11,11,12,12,12,6,-5,12,-5,1,1,15,17,33,-2,5,19,34]} 1. e4 c5 2. Nf3 Nc6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 e5 6. Ndb5 d6 7. Bg5 a6 8. Na3 b5 9. Nd5 Be7 10. Bxf6 Bxf6 11. c3 Ne7 12. Nxf6+ gxf6 13. Nc2 Bb7 14. Bd3 f5 *
+{[%evp 0,28,24,18,40,52,52,2,2,27,39,40,40,40,40,-1,5,16,7,7,7,-13,7,-22,8,15,20,16,-14,-12,31]} 1. e4 c5 2. Nf3 Nc6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 e5 6. Ndb5 d6 7. Bg5 a6 8. Na3 b5 9. Nd5 Be7 10. Bxf6 Bxf6 11. c3 Ne7 12. Nxf6+ gxf6 13. Nc2 Bb7 14. Bd3 f5 *
 
 [Event "?"]
 [Site "?"]
@@ -720,10 +714,10 @@
 [Black "?"]
 [Result "*"]
 [ECO "B32"]
-[PlyCount "20"]
+[PlyCount "18"]
 [EventDate "2023.??.??"]
 
-1. e4 c5 2. Nf3 Nc6 3. d4 cxd4 4. Nxd4 e5 5. Nb5 d6 6. c4 Be6 7. N5c3 Nf6 8. Bd3 Nd4 9. O-O Be7 10. Nd5 Rc8 *
+1. e4 c5 2. Nf3 Nc6 3. d4 cxd4 4. Nxd4 e5 5. Nb5 d6 6. N1c3 a6 7. Na3 b5 8. Nd5 Nge7 9. Bd3 Nd4 *
 
 [Event "?"]
 [Site "?"]
@@ -758,12 +752,12 @@
 [White "Sicilian Scheveningen"]
 [Black "?"]
 [Result "*"]
-[ECO "B82"]
+[ECO "B80"]
 [Annotator "_"]
-[PlyCount "14"]
+[PlyCount "16"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,14,27,11,55,32,79,63,63,35,56,35,90,60,51,51,57]} 1. e4 c5 2. Nf3 e6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 d6 6. Be3 Be7 7. Qf3 a6 *
+{[%evp 0,16,27,9,44,44,61,58,67,26,30,30,80,53,66,44,70,52,90]} 1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Be3 e6 7. f3 Nc6 8. Qd2 Qc7 *
 
 [Event "?"]
 [Site "?"]
@@ -881,12 +875,11 @@
 [White "Sicilian Dragon"]
 [Black "?"]
 [Result "*"]
-[ECO "B75"]
-[Annotator "_"]
-[PlyCount "26"]
+[ECO "B78"]
+[PlyCount "22"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,26,27,16,74,41,90,78,60,39,39,30,91,63,55,28,37,32,102,3,58,21,38,33,54,42,42,42,50]} 1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 g6 6. Bc4 Bg7 7. f3 Nc6 8. Be3 Qb6 9. Nf5 Qxb2 10. Nxg7+ Kf8 11. Nd5 Kxg7 12. Rb1 Qa3 13. Qd2 h5 *
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 g6 6. Be3 Bg7 7. f3 O-O 8. Qd2 Nc6 9. Bc4 Bd7 10. O-O-O Rc8 11. Bb3 Ne5 *
 
 [Event "?"]
 [Site "?"]
@@ -952,7 +945,7 @@
 [PlyCount "18"]
 [EventDate "2023.??.??"]
 
-1. e4 c5 2. Nf3 Nc6 3. Bb5 g6 4. Bxc6 dxc6 5. d3 Bg7 6. h3 Qc7 7. O-O e5 8. Be3 b6 9. Nbd2 f6 *
+1. e4 c5 2. Nf3 Nc6 3. Bb5 g6 4. Bxc6 dxc6 5. d3 Bg7 6. h3 b6 7. O-O Nh6 8. a4 a5 9. Na3 f6 *
 
 [Event "?"]
 [Site "?"]
@@ -962,10 +955,10 @@
 [Black "?"]
 [Result "*"]
 [ECO "A31"]
-[PlyCount "18"]
+[PlyCount "16"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,18,19,-18,30,19,20,16,43,36,44,49,30,28,59,45,36,40,49,49,49]} 1. c4 c5 2. Nc3 Nf6 3. Nf3 b6 4. e4 d6 5. d4 cxd4 6. Nxd4 Bb7 7. f3 e6 8. Be3 a6 9. Qd2 Be7 *
+1. c4 c5 2. Nc3 Nf6 3. Nf3 b6 4. e4 d6 5. d4 cxd4 6. Nxd4 Bb7 7. f3 e6 8. Be3 a6 *
 
 [Event "?"]
 [Site "?"]
@@ -1016,11 +1009,10 @@
 [Black "?"]
 [Result "*"]
 [ECO "E20"]
-[Annotator "_"]
-[PlyCount "16"]
+[PlyCount "12"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,18,18,14,29,6,-7,-11,23,-27,14,23,37,40,84,45,103,57,99,66,69]} 1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. f3 b6 5. e4 Bxc3+ 6. bxc3 d6 7. Bd3 Bb7 8. Ne2 Nbd7 *
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. f3 b6 5. e4 Bxc3+ 6. bxc3 Nc6 *
 
 [Event "?"]
 [Site "?"]
@@ -1044,10 +1036,23 @@
 [Black "?"]
 [Result "*"]
 [ECO "E32"]
-[PlyCount "20"]
+[PlyCount "16"]
 [EventDate "2023.??.??"]
 
-1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 d6 5. a3 Bxc3+ 6. Qxc3 O-O 7. f3 e5 8. dxe5 dxe5 9. Qxe5 Nc6 10. Qc3 Nh5 *
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 d6 5. a3 Bxc3+ 6. Qxc3 O-O 7. f3 b6 8. e4 Bb7 *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.03.04"]
+[Round "?"]
+[White "Queen's Indian"]
+[Black "?"]
+[Result "*"]
+[ECO "E12"]
+[PlyCount "14"]
+[EventDate "2023.??.??"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. a3 Bb7 5. Nc3 g6 6. Qc2 Bxf3 7. exf3 Nc6 *
 
 [Event "?"]
 [Site "?"]
@@ -1058,10 +1063,10 @@
 [Result "*"]
 [ECO "A55"]
 [Annotator "_"]
-[PlyCount "20"]
+[PlyCount "18"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,20,17,17,18,6,30,4,-1,19,40,20,50,38,40,40,47,26,57,58,57,53,73]} 1. d4 Nf6 2. c4 d6 3. Nc3 e5 4. Nf3 Nbd7 5. e4 c6 6. Be2 Be7 7. O-O O-O 8. Qc2 a6 9. Rd1 Qc7 10. Be3 Re8 *
+1. d4 Nf6 2. c4 d6 3. Nc3 e5 4. Nf3 Nbd7 5. e4 c6 6. Be2 Be7 7. O-O O-O 8. Qc2 a6 9. Rd1 Qc7 *
 
 [Event "?"]
 [Site "?"]
@@ -1084,11 +1089,11 @@
 [White "King's Indian Fianchetto"]
 [Black "?"]
 [Result "*"]
-[ECO "E63"]
-[PlyCount "24"]
+[ECO "E62"]
+[PlyCount "14"]
 [EventDate "2023.??.??"]
 
-1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. Nf3 O-O 5. g3 d6 6. Bg2 Nc6 7. O-O a6 8. h3 Bd7 9. Be3 Rb8 10. Rc1 Na5 11. Nd5 b5 12. Nxf6+ Bxf6 *
+1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. Nf3 O-O 5. g3 d6 6. Bg2 Nc6 7. O-O Bg4 *
 
 [Event "?"]
 [Site "?"]
@@ -1125,10 +1130,10 @@
 [Black "?"]
 [Result "*"]
 [ECO "D85"]
-[PlyCount "18"]
+[PlyCount "16"]
 [EventDate "2023.??.??"]
 
-1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. cxd5 Nxd5 5. e4 Nxc3 6. bxc3 c5 7. Bb5+ Nc6 8. d5 a6 9. Be2 Na5 *
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. cxd5 Nxd5 5. e4 Nxc3 6. bxc3 c5 7. Bb5+ Nc6 8. d5 a6 *
 
 [Event "?"]
 [Site "?"]
@@ -1167,10 +1172,10 @@
 [Result "*"]
 [ECO "A89"]
 [Annotator "_"]
-[PlyCount "18"]
+[PlyCount "16"]
 [EventDate "2023.??.??"]
 
-{[%evp 0,18,20,18,68,50,50,47,71,63,63,54,57,52,62,51,40,-11,67,39,84]} 1. d4 f5 2. c4 Nf6 3. Nf3 g6 4. g3 Bg7 5. Bg2 O-O 6. O-O d6 7. Nc3 Nc6 8. d5 Ne5 9. Qb3 Kh8 *
+1. d4 f5 2. c4 Nf6 3. Nf3 g6 4. g3 Bg7 5. Bg2 O-O 6. O-O d6 7. Nc3 Nc6 8. d5 Ne5 *
 
 [Event "?"]
 [Site "?"]
@@ -1215,69 +1220,17 @@
 
 [Event "?"]
 [Site "?"]
-[Date "2023.03.01"]
-[Round "?"]
-[White "Alekhine 4 pawns"]
-[Black "?"]
-[Result "*"]
-[ECO "B03"]
-[PlyCount "18"]
-[EventDate "2023.??.??"]
-
-1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. c4 Nb6 5. f4 dxe5 6. fxe5 Bf5 7. Nc3 e6 8. Nf3 Bg4 9. Be3 Nc6 *
-
-[Event "?"]
-[Site "?"]
-[Date "2023.03.01"]
-[Round "?"]
-[White "Caro Kann Tartakower"]
-[Black "?"]
-[Result "*"]
-[ECO "B15"]
-[PlyCount "22"]
-[EventDate "2023.??.??"]
-
-1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Nxf6+ exf6 6. c3 Bd6 7. Bd3 O-O 8. Qc2 Re8+ 9. Ne2 h5 10. O-O Qc7 11. h3 h4 *
-
-[Event "?"]
-[Site "?"]
 [Date "2023.02.28"]
 [Round "?"]
 [White "Ruy Lopez Open"]
 [Black "?"]
 [Result "*"]
 [ECO "C83"]
+[Annotator "_"]
 [PlyCount "24"]
 [EventDate "2023.??.??"]
 
-1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Nxe4 6. d4 b5 7. Bb3 d5 8. dxe5 Be6 9. Nbd2 Nc5 10. c3 Be7 11. Bc2 Qd7 12. Nb3 Bg4 *
-
-[Event "?"]
-[Site "?"]
-[Date "2023.03.03"]
-[Round "?"]
-[White "Scotch"]
-[Black "?"]
-[Result "*"]
-[ECO "C45"]
-[Annotator "_"]
-[PlyCount "22"]
-[EventDate "2023.??.??"]
-
-{[%evp 0,22,25,18,18,11,11,21,-13,12,33,4,-12,5,-7,1,1,-16,24,6,6,5,5,5,18]} 1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Nf6 5. Nxc6 bxc6 6. e5 Nd5 7. c4 Nb6 8. Be3 Bb4+ 9. Nd2 Qe7 10. a3 Bxd2+ 11. Qxd2 Qxe5 *
-
-[Event "?"]
-[Site "?"]
-[Date "2023.03.04"]
-[Round "?"]
-[White "Baltic Defence"]
-[Black "?"]
-[Result "*"]
-[ECO "D06"]
-[PlyCount "10"]
-[EventDate "2023.??.??"]
-
-1. d4 d5 2. c4 Bf5 3. cxd5 Bxb1 4. Rxb1 Qxd5 5. e3 Nd7 *
+{[%evp 0,28,25,21,20,20,32,12,21,-5,1,18,19,-4,5,6,-7,0,-7,-10,-10,-10,38,42,23,-9,78,6,7,37,34]} 1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Nxe4 6. d4 b5 7. Bb3 d5 8. dxe5 Be6 9. Nbd2 Nc5 10. c3 Be7 11. Bc2 Qd7 12. Nb3 Bg4 *
 
 [Event "?"]
 [Site "?"]
@@ -1294,16 +1247,69 @@
 
 [Event "?"]
 [Site "?"]
+[Date "2023.03.01"]
+[Round "?"]
+[White "Alekhine 4 pawns"]
+[Black "?"]
+[Result "*"]
+[ECO "B03"]
+[Annotator "_"]
+[PlyCount "10"]
+[EventDate "2023.??.??"]
+
+{[%evp 0,18,25,26,48,49,48,35,38,15,24,22,18,14,39,7,36,31,73,29,58]} 1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. c4 Nb6 5. f4 g6 (5... dxe5 6. fxe5 Bf5 7. Nc3 e6 8. Nf3 Bg4 9. Be3 Nc6) *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.03.01"]
+[Round "?"]
+[White "Caro Kann Tartakower"]
+[Black "?"]
+[Result "*"]
+[ECO "B15"]
+[PlyCount "22"]
+[EventDate "2023.??.??"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Nxf6+ exf6 6. c3 Bd6 7. Bd3 O-O 8. Qc2 Re8+ 9. Ne2 h5 10. O-O Qc7 11. h3 h4 *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.03.03"]
+[Round "?"]
+[White "Caro Kann Nimzowitsch"]
+[Black "?"]
+[Result "*"]
+[ECO "B16"]
+[PlyCount "10"]
+[EventDate "2023.??.??"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Nxf6+ gxf6 *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.03.04"]
+[Round "?"]
+[White "Baltic Defence"]
+[Black "?"]
+[Result "*"]
+[ECO "D06"]
+[PlyCount "8"]
+[EventDate "2023.??.??"]
+
+1. d4 d5 2. c4 Bf5 3. cxd5 Bxb1 4. Rxb1 Qxd5 *
+
+[Event "?"]
+[Site "?"]
 [Date "2023.03.04"]
 [Round "?"]
 [White "Trompowsky"]
 [Black "?"]
 [Result "*"]
 [ECO "A45"]
-[PlyCount "20"]
+[PlyCount "16"]
 [EventDate "2023.??.??"]
 
-1. d4 Nf6 2. Bg5 Ne4 3. Bf4 c5 4. f3 Qa5+ 5. c3 Nf6 6. d5 Qb6 7. Bc1 e6 8. e4 exd5 9. exd5 d6 10. c4 Be7 *
+1. d4 Nf6 2. Bg5 Ne4 3. Bf4 c5 4. f3 Qa5+ 5. c3 Nf6 6. d5 Qb6 7. Bc1 d6 8. e4 g6 *
 
 [Event "?"]
 [Site "?"]
@@ -1322,7 +1328,7 @@
 [Site "?"]
 [Date "2023.03.04"]
 [Round "?"]
-[White "Veresov"]
+[White "Jobava London"]
 [Black "?"]
 [Result "*"]
 [ECO "D00"]
@@ -1330,17 +1336,4 @@
 [EventDate "2023.??.??"]
 
 1. d4 Nf6 2. Nc3 d5 3. Bf4 a6 4. e3 e6 5. g4 c5 6. g5 Nfd7 7. Qg4 cxd4 8. exd4 Bb4 *
-
-[Event "?"]
-[Site "?"]
-[Date "2023.03.04"]
-[Round "?"]
-[White "Queen's Indian"]
-[Black "?"]
-[Result "*"]
-[ECO "E12"]
-[PlyCount "14"]
-[EventDate "2023.??.??"]
-
-1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. a3 Bb7 5. Nc3 g6 6. Qc2 Bxf3 7. exf3 Nc6 *
 
