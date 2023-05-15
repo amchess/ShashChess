@@ -645,9 +645,10 @@ void MainThread::search() {
                 }
             }
         }
+    #endif
+    // Live Book end
       }
-  #endif
-  // Live Book end
+
       if (!bookMove || think)
       {
 	      Threads.start_searching(); // start non-main threads
