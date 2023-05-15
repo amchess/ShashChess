@@ -57,13 +57,15 @@ endif
 
 ### Source and object files
 SRCS = benchmark.cpp bitbase.cpp bitboard.cpp endgame.cpp evaluate.cpp learn.cpp main.cpp \
-	material.cpp misc.cpp mcts/montecarlo.cpp movegen.cpp movepick.cpp pawns.cpp polybook.cpp position.cpp psqt.cpp \
+	material.cpp misc.cpp movegen.cpp movepick.cpp pawns.cpp position.cpp psqt.cpp \
 	search.cpp thread.cpp timeman.cpp tt.cpp uci.cpp ucioption.cpp tune.cpp syzygy/tbprobe.cpp \
-	nnue/evaluate_nnue.cpp nnue/features/half_ka_v2_hm.cpp
+	mcts/montecarlo.cpp  \
+	nnue/evaluate_nnue.cpp nnue/features/half_ka_v2_hm.cpp \
+	book/book.cpp book/polyglot/polyglot.cpp book/ctg/ctg.cpp
 
 OBJS = $(notdir $(SRCS:.cpp=.o))
 
-VPATH = mcts:syzygy:nnue:nnue/features
+VPATH = mcts:syzygy:nnue:nnue/features:book:book/polyglot:book/ctg
 
 ### ==========================================================================
 ### Section 2. High-level Configuration
@@ -711,7 +713,7 @@ ifeq ($(pext),yes)
 endif
 
 ### 3.7.1 Try to include git commit sha for versioning
-GIT_SHA = $(shell git rev-parse --short HEAD 2>/dev/null)
+GIT_SHA = $(shell git rev-parse HEAD 2>/dev/null | cut -c 1-8)
 ifneq ($(GIT_SHA), )
 	CXXFLAGS += -DGIT_SHA=$(GIT_SHA)
 endif
@@ -917,12 +919,12 @@ net:
 
 # clean binaries and objects
 objclean:
-	@rm -f shashchess shashchess.exe *.o ./syzygy/*.o ./nnue/*.o ./nnue/features/*.o ./mcts/*.o
+	@rm -f shashchess shashchess.exe *.o ./syzygy/*.o ./nnue/*.o ./nnue/features/*.o ./mcts/*.o ./book/*.o ./book/polyglot/*.o ./book/ctg/*.o
 
 # clean auxiliary profiling files
 profileclean:
 	@rm -rf profdir
-	@rm -f bench.txt *.gcda *.gcno ./syzygy/*.gcda ./nnue/*.gcda ./nnue/features/*.gcda *.s
+	@rm -f bench.txt *.gcda *.gcno ./syzygy/*.gcda ./nnue/*.gcda ./nnue/features/*.gcda ./book/*.gcda ./book/polyglot/*.gcda ./book/ctg/*.gcda *.s 
 	@rm -f shashchess.profdata *.profraw
 	@rm -f shashchess.*args*
 	@rm -f shashchess.*lt*

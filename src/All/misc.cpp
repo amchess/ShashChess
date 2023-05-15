@@ -53,6 +53,7 @@ using fun8_t = bool(*)(HANDLE, BOOL, PTOKEN_PRIVILEGES, DWORD, PTOKEN_PRIVILEGES
 #include <sstream>
 #include <string_view>
 #include <vector>
+#include <stdarg.h>
 
 #if defined(__linux__) && !defined(__ANDROID__)
 #include <stdlib.h>
@@ -75,7 +76,7 @@ namespace Stockfish {
 namespace {
 
 /// Version number or dev.
-constexpr string_view version = "GZ";
+constexpr string_view version = "32";
 
 /// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 /// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
@@ -142,70 +143,6 @@ public:
 };
 
 } // namespace
-
-//begin learning from Khalid
-namespace Utility
-{
-    string myFolder;
-
-    namespace
-    {
-#if defined(_WIN32) || defined (_WIN64)
-        constexpr char DirectorySeparator = '\\';
-#else
-        constexpr char DirectorySeparator = '/';
-#endif
-    }
-
-    void init(const char* arg0)
-    {
-        string s = arg0;
-        size_t i = s.find_last_of(DirectorySeparator);
-        if(i != string::npos)
-            myFolder = s.substr(0, i);
-    }
-
-    //Map relative folder or filename to local directory of the engine executable
-    string map_path(const string& path)
-    {
-        string newPath = path;
-
-        //Make sure we have something to work on
-        if (!path.size() || !myFolder.size())
-            return path;
-
-        //Make sure we can map this path
-        if (newPath.find(DirectorySeparator) == string::npos)
-            newPath = myFolder + DirectorySeparator + newPath;
-
-        return newPath;
-    }
-
-    bool is_game_decided(const Position& pos, Value lastScore)
-    {
-      //Arena's default adjudication conditions begin
-      //Assume game is decided if |last sent score| is above 900 cp
-      if (lastScore != VALUE_NONE && std::abs(lastScore) > 9* PawnValueEg)
-          return true;
-
-
-        //Assume game is decided (draw) if game ply is above 500
-        if (pos.game_ply() > 500)
-            return true;
-        //Arena's default adjudication conditions end
-        //From Fritz GUI: assume a game is decided when game ply is above 1200 and |last score| is 0=VALUE_DRAW
-        if (pos.game_ply() > 1200 && abs(lastScore) == VALUE_DRAW )
-            return true;
-
-        //Assume game is decided if remaining pieces is less than 8 (based on Lomosonov tablebases)
-        if (pos.count<ALL_PIECES>() <= Tablebases::MaxCardinality)
-            return true;
-
-        //Assume game is not decided!
-        return false;
-    }
-}
-//end learning from Khalid
 
 /// engine_info() returns the full name of the current ShashChess version.
 /// For local dev compiles we try to append the commit sha and commit date
@@ -848,5 +785,172 @@ void init([[maybe_unused]] int argc, char* argv[]) {
 
 
 } // namespace CommandLine
+//book mangement and learning begin
+namespace Utility
+{
+    //begin learning from Khalid
+    string myFolder;
+
+    void init(const char* arg0)
+    {
+        string s = arg0;
+        size_t i = s.find_last_of(DirectorySeparator);
+        if(i != string::npos)
+            myFolder = s.substr(0, i);
+    }
+    //end learning from Khalid    
+    string unquote(const string& s)
+    {
+        string s1 = s;
+
+        if (s1.size() > 2)
+        {
+            if ((s1.front() == '\"' && s1.back() == '\"') || (s1.front() == '\'' && s1.back() == '\''))
+            {
+                s1 = s1.substr(1, s1.size() - 2);
+            }
+        }
+
+        return s1;
+    }
+
+    bool is_empty_filename(const string &fn)
+    {
+        if (fn.empty())
+            return true;
+
+        static string Empty = EMPTY;
+        return equal(
+            fn.begin(), fn.end(),
+            Empty.begin(), Empty.end(),
+            [](char a, char b) { return tolower(a) == tolower(b); });
+    }
+
+    string fix_path(const string& p)
+    {
+        if (is_empty_filename(p))
+            return p;
+
+        string p1 = unquote(p);
+        replace(p1.begin(), p1.end(), ReverseDirectorySeparator, DirectorySeparator);
+
+        return p1;
+    }
+
+    string combine_path(const string& p1, const string& p2)
+    {
+        //We don't expect the first part of the path to be empty!
+        assert(is_empty_filename(p1) == false);
+
+        if (is_empty_filename(p2))
+            return p2;
+
+        string p;
+        if (p1.back() == DirectorySeparator || p1.back() == ReverseDirectorySeparator)
+            p = p1 + p2;
+        else
+            p = p1 + DirectorySeparator + p2;
+
+        return fix_path(p);
+    }
+
+    string map_path(const string& p)
+    {
+        if (is_empty_filename(p))
+            return p;
+
+        string p2 = fix_path(p);
+
+        //Make sure we can map this path
+        if (p2.find(DirectorySeparator) == string::npos)
+            p2 = combine_path(CommandLine::binaryDirectory, p);
+
+        return p2;
+    }
+
+    size_t get_file_size(const string& f)
+    {
+        if(is_empty_filename(f))
+            return (size_t)-1;
+
+        ifstream in(map_path(f), ifstream::ate | ifstream::binary);
+        if (!in.is_open())
+            return (size_t)-1;
+
+        return (size_t)in.tellg();
+    }
+
+    bool is_same_file(const string& f1, const string& f2)
+    {
+        return map_path(f1) == map_path(f2);
+    }
+
+    string format_bytes(uint64_t bytes, int decimals)
+    {
+        static const uint64_t KB = 1024;
+        static const uint64_t MB = KB * 1024;
+        static const uint64_t GB = MB * 1024;
+        static const uint64_t TB = GB * 1024;
+
+        stringstream ss;
+
+        if (bytes < KB)
+            ss << bytes << " B";
+        else if (bytes < MB)
+            ss << fixed << setprecision(decimals) << ((double)bytes / KB) << "KB";
+        else if (bytes < GB)
+            ss << fixed << setprecision(decimals) << ((double)bytes / MB) << "MB";
+        else if (bytes < TB)
+            ss << fixed << setprecision(decimals) << ((double)bytes / GB) << "GB";
+        else
+            ss << fixed << setprecision(decimals) << ((double)bytes / TB) << "TB";
+
+        return ss.str();
+    }
+
+    //Code is an `edited` version of: https://stackoverflow.com/a/49812018
+    string format_string(const char* const fmt, ...)
+    {
+        //Initialize use of the variable arguments
+        va_list vaArgs;
+        va_start(vaArgs, fmt);
+
+        //Acquire the required string size
+        va_start(vaArgs, fmt);
+        int len = vsnprintf(nullptr, 0, fmt, vaArgs);
+        va_end(vaArgs);
+
+        
+        //Allocate enough buffer and format
+        vector<char> v(len + 1);
+        
+        va_start(vaArgs, fmt);
+        vsnprintf(v.data(), v.size(), fmt, vaArgs);
+        va_end(vaArgs);
+
+        return string(v.data(), len);
+    }        
+    bool is_game_decided(const Position& pos, Value lastScore)
+    {
+        static constexpr const Value DecidedGameEvalThreeshold = PawnValueEg * 5;
+        static constexpr const int DecidedGameMaxPly = 150;
+        static constexpr const int DecidedGameMaxPieceCount = 5;
+
+        //Assume game is decided if |last sent score| is above DecidedGameEvalThreeshold
+        if (lastScore != VALUE_NONE && std::abs(lastScore) > DecidedGameEvalThreeshold)
+            return true;
+
+        //Assume game is decided (draw) if game ply is above 500
+        if (pos.game_ply() > DecidedGameMaxPly)
+            return true;
+
+        if (pos.count<ALL_PIECES>() < DecidedGameMaxPieceCount)
+            return true;
+
+        //Assume game is not decided!
+        return false;
+    }
+} // namespace Utility
+//Book management and learning end
 
 } // namespace Stockfish

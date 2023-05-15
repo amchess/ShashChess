@@ -28,8 +28,8 @@
 #include "learn.h"
 #include "tt.h"
 #include "uci.h"
+#include "book/book.h"
 #include "syzygy/tbprobe.h"
-#include "polybook.h" //cerebellum
 
 using std::string;
 
@@ -52,6 +52,9 @@ static void on_use_NNUE(const Option&) { Eval::NNUE::init(); }
 static void on_eval_file(const Option&) { Eval::NNUE::init(); }
 static void on_UCI_LimitStrength(const Option& ) { Eval::NNUE::init(); }
 static void on_LimitStrength_CB(const Option& ) { Eval::NNUE::init(); }
+//book management begin
+static void on_book1(const Option& o) { Book::on_book(0, (string)o); }
+static void on_book2(const Option& o) { Book::on_book(1, (string)o); }
 //livebook begin
 #ifdef USE_LIVEBOOK
 static void on_livebook_url(const Option& o) { Search::setLiveBookURL(o); }
@@ -60,10 +63,7 @@ static void on_live_book_retry(const Option& o) { Search::set_livebook_retry(o);
 static void on_livebook_depth(const Option& o) { Search::set_livebook_depth(o); }
 #endif
 //livebook end
-//cerebellum+book begin
-static void on_book1_file(const Option& o) { polybook[0].init(o); }
-static void on_book2_file(const Option& o) { polybook[1].init(o); }
-//cerebellum+book end
+//book management end
 
 /// Our case insensitive less() function as required by UCI protocol
 bool CaseInsensitiveLess::operator() (const string& s1, const string& s2) const {
@@ -86,6 +86,7 @@ void init(OptionsMap& o) {
   o["Ponder"]                << Option(false);
   o["MultiPV"]               << Option(1, 1, 500);
   o["Move Overhead"]         << Option(10, 0, 5000);
+  o["Minimum Thinking Time"] << Option(100, 0, 5000);
   o["Slow Mover"]            << Option(100, 10, 1000);
   o["UCI_Chess960"]          << Option(false);
   o["UCI_LimitStrength"]     << Option(false, on_UCI_LimitStrength);
@@ -102,6 +103,16 @@ void init(OptionsMap& o) {
   // The default must follow the format nn-[SHA256 first 12 digits].nnue
   // for the build process (profile-build and fishtest) to work.
   o["EvalFile"]              << Option(EvalFileDefaultName, on_eval_file);
+  //Polyfish ctg and bin books begin	
+  o["CTG/BIN Book 1 File"]     << Option("<empty>", on_book1);
+  o["Book 1 Width"]            << Option(1, 1, 20);
+  o["Book 1 Depth"]            << Option(255, 1, 255);
+  o["(CTG) Book 1 Only Green"] << Option(true);
+  o["CTG/BIN Book 2 File"]     << Option("<empty>", on_book2);
+  o["Book 2 Width"]            << Option(1, 1, 20);
+  o["Book 2 Depth"]            << Option(255, 1, 255);
+  o["(CTG) Book 2 Only Green"] << Option(true);
+  //Polyfish ctg and bin books end
   //livebook begin
   #ifdef USE_LIVEBOOK
   o["Live Book"]             << Option(false);
@@ -113,17 +124,6 @@ void init(OptionsMap& o) {
   o["Live Book Depth"]       << Option(100, 1, 100, on_livebook_depth);
   #endif
   //livebook end
-  //cerebellum book begin
-  o["Book1"]                             << Option(false);
-  o["Book1 File"]                        << Option("<empty>", on_book1_file);
-  o["Book1 BestBookMove"]                << Option(true);
-  o["Book1 Depth"]                       << Option(100, 1, 350);
-						 
-  o["Book2"]                             << Option(false);
-  o["Book2 File"]                        << Option("<empty>", on_book2_file);
-  o["Book2 BestBookMove"]                << Option(true);
-  o["Book2 Depth"]                       << Option(100, 1, 350);
-  //cerebellum book end  
   o["Full depth threads"]    << Option(0, 0, 512, on_full_threads); //if this is used, must be after #Threads is set.
   o["Opening variety"]       << Option (0, 0, 40);
   o["Persisted learning"]    << Option("Off var Off var Standard var Self", "Off", on_persisted_learning);

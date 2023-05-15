@@ -29,8 +29,10 @@
 #include "search.h"
 #include "thread.h"
 #include "timeman.h"
+#include "tt.h"
 #include "learn.h"
 #include "uci.h"
+#include "book/book.h"
 #include "syzygy/tbprobe.h"
 #include "nnue/evaluate_nnue.h"
 
@@ -348,6 +350,7 @@ void UCI::loop(int argc, char* argv[]) {
       else if (token == "bench")    bench(pos, is, states);
       else if (token == "d")        sync_cout << pos << sync_endl;
       else if (token == "eval")     trace_eval(pos);
+      else if (token == "book")    Book::show_moves(pos);
       else if (token == "compiler") sync_cout << compiler_info() << sync_endl;
       else if (token == "export_net")
       {

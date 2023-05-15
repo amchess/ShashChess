@@ -172,7 +172,6 @@ void ThreadPool::clear() {
   main()->bestPreviousScore = VALUE_INFINITE;
   main()->bestPreviousAverageScore = VALUE_INFINITE;
   main()->previousTimeReduction = 1.0;
-  main()->complexity = 1.0;
 }
 
 
@@ -213,6 +212,7 @@ void ThreadPool::start_thinking(Position& pos, StateListPtr& states,
   for (Thread* th : threads)
   {
       th->nodes = (th->tbHits = (th->nmpGuardV = (th->nmpGuard = (th->nmpMinPly = th->bestMoveChanges = 0))));//from crystal
+      th->pvValue = VALUE_NONE;//from Crystal
       th->rootDepth = th->completedDepth = 0;
       th->nmpSide = 0;//from crystal
       th->rootMoves = rootMoves;

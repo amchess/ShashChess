@@ -56,7 +56,7 @@ public:
   void start_searching();
   void wait_for_search_finished();
   size_t id() const { return idx; }
-  bool is_mcts() const { return isMCTS; }
+  bool is_mcts() const { return isMCTS; } //montecarlo
 
   Pawns::Table pawnsTable;
   Material::Table materialTable;
@@ -64,6 +64,7 @@ public:
   std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
   int selDepth, nmpMinPly, nmpSide;//crystal
   Value bestValue, optimism[COLOR_NB];
+  Value pvValue;//from Crystal
   
   bool nmpGuard,nmpGuardV; //from Crystal
   Position rootPos;
@@ -94,7 +95,6 @@ struct MainThread : public Thread {
   void search() override;
   void check_time();
 
-  double complexity;
   double previousTimeReduction;
   Value bestPreviousScore;
   Value bestPreviousAverageScore;
