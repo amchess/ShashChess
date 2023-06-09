@@ -20,7 +20,6 @@
 
 #include "movegen.h"
 #include "position.h"
-#include "thread.h"
 
 namespace Stockfish {
 
@@ -178,16 +177,9 @@ namespace {
         // To check, you either move freely a blocker or make a direct check.
         if (Checks && (Pt == QUEEN || !(pos.blockers_for_king(~Us) & from)))
             b &= pos.check_squares(Pt);
-        //from crystal begin by shashin
-        Square ksq = pos.square<KING>(Us);
 
         while (b)
-        {
-            Square to = pop_lsb(b); 
-            if (!(pos.blockers_for_king(Us) & from) || aligned(from, to, ksq) || pos.this_thread()->shashinQuiescentCapablancaMaxScore )            
-                *moveList++ = make_move(from, to);
-        }
-        //from crystal end by shashin
+            *moveList++ = make_move(from, pop_lsb(b));
     }
 
     return moveList;
@@ -223,14 +215,10 @@ namespace {
         Bitboard b = attacks_bb<KING>(ksq) & (Type == EVASIONS ? ~pos.pieces(Us) : target);
         if (Checks)
             b &= ~attacks_bb<QUEEN>(pos.square<KING>(~Us));
-        //from crystal begin by shashin
+
         while (b)
-        {
-           Square to = pop_lsb(b);
-            if(((pos.attackers_to(to) & pos.pieces(~Us)) == 0)|| (pos.this_thread()->shashinQuiescentCapablancaMaxScore))
-               *moveList++ = make_move(ksq, to);
-        }
-        //from crystal end by shashin
+            *moveList++ = make_move(ksq, pop_lsb(b));
+
         if ((Type == QUIETS || Type == NON_EVASIONS) && pos.can_castle(Us & ANY_CASTLING))
             for (CastlingRights cr : { Us & KING_SIDE, Us & QUEEN_SIDE } )
                 if (!pos.castling_impeded(cr) && pos.can_castle(cr))

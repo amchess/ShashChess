@@ -78,7 +78,7 @@ public:
   ContinuationHistory continuationHistory[2][2];
   bool fullSearch;//full threads patch
   //begin from Shashin
-  int shashinWinProbabilityRange=0, shashinQuiescentCapablancaMiddleHighScore, shashinQuiescentCapablancaMaxScore;
+  int shashinWinProbabilityRange=0;
   Key shashinPosKey;
   Depth shashinDepth=0;
   //end from Shashin
