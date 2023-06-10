@@ -1706,6 +1706,41 @@ namespace {
         Eval::NNUE::hint_common_parent_position(pos);
     }
     } // End early Pruning from Crystal by Shashin
+
+    
+    // Step 11. If the position is not in TT, decrease depth by 2 (or by 4 if the TT entry for the current position was hit and the stored depth is greater than or equal to the current depth).
+    // Use qsearch if depth is equal or below zero (~9 Elo)
+    if (    PvNode
+        && !ttMove
+        && ((!gameCycle && depth >= 3 && (ss-1)->moveCount > 1 ) ||(pos.this_thread()->shashinQuiescentCapablancaMaxScore)))//from Crystal
+    {
+		depth -= 2 + ((pos.this_thread()->shashinQuiescentCapablancaMaxScore)? 2 * (ss->ttHit && tte->depth() >= depth):0);//from Crystal
+    }
+    
+	if(pos.this_thread()->shashinQuiescentCapablancaMaxScore){
+    if (depth <= 0)
+    {
+        return qsearch<PV>(pos, ss, alpha, beta);
+    }
+    if (    cutNode
+        && ((!(ss-1)->secondaryLine)||(pos.this_thread()->shashinQuiescentCapablancaMaxScore)) //from Crystal
+        &&  depth >= 7
+        && !ttMove)
+        depth -= 2;
+    }
+    
+    	// Internal iterative deepening (~10 Elo)
+	if (depth >= 8
+		&& !ttMove)
+	{
+		search<nodeType>(pos, ss, alpha, beta, depth - 7, cutNode);
+
+		tte = TT.probe(posKey, ss->ttHit);
+		ttValue = ss->ttHit ? value_from_tt(tte->value(), ss->ply, pos.rule50_count()) : VALUE_NONE;
+		ttMove = ss->ttHit ? tte->move() : MOVE_NONE;
+	}
+
+
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~4 Elo)
