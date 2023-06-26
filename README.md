@@ -188,15 +188,14 @@ The number of settled threads to use for a full depth brute force search.
 If the number is greater than threads number, all threads are for full depth brute force search.
 
 ### MonteCarlo Tree Search section (experimental: thanks to original Stephan Nicolet work)
-#### MCTS (checkbox)
 
-_Boolean, Default: False_ If activated, the engine uses the MonteCarlo Tree Search in the manner specified by the following parameters.
+_Boolean, Default: False_ If activated, thanks to Shashin theory, the engine will use the MonteCarlo Tree Search for Capablanca quiescent type positions and also for caos ones, in the manner specified by the following parameters. The idea is to exploit Lc0 best results in those positions types, because Lc0 uses mcts in the search.
 
 #### MCTSThreads
 
 _Integer, Default: 0, Min: 0, Max: 512_
 The number of settled threads to use for MCTS search except the first (main) one always for alpha-beta search. 
-In particular, if the number is greater than threads number, they will all do a montecarlo tree search, always except the first (main) for alpha-beta search.
+In particular, if the number is greater than threads number, they will all do a montecarlo tree search, always except the first (main) for alpha-beta search. As a golden rule, for best results, do not exceed 8/11 of the threads set
 
 #### Multi Strategy 
 
@@ -208,35 +207,39 @@ Only in multi mcts mode, for tree policy.
 _Integer, Default: 5, Min: 0, Max: 1000_
 Only in multi mcts mode, for Upper Confidence Bound.
 
-### Book management section (thanks to Khalid Omar)
-The order is: bin->ctg->live book
+### Live Book section (thanks to Eman's author Khalid Omar for windows builds)
 
-#### CTG/BIN Book 1 File
-The file name of the first book file which could be a polyglot (BIN) or Chessbase (CTG) book. To disable this book, use: ```<empty>```
-If the book (CTG or BIN) is in a different directory than the engine executable, then configure the full path of the book file, example:
-```C:\Path\To\My\Book.ctg``` or ```/home/username/path/to/book/bin```
+#### Live Book (checkbox)
 
-#### Book 1 Width
-The number of moves to consider from the book for the same position. To play best book move, set this option to ```1```. If a value ```n``` (greater than ```1```) is configured, the engine will pick **randomly** one of the top ```n``` moves available in the book for the given position
+_Boolean, Default: False_ If activated, the engine uses the livebook as primary choice.
 
-#### Book 1 Depth
-The maximum number of moves to play from the book
-	
-#### (CTG) Book 1 Only Green
-This option is only used if the loaded book is a CTG book. When set to ```true```, the engine will only play Green moves from the book (if any). If no green moves found, then no book move is made
-This option has no effect or use if the loaded book is a Polyglot (BIN) book
-    
-#### CTG/BIN Book 2 File
-Same explaination as **CTG/BIN Book 1 File**, but for the second book
+#### Live Book URL
+The default is the online chessdb [https://www.chessdb.cn/queryc_en/](https://www.chessdb.cn/queryc_en/), a wonderful project by noobpwnftw (thanks to him!)
+ 
+[https://github.com/noobpwnftw/chessdb](https://github.com/noobpwnftw/chessdb)
+[http://talkchess.com/forum3/viewtopic.php?f=2&t=71764&hilit=chessdb](http://talkchess.com/forum3/viewtopic.php?f=2&t=71764&hilit=chessdb)
 
-#### Book 2 Width
-Same explaination as **BIN Book 1 Width**, but for the second book
+The private application can also learn from this live db.
 
-#### Book 2 Depth
-Same explaination as **BIN Book 1 Depth**, but for the second book
+#### Live Book Timeout
 
-#### (CTG) Book 2 Only Green
-Same explaination as **(CTG) Book 1 Only Green**, but for the second book
+_Default 5000, min 0, max 10000_ Only for bullet games, use a lower value, for example, 1500.
+
+#### Live Book Retry
+
+_Default 3, min 1, max 100_ Max times the engine tries to contribute (if the corresponding option is activated: see below) to the live book. If 0, the engine doesn't use the livebook.
+
+#### Live Book Diversity
+
+_Boolean, Default: False_ If activated, the engine varies its play, reducing conversely its strength because already the live chessdb is very large.
+
+#### Live Book Contribute
+
+_Boolean, Default: False_ If activated, the engine sends a move, not in live chessdb, in its queue to be analysed. In this manner, we have a kind of learning cloud.
+
+#### Live Book Depth
+
+_Default 100, min 1, max 100_ Depth of live book moves.
 
 ### Full depth threads
 
@@ -276,13 +279,13 @@ This file is loaded in an hashtable at the engine load and updated each time the
 When BrainLearn starts a new game or when we have max 8 pieces on the chessboard, the learning is activated and the hash table updated each time the engine has a best score
 at a depth >= 4 PLIES, according to Stockfish aspiration window.
 
-At the engine loading, there is an automatic merge to experience.bin files, if we put the other ones, based on the following convention:
+At the engine loading, there is an automatic merge to experience.exp files, if we put the other ones, based on the following convention:
 
-&lt;fileType&gt;&lt;qualityIndex&gt;.bin
+&lt;fileType&gt;&lt;qualityIndex&gt;.exp
 
 where
 
-- _fileType=&quot;experience&quot;/&quot;bin&quot;_
+- _fileType=experience_
 - _qualityIndex_ , an integer, incrementally from 0 on based on the file&#39;s quality assigned by the user (0 best quality and so on)
 
 N.B.
@@ -293,6 +296,10 @@ Because of disk access, to be effective, the learning must be made at no bullet 
 
 _Boolean, Default: False_ 
 If activated, the learning file is only read.
+
+### Shashin section
+
+### Shashin section
 
 ### Shashin section
 

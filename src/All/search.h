@@ -123,11 +123,10 @@ void set_livebook_depth(int book_depth);
 //from Montecarlo begin
 Value minimax_value(Position& pos, Search::Stack* ss, Depth depth);
 Value minimax_value(Position& pos, Search::Stack* ss, Depth depth, Value alpha, Value beta);
+//from Montecarlo end
 #ifdef USE_LIVEBOOK
 size_t cURL_WriteFunc(void *contents, size_t size, size_t nmemb, std::string *s);
 #endif
-//from Montecarlo end
-Value static_value(Position &pos, Search::Stack *ss);
 } // namespace Stockfish
 
 #endif // #ifndef SEARCH_H_INCLUDED

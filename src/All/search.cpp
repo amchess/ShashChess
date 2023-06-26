@@ -307,7 +307,7 @@ inline int getHandicapDepth(int elo) {
 // handicapMode end
 
 // from Shashin
-Value static_value(Position &pos, Stack *ss)
+inline Value static_value(Position &pos, Stack *ss)
 {
     // Check if MAX_PLY is reached
     if (ss->ply >= MAX_PLY)
@@ -325,11 +325,11 @@ Value static_value(Position &pos, Stack *ss)
     return evaluate(pos);
 }
 
-inline int getShashinRange(Value value, Depth depth)
+inline uint8_t getShashinRange(Value value, Depth depth)
 {
     short capturedValue=(std::clamp(value, (Value)(-4000), (Value)(4000)));
     uint8_t capturedDepth=std::min(240, depth);
-    int winProbability = WinProbability[capturedValue + 4000][capturedDepth];
+    uint8_t winProbability = WinProbability[capturedValue + 4000][capturedDepth];
     if (winProbability <= SHASHIN_HIGH_PETROSIAN_THRESHOLD)
     {
         return SHASHIN_POSITION_HIGH_PETROSIAN;
@@ -385,13 +385,13 @@ inline int getShashinRange(Value value, Depth depth)
     return SHASHIN_POSITION_TAL_CAPABLANCA_PETROSIAN;        
 }
 
-inline int isShashinHigh(const Position &pos)
+inline bool isShashinHigh(const Position &pos)
 {
     return (pos.this_thread()->shashinWinProbabilityRange!=SHASHIN_POSITION_HIGH_PETROSIAN)
            &&
            (pos.this_thread()->shashinWinProbabilityRange!=SHASHIN_POSITION_HIGH_TAL);
 }
-inline int isShashinHighMiddle(const Position &pos)
+inline bool isShashinHighMiddle(const Position &pos)
 {
     return isShashinHigh(pos)
            &&
@@ -399,7 +399,7 @@ inline int isShashinHighMiddle(const Position &pos)
            &&           
            (pos.this_thread()->shashinWinProbabilityRange!=SHASHIN_POSITION_MIDDLE_HIGH_TAL);
 }
-inline int isShashinMiddle(const Position &pos)
+inline bool isShashinMiddle(const Position &pos)
 {
     return isShashinHighMiddle(pos)
            &&
@@ -407,7 +407,7 @@ inline int isShashinMiddle(const Position &pos)
            &&           
            (pos.this_thread()->shashinWinProbabilityRange!=SHASHIN_POSITION_MIDDLE_TAL);
 }
-inline int isShashinMiddleLow(const Position &pos)
+inline bool isShashinMiddleLow(const Position &pos)
 {
     return isShashinMiddle(pos)
            &&
@@ -415,7 +415,7 @@ inline int isShashinMiddleLow(const Position &pos)
            &&           
            (pos.this_thread()->shashinWinProbabilityRange!=SHASHIN_POSITION_MIDDLE_LOW_TAL);
 }
-inline int isShashinLow(const Position &pos)
+inline bool isShashinLow(const Position &pos)
 {
     return isShashinMiddleLow(pos)
            &&
@@ -427,7 +427,11 @@ inline int isShashinLow(const Position &pos)
 inline void updateShashinValues(const Position &pos, Value score,Depth depth)
 {
     if ((pos.key() != pos.this_thread()->shashinPosKey)||
-        ((pos.key() == pos.this_thread()->shashinPosKey) &&  (depth > pos.this_thread()->shashinDepth )))
+        ((pos.key() == pos.this_thread()->shashinPosKey) &&  
+        ((depth > pos.this_thread()->shashinDepth )
+            ||
+         ((depth==0) && (pos.this_thread()->shashinDepth==0))   
+        )))
     {
         pos.this_thread()->shashinWinProbabilityRange = getShashinRange(score,depth);
         pos.this_thread()->shashinPosKey = pos.key();
@@ -474,10 +478,10 @@ inline bool isShashinPositionTal(Position &pos)
     }
     return false;
 }*/
-inline uint8_t getInitialShashinWinProbabilityRange(Position &pos)
+inline uint8_t getInitialShashinWinProbabilityRange(Position &pos, Stack* ss)
 {
     if (!highTal && !middleTal && !lowTal && !capablanca && !highPetrosian && !middlePetrosian && !lowPetrosian)
-        return SHASHIN_POSITION_TAL_CAPABLANCA_PETROSIAN;
+        return getShashinRange(static_value(pos, ss),std::max(pos.game_ply(),ss->ply));
     if(highPetrosian && !middlePetrosian && !lowPetrosian && !capablanca && !lowTal && !middleTal && !highTal)
         return SHASHIN_POSITION_HIGH_PETROSIAN;
     if(highPetrosian && middlePetrosian && !lowPetrosian && !capablanca && !lowTal && !middleTal && !highTal)
@@ -503,18 +507,15 @@ inline uint8_t getInitialShashinWinProbabilityRange(Position &pos)
     if(!highPetrosian && !middlePetrosian && !lowPetrosian && !capablanca && !lowTal && middleTal && highTal)
         return SHASHIN_POSITION_MIDDLE_HIGH_TAL;
     if(!highPetrosian && !middlePetrosian && !lowPetrosian && !capablanca && !lowTal && !middleTal && highTal)
-        return SHASHIN_POSITION_HIGH_TAL;                                    
-    return pos.this_thread()->shashinWinProbabilityRange;
+        return SHASHIN_POSITION_HIGH_TAL;
+    return SHASHIN_POSITION_TAL_CAPABLANCA_PETROSIAN;                                            
 }
 
-inline void initShashinValues(Position &pos, Stack *ss, bool mcts)
+inline void initShashinValues(Position &pos, Stack *ss)
 {
-    Value quiescentValue = static_value(pos, ss);
-    updateShashinValues(pos, quiescentValue,std::max(pos.game_ply(),ss->ply));
-    if (!mcts)
-    {
-        pos.this_thread()->shashinWinProbabilityRange = getInitialShashinWinProbabilityRange(pos);
-    }
+    pos.this_thread()->shashinPosKey = pos.key();
+    pos.this_thread()->shashinDepth = std::max(pos.game_ply(),ss->ply);
+    pos.this_thread()->shashinWinProbabilityRange = getInitialShashinWinProbabilityRange(pos,ss);
 }
 
 inline void revertShashinValues(Position &pos, int lastShashinWinProbability, Key lastShashinPosKey, Depth lastShashinDepth)
@@ -690,29 +691,31 @@ void MainThread::search() {
 
 
   // kelly begin
-  if (bestThread->completedDepth > 4 && LD.is_enabled() && !LD.is_paused()) // from Khalid
+  if (!bookMove)
   {
-
-        PersistedLearningMove plm;
-        plm.key = rootPos.key();
-        plm.learningMove.depth = bestThread->completedDepth;
-        plm.learningMove.move = bestThread->rootMoves[0].pv[0];
-        plm.learningMove.score = bestThread->rootMoves[0].score;
-        if (LD.learning_mode() == LearningMode::Self)
-        {
-            const LearningMove *existingMove = LD.probe_move(plm.key, plm.learningMove.move);
-            if (existingMove)
-                plm.learningMove.score = existingMove->score;
-            gameLine.push_back(plm);
-        }
-        else
-        {
-            LD.add_new_learning(plm.key, plm.learningMove);
-        }
-  }
-  if (!enabledLearningProbe)
-  {
-      useLearning = false;
+      if (bestThread->completedDepth > 4 && LD.is_enabled() && !LD.is_paused()) // from Khalid
+      {
+          PersistedLearningMove plm;
+          plm.key = rootPos.key();
+          plm.learningMove.depth = bestThread->completedDepth;
+          plm.learningMove.move = bestThread->rootMoves[0].pv[0];
+          plm.learningMove.score = bestThread->rootMoves[0].score;
+          if (LD.learning_mode() == LearningMode::Self)
+          {
+              const LearningMove* existingMove = LD.probe_move(plm.key, plm.learningMove.move);
+              if (existingMove)
+                  plm.learningMove.score = existingMove->score;
+              gameLine.push_back(plm);
+          }
+          else
+          {
+              LD.add_new_learning(plm.key, plm.learningMove);
+          }
+      }
+      if (!enabledLearningProbe)
+      {
+          useLearning = false;
+      }
   }
   // Kelly end
 
@@ -729,21 +732,24 @@ void MainThread::search() {
 
   // from Khalid begin
   // Save learning data if game is already decided
-
-  if (Utility::is_game_decided(rootPos, (bestThread->rootMoves[0].score)) 
-  && LD.is_enabled() && !LD.is_paused())
+  if (!bookMove)
   {
-    // Perform Q-learning if enabled
-    if (LD.learning_mode() == LearningMode::Self)
-      putGameLineIntoLearningTable();
-	// Save to learning file
-	if (!LD.is_readonly())
-	{
-    	LD.persist();
-	}
-	// Stop learning until we receive *ucinewgame* command
-	LD.pause();
+      if (Utility::is_game_decided(rootPos, (bestThread->rootMoves[0].score))
+          && LD.is_enabled() && !LD.is_paused())
+      {
+          // Perform Q-learning if enabled
+          if (LD.learning_mode() == LearningMode::Self)
+              putGameLineIntoLearningTable();
+          // Save to learning file
+          if (!LD.is_readonly())
+          {
+              LD.persist();
+          }
+          // Stop learning until we receive *ucinewgame* command
+          LD.pause();
+      }
   }
+
   // from Khalid end
 // livebook begin
 #ifdef USE_LIVEBOOK
@@ -818,7 +824,7 @@ void Thread::search() {
   multiPV = std::min(multiPV, rootMoves.size());
   // from Shashin
   bool mcts = (bool)Options["MCTS by Shashin"];
-  initShashinValues(rootPos, ss, mcts);
+  initShashinValues(rootPos, ss);
   // end from Shashin
  
   int searchAgainCounter = 0;
@@ -828,7 +834,8 @@ void Thread::search() {
   if (
      	(
                 (!mainThread) && mcts && (((mctsThreads == 1) && (idx == 1)) || ((mctsThreads > 1) && (idx <= (size_t)mctsThreads) && (!mainThread))) &&
-                (isShashinLow(rootPos)
+                (
+                 (!(isShashinLow(rootPos)))
                  &&
                  (rootPos.key()==rootPos.this_thread()->shashinPosKey)   
                 ) &&
@@ -1514,7 +1521,7 @@ namespace {
         (ss-1)->statScore < 17329
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 21 * depth - improvement * 99 / 1300 + 258
+        &&  ss->staticEval >= beta - 21 * depth - improvement / 13 + 258
         &&  pos.non_pawn_material(us)
 		&& !disableNMAndPC //Kelly
 		&& (((isShashinMiddle(pos)
@@ -1575,10 +1582,9 @@ namespace {
         if (nullValue >= beta)
         {
             // Do not return unproven mate or TB scores
-            if (nullValue >= VALUE_TB_WIN_IN_MAX_PLY)
-                nullValue = beta;
+            nullValue = std::min(nullValue, VALUE_TB_WIN_IN_MAX_PLY-1);
 
-            if (thisThread->nmpMinPly || (abs(beta) < VALUE_KNOWN_WIN && depth < 14))
+            if (thisThread->nmpMinPly || depth < 14)
                 return nullValue;
 
             assert(!thisThread->nmpMinPly); // Recursive verification is not allowed
@@ -1895,9 +1901,28 @@ moves_loop: // When in check, search starts here
                    + captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / 7 < alpha)
                   continue;
 
+              Bitboard occupied;
               // SEE based pruning (~11 Elo)
-              if (!pos.see_ge(move, Value(-205) * depth))
-                      continue;
+              if (!pos.see_ge(move, occupied, Value(-205) * depth))
+              {
+                 if (depth < 2 - capture)
+                    continue;
+                 // Don't prune the move if opponent Queen/Rook is under discovered attack after the exchanges
+                 // Don't prune the move if opponent King is under discovered attack after or during the exchanges
+                 Bitboard leftEnemies = (pos.pieces(~us, KING, QUEEN, ROOK)) & occupied;
+                 Bitboard attacks = 0;
+                 occupied |= to_sq(move);
+                 while (leftEnemies && !attacks)
+                 {
+                      Square sq = pop_lsb(leftEnemies);
+                      attacks |= pos.attackers_to(sq, occupied) & pos.pieces(us) & occupied;
+                      // don't consider pieces which were already threatened/hanging before SEE exchanges
+                      if (attacks && (sq != pos.square<KING>(~us) && (pos.attackers_to(sq, pos.pieces()) & pos.pieces(us))))
+                         attacks = 0;
+                 }
+                 if (!attacks)
+                    continue;
+              }
           }
           else
           {
@@ -2395,10 +2420,7 @@ moves_loop: // When in check, search starts here
 
     // Step 4. Static evaluation of the position
     if (ss->inCheck)
-    {
-        ss->staticEval = VALUE_NONE;
         bestValue = futilityBase = -VALUE_INFINITE;
-    }
     else
     {
         if (ss->ttHit)
@@ -2414,9 +2436,8 @@ moves_loop: // When in check, search starts here
         }
         else
             // In case of null move search use previous static eval with a different sign
-            ss->staticEval = bestValue =
-            (ss-1)->currentMove != MOVE_NULL ? evaluate(pos)
-                                             : -(ss-1)->staticEval;
+            ss->staticEval = bestValue = (ss-1)->currentMove != MOVE_NULL ? evaluate(pos)
+                                                                          : -(ss-1)->staticEval;
 
         // Stand pat. Return immediately if static value is at least beta
         if (bestValue >= beta)
@@ -2455,108 +2476,110 @@ moves_loop: // When in check, search starts here
     // or a beta cutoff occurs.
     while ((move = mp.next_move()) != MOVE_NONE)
     {
-      assert(is_ok(move));
+        assert(is_ok(move));
 
-      // Check for legality
-      if (!pos.legal(move))
-          continue;
+        // Check for legality
+        if (!pos.legal(move))
+            continue;
 
-      givesCheck = pos.gives_check(move);
-      capture = pos.capture_stage(move);
+        givesCheck = pos.gives_check(move);
+        capture = pos.capture_stage(move);
 
-      moveCount++;
+        moveCount++;
 
-    // Step 6. Pruning.
-    if (bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
-    {
-      // Futility pruning and moveCount pruning (~10 Elo)
-      if (   !givesCheck
-          &&  to_sq(move) != prevSq
-          &&  futilityBase > -VALUE_KNOWN_WIN
-          &&  type_of(move) != PROMOTION)
-      {
-          if (moveCount > 2 + (((isShashinMiddleLow(pos))
+        // Step 6. Pruning.
+        if (bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
+        {
+            // Futility pruning and moveCount pruning (~10 Elo)
+            if (   !givesCheck
+                &&  to_sq(move) != prevSq
+                &&  futilityBase > -VALUE_KNOWN_WIN
+                &&  type_of(move) != PROMOTION)
+            {
+                if (moveCount > 2 + (((isShashinMiddleLow(pos))
                                  ||(pos.key()!=pos.this_thread()->shashinPosKey))?0:PvNode))//from Crystal
-              continue;
+                    continue;
 
-          futilityValue = futilityBase + PieceValue[EG][pos.piece_on(to_sq(move))];
+                futilityValue = futilityBase + PieceValue[EG][pos.piece_on(to_sq(move))];
 
-          if (futilityValue <= alpha)
-          {
-              bestValue = std::max(bestValue, futilityValue);
-              continue;
-          }
 
-          if (futilityBase <= alpha && !pos.see_ge(move, VALUE_ZERO + 1))
-          {
-              bestValue = std::max(bestValue, futilityBase);
-              continue;
-          }
-      }
+                if (futilityValue <= alpha)
+                {
+                    bestValue = std::max(bestValue, futilityValue);
+                    continue;
+                }
 
-      // We prune after 2nd quiet check evasion where being 'in check' is implicitly checked through the counter
-      // and being a 'quiet' apart from being a tt move is assumed after an increment because captures are pushed ahead.
-      if (quietCheckEvasions > 1)
-          break;
+                if (futilityBase <= alpha && !pos.see_ge(move, VALUE_ZERO + 1))
+                {
+                    bestValue = std::max(bestValue, futilityBase);
+                    continue;
+                }
+            }
 
-      // Continuation history based pruning (~3 Elo)
-      if (   !capture
-          && (*contHist[0])[pos.moved_piece(move)][to_sq(move)] < 0
-          && (*contHist[1])[pos.moved_piece(move)][to_sq(move)] < 0)
-          continue;
+            // We prune after the second quiet check evasion move, where being 'in check' is
+            // implicitly checked through the counter, and being a 'quiet move' apart from
+            // being a tt move is assumed after an increment because captures are pushed ahead.
+            if (quietCheckEvasions > 1)
+                break;
 
-      // Do not search moves with bad enough SEE values (~5 Elo)
-      if (!pos.see_ge(move, Value(-95)))
-          continue;
-    }
+            // Continuation history based pruning (~3 Elo)
+            if (   !capture
+                && (*contHist[0])[pos.moved_piece(move)][to_sq(move)] < 0
+                && (*contHist[1])[pos.moved_piece(move)][to_sq(move)] < 0)
+                continue;
 
-      // Speculative prefetch as early as possible
-      prefetch(TT.first_entry(pos.key_after(move)));
+            // Do not search moves with bad enough SEE values (~5 Elo)
+            if (!pos.see_ge(move, Value(-95)))
+                continue;
+        }
 
-      // Update the current move
-      ss->currentMove = move;
-      ss->continuationHistory = &thisThread->continuationHistory[ss->inCheck]
-                                                                [capture]
-                                                                [pos.moved_piece(move)]
-                                                                [to_sq(move)];
+        // Speculative prefetch as early as possible
+        prefetch(TT.first_entry(pos.key_after(move)));
 
-      quietCheckEvasions += !capture && ss->inCheck;
+        // Update the current move
+        ss->currentMove = move;
+        ss->continuationHistory = &thisThread->continuationHistory[ss->inCheck]
+                                                                  [capture]
+                                                                  [pos.moved_piece(move)]
+                                                                  [to_sq(move)];
 
-      // from Shashin begin
-      int lastShashinValue = pos.this_thread()->shashinWinProbabilityRange,
-          lastShashinPosKey = pos.this_thread()->shashinPosKey,
-          lastShashinDepth = pos.this_thread()->shashinDepth;
-      // from Shashin end
-      // Step 7. Make and search the move
-      pos.do_move(move, st, givesCheck);
-      // from Shashin begin
-      updateForRevertShashinValues(pos,std::max((pos.game_ply())+1,(ss->ply)+1));
-      // From Shashin end
-      value = -qsearch<nodeType>(pos, ss+1, -beta, -alpha, depth - 1);
-      pos.undo_move(move);
-      // from Shashin begin
-      revertShashinValues(pos, lastShashinValue, lastShashinPosKey,lastShashinDepth);
-      // from Shashin end
-      assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
+        quietCheckEvasions += !capture && ss->inCheck;
 
-      // Step 8. Check for a new best move
-      if (value > bestValue)
-      {
-          bestValue = value;
+        // from Shashin begin
+        int lastShashinValue = pos.this_thread()->shashinWinProbabilityRange,
+            lastShashinPosKey = pos.this_thread()->shashinPosKey,
+            lastShashinDepth = pos.this_thread()->shashinDepth;
+        // from Shashin end
+        // Step 7. Make and search the move
+        pos.do_move(move, st, givesCheck);
+        // from Shashin begin
+        updateForRevertShashinValues(pos,std::max((pos.game_ply())+1,(ss->ply)+1));
+        // From Shashin end
+        value = -qsearch<nodeType>(pos, ss+1, -beta, -alpha, depth - 1);
+        pos.undo_move(move);
+        // from Shashin begin
+        revertShashinValues(pos, lastShashinValue, lastShashinPosKey,lastShashinDepth);
+        // from Shashin end
+        assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
 
-          if (value > alpha)
-          {
-              bestMove = move;
+        // Step 8. Check for a new best move
+        if (value > bestValue)
+        {
+            bestValue = value;
 
-              if (PvNode) // Update pv even in fail-high case
-                  update_pv(ss->pv, move, (ss+1)->pv);
+            if (value > alpha)
+            {
+                bestMove = move;
 
-              if (PvNode && value < beta) // Update alpha here!
-                  alpha = value;
-              else
-                  break; // Fail high
-          }
-       }
+                if (PvNode) // Update pv even in fail-high case
+                    update_pv(ss->pv, move, (ss+1)->pv);
+
+                if (PvNode && value < beta) // Update alpha here!
+                    alpha = value;
+                else
+                    break; // Fail high
+            }
+        }
     }
     // from Sugar
     if (openingVariety && bestValue + (openingVariety * UCI::NormalizeToPawnValue / 100) >= 0 && pos.count<PAWN>() > 12)

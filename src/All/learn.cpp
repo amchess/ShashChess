@@ -162,6 +162,9 @@ void LearningData::insert_or_update(PersistedLearningMove *plm, bool qLearning)
             lm = *bestNewMoveCandidate;
             *bestNewMoveCandidate = *currentBestMove;
             *currentBestMove = lm;
+
+            //Flag for persisting
+            needPersisting = true;
         }
     }
 }
@@ -201,21 +204,21 @@ void LearningData::init()
     if (learningMode == LearningMode::Off)
         return;
 
-    load(Utility::map_path("experience.bin"));
+    load(Utility::map_path("experience.exp"));
 
     std::vector<std::string> slaveFiles;
 
-    //Just in case, check and load for "experience_new.bin" which will be present if
+    //Just in case, check and load for "experience_new.exp" which will be present if
     //previous saving operation failed (engine crashed or terminated)
-    std::string slaveFile = Utility::map_path("experience_new.bin");
-    if (load("experience_new.bin"))
+    std::string slaveFile = Utility::map_path("experience_new.exp");
+    if (load("experience_new.exp"))
         slaveFiles.push_back(slaveFile);
 
     //Load slave experience files (if any)
     int i = 0;
     while (true)
     {
-        slaveFile = Utility::map_path("experience" + std::to_string(i) + ".bin");
+        slaveFile = Utility::map_path("experience" + std::to_string(i) + ".exp");
         bool loaded = load(slaveFile);
         if (!loaded)
             break;
@@ -265,13 +268,13 @@ void LearningData::persist()
 
     /*
         To avoid any problems when saving to experience file, we will actually do the following:
-        1) Save new experience to "experience_new.bin"
-        2) Remove "experience.bin"
-        3) Rename "experience_new.bin" to "experience.bin"
+        1) Save new experience to "experience_new.exp"
+        2) Remove "experience.exp"
+        3) Rename "experience_new.exp" to "experience.exp"
 
         This approach is failproof so that the old file is only removed when the new file is sufccessfully saved!
         If, for whatever odd reason, the engine is able to execute step (1) and (2) and fails to execute step (3)
-        i.e., we end up with experience0.bin then it is not a problem since the file will be loaded anyway the next
+        i.e., we end up with experience0.exp then it is not a problem since the file will be loaded anyway the next
         time the engine starts!
     */
 
@@ -292,13 +295,13 @@ void LearningData::persist()
             uniqueStr = ss.str();
         }
 
-        experienceFilename = Utility::map_path("experience-" + uniqueStr + ".bin");
-        tempExperienceFilename = Utility::map_path("experience_new-" + uniqueStr + ".bin");
+        experienceFilename = Utility::map_path("experience-" + uniqueStr + ".exp");
+        tempExperienceFilename = Utility::map_path("experience_new-" + uniqueStr + ".exp");
     }
     else
     {
-        experienceFilename = Utility::map_path("experience.bin");
-        tempExperienceFilename = Utility::map_path("experience_new.bin");
+        experienceFilename = Utility::map_path("experience.exp");
+        tempExperienceFilename = Utility::map_path("experience_new.exp");
     }
 
     std::ofstream outputFile(tempExperienceFilename, std::ofstream::trunc | std::ofstream::binary);
