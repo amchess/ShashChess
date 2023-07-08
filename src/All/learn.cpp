@@ -310,7 +310,11 @@ void LearningData::persist()
     {
         persistedLearningMove.key = kvp.first;
         persistedLearningMove.learningMove = *kvp.second;
-        outputFile.write((char*)&persistedLearningMove, sizeof(persistedLearningMove));
+        if(persistedLearningMove.learningMove.depth!=0)
+        {
+            outputFile.write((char*)&persistedLearningMove, sizeof(persistedLearningMove));
+        }
+
     }
     outputFile.close();
 
