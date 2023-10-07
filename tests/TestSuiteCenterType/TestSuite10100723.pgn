@@ -1,0 +1,133 @@
+﻿[Event "?"]
+[Site "?"]
+[Date "2023.09.28"]
+[Round "?"]
+[White "Caro Kann"]
+[Black "?"]
+[Result "*"]
+[ECO "B16"]
+[PlyCount "18"]
+[EventDate "2023.09.28"]
+
+1. e4 c6 2. d4 d5 3. Nd2 dxe4 4. Nxe4 Nf6 5. Nxf6+ gxf6 6. Nf3 Bf5 7. Be2 Qc7 8. O-O Nd7 9. c4 O-O-O *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.09.28"]
+[Round "?"]
+[White "Francese"]
+[Black "?"]
+[Result "*"]
+[ECO "C05"]
+[PlyCount "16"]
+[EventDate "2023.09.28"]
+
+1. e4 e6 2. d4 d5 3. Nd2 Nf6 4. e5 Nfd7 5. f4 c5 6. Ndf3 Nc6 7. c3 cxd4 8. cxd4 h5 *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.09.28"]
+[Round "?"]
+[White "Olandese"]
+[Black "?"]
+[Result "*"]
+[ECO "A80"]
+[Annotator "_"]
+[PlyCount "12"]
+[EventDate "2023.09.28"]
+
+{[%evp 0,12,17,17,63,60,59,59,53,40,53,46,76,86,81]} 1. d4 f5 2. Nf3 Nf6 3. Bg5 e6 4. Nbd2 d5 5. c4 c6 6. e3 Bd6 *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.09.28"]
+[Round "?"]
+[White "Siciliana"]
+[Black "?"]
+[Result "*"]
+[ECO "B82"]
+[PlyCount "16"]
+[EventDate "2023.09.28"]
+
+1. e4 c5 2. Nf3 Nc6 3. d4 cxd4 4. Nxd4 e6 5. Nc3 d6 6. Be3 Nf6 7. f4 Be7 8. Qf3 O-O *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.09.28"]
+[Round "?"]
+[White "Ruy Lopez"]
+[Black "?"]
+[Result "*"]
+[ECO "C77"]
+[PlyCount "16"]
+[EventDate "2023.09.28"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. d3 d6 6. c4 Bg4 7. Be3 Nd7 8. h3 Bh5 *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.09.28"]
+[Round "?"]
+[White "Est Indiana"]
+[Black "?"]
+[Result "*"]
+[ECO "E90"]
+[PlyCount "16"]
+[EventDate "2023.09.28"]
+
+1. c4 g6 2. Nc3 Bg7 3. d4 Nf6 4. e4 d6 5. Nf3 O-O 6. h3 e5 7. d5 Qe8 8. g4 a5 *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.09.28"]
+[Round "?"]
+[White "Indiana Nimzowitsch"]
+[Black "?"]
+[Result "*"]
+[ECO "E28"]
+[Annotator "_"]
+[PlyCount "16"]
+[EventDate "2023.09.28"]
+
+{[%evp 0,16,17,23,23,-11,-4,-4,4,7,18,-10,-9,-14,23,16,16,1,80]} 1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. e3 O-O 5. a3 Bxc3+ 6. bxc3 c5 7. Bd3 b6 8. e4 Ne8 *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.09.28"]
+[Round "?"]
+[White "Gambetto di donna"]
+[Black "?"]
+[Result "*"]
+[ECO "D53"]
+[Annotator "_"]
+[PlyCount "16"]
+[EventDate "2023.09.28"]
+
+{[%evp 0,16,26,26,26,12,49,40,40,24,45,17,36,44,44,10,95,69,77]} 1. d4 Nf6 2. c4 c6 3. Nc3 d5 4. Nf3 e6 5. Bg5 Be7 6. e3 Nbd7 7. Rc1 Nf8 8. Bd3 Ng6 *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.09.28"]
+[Round "?"]
+[White "Siciliana"]
+[Black "?"]
+[Result "*"]
+[ECO "B22"]
+[PlyCount "16"]
+[EventDate "2023.09.28"]
+
+1. e4 c5 2. c3 d6 3. d4 Qc7 4. Be3 b6 5. g3 Nf6 6. Bg2 e5 7. Ne2 Nc6 8. O-O g6 *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.09.28"]
+[Round "?"]
+[White "Trompowsky"]
+[Black "?"]
+[Result "*"]
+[ECO "A45"]
+[PlyCount "16"]
+[EventDate "2023.09.28"]
+
+1. d4 Nf6 2. Bg5 Ne4 3. Bf4 c5 4. f3 Qa5+ 5. c3 Nf6 6. d5 d6 7. e4 Nbd7 8. a4 a6 *
+
