@@ -52,6 +52,9 @@ static void on_tb_path(const Option& o) { Tablebases::init(o); }
 static void on_use_NNUE(const Option&) { Eval::NNUE::init(); }
 static void on_eval_file(const Option&) { Eval::NNUE::init(); }
 static void on_UCI_LimitStrength(const Option& ) { Eval::NNUE::init(); }
+static void on_LimitStrength_CB(const Option& ) { Eval::NNUE::init(); }
+static void on_UCI_Elo(const Option& ) { Eval::NNUE::init(); }
+static void on_ELO_CB(const Option& ) { Eval::NNUE::init(); }
 //book management begin
 static void on_book1(const Option& o) { Book::on_book(0, (string)o); }
 static void on_book2(const Option& o) { Book::on_book(1, (string)o); }
@@ -93,13 +96,13 @@ void init(OptionsMap& o) {
   o["UCI_LimitStrength"]     << Option(false, on_UCI_LimitStrength);
   //handicap mode from ShashChess begin
   o["Handicapped Depth"]     << Option(false,on_UCI_LimitStrength);
-  o["UCI_Elo"]               << Option(3190, 1320, 3190,on_UCI_LimitStrength);
+  o["UCI_Elo"]               << Option(3190, 1320, 3190,on_UCI_Elo);
   o["Handicapped avatar player"]  << Option(false,on_UCI_LimitStrength);
   o["Avatar File"]           << Option("", on_avatar);
   //handicap mode from ShashChess end
   //only for chessbase gui handicap mode begin 
-  o["LimitStrength_CB"]      << Option(false,on_UCI_LimitStrength);
-  o["ELO_CB"]                << Option(3190, 1320, 3190,on_UCI_LimitStrength); 
+  o["LimitStrength_CB"]      << Option(false,on_LimitStrength_CB);
+  o["ELO_CB"]                << Option(3190, 1320, 3190,on_ELO_CB); 
   //only for chessbase gui handicap mode end
   o["UCI_ShowWDL"]           << Option(false);
   o["SyzygyPath"]            << Option("<empty>", on_tb_path);
