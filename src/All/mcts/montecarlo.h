@@ -89,7 +89,7 @@ namespace Stockfish {
 		}
 	};
 
-	extern int mctsThreads;
+	extern int mctsThreads, mctsGoldDigger;
 
 	class AutoSpinLock
 	{

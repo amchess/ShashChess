@@ -41,6 +41,7 @@ namespace UCI {
 
 /// 'On change' actions, triggered by an option's value change
 static void on_clear_hash(const Option&) { Search::clear(); }
+static void on_avatar(const Option& o) { Eval::loadAvatar(o); }
 static void on_hash_size(const Option& o) { TT.resize(size_t(o)); }
 static void on_logger(const Option& o) { start_logger(o); }
 static void on_threads(const Option& o) { Threads.set(size_t(o)); }
@@ -51,7 +52,6 @@ static void on_tb_path(const Option& o) { Tablebases::init(o); }
 static void on_use_NNUE(const Option&) { Eval::NNUE::init(); }
 static void on_eval_file(const Option&) { Eval::NNUE::init(); }
 static void on_UCI_LimitStrength(const Option& ) { Eval::NNUE::init(); }
-static void on_LimitStrength_CB(const Option& ) { Eval::NNUE::init(); }
 //book management begin
 static void on_book1(const Option& o) { Book::on_book(0, (string)o); }
 static void on_book2(const Option& o) { Book::on_book(1, (string)o); }
@@ -89,11 +89,18 @@ void init(OptionsMap& o) {
   o["Minimum Thinking Time"] << Option(100, 0, 5000);
   o["Slow Mover"]            << Option(100, 10, 1000);
   o["UCI_Chess960"]          << Option(false);
+  
   o["UCI_LimitStrength"]     << Option(false, on_UCI_LimitStrength);
-  o["Handicapped Depth"]     << Option(false);
-  o["LimitStrength_CB"]      << Option(false,on_LimitStrength_CB);
-  o["UCI_Elo"]               << Option(3190, 1320, 3190);//handicap mode from ShashChess 
-  o["ELO_CB"]                << Option(3190, 1320, 3190);//handicap mode from ShashChess 
+  //handicap mode from ShashChess begin
+  o["Handicapped Depth"]     << Option(false,on_UCI_LimitStrength);
+  o["UCI_Elo"]               << Option(3190, 1320, 3190,on_UCI_LimitStrength);
+  o["Handicapped avatar player"]  << Option(false,on_UCI_LimitStrength);
+  o["Avatar File"]           << Option("", on_avatar);
+  //handicap mode from ShashChess end
+  //only for chessbase gui handicap mode begin 
+  o["LimitStrength_CB"]      << Option(false,on_UCI_LimitStrength);
+  o["ELO_CB"]                << Option(3190, 1320, 3190,on_UCI_LimitStrength); 
+  //only for chessbase gui handicap mode end
   o["UCI_ShowWDL"]           << Option(false);
   o["SyzygyPath"]            << Option("<empty>", on_tb_path);
   o["Syzygy50MoveRule"]      << Option(true);
@@ -130,8 +137,9 @@ void init(OptionsMap& o) {
   o["Read only learning"]    << Option(false, on_readonly_learning);
   o["MCTS by Shashin"]       << Option(false);
   o["MCTSThreads"]           << Option(1, 1, 512);
-  o["Multi Strategy"]        << Option(20, 0, 100);
-  o["Multi MinVisits"]       << Option(5, 0, 1000);
+  o["MCTSGoldDigger"]             << Option(1, 1, 5);
+  o["MTCS Multi Strategy"]        << Option(20, 0, 100);
+  o["MCTS Multi MinVisits"]       << Option(5, 0, 1000);
   o["Concurrent Experience"] << Option (false); 
   o["High Tal"]              << Option(false);
   o["Middle Tal"]            << Option(false);

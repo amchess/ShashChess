@@ -78,9 +78,8 @@ public:
   ContinuationHistory continuationHistory[2][2];
   bool fullSearch;//full threads patch
   //begin from Shashin
-  uint8_t shashinWinProbabilityRange=0;
-  Key shashinPosKey;
-  Depth shashinDepth=0;
+  int8_t shashinWinProbabilityRange=0;
+  int shashinPly=0;
   //end from Shashin
   bool isMCTS; //from montecarlo
  };

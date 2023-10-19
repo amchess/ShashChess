@@ -58,12 +58,14 @@ using namespace std;
 
 namespace Stockfish {
 
-//from handicap mode
-extern bool pawnsToEvaluate, winnableToEvaluate, imbalancesToEvaluate;
-//end from handicap mode
 namespace Eval {
 
   bool useNNUE;
+  //true handicap mode begin
+  bool limitStrength,pawnsToEvaluate, winnableToEvaluate, imbalancesToEvaluate,handicappedAvatarPlayer,handicappedDepth;
+  int uciElo;
+  //true handicap mode end
+  
   string currentEvalFileName = "None";
 
   /// NNUE::init() tries to load a NNUE network at startup time, or when the engine
@@ -75,8 +77,14 @@ namespace Eval {
   /// variable to have the engine search in a special directory in their distro.
 
   void NNUE::init() {
-
-    useNNUE = Options["Use NNUE"]&&(!Options["UCI_LimitStrength"])&&(!Options["LimitStrength_CB"]);//from handicap mode
+    limitStrength = Options["UCI_LimitStrength"] || Options["LimitStrength_CB"];
+    useNNUE = Options["Use NNUE"]&&(!limitStrength);//true handicap mode
+    uciElo = limitStrength ? Options["UCI_Elo"] : Options["ELO_CB"];
+    pawnsToEvaluate = limitStrength ? (uciElo >= 2000) : 1;
+    winnableToEvaluate = limitStrength ? (uciElo >= 2200) : 1;
+    imbalancesToEvaluate = limitStrength ? (uciElo >= 2400) : 1;
+    handicappedAvatarPlayer=Eval::limitStrength? (bool)Options["Handicapped avatar player"]:false;
+    handicappedDepth=Options["Handicapped Depth"];
     if (!useNNUE)
         return;
 
@@ -206,8 +214,44 @@ namespace {
   constexpr int SafeCheck[][2] = {
       {}, {}, {805, 1292}, {650, 984}, {1071, 1886}, {730, 1128}
   };
+  //handicap mode begin
+  // Evaluation weights, initialized from UCI options
+  enum
+  {
+      MATERIAL_INDEX = 0,
+      IMBALANCE_INDEX,
+      PAWN_STRUCTURE_INDEX,
+      KNIGHT_INDEX,
+      BISHOP_INDEX,
+      ROOK_INDEX,
+      QUEEN_INDEX,
+      MOBILITY_INDEX,
+      KING_SAFETY_INDEX,
+      THREATS_INDEX,
+      PASSED_PAWN_INDEX,
+      SPACE_INDEX,
+      WINNABLE_INDEX,
+      AVATAR_NB
+  };
+  struct Weight { std::string mgName; std::string egName;  int mg, eg; } Weights[AVATAR_NB] =
+  {
+      { "Material(mg)",      "Material(eg)",      100, 100 },
+      { "Imbalance(mg)",     "Imbalance(eg)",     100, 100 },
+      { "PawnStructure(mg)", "PawnStructure(eg)", 100, 100 },
+      { "Knight(mg)",        "Knight(eg)",        100, 100 },
+      { "Bishop(mg)",        "Bishop(mg)",        100, 100 },
+      { "Rook(mg)",          "Rook(eg)",          100, 100 },
+      { "Queen(mg)",         "Queen(eg)",         100, 100 },
+      { "Mobility(mg)",      "Mobility(eg)",      100, 100 },
+      { "KingSafety(mg)",    "KingSafety(eg)",    100, 100 },
+      { "Threats(mg)",       "Threats(eg)",       100, 100 },
+      { "PassedPawns(mg)",   "PassedPawns(eg)",   100, 100 },
+      { "Space(mg)",         "Space(eg)",         100, 100 },
+      { "",                  "Winnable(eg)",      0  , 100 } //Winnable is only an EG value
+  };
 
-#define S(mg, eg) make_score(mg, eg)
+  #define S(mg, eg) make_score(mg, eg)
+  //handicap mode end
 
   // MobilityBonus[PieceType-2][attacked] contains bonuses for middle and end game,
   // indexed by piece type and number of attacked squares in the mobility area.
@@ -341,8 +385,20 @@ namespace {
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
   };
+  //handicap mode begin
+  // apply_weight() scales score 'v' by weight 'w'
+  template<Phase P>
+  inline Value apply_weight(Value v, int wi) {
+      if constexpr (P == MG)
+          return v * Weights[wi].mg / 100;
+      else if constexpr (P == EG)
+          return v * Weights[wi].eg / 100;
+  }
 
-
+  inline Score apply_weights(Score s, int wi) {
+    return make_score(apply_weight<MG>(mg_value(s), wi), apply_weight<EG>(eg_value(s), wi));
+  }
+  //handicap mode end
   // Evaluation::initialize() computes king and pawn attacks, and the king ring
   // bitboard for a given color. This is done at the beginning of the evaluation.
 
@@ -901,12 +957,14 @@ namespace {
     // so that the midgame and endgame scores do not change sign after the bonus.
     int u = ((mg > 0) - (mg < 0)) * std::clamp(complexity + 50, -abs(mg), 0);
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
+
     //Handicap Mode begin
-    if(winnableToEvaluate)
+    if(Stockfish::Eval::winnableToEvaluate)
     {
-		mg += u;
-		eg += v;
+		  mg += u;
+		  eg += v;
     }
+
     //Handicap Mode end
     // Compute the scale factor for the winning side
     Color strongSide = eg > VALUE_DRAW ? WHITE : BLACK;
@@ -986,12 +1044,12 @@ namespace {
     // the position object (material + piece square tables) and the material
     // imbalance. Score is computed internally from the white point of view.
     //from handicap mode begin
-    Score score = pos.psq_score() + (imbalancesToEvaluate ? me->imbalance():0);
+    Score score = apply_weights(pos.psq_score(), MATERIAL_INDEX) + (Stockfish::Eval::imbalancesToEvaluate ? apply_weights(me->imbalance(), IMBALANCE_INDEX):0);							  
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
-    if (pawnsToEvaluate)
+    if (Stockfish::Eval::pawnsToEvaluate)
     {
-      score += pe->pawn_score (WHITE) - pe->pawn_score (BLACK);
+    	score += apply_weights(pe->pawn_score (WHITE) - pe->pawn_score (BLACK), PAWN_STRUCTURE_INDEX);
     }
 
     // Early exit if score is high
@@ -1009,35 +1067,36 @@ namespace {
     initialize<BLACK>();
 
 	//from handicap mode begin
-    if (pawnsToEvaluate)
+    if (Stockfish::Eval::pawnsToEvaluate)
     {
       // Pieces evaluated first (also populates attackedBy, attackedBy2).
       // Note that the order of evaluation of the terms is left unspecified.
-      score += pieces<WHITE, KNIGHT> () - pieces<BLACK, KNIGHT> ()
-		    + pieces<WHITE, BISHOP> () - pieces<BLACK, BISHOP> ()
-		    + pieces<WHITE, ROOK> () - pieces<BLACK, ROOK> ()
-		    + pieces<WHITE, QUEEN> () - pieces<BLACK, QUEEN> ();
+      score +=  apply_weights(pieces<WHITE, KNIGHT>() - pieces<BLACK, KNIGHT>(), KNIGHT_INDEX)
+		      + apply_weights(pieces<WHITE, BISHOP>() - pieces<BLACK, BISHOP>(), BISHOP_INDEX)
+		      + apply_weights(pieces<WHITE, ROOK>()   - pieces<BLACK, ROOK>()  , ROOK_INDEX)
+		      + apply_weights(pieces<WHITE, QUEEN>()  - pieces<BLACK, QUEEN>() , QUEEN_INDEX);
     }
+    score += apply_weights(mobility[WHITE] - mobility[BLACK], MOBILITY_INDEX);
     //from handicap mode end
-    score += mobility[WHITE] - mobility[BLACK];
-
     // More complex interactions that require fully populated attack bitboards
-    score +=  king<   WHITE>() - king<   BLACK>();
+    score +=  apply_weights(king<WHITE>() - king<BLACK>(), KING_SAFETY_INDEX);
+
     //from handicap mode begin
-    if (pawnsToEvaluate)
+    if (Stockfish::Eval::pawnsToEvaluate)
     {
-		score += passed<WHITE> () - passed<BLACK> ();
+		score += apply_weights(passed<WHITE>() - passed<BLACK>(), PASSED_PAWN_INDEX);
     }
+
     //from handicap mode end
     if (lazy_skip(LazyThreshold2))
         goto make_v;
 
-    score +=  threats<WHITE>() - threats<BLACK>()
-            + space<  WHITE>() - space<  BLACK>();
+    score +=  apply_weights(threats<WHITE>() - threats<BLACK>(), THREATS_INDEX)
+            + apply_weights(space<WHITE>()  - space<BLACK>(), SPACE_INDEX);
 
 make_v:
     // Derive single value from mg and eg parts of score
-    Value v = winnable(score);
+    Value v = apply_weight<EG>(winnable(score), WINNABLE_INDEX);
 
     // In case of tracing add all remaining individual evaluation terms
     if constexpr (T)
@@ -1171,5 +1230,64 @@ std::string Eval::trace(Position& pos) {
 
   return ss.str();
 }
+//handicap mode begin
+namespace Eval {
 
+    // load() reads avatar values
+    void loadAvatar(const std::string& fname) {
+
+        if (fname.empty())
+            return;
+
+        std::ifstream file(fname);
+        if (!file) {
+            cerr << "Unable to open avatar file: " << Utility::map_path(fname) << endl;
+            exit(EXIT_FAILURE);
+        }
+
+        using WeightsMap = std::map<std::string, int, UCI::CaseInsensitiveLess>;
+        WeightsMap weightsProperties;
+
+        //Read weights from Avatar file into a map
+        std::string line;
+        while (std::getline(file, line)) {
+            
+            size_t delimiterPos;
+            if (line.empty() || line[0] == '#' || (delimiterPos = line.find('=')) == std::string::npos) {
+                continue; // Ignora righe vuote o commenti
+            }
+
+            std::string wName  = line.substr(0, delimiterPos );
+            std::string wValue = line.substr(delimiterPos + 1);
+
+            try
+            {
+                int value = std::stoi(wValue);
+                if (value < 0 || value > 100)
+                    throw;
+
+                weightsProperties[wName] = value;
+            }
+            catch(...)
+            {
+                cerr << "Avatar option '" << wName << "' with a non weight value: " << wValue << endl;
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        file.close();
+
+        //Assign to Weights array
+        WeightsMap::const_iterator it;
+        for (int i = 0; i < AVATAR_NB; ++i)
+        {
+            if ((it = weightsProperties.find(Weights[i].mgName)) != weightsProperties.end())
+                Weights[i].mg = it->second;
+
+            if ((it = weightsProperties.find(Weights[i].egName)) != weightsProperties.end())
+                Weights[i].eg = it->second;
+        }
+    }
+}
+ //handicap mode end
 } // namespace Stockfish

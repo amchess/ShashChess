@@ -75,21 +75,6 @@ namespace {
     // Parse the move list, if any
     while (is >> token && (m = UCI::to_move(pos, token)) != MOVE_NONE)
     {
-        //Kelly begin
-        if (LD.is_enabled() && LD.learning_mode() != LearningMode::Self && !LD.is_paused())
-        {
-            PersistedLearningMove persistedLearningMove;
-
-            persistedLearningMove.key = pos.key();
-            persistedLearningMove.learningMove.depth = 0;
-            persistedLearningMove.learningMove.move = m;
-            persistedLearningMove.learningMove.score = VALUE_NONE;
-            persistedLearningMove.learningMove.performance = 100;
-
-            LD.add_new_learning(persistedLearningMove.key, persistedLearningMove.learningMove);
-        }
-        //Kelly end
-
         states->emplace_back();
         pos.do_move(m, states->back());
     }
@@ -132,7 +117,27 @@ namespace {
     else
         sync_cout << "No such option: " << name << sync_endl;
   }
-
+  // handicapMode begin
+  inline int getHandicapDepth(int elo) {
+      if (elo <= 1350)
+      {
+          return (int)(3 * elo / 1350 + 1);
+      }
+      if (elo <= 1999)
+      {
+          return (int)((2 * elo - 104) / 649);
+      }
+      if (elo <= 2199)
+      {
+          return (int)((2 * elo - 2607) / 199);
+      }
+      if (elo <= 2399)
+      {
+          return (int)((2 * elo - 2410) / 199);
+      }
+      return (int)((7 * elo - 10950) / 450);
+  }
+  // handicapMode end
 
   // go() is called when the engine receives the "go" UCI command. The function
   // sets the thinking time and other parameters from the input string, then starts
@@ -145,7 +150,12 @@ namespace {
     bool ponderMode = false;
 
     limits.startTime = now(); // The search starts as early as possible
-
+    //from true handicap mode begin
+    if(Eval::limitStrength)
+    {
+        limits.depth=getHandicapDepth(Eval::uciElo);
+    }
+    //from true handicap mode end
     while (is >> token)
         if (token == "searchmoves") // Needs to be the last command on the line
             while (is >> token)
@@ -156,7 +166,9 @@ namespace {
         else if (token == "winc")      is >> limits.inc[WHITE];
         else if (token == "binc")      is >> limits.inc[BLACK];
         else if (token == "movestogo") is >> limits.movestogo;
-        else if (token == "depth")     is >> limits.depth;
+        else if (token == "depth")     {
+            is >> limits.depth;
+        }
         else if (token == "nodes")     is >> limits.nodes;
         else if (token == "movetime")  is >> limits.movetime;
         else if (token == "mate")      is >> limits.mate;

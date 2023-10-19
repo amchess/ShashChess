@@ -34,7 +34,12 @@ namespace Eval {
   Value evaluate(const Position& pos);
 
   extern bool useNNUE;
+  //true handicap mode begin
+  extern bool limitStrength,pawnsToEvaluate,winnableToEvaluate,imbalancesToEvaluate, handicappedAvatarPlayer;
+  extern int uciElo;
+  //true handicap mode end
   extern std::string currentEvalFileName;
+  void loadAvatar(const std::string& fname);//avatar
 
   // The default net name MUST follow the format nn-[SHA256 first 12 digits].nnue
   // for the build process (profile-build and fishtest) to work. Do not change the

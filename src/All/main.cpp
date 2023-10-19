@@ -45,6 +45,7 @@ int main(int argc, char* argv[]) {
   Bitboards::init();
   Position::init();
   Bitbases::init();
+  Eval::loadAvatar(Options["Avatar File"]);//handicap mode
   Endgames::init();
   Threads.set(size_t(Options["Threads"]));
   Threads.setFull(Options["Full depth threads"]);//Full threads patch

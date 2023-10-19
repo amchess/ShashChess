@@ -142,6 +142,12 @@ Elo range     | Handicapped Depth |
 | [2200,2399] | [10,12]           |
 | [2400,3190] | [13,20]           |
 
+#### Handicapped avatar player
+If enabled, the engine not only simulates the thought process of a player of a certain level but also the mistakes he can make. These mistakes become more frequent the lower the player's Elo rating. This is the handicap mode implemented by Stockfish, but when combined with the previous options that simulate a player's thinking system, it truly approximates a "human avatar".
+
+#### Avatar File
+A file in .avt format with the profile of a player. You can edit this file containing the weigths of Stockfish classical eval terms, from 0 to 100, but with a private tool,
+we can generate those values to simulate a real player.
 
 ### Sygyzy End Game table bases
 
@@ -195,14 +201,18 @@ _Boolean, Default: False_ If activated, thanks to Shashin theory, the engine wil
 
 _Integer, Default: 0, Min: 0, Max: 512_
 The number of settled threads to use for MCTS search except the first (main) one always for alpha-beta search. 
-In particular, if the number is greater than threads number, they will all do a montecarlo tree search, always except the first (main) for alpha-beta search. As a golden rule, for best results, do not exceed 8/11 of the threads set
+In particular, if the number is greater than threads number, they will all do a montecarlo tree search, always except the first (main) for alpha-beta search.
 
-#### Multi Strategy 
+#### MCTSGoldDigger
+_Integer, Default: 1, Min: 1, Max: 5_
+MCTS is good for no Capablanca/strategical positions. The default is the best for match play. By increasing this value, you can increase the ability to solve complicated positions at the expense of playing strength in a match. As with the MCTSThreads option, the optimal value should be tested on the individual machine.
+
+#### MCTS Multi Strategy 
 
 _Integer, Default: 20, Min: 0, Max: 100_ 
 Only in multi mcts mode, for tree policy.
 
-#### Multi MinVisits
+#### MCTS Multi MinVisits
 
 _Integer, Default: 5, Min: 0, Max: 1000_
 Only in multi mcts mode, for Upper Confidence Bound.

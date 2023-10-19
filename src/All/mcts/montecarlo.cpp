@@ -90,7 +90,7 @@ namespace Stockfish {
 	MCTSHashTable MCTS;
 	Edge EDGE_NONE;
 	Spinlock createLock;
-	int mctsThreads;
+	int mctsThreads, mctsGoldDigger;
 
 	int intRand(const int& min, const int& max) {
 		static std::random_device rd;
@@ -274,7 +274,7 @@ namespace Stockfish {
 					(
 						(mctsThreads > 1)
 						&& number_of_sons(current_node()) > 5
-						&& e_greedy >= Options["Multi Strategy"]
+						&& e_greedy >= Options["MCTS Multi Strategy"]
 						))
 				)
 			{
@@ -945,7 +945,7 @@ namespace Stockfish {
 		assert(fatherVisits > 0);
 
 		double result = 0.0;
-		if (((mctsThreads > 1) && (edge->visits > Options["Multi MinVisits"]))
+		if (((mctsThreads > 1) && (edge->visits > Options["MCTS Multi MinVisits"]))
 			||
 			((mctsThreads == 1) && edge->visits)
 			)
