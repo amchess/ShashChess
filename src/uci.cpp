@@ -151,7 +151,7 @@ void go(Position& pos, istringstream& is, StateListPtr& states) {
 
     limits.startTime = now();  // The search starts as early as possible
     //from true handicap mode begin
-    if (Eval::limitStrength)
+    if (Eval::limitStrength && Eval::handicappedDepth)
     {
         limits.depth = getHandicapDepth(Eval::uciElo);
     }

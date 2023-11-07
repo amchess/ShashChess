@@ -146,7 +146,7 @@ inline bool is_interrupted() { return Threads.stop.load(std::memory_order_relaxe
 // MonteCarlo::search() is the main function of Monte-Carlo algorithm.
 void MonteCarlo::search() {
 
-    create_root();
+    //create_root();//already in the constructor
     while (computational_budget())
     {
         AB_Rollout         = false;
@@ -177,10 +177,13 @@ void MonteCarlo::search() {
         else
             reward = playout_policy(node);
 
-        backup(reward, AB_Rollout);
-
-        if (should_output_result())
-            emit_principal_variation();
+        if(Utility::is_game_decided(pos, backup(reward, AB_Rollout)))
+        {
+            pos.this_thread()->isMCTS = false;
+            break;
+        } 
+        //if (should_output_result())
+            //emit_principal_variation();
     }
 }
 
@@ -232,9 +235,9 @@ void MonteCarlo::create_root() {
 /// in the computational budget (time limit, or number of nodes, etc.)
 bool MonteCarlo::computational_budget() {
     assert(is_root(current_node()));
-
-    if (pos.this_thread() == Threads.main())
-        dynamic_cast<MainThread*>(pos.this_thread())->check_time();
+    Threads.main()->check_time();
+    //if (pos.this_thread() == Threads.main())
+        //dynamic_cast<MainThread*>(pos.this_thread())->check_time();
 
     return descentCnt < MAX_DESCENTS && !is_interrupted();
 }
@@ -251,7 +254,7 @@ mctsNodeInfo* MonteCarlo::tree_policy() {
         return root;
     }
 
-    while (current_node()->node_visits > 0)
+    while (current_node()->node_visits > 0 && computational_budget())
     {
         if (is_terminal(current_node()))
             return current_node();
@@ -300,7 +303,6 @@ mctsNodeInfo* MonteCarlo::tree_policy() {
 			*/
         nodes[ply] = get_node(pos);
     }
-
     assert(current_node()->node_visits == 0);
 
     //   debug << "... exiting tree_policy()" << endl;
@@ -348,7 +350,7 @@ Reward MonteCarlo::playout_policy(mctsNodeInfo* node) {
 
 /// MonteCarlo::backup() implements the strategy for accumulating rewards up the tree
 /// after a playout.
-void MonteCarlo::backup(Reward r, bool AB_Mode) {
+Value MonteCarlo::backup(Reward r, bool AB_Mode) {
 
     /* debug << "Entering backup()..." << endl;
 		 debug << pos << endl;
@@ -360,7 +362,7 @@ void MonteCarlo::backup(Reward r, bool AB_Mode) {
     assert(ply >= 1);
     double weight = 1.0;
 
-    while (!is_root(current_node()))
+    while (!is_root(current_node()) && computational_budget())
     {
         undo_move();
 
@@ -401,10 +403,11 @@ void MonteCarlo::backup(Reward r, bool AB_Mode) {
 
         assert(stack[ply].currentMove == edge->move);
     }
-
     // debug << "... exiting backup()" << endl;
 
     assert(is_root(current_node()));
+    return reward_to_value(r);
+
 }
 
 
@@ -521,7 +524,7 @@ void MonteCarlo::emit_principal_variation() {
         // Extract from the tree the principal variation of the best move
         Move move = rootMoves[0].pv[0];
         int  cnt  = 0;
-        while (pos.legal(move))
+        while (pos.legal(move) && computational_budget())
         {
             cnt++;
             do_move(move);
@@ -539,7 +542,6 @@ void MonteCarlo::emit_principal_variation() {
             if (pos.legal(move))
                 rootMoves[0].pv.push_back(move);
         }
-
         for (int k = 0; k < cnt; k++)
             undo_move();
 
@@ -701,7 +703,7 @@ void MonteCarlo::generate_moves() {
 
         // Generate the legal moves and calculate their priors
         Reward bestPrior = REWARD_MATED;
-        while ((move = mp.next_move()) != MOVE_NONE)
+        while (((move = mp.next_move()) != MOVE_NONE) && computational_budget())
             if (pos.legal(move))
             {
                 stack[ply].moveCount = ++moveCount;
@@ -984,7 +986,6 @@ void MonteCarlo::print_children() {
     }
 
     lastOutputTime = now();
-
     /*
 		debug << "pv = " << pv << endl;
 		debug << "descentCnt = " << descentCnt << endl;

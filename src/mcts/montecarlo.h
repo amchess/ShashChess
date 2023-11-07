@@ -189,7 +189,7 @@ class MonteCarlo {
     bool          computational_budget();
     mctsNodeInfo* tree_policy();
     Reward        playout_policy(mctsNodeInfo* node);
-    void          backup(Reward r, bool AB_Mode);
+    Value          backup(Reward r, bool AB_Mode);
     Edge*         best_child(mctsNodeInfo* node, EdgeStatistic statistic);
 
     // The UCB formula

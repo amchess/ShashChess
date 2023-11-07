@@ -766,63 +766,76 @@ void Thread::search() {
     initShashinValues(rootPos, ss);  //from Shashin
 
     int searchAgainCounter = 0;
-    // mcts begin
+    // from mcts begin
     bool mcts            = (bool) Options["MCTS by Shashin"];
-    bool doMCTSByShashin = false;
-
-    if (mcts)
-    {
-    	bool maybeDraw       = rootPos.rule50_count() >= 90 || rootPos.has_game_cycle(2);
-        mctsThreads    = Options["MCTSThreads"];
-        mctsGoldDigger = Options["MCTSGoldDigger"];
-
-        switch (mctsGoldDigger)
+	isMCTS                      = false;
+    if (mcts && (multiPV==1) && (!Threads.stop))
+    { 
+        if(!Utility::is_game_decided(rootPos, static_value(rootPos,ss)))
         {
-        case 1 :
-            doMCTSByShashin = !isShashinHigh(rootPos);
-            break;
-        case 2 :
-            doMCTSByShashin = !isShashinHighMiddle(rootPos);
-            break;
-        case 3 :
-            doMCTSByShashin = !isShashinMiddle(rootPos);
-            break;
-        case 4 :
-            doMCTSByShashin = !isShashinMiddleLow(rootPos);
-            break;
-        case 5 :
-            doMCTSByShashin = !isShashinLow(rootPos);
-            break;
-        case 6 :
-            doMCTSByShashin =
-              (rootPos.this_thread()->shashinWinProbabilityRange != SHASHIN_POSITION_CAPABLANCA);
-            break;
-        default :
-            break;
+            Threads.main()->check_time();
+            if((!(Threads.stop.load(std::memory_order_relaxed))))
+            {
+                bool maybeDraw       = rootPos.rule50_count() >= 90 || rootPos.has_game_cycle(2);
+                mctsThreads    = Options["MCTSThreads"];
+                mctsGoldDigger = Options["MCTSGoldDigger"];
+                bool doMCTSByShashin = false;
+                switch (mctsGoldDigger)
+                {
+                    case 1 :
+                        doMCTSByShashin = !isShashinHigh(rootPos);
+                        break;
+                    case 2 :
+                        doMCTSByShashin = !isShashinHighMiddle(rootPos);
+                        break;
+                    case 3 :
+                        doMCTSByShashin = !isShashinMiddle(rootPos);
+                        break;
+                    case 4 :
+                        doMCTSByShashin = !isShashinMiddleLow(rootPos);
+                        break;
+                    case 5 :
+                        doMCTSByShashin = !isShashinLow(rootPos);
+                        break;
+                    case 6 :
+                        doMCTSByShashin =
+                        (rootPos.this_thread()->shashinWinProbabilityRange != SHASHIN_POSITION_CAPABLANCA);
+                        break;
+                    default :
+                        break;
+                }
+                if ((!mainThread) && doMCTSByShashin && (!maybeDraw))
+                {
+                    isMCTS                 = true;
+                    MonteCarlo* monteCarlo = new MonteCarlo(rootPos);
+                    if (!monteCarlo)
+                    {
+                        std::cerr << IO_LOCK << "Could not allocate " << sizeof(MonteCarlo)
+                                << " bytes for MonteCarlo search" << std::endl
+                                << IO_UNLOCK;
+                        ::exit(EXIT_FAILURE);
+                    }
+            
+                    monteCarlo->search();
+                    if (idx == 1 && Limits.infinite && ((Threads.stop.load(std::memory_order_relaxed))))
+                    {   
+                        monteCarlo->print_children();
+                    }
+                    delete monteCarlo;
+                    return;
+                }
+            }
+            Threads.main()->check_time(); 
         }
-	    if ((!mainThread) && doMCTSByShashin && (!maybeDraw) && (!Threads.stop) 
-                          && (!Utility::is_game_decided(rootPos, static_value(rootPos,ss))))
-	    {
-	        isMCTS                 = true;
-	        MonteCarlo* monteCarlo = new MonteCarlo(rootPos);
-	        if (!monteCarlo)
-	        {
-	            std::cerr << IO_LOCK << "Could not allocate " << sizeof(MonteCarlo)
-	                      << " bytes for MonteCarlo search" << std::endl
-	                      << IO_UNLOCK;
-	            ::exit(EXIT_FAILURE);
-	        }
-	
-	        monteCarlo->search();
-	        if (idx == 1 && Limits.infinite)
-	            monteCarlo->print_children();
-	        delete monteCarlo;
-	    }
+        else
+        {
+            isMCTS=false;
+        }
     }
     if(!isMCTS)
     {
     // from mcts end
-        // Iterative deepening loop until requested to stop or the target depth is reached
+      	// Iterative deepening loop until requested to stop or the target depth is reached
         while (++rootDepth < MAX_PLY && !Threads.stop
                && !(Limits.depth && mainThread && rootDepth > Limits.depth))
         {
@@ -2668,21 +2681,24 @@ Value minimax_value(Position& pos, Search::Stack* ss, Depth depth) {
           debug << pos << std::endl;
           hit_any_key();
       }*/
+    while (!Threads.stop.load(std::memory_order_relaxed))
+    {
+        Value value = search<PV>(pos, ss, alpha, beta, depth, false);
 
-    Value value = search<PV>(pos, ss, alpha, beta, depth, false);
+        // Have we found a "mate in x"?
+        if (Limits.mate && value >= VALUE_MATE_IN_MAX_PLY && VALUE_MATE - value <= 2 * Limits.mate)
+            Threads.stop = true;
 
-    // Have we found a "mate in x"?
-    if (Limits.mate && value >= VALUE_MATE_IN_MAX_PLY && VALUE_MATE - value <= 2 * Limits.mate)
-        Threads.stop = true;
-
-    /*    if (pos.should_debug())
-      {
-          debug << pos << std::endl;
-          debug << "... exiting minimax_value() with value = " << value << std::endl;
-          hit_any_key();
-      }
-    */
-    return value;
+        /*    if (pos.should_debug())
+        {
+            debug << pos << std::endl;
+            debug << "... exiting minimax_value() with value = " << value << std::endl;
+            hit_any_key();
+        }
+        */
+        return value;
+    }
+    return VALUE_ZERO;
 }
 
 // minimax_value() is a wrapper around the search() and qsearch() functions

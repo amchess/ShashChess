@@ -1290,7 +1290,9 @@ void loadAvatar(const std::string& fname) {
     }
 
     file.close();
-
+    if(!fname.empty()){
+        sync_cout << "info string Avatar file " << fname << " loaded successfully" << sync_endl;
+    }
     //Assign to Weights array
     WeightsMap::const_iterator it;
     for (int i = 0; i < AVATAR_NB; ++i)
