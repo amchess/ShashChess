@@ -37,6 +37,10 @@
 #include "uci.h"
 #include "incbin/incbin.h"
 #include "nnue/evaluate_nnue.h"
+//from Rodent begin
+#include <cmath>
+#include <random>
+//from Rodent end
 
 // Macro to embed the default efficiently updatable neural network (NNUE) file
 // data in the engine binary (using incbin.h, by Dale Weiler).
@@ -64,7 +68,7 @@ bool useNNUE;
 //true handicap mode begin
 bool limitStrength, pawnsToEvaluate, winnableToEvaluate, imbalancesToEvaluate,
   handicappedAvatarPlayer, handicappedDepth;
-int uciElo;
+int uciElo, RandomEvalPerturb = 0;
 //true handicap mode end
 
 string currentEvalFileName = "None";
@@ -76,11 +80,11 @@ string currentEvalFileName = "None";
 /// network may be embedded in the binary), in the active working directory and
 /// in the engine directory. Distro packagers may define the DEFAULT_NNUE_DIRECTORY
 /// variable to have the engine search in a special directory in their distro.
-
 void NNUE::init() {
-    limitStrength        = Options["UCI_LimitStrength"] || Options["LimitStrength_CB"];
-    useNNUE              = Options["Use NNUE"] && (!limitStrength);  //true handicap mode
-    uciElo               = limitStrength ? Options["UCI_Elo"] : Options["ELO_CB"];
+    limitStrength = Options["UCI_LimitStrength"] || Options["LimitStrength_CB"];
+    useNNUE       = Options["Use NNUE"] && (!limitStrength);  //true handicap mode
+    uciElo        = limitStrength ? std::min((int) (Options["UCI_Elo"]), (int) (Options["ELO_CB"]))
+                                  : (int) (3190);
     pawnsToEvaluate      = limitStrength ? (uciElo >= 2000) : 1;
     winnableToEvaluate   = limitStrength ? (uciElo >= 2200) : 1;
     imbalancesToEvaluate = limitStrength ? (uciElo >= 2400) : 1;
@@ -1144,10 +1148,12 @@ make_v:
 Value Eval::evaluate(const Position& pos) {
 
     assert(!pos.checkers());
+    //from Rodent handicap mode begin
+    static thread_local std::mt19937_64 tls_rng = []() { return std::mt19937_64(std::time(0)); }();
+    //from Rodent handicap mode end
 
     Value v;
     Value psq = pos.psq_eg_stm();
-
     // We use the much less accurate but faster Classical eval when the NNUE
     // option is set to false. Otherwise we use the NNUE eval unless the
     // PSQ advantage is decisive. (~4 Elo at STC, 1 Elo at LTC)
@@ -1172,7 +1178,16 @@ Value Eval::evaluate(const Position& pos) {
 
     // Damp down the evaluation linearly when shuffling
     v = v * (200 - pos.rule50_count()) / 214;
-
+    //from handicap mode Michael Byrne begin
+    if (limitStrength && handicappedAvatarPlayer)
+    {
+        RandomEvalPerturb = (-10 * uciElo + 31900) / 319;
+        std::normal_distribution<float> d(0.0, RandomValue);
+        float                           r = d(tls_rng);
+        r = std::clamp<float>(r, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
+        v = (RandomEvalPerturb * Value(r) + (100 - RandomEvalPerturb) * v) / 100;
+    }
+    //from handicap mode Michael Byrne end
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
 
@@ -1290,7 +1305,8 @@ void loadAvatar(const std::string& fname) {
     }
 
     file.close();
-    if(!fname.empty()){
+    if (!fname.empty())
+    {
         sync_cout << "info string Avatar file " << fname << " loaded successfully" << sync_endl;
     }
     //Assign to Weights array

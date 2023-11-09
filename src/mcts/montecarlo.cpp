@@ -177,13 +177,13 @@ void MonteCarlo::search() {
         else
             reward = playout_policy(node);
 
-        if(Utility::is_game_decided(pos, backup(reward, AB_Rollout)))
+        if (Utility::is_game_decided(pos, backup(reward, AB_Rollout)))
         {
             pos.this_thread()->isMCTS = false;
             break;
-        } 
+        }
         //if (should_output_result())
-            //emit_principal_variation();
+        //emit_principal_variation();
     }
 }
 
@@ -237,7 +237,7 @@ bool MonteCarlo::computational_budget() {
     assert(is_root(current_node()));
     Threads.main()->check_time();
     //if (pos.this_thread() == Threads.main())
-        //dynamic_cast<MainThread*>(pos.this_thread())->check_time();
+    //dynamic_cast<MainThread*>(pos.this_thread())->check_time();
 
     return descentCnt < MAX_DESCENTS && !is_interrupted();
 }
@@ -407,7 +407,6 @@ Value MonteCarlo::backup(Reward r, bool AB_Mode) {
 
     assert(is_root(current_node()));
     return reward_to_value(r);
-
 }
 
 

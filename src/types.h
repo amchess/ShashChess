@@ -207,9 +207,9 @@ enum Value : int {
     RookValueEg   = 1380,
     QueenValueMg  = 2538,
     QueenValueEg  = 2682,
-
-    MidgameLimit = 15258,
-    EndgameLimit = 3915
+    RandomValue   = 1200,  //handicap mode Michael Byrne
+    MidgameLimit  = 15258,
+    EndgameLimit  = 3915
 };
 
 enum PieceType {

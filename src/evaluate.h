@@ -36,8 +36,8 @@ Value       evaluate(const Position& pos);
 extern bool useNNUE;
 //true handicap mode begin
 extern bool limitStrength, pawnsToEvaluate, winnableToEvaluate, imbalancesToEvaluate,
-  handicappedAvatarPlayer,handicappedDepth;
-extern int uciElo;
+  handicappedAvatarPlayer, handicappedDepth;
+extern int uciElo, RandomEvalPerturb;
 //true handicap mode end
 extern std::string currentEvalFileName;
 void               loadAvatar(const std::string& fname);  //avatar

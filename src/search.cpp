@@ -88,8 +88,6 @@ enum NodeType {
 
 // Futility margin
 Value futility_margin(Depth d, bool improving) { return Value(140 * (d - improving)); }
-// int skillLevel;//from true handicap mode
-
 // Reductions lookup table, initialized at startup
 int Reductions[MAX_MOVES];  // [depth or moveNumber]
 
@@ -117,29 +115,6 @@ Value value_draw(const Thread* thisThread) {
     return VALUE_DRAW - 1 + Value(thisThread->nodes & 0x2);
 }
 
-// Skill structure is used to implement strength limit. If we have an uci_elo then
-// we convert it to a suitable fractional skill level using anchoring to CCRL Elo
-// (goldfish 1.13 = 2000) and a fit through Ordo derived Elo for match (TC 60+0.6)
-// results spanning a wide range of k values.
-//from true handicap mode begin
-struct Skill {
-    Skill(int uci_elo) {
-        if (uci_elo)
-        {
-            double e = double(uci_elo - 1320) / (3190 - 1320);
-            level = std::clamp((((37.2473 * e - 40.8525) * e + 22.2943) * e - 0.311438), 0.0, 19.0);
-        }
-        else
-            level = double(20);
-    }
-    bool enabled() const { return level < 20.0; }
-    bool time_to_pick(Depth depth) const { return depth == 1 + int(level); }
-    Move pick_best(size_t multiPV);
-
-    double level;
-    Move   best = MOVE_NONE;
-};
-//from true handicap mode end
 int openingVariety;  // from Sugar
 template<NodeType nodeType>
 Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, bool cutNode);
@@ -499,8 +474,6 @@ void MainThread::search() {
     lowPetrosian    = Options["Low Petrosian"];
     // end from Shashin
 
-    // skillLevel= ((int)((uciElo-1350)/75)); //from true handicap mode
-    // end from handicap mode
     Move bookMove = MOVE_NONE;  //Books management
 
     if (rootMoves.empty())
@@ -615,14 +588,8 @@ void MainThread::search() {
         Time.availableNodes += Limits.inc[us] - Threads.nodes_searched();
 
     Thread* bestThread = this;
-    Skill   skill      = Skill(Eval::limitStrength ? Eval::uciElo : 0);  //from true handicap mode
 
-    if (int(Options["MultiPV"]) == 1
-        //from true handicap mode begin
-        && !Limits.depth
-        && (!skill.enabled() || (!(Eval::limitStrength)))
-        //from true handicap mode end
-        && rootMoves[0].pv[0] != MOVE_NONE)
+    if (int(Options["MultiPV"]) == 1 && !Limits.depth && rootMoves[0].pv[0] != MOVE_NONE)
         bestThread = Threads.get_best_thread();
 
     bestPreviousScore        = bestThread->rootMoves[0].score;
@@ -753,56 +720,48 @@ void Thread::search() {
     }
 
     size_t multiPV = size_t(Options["MultiPV"]);
-    // from true handicap mode begin
-    Skill skill(Eval::limitStrength ? Eval::uciElo : 0);
-
-    // When playing with strength handicap enable MultiPV search that we will
-    // use behind the scenes to retrieve a set of possible moves.
-    if (skill.enabled() && (Eval::limitStrength) && (Eval::handicappedAvatarPlayer))
-        multiPV = std::max(multiPV, (size_t) 4);
-    // from true handicap mode end
 
     multiPV = std::min(multiPV, rootMoves.size());
     initShashinValues(rootPos, ss);  //from Shashin
 
     int searchAgainCounter = 0;
     // from mcts begin
-    bool mcts            = (bool) Options["MCTS by Shashin"];
-	isMCTS                      = false;
-    if (mcts && (multiPV==1) && (!Threads.stop))
-    { 
-        if(!Utility::is_game_decided(rootPos, static_value(rootPos,ss)))
+    bool mcts = (bool) Options["MCTS by Shashin"];
+    isMCTS    = false;
+    if (mcts && (multiPV == 1) && (!Threads.stop))
+    {
+        if (!Utility::is_game_decided(rootPos, static_value(rootPos, ss)))
         {
             Threads.main()->check_time();
-            if((!(Threads.stop.load(std::memory_order_relaxed))))
+            if ((!(Threads.stop.load(std::memory_order_relaxed))))
             {
                 bool maybeDraw       = rootPos.rule50_count() >= 90 || rootPos.has_game_cycle(2);
-                mctsThreads    = Options["MCTSThreads"];
-                mctsGoldDigger = Options["MCTSGoldDigger"];
+                mctsThreads          = Options["MCTSThreads"];
+                mctsGoldDigger       = Options["MCTSGoldDigger"];
                 bool doMCTSByShashin = false;
                 switch (mctsGoldDigger)
                 {
-                    case 1 :
-                        doMCTSByShashin = !isShashinHigh(rootPos);
-                        break;
-                    case 2 :
-                        doMCTSByShashin = !isShashinHighMiddle(rootPos);
-                        break;
-                    case 3 :
-                        doMCTSByShashin = !isShashinMiddle(rootPos);
-                        break;
-                    case 4 :
-                        doMCTSByShashin = !isShashinMiddleLow(rootPos);
-                        break;
-                    case 5 :
-                        doMCTSByShashin = !isShashinLow(rootPos);
-                        break;
-                    case 6 :
-                        doMCTSByShashin =
-                        (rootPos.this_thread()->shashinWinProbabilityRange != SHASHIN_POSITION_CAPABLANCA);
-                        break;
-                    default :
-                        break;
+                case 1 :
+                    doMCTSByShashin = !isShashinHigh(rootPos);
+                    break;
+                case 2 :
+                    doMCTSByShashin = !isShashinHighMiddle(rootPos);
+                    break;
+                case 3 :
+                    doMCTSByShashin = !isShashinMiddle(rootPos);
+                    break;
+                case 4 :
+                    doMCTSByShashin = !isShashinMiddleLow(rootPos);
+                    break;
+                case 5 :
+                    doMCTSByShashin = !isShashinLow(rootPos);
+                    break;
+                case 6 :
+                    doMCTSByShashin = (rootPos.this_thread()->shashinWinProbabilityRange
+                                       != SHASHIN_POSITION_CAPABLANCA);
+                    break;
+                default :
+                    break;
                 }
                 if ((!mainThread) && doMCTSByShashin && (!maybeDraw))
                 {
@@ -811,31 +770,32 @@ void Thread::search() {
                     if (!monteCarlo)
                     {
                         std::cerr << IO_LOCK << "Could not allocate " << sizeof(MonteCarlo)
-                                << " bytes for MonteCarlo search" << std::endl
-                                << IO_UNLOCK;
+                                  << " bytes for MonteCarlo search" << std::endl
+                                  << IO_UNLOCK;
                         ::exit(EXIT_FAILURE);
                     }
-            
+
                     monteCarlo->search();
-                    if (idx == 1 && Limits.infinite && ((Threads.stop.load(std::memory_order_relaxed))))
-                    {   
+                    if (idx == 1 && Limits.infinite
+                        && ((Threads.stop.load(std::memory_order_relaxed))))
+                    {
                         monteCarlo->print_children();
                     }
                     delete monteCarlo;
                     return;
                 }
             }
-            Threads.main()->check_time(); 
+            Threads.main()->check_time();
         }
         else
         {
-            isMCTS=false;
+            isMCTS = false;
         }
     }
-    if(!isMCTS)
+    if (!isMCTS)
     {
-    // from mcts end
-      	// Iterative deepening loop until requested to stop or the target depth is reached
+        // from mcts end
+        // Iterative deepening loop until requested to stop or the target depth is reached
         while (++rootDepth < MAX_PLY && !Threads.stop
                && !(Limits.depth && mainThread && rootDepth > Limits.depth))
         {
@@ -963,12 +923,6 @@ void Thread::search() {
             if (!mainThread)
                 continue;
 
-            //from true handicap mode begin
-            // If skill level is enabled and time is up, pick a sub-optimal best move
-            if (skill.enabled() && skill.time_to_pick(rootDepth) && (Eval::handicappedAvatarPlayer))
-                skill.pick_best(multiPV);
-            //from true handicap mode end
-
             // Use part of the gained time from a previous stable move for the current move
             for (Thread* th : Threads)
             {
@@ -1021,13 +975,6 @@ void Thread::search() {
         return;
 
     mainThread->previousTimeReduction = timeReduction;
-
-    // from true handicap mode begin
-    // If skill level is enabled, swap best PV line with the sub-optimal one
-    if (skill.enabled() && Eval::limitStrength && Eval::handicappedAvatarPlayer)
-        std::swap(rootMoves[0], *std::find(rootMoves.begin(), rootMoves.end(),
-                                           skill.best ? skill.best : skill.pick_best(multiPV)));
-    // from true handicap mode end
 }
 
 
@@ -2621,42 +2568,6 @@ void update_quiet_stats(const Position& pos, Stack* ss, Move move, int bonus) {
     }
 }
 
-// from true handicap mode begin
-// When playing with strength handicap, choose best move among a set of RootMoves
-// using a statistical rule dependent on 'level'. Idea by Heinz van Saanen.
-
-
-Move Skill::pick_best(size_t multiPV) {
-
-    const RootMoves& rootMoves = Threads.main()->rootMoves;
-    static PRNG      rng(now());  // PRNG sequence should be non-deterministic
-
-    // RootMoves are already sorted by score in descending order
-    Value  topScore = rootMoves[0].score;
-    int    delta    = std::min(topScore - rootMoves[multiPV - 1].score, PawnValueMg);
-    int    maxScore = -VALUE_INFINITE;
-    double weakness = 120 - 2 * level;
-
-    // Choose best move. For each move score we add two terms, both dependent on
-    // weakness. One is deterministic and bigger for weaker levels, and one is
-    // random. Then we choose the move with the resulting highest score.
-    for (size_t i = 0; i < multiPV; ++i)
-    {
-        // This is our magic formula
-        int push = int((weakness * int(topScore - rootMoves[i].score)
-                        + delta * (rng.rand<unsigned>() % int(weakness)))
-                       / 128);
-
-        if (rootMoves[i].score + push >= maxScore)
-        {
-            maxScore = rootMoves[i].score + push;
-            best     = rootMoves[i].pv[0];
-        }
-    }
-
-    return best;
-}
-// from true handicap mode end
 
 }  // namespace
 
