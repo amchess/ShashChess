@@ -114,7 +114,7 @@ void init(OptionsMap& o) {
     o["LimitStrength_CB"] << Option(false, on_LimitStrength_CB);
     o["ELO_CB"] << Option(3190, 1320, 3190, on_ELO_CB);
     //only for chessbase gui handicap mode end
-    o["UCI_ShowWDL"] << Option(false);
+    o["UCI_ShowWDL"] << Option(true);
     o["SyzygyPath"] << Option("<empty>", on_tb_path);
     o["Syzygy50MoveRule"] << Option(true);
     o["SyzygyProbeDepth"] << Option(1, 1, 100);
@@ -152,8 +152,7 @@ void init(OptionsMap& o) {
     o["Read only learning"] << Option(false, on_readonly_learning);
     o["MCTS by Shashin"] << Option(false);
     o["MCTSThreads"] << Option(1, 1, 512);
-    o["MCTSGoldDigger"] << Option(1, 1, 6);
-    o["MTCS Multi Strategy"] << Option(20, 0, 100);
+    o["MCTS Multi Strategy"] << Option(20, 0, 100);
     o["MCTS Multi MinVisits"] << Option(5, 0, 1000);
     o["Concurrent Experience"] << Option(false);
     o["High Tal"] << Option(false);

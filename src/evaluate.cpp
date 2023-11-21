@@ -37,10 +37,10 @@
 #include "uci.h"
 #include "incbin/incbin.h"
 #include "nnue/evaluate_nnue.h"
-//from Rodent begin
+//from Handicap mode begin
 #include <cmath>
 #include <random>
-//from Rodent end
+//from Handicap mode end
 
 // Macro to embed the default efficiently updatable neural network (NNUE) file
 // data in the engine binary (using incbin.h, by Dale Weiler).
@@ -274,7 +274,7 @@ struct Weight {
   {"Threats(mg)", "Threats(eg)", 100, 100},
   {"PassedPawns(mg)", "PassedPawns(eg)", 100, 100},
   {"Space(mg)", "Space(eg)", 100, 100},
-  {"", "Winnable(eg)", 0, 100}  //Winnable is only an EG value
+  {"Winnable(mg)", "Winnable(eg)", 100, 100}
 };
 
 #define S(mg, eg) make_score(mg, eg)
@@ -1027,6 +1027,12 @@ Value Evaluation<T>::winnable(Score score) const {
         sf -= 4 * !pawnsOnBothFlanks;
     }
 
+    Score w = make_score(mg, eg);
+    w = apply_weights(w, WINNABLE_INDEX);
+
+    mg = mg_value(w);
+    eg = eg_value(w);
+
     // Interpolate between the middlegame and (scaled by 'sf') endgame score
     v = mg * int(me->game_phase())
       + eg * int(PHASE_MIDGAME - me->game_phase()) * ScaleFactor(sf) / SCALE_FACTOR_NORMAL;
@@ -1034,9 +1040,8 @@ Value Evaluation<T>::winnable(Score score) const {
 
     if constexpr (T)
     {
-        Trace::add(WINNABLE,
-                   make_score(u, eg * ScaleFactor(sf) / SCALE_FACTOR_NORMAL - eg_value(score)));
-        Trace::add(TOTAL, make_score(mg, eg * ScaleFactor(sf) / SCALE_FACTOR_NORMAL));
+        Trace::add(WINNABLE, w);
+        Trace::add(TOTAL, make_score(mg * int(me->game_phase()), eg * int(PHASE_MIDGAME - me->game_phase()) * ScaleFactor(sf) / SCALE_FACTOR_NORMAL) / PHASE_MIDGAME);
     }
 
     return Value(v);
@@ -1148,9 +1153,9 @@ make_v:
 Value Eval::evaluate(const Position& pos) {
 
     assert(!pos.checkers());
-    //from Rodent handicap mode begin
+    //from handicap mode begin
     static thread_local std::mt19937_64 tls_rng = []() { return std::mt19937_64(std::time(0)); }();
-    //from Rodent handicap mode end
+    //from handicap mode end
 
     Value v;
     Value psq = pos.psq_eg_stm();

@@ -258,9 +258,13 @@ inline Value static_value(Position& pos, Stack* ss) {
     if (pos.is_draw(ss->ply) && !pos.checkers())
         return VALUE_DRAW;
 
-    // Detect mate and stalimate situations
+    // Detect mate and stalemate situations
     if (MoveList<LEGAL>(pos).size() == 0)
         return pos.checkers() ? VALUE_MATE : VALUE_DRAW;
+
+    //Should not call evaluate() if the side to move is under check!
+    if (pos.checkers())
+        return VALUE_DRAW; //TODO: Not sure if VALUE_DRAW is correct!
 
     // Evaluate the position statically
     return evaluate(pos);
@@ -732,38 +736,16 @@ void Thread::search() {
     {
         if (!Utility::is_game_decided(rootPos, static_value(rootPos, ss)))
         {
-            Threads.main()->check_time();
+            //Threads.main()->check_time();
             if ((!(Threads.stop.load(std::memory_order_relaxed))))
             {
                 bool maybeDraw       = rootPos.rule50_count() >= 90 || rootPos.has_game_cycle(2);
                 mctsThreads          = Options["MCTSThreads"];
-                mctsGoldDigger       = Options["MCTSGoldDigger"];
-                bool doMCTSByShashin = false;
-                switch (mctsGoldDigger)
-                {
-                case 1 :
-                    doMCTSByShashin = !isShashinHigh(rootPos);
-                    break;
-                case 2 :
-                    doMCTSByShashin = !isShashinHighMiddle(rootPos);
-                    break;
-                case 3 :
-                    doMCTSByShashin = !isShashinMiddle(rootPos);
-                    break;
-                case 4 :
-                    doMCTSByShashin = !isShashinMiddleLow(rootPos);
-                    break;
-                case 5 :
-                    doMCTSByShashin = !isShashinLow(rootPos);
-                    break;
-                case 6 :
-                    doMCTSByShashin = (rootPos.this_thread()->shashinWinProbabilityRange
-                                       != SHASHIN_POSITION_CAPABLANCA);
-                    break;
-                default :
-                    break;
-                }
-                if ((!mainThread) && doMCTSByShashin && (!maybeDraw))
+                if (!mainThread && ((rootPos.this_thread()->shashinWinProbabilityRange
+                                  == SHASHIN_POSITION_CAPABLANCA_PETROSIAN)
+                                  ||
+                                  (rootPos.this_thread()->shashinWinProbabilityRange
+                                  == SHASHIN_POSITION_HIGH_PETROSIAN)) && !maybeDraw)
                 {
                     isMCTS                 = true;
                     MonteCarlo* monteCarlo = new MonteCarlo(rootPos);
@@ -772,6 +754,7 @@ void Thread::search() {
                         std::cerr << IO_LOCK << "Could not allocate " << sizeof(MonteCarlo)
                                   << " bytes for MonteCarlo search" << std::endl
                                   << IO_UNLOCK;
+
                         ::exit(EXIT_FAILURE);
                     }
 
@@ -785,13 +768,18 @@ void Thread::search() {
                     return;
                 }
             }
-            Threads.main()->check_time();
+            else
+            {
+                return;
+            }
+            //Threads.main()->check_time();
         }
         else
         {
             isMCTS = false;
         }
     }
+
     if (!isMCTS)
     {
         // from mcts end
@@ -971,10 +959,16 @@ void Thread::search() {
             iterIdx                        = (iterIdx + 1) & 3;
         }
     }
+
     if (!mainThread)
         return;
-
     mainThread->previousTimeReduction = timeReduction;
+    //from mcts begin    
+    if(mcts)
+    {
+        Threads.stop = true;
+    }
+    //from mcts end
 }
 
 
@@ -1030,9 +1024,9 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     bool givesCheck, improving, priorCapture, singularQuietLMR, expTTHit = false,
                                                                 isMate;  // from Crystal
     // from Kelly End
-    bool  capture, moveCountPruning, ttCapture, kingDanger, ourMove, nullParity;  // from Crystal
+    bool  capture, moveCountPruning, ttCapture, kingDanger, nullParity;  // from Crystal
     Piece movedPiece;
-    int   moveCount, captureCount, quietCount, improvement = 0, rootDepth;  // from Crystal
+    int   moveCount, captureCount, quietCount, ourMove, improvement = 0, rootDepth;  // from Crystal
     // from Kelly begin
     bool updatedLearning = false;
 

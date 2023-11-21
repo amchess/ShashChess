@@ -94,7 +94,7 @@ class Spinlock {
     void release() { lock.store(1, std::memory_order_release); }
 };
 
-extern int mctsThreads, mctsGoldDigger;
+extern int mctsThreads;
 
 class AutoSpinLock {
    private:

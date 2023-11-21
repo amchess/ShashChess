@@ -207,6 +207,16 @@ void ThreadPool::start_thinking(Position&                 pos,
     if (states.get())
         setupStates = std::move(states);  // Ownership transfer, states is now empty
 
+    //Calculate optimism
+    //Optimism is needed when evaluate() is called. There are two paths to calling evaluate()
+    //    1) getInitialShashinWinProbabilityRange() calls static_value() which calls evaluate()
+    //    2) Thread::search() calls static_value() which calls evaluate()
+    //If optimism is not initialized properly, we risk undefined behavior which could lead to unwanted results.
+    //NOTE: If the logic/equation to calculate optimism is changed in search.cpp, then ideally it should change here too
+    int opt = 0;
+    if (abs(main()->bestPreviousAverageScore) < VALUE_KNOWN_WIN)
+        opt = 109 * main()->bestPreviousAverageScore / (std::abs(main()->bestPreviousAverageScore) + 141);
+
     // We use Position::set() to set root position across threads. But there are
     // some StateInfo fields (previous, pliesFromNull, capturedPiece) that cannot
     // be deduced from a fen string, so set() clears them and they are set from
@@ -223,6 +233,10 @@ void ThreadPool::start_thinking(Position&                 pos,
         th->rootMoves                      = rootMoves;
         th->rootPos.set(pos.fen(), pos.is_chess960(), &th->rootState, th);
         th->rootState = setupStates->back();
+
+        //Assign per-thread optimism
+        th->optimism[pos.side_to_move()] = Value(opt);
+        th->optimism[~pos.side_to_move()] = -Value(opt);
     }
 
     main()->start_searching();

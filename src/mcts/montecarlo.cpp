@@ -82,7 +82,7 @@ struct COMPARE_ROBUST_CHOICE {
 MCTSHashTable MCTS;
 Edge          EDGE_NONE;
 Spinlock      createLock;
-int           mctsThreads, mctsGoldDigger;
+int           mctsThreads;
 
 int intRand(const int& min, const int& max) {
     static std::random_device        rd;
@@ -141,49 +141,50 @@ mctsNodeInfo* get_node(const Position& pos) {
 
 // Helpers functions
 inline int  number_of_sons(mctsNodeInfo* node) { return node->number_of_sons; }
-inline bool is_interrupted() { return Threads.stop.load(std::memory_order_relaxed); }
 
 // MonteCarlo::search() is the main function of Monte-Carlo algorithm.
 void MonteCarlo::search() {
 
     //create_root();//already in the constructor
-    while (computational_budget())
+    while (mctsNodeInfo* node = tree_policy())
     {
-        AB_Rollout         = false;
-        mctsNodeInfo* node = tree_policy();
-        Reward        reward;
-
-        if (AB_Rollout)
+        if(node!=nullptr)
         {
-            Value value = evaluate_with_minimax(std::min<int>(node->deep, MAX_PLY - ply - 2), node);
-            if (Threads.stop)
+            AB_Rollout = false;
+            Reward reward;
+
+            if (AB_Rollout)
+            {
+                Value value = evaluate_with_minimax(std::min<int>(node->deep, MAX_PLY - ply - 2), node);
+                if (Threads.stop)
+                    break;
+
+                if (value == VALUE_ZERO)
+                    value = node->ttValue;
+
+                if (value >= VALUE_KNOWN_WIN)
+                    value = VALUE_KNOWN_WIN - node->deep - ply;
+
+                if (value <= -VALUE_KNOWN_WIN)
+                    value = -(VALUE_KNOWN_WIN - node->deep - ply);
+
+                reward        = value_to_reward(value);
+                node->ttValue = value;
+
+                if ((mctsThreads == 1) && (node->deep + ply > maximumPly))
+                    maximumPly = node->deep + ply;
+            }
+            else
+                reward = playout_policy(node);
+
+            if (Utility::is_game_decided(pos, backup(reward, AB_Rollout)))
+            {
+                pos.this_thread()->isMCTS = false;
                 break;
-
-            if (value == VALUE_ZERO)
-                value = node->ttValue;
-
-            if (value >= VALUE_KNOWN_WIN)
-                value = VALUE_KNOWN_WIN - node->deep - ply;
-
-            if (value <= -VALUE_KNOWN_WIN)
-                value = -(VALUE_KNOWN_WIN - node->deep - ply);
-
-            reward        = value_to_reward(value);
-            node->ttValue = value;
-
-            if ((mctsThreads == 1) && (node->deep + ply > maximumPly))
-                maximumPly = node->deep + ply;
+            }
+            //if (should_output_result())
+            //emit_principal_variation();
         }
-        else
-            reward = playout_policy(node);
-
-        if (Utility::is_game_decided(pos, backup(reward, AB_Rollout)))
-        {
-            pos.this_thread()->isMCTS = false;
-            break;
-        }
-        //if (should_output_result())
-        //emit_principal_variation();
     }
 }
 
@@ -234,12 +235,7 @@ void MonteCarlo::create_root() {
 /// MonteCarlo::computational_budget() returns true the search is still
 /// in the computational budget (time limit, or number of nodes, etc.)
 bool MonteCarlo::computational_budget() {
-    assert(is_root(current_node()));
-    Threads.main()->check_time();
-    //if (pos.this_thread() == Threads.main())
-    //dynamic_cast<MainThread*>(pos.this_thread())->check_time();
-
-    return descentCnt < MAX_DESCENTS && !is_interrupted();
+    return descentCnt < MAX_DESCENTS && !Threads.stop.load(std::memory_order_relaxed);
 }
 
 /// MonteCarlo::tree_policy() selects the next node to be expanded
@@ -254,10 +250,10 @@ mctsNodeInfo* MonteCarlo::tree_policy() {
         return root;
     }
 
-    while (current_node()->node_visits > 0 && computational_budget())
+    while (current_node()->node_visits > 0)
     {
-        if (is_terminal(current_node()))
-            return current_node();
+        if((!computational_budget())||(is_terminal(current_node())))
+            return nullptr;
 
         const int e_greedy = intRand(0, RAND_MAX) % 100;
 
@@ -303,6 +299,7 @@ mctsNodeInfo* MonteCarlo::tree_policy() {
 			*/
         nodes[ply] = get_node(pos);
     }
+
     assert(current_node()->node_visits == 0);
 
     //   debug << "... exiting tree_policy()" << endl;
@@ -362,7 +359,7 @@ Value MonteCarlo::backup(Reward r, bool AB_Mode) {
     assert(ply >= 1);
     double weight = 1.0;
 
-    while (!is_root(current_node()) && computational_budget())
+    while (!is_root(current_node()))
     {
         undo_move();
 
@@ -523,7 +520,7 @@ void MonteCarlo::emit_principal_variation() {
         // Extract from the tree the principal variation of the best move
         Move move = rootMoves[0].pv[0];
         int  cnt  = 0;
-        while (pos.legal(move) && computational_budget())
+        while (pos.legal(move))
         {
             cnt++;
             do_move(move);
@@ -681,8 +678,8 @@ void MonteCarlo::generate_moves() {
     if (current_node()->node_visits == 0)
     {
         const Thread*   thread      = pos.this_thread();
-        const Square    prevSq      = to_sq(stack[ply - 1].currentMove);
-        const Move      countermove = thread->counterMoves[pos.piece_on(prevSq)][prevSq];
+        const Square    prevSq      = stack[ply - 1].currentMove == MOVE_NONE ? SQUARE_ZERO : to_sq(stack[ply - 1].currentMove);
+        const Move      countermove = prevSq == SQUARE_ZERO ? MOVE_NONE : thread->counterMoves[pos.piece_on(prevSq)][prevSq];
         constexpr Move  ttMove      = MOVE_NONE;  // FIXME
         const Move*     killers     = stack[ply].killers;
         constexpr Depth depth       = 30;
@@ -702,13 +699,11 @@ void MonteCarlo::generate_moves() {
 
         // Generate the legal moves and calculate their priors
         Reward bestPrior = REWARD_MATED;
-        while (((move = mp.next_move()) != MOVE_NONE) && computational_budget())
+        while (((move = mp.next_move()) != MOVE_NONE))
             if (pos.legal(move))
             {
                 stack[ply].moveCount = ++moveCount;
                 const Reward prior   = calculate_prior(move);
-                if (Threads.stop)
-                    break;
                 if (prior > bestPrior)
                 {
                     current_node()->ttValue = reward_to_value(prior);
