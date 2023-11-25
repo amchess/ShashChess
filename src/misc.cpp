@@ -79,7 +79,7 @@ namespace Stockfish {
 namespace {
 
 /// Version number or dev.
-constexpr string_view version = "34.4";
+constexpr string_view version = "34.5";
 
 /// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 /// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We

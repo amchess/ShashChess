@@ -56,7 +56,6 @@ class Thread {
     void         start_searching();
     void         wait_for_search_finished();
     size_t       id() const { return idx; }
-    bool         is_mcts() const { return isMCTS; }  //montecarlo
 
     Pawns::Table          pawnsTable;
     Material::Table       materialTable;

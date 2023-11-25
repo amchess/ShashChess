@@ -215,7 +215,8 @@ void ThreadPool::start_thinking(Position&                 pos,
     //NOTE: If the logic/equation to calculate optimism is changed in search.cpp, then ideally it should change here too
     int opt = 0;
     if (abs(main()->bestPreviousAverageScore) < VALUE_KNOWN_WIN)
-        opt = 109 * main()->bestPreviousAverageScore / (std::abs(main()->bestPreviousAverageScore) + 141);
+        opt = 109 * main()->bestPreviousAverageScore
+            / (std::abs(main()->bestPreviousAverageScore) + 141);
 
     // We use Position::set() to set root position across threads. But there are
     // some StateInfo fields (previous, pliesFromNull, capturedPiece) that cannot
@@ -235,7 +236,7 @@ void ThreadPool::start_thinking(Position&                 pos,
         th->rootState = setupStates->back();
 
         //Assign per-thread optimism
-        th->optimism[pos.side_to_move()] = Value(opt);
+        th->optimism[pos.side_to_move()]  = Value(opt);
         th->optimism[~pos.side_to_move()] = -Value(opt);
     }
 

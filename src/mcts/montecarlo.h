@@ -40,7 +40,7 @@ enum EdgeStatistic {
     STAT_MEAN,
     STAT_PRIOR
 };
-int intRand(const int& min, const int& max);
+
 ///////////////////////////////////////////////////////////////////////////////////////
 /// Edge struct stores the statistics of one edge between nodes in the Monte-Carlo tree
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -64,51 +64,58 @@ struct Edge {
     std::atomic<Reward> meanActionValue;
 };
 
-constexpr int                           MAX_CHILDREN = 128;
+extern size_t                           mctsThreads;
+extern size_t                           mctsMultiStrategy;
+extern double                           mctsMultiMinVisits;
+constexpr int                           MAX_CHILDREN = MAX_MOVES;
 typedef std::array<Edge*, MAX_CHILDREN> EdgeArray;
 
 ///////////////////////////////////////////////////////////////////////////////////////
-/// Spinlock class is a yielding spin-lock (compatible with hyperthreading machines)
+/// Spinlock class: A yielding spin-lock that allows the same thread to lock the
+///                 resource more than once. The resource is released only when the
+///                 owner thread releases all the locks it has placed on the resource
 ///////////////////////////////////////////////////////////////////////////////////////
 class Spinlock {
-    std::atomic<int> lock;
+
+    static const size_t NO_THREAD = 0;
+
+    std::atomic<size_t> owner;
+    int                 lockCount;
 
    public:
-    Spinlock() { lock = 1; }  // Init here to workaround a bug with MSVC 2013
+    Spinlock() :
+        owner(0),
+        lockCount(0) {}
 
     //Prevent copying of this class type
     Spinlock(const Spinlock&)            = delete;
     Spinlock& operator=(const Spinlock&) = delete;
 
-    void acquire() {
-        while (lock.fetch_sub(1, std::memory_order_acquire) != 1)
+    void acquire(size_t threadId) {
+        if (mctsThreads > 1)
         {
-            while (lock.load(std::memory_order_relaxed) <= 0)
+            size_t currentOwner = NO_THREAD;
+
+            while (!owner.compare_exchange_weak(currentOwner, threadId, std::memory_order_acquire,
+                                                std::memory_order_relaxed)
+                   && currentOwner != threadId)
             {
-                //Be nice to hyperthreading
-                std::this_thread::yield();
+                currentOwner = NO_THREAD;
+                std::this_thread::yield();  //Be nice
             }
+
+            lockCount++;
         }
     }
 
-    void release() { lock.store(1, std::memory_order_release); }
-};
-
-extern int mctsThreads;
-
-class AutoSpinLock {
-   private:
-    Spinlock& _sl;
-
-   public:
-    AutoSpinLock(Spinlock& sl) :
-        _sl(sl) {
+    void release([[maybe_unused]] size_t threadId) {
         if (mctsThreads > 1)
-            _sl.acquire();
-    }
-    ~AutoSpinLock() {
-        if (mctsThreads > 1)
-            _sl.release();
+        {
+            assert(owner.load(std::memory_order_relaxed) == threadId);
+
+            if (--lockCount == 0)
+                owner.store(0);
+        }
     }
 };
 
@@ -116,6 +123,7 @@ class AutoSpinLock {
 /// NodeInfo struct stores information in a node of the Monte-Carlo tree
 ///////////////////////////////////////////////////////////////////////////////////////
 struct mctsNodeInfo {
+
     //Default constructor
     mctsNodeInfo() {
         for (size_t i = 0; i < children.size(); ++i)
@@ -131,24 +139,22 @@ struct mctsNodeInfo {
     mctsNodeInfo(const mctsNodeInfo&)            = delete;
     mctsNodeInfo& operator=(const mctsNodeInfo&) = delete;
 
-    Move       last_move() const { return lastMove; }
-    EdgeArray& children_list() { return children; }
-    Spinlock   lock;
+    Spinlock lock;
 
     // Data members
-    Key                key1           = 0;  // Zobrist hash of all pieces, including pawns
-    Key                key2           = 0;  // Zobrist hash of pawns
-    std::atomic<long>  node_visits    = 0;  // number of visits by the Monte-Carlo algorithm
-    std::atomic<int>   number_of_sons = 0;  // total number of legal moves
-    std::atomic<int>   expandedSons   = 0;  // number of sons expanded by the Monte-Carlo algorithm
+    Key                key1           = 0;          // Zobrist hash of all pieces, including pawns
+    Key                key2           = 0;          // Zobrist hash of pawns
+    std::atomic<long>  node_visits    = 0;          // number of visits by the Monte-Carlo algorithm
+    std::atomic<int>   number_of_sons = 0;          // total number of legal moves
     std::atomic<Move>  lastMove       = MOVE_NONE;  // the move between the parent and this node
-    std::atomic<Depth> deep           = 1;
     std::atomic<Value> ttValue        = VALUE_NONE;
     std::atomic<bool>  AB             = false;
     EdgeArray          children;
 };
-mctsNodeInfo* create_node(Key key1, Key key2);
-mctsNodeInfo* get_node(const Position& pos);
+
+class MonteCarlo;
+mctsNodeInfo* get_node(const MonteCarlo* mcts, const Position& pos);
+
 ///////////////////////////////////////////////////////////////////////////////////////
 // The Monte-Carlo tree is stored implicitly in one big hash table
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -173,6 +179,8 @@ extern MCTSHashTable MCTS;
 // Main MCTS search class
 ///////////////////////////////////////////////////////////////////////////////////////
 class MonteCarlo {
+    friend class AutoSpinLock;
+
    public:
     // Constructors
     MonteCarlo(Position& p);
@@ -190,56 +198,45 @@ class MonteCarlo {
     mctsNodeInfo* tree_policy();
     Reward        playout_policy(mctsNodeInfo* node);
     Value         backup(Reward r, bool AB_Mode);
-    Edge*         best_child(mctsNodeInfo* node, EdgeStatistic statistic);
+    Edge*         best_child(mctsNodeInfo* node, EdgeStatistic statistic) const;
 
     // The UCB formula
-    double ucb(mctsNodeInfo* node, const Edge* edge, bool priorMode);
+    double ucb(const Edge* edge, long fatherVisits, bool priorMode) const;
 
-    // Playing moves
-    mctsNodeInfo* current_node();
-    bool          is_root(mctsNodeInfo* node);
-    bool          is_terminal(mctsNodeInfo* node);
-    void          do_move(Move m);
-    void          undo_move();
-    void          generate_moves();
+    // Nodes and moves
+    bool is_root(const mctsNodeInfo* node) const;
+    bool is_terminal(mctsNodeInfo* node) const;
+    void do_move(Move m);
+    void undo_move();
+    void generate_moves(mctsNodeInfo* node);
 
     // Evaluations of nodes in the tree
     [[nodiscard]] Reward value_to_reward(Value v) const;
     [[nodiscard]] Value  reward_to_value(Reward r) const;
     [[nodiscard]] Value  evaluate_with_minimax(Depth d) const;
-    Value                evaluate_with_minimax(Depth d, mctsNodeInfo* node) const;
-    [[nodiscard]] Reward evaluate_terminal();
+    Value                evaluate_with_minimax(mctsNodeInfo* node, Depth d) const;
+    [[nodiscard]] Reward evaluate_terminal(mctsNodeInfo* node) const;
     Reward               calculate_prior(Move m);
-    static void          add_prior_to_node(mctsNodeInfo* node, Move m, Reward prior);
+    void                 add_prior_to_node(mctsNodeInfo* node, Move m, Reward prior) const;
 
     // Tweaking the exploration algorithm
     void                 default_parameters();
-    void                 set_exploration_constant(double C);
+    void                 set_exploration_constant(double c);
     [[nodiscard]] double exploration_constant() const;
 
     // Output of results
-    [[nodiscard]] bool should_output_result() const;
-    void               emit_principal_variation();
+    [[nodiscard]] bool should_emit_pv() const;
+    void               emit_pv();
     void               print_children();
 
-    // Testing and debugging
-    [[nodiscard]] std::string params() const;
-    static void               debug_node();
-    static void               debug_edge();
-    static void               debug_tree_stats();
-    void                      test();
-
    private:
-    Position&     pos;     // The current position of the tree
-    mctsNodeInfo* root{};  // A pointer to the root
+    Position&          pos;  // The current position of the tree
+    Stockfish::Thread* thisThread;
+    mctsNodeInfo*      root{};  // A pointer to the root
 
     // Counters and statistics
     int       ply{};
     int       maximumPly{};
-    long      descentCnt{};
-    long      playoutCnt{};
-    long      doMoveCnt{};
-    long      priorCnt{};
     TimePoint startTime{};
     TimePoint lastOutputTime{};
 
@@ -249,7 +246,6 @@ class MonteCarlo {
     bool   AB_Rollout{};
 
     // Flags and limits to tweak the algorithm
-    long   MAX_DESCENTS{};
     double BACKUP_MINIMAX{};
     double UCB_UNEXPANDED_NODE{};
     double UCB_EXPLORATION_CONSTANT{};
