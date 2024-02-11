@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 ### ==========================================================================
 ### Section 1. General Configuration
 ### ==========================================================================
@@ -394,7 +393,7 @@ LDFLAGS = $(ENV_LDFLAGS) $(EXTRALDFLAGS)
 ifneq ($(OS),Android)
 	CXXFLAGS += -DUSE_LIVEBOOK
 	ifeq ($(target_windows),yes)
-		LDFLAGS += -DUSE_LIVEBOOK -lcurl -lws2_32
+		LDFLAGS += -DUSE_LIVEBOOK -lcurl -lnghttp2 -lidn2 -lssh2 -lssh2 -lpsl -lbcrypt -ladvapi32 -lcrypt32 -lbcrypt -lssl -lcrypto -lssl -lcrypto -lgdi32 -lwldap32 -lzstd -lzstd -lbrotlidec -lz -lws2_32 -lidn2 -liconv -lunistring -lbrotlidec -lbrotlicommon --static
 	else
 		LDFLAGS += -DUSE_LIVEBOOK -lcurl	
 	endif

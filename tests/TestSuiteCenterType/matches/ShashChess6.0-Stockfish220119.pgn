@@ -538,7 +538,7 @@ Re8 {[%eval 0,29] [%emt 0:00:26]} 27. a5 {[%eval 21,33] [%emt 0:01:51]} Raa8 {
 [EventType "tourn"]
 [SourceTitle "Fritz Engine Tournament"]
 
-{Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz 3398 MHz W=34.5 plies; 8 727kN/s;
+{Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz 3398 MHz W=34.6 plies; 8 727kN/s;
 1 332 636 TBAs B=32.8 plies; 8 179kN/s; 952 658 TBAs} 1. d4 d5 2. c4 e6 3. Nf3
 Nf6 4. Nc3 c6 5. Bg5 h6 6. Bxf6 Qxf6 7. e3 Nd7 8. Bd3 {[%eval 63,30] [%emt 0:
 01:14]} dxc4 {[%eval 9,31] [%emt 0:01:24] (Qd8)} 9. Bxc4 {[%eval 55,28] [%emt

@@ -1149,7 +1149,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     if (!excludedMove && LD.is_enabled() && useLearning)
     {
         const LearningMove* learningMove = nullptr;
-        sibs                             = LD.probe(posKey, learningMove);
+        sibs                             = LD.probeByMaxDepthAndScore(posKey, learningMove);
         if (learningMove)
         {
             assert(sibs);
