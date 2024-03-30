@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2023 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -16,52 +16,47 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <cstring>  // For std::memset
+#include "tt.h"
+
+#include <cassert>
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <thread>
+#include <vector>
 
-#include "bitboard.h"
 #include "misc.h"
-#include "thread.h"
-#include "tt.h"
-#include "uci.h"
 
-namespace Stockfish {
+namespace ShashChess {
 
-TranspositionTable TT;  // Our global transposition table
-
-/// TTEntry::save() populates the TTEntry with a new node's data, possibly
-/// overwriting an old position. Update is not atomic and can be racy.
-
-void TTEntry::save(Key k, Value v, bool pv, Bound b, Depth d, Move m, Value ev) {
+// Populates the TTEntry with a new node's data, possibly
+// overwriting an old position. The update is not atomic and can be racy.
+void TTEntry::save(
+  Key k, Value v, bool pv, Bound b, Depth d, Move m, Value ev, uint8_t generation8) {
 
     // Preserve any existing move for the same position
-    if (m || (uint16_t) k != key16)
-        move16 = (uint16_t) m;
+    if (m || uint16_t(k) != key16)
+        move16 = m;
 
     // Overwrite less valuable entries (cheapest checks first)
-    if (b == BOUND_EXACT || (uint16_t) k != key16 || d - DEPTH_OFFSET + 2 * pv > depth8 - 4)
+    if (b == BOUND_EXACT || uint16_t(k) != key16 || d - DEPTH_OFFSET + 2 * pv > depth8 - 4)
     {
         assert(d > DEPTH_OFFSET);
         assert(d < 256 + DEPTH_OFFSET);
 
-        key16     = (uint16_t) k;
-        depth8    = (uint8_t) (d - DEPTH_OFFSET);
-        genBound8 = (uint8_t) (TT.generation8 | uint8_t(pv) << 2 | b);
-        value16   = (int16_t) v;
-        eval16    = (int16_t) ev;
+        key16     = uint16_t(k);
+        depth8    = uint8_t(d - DEPTH_OFFSET);
+        genBound8 = uint8_t(generation8 | uint8_t(pv) << 2 | b);
+        value16   = int16_t(v);
+        eval16    = int16_t(ev);
     }
 }
 
 
-/// TranspositionTable::resize() sets the size of the transposition table,
-/// measured in megabytes. Transposition table consists of a power of 2 number
-/// of clusters and each cluster consists of ClusterSize number of TTEntry.
-
-void TranspositionTable::resize(size_t mbSize) {
-
-    Threads.main()->wait_for_search_finished();
-
+// Sets the size of the transposition table,
+// measured in megabytes. Transposition table consists of a power of 2 number
+// of clusters and each cluster consists of ClusterSize number of TTEntry.
+void TranspositionTable::resize(size_t mbSize, int threadCount) {
     aligned_large_pages_free(table);
 
     clusterCount = mbSize * 1024 * 1024 / sizeof(Cluster);
@@ -73,29 +68,25 @@ void TranspositionTable::resize(size_t mbSize) {
         exit(EXIT_FAILURE);
     }
 
-    clear();
+    clear(threadCount);
 }
 
 
-/// TranspositionTable::clear() initializes the entire transposition table to zero,
-//  in a multi-threaded way.
-
-void TranspositionTable::clear() {
-
+// Initializes the entire transposition table to zero,
+// in a multi-threaded way.
+void TranspositionTable::clear(size_t threadCount) {
     std::vector<std::thread> threads;
 
-    for (size_t idx = 0; idx < size_t(Options["Threads"]); ++idx)
+    for (size_t idx = 0; idx < size_t(threadCount); ++idx)
     {
-        threads.emplace_back([this, idx]() {
+        threads.emplace_back([this, idx, threadCount]() {
             // Thread binding gives faster search on systems with a first-touch policy
-            if (Options["Threads"] > 8)
+            if (threadCount > 8)
                 WinProcGroup::bindThisThread(idx);
 
             // Each thread will zero its part of the hash table
-            const size_t stride = size_t(clusterCount / Options["Threads"]),
-                         start  = size_t(stride * idx),
-                         len =
-                           idx != size_t(Options["Threads"]) - 1 ? stride : clusterCount - start;
+            const size_t stride = size_t(clusterCount / threadCount), start = size_t(stride * idx),
+                         len = idx != size_t(threadCount) - 1 ? stride : clusterCount - start;
 
             std::memset(&table[start], 0, len * sizeof(Cluster));
         });
@@ -106,17 +97,16 @@ void TranspositionTable::clear() {
 }
 
 
-/// TranspositionTable::probe() looks up the current position in the transposition
-/// table. It returns true and a pointer to the TTEntry if the position is found.
-/// Otherwise, it returns false and a pointer to an empty or least valuable TTEntry
-/// to be replaced later. The replace value of an entry is calculated as its depth
-/// minus 8 times its relative age. TTEntry t1 is considered more valuable than
-/// TTEntry t2 if its replace value is greater than that of t2.
-
+// Looks up the current position in the transposition
+// table. It returns true and a pointer to the TTEntry if the position is found.
+// Otherwise, it returns false and a pointer to an empty or least valuable TTEntry
+// to be replaced later. The replace value of an entry is calculated as its depth
+// minus 8 times its relative age. TTEntry t1 is considered more valuable than
+// TTEntry t2 if its replace value is greater than that of t2.
 TTEntry* TranspositionTable::probe(const Key key, bool& found) const {
 
     TTEntry* const tte   = first_entry(key);
-    const uint16_t key16 = (uint16_t) key;  // Use the low 16 bits as key inside the cluster
+    const uint16_t key16 = uint16_t(key);  // Use the low 16 bits as key inside the cluster
 
     for (int i = 0; i < ClusterSize; ++i)
         if (tte[i].key16 == key16 || !tte[i].depth8)
@@ -124,7 +114,7 @@ TTEntry* TranspositionTable::probe(const Key key, bool& found) const {
             tte[i].genBound8 =
               uint8_t(generation8 | (tte[i].genBound8 & (GENERATION_DELTA - 1)));  // Refresh
 
-            return found = (bool) tte[i].depth8, &tte[i];
+            return found = bool(tte[i].depth8), &tte[i];
         }
 
     // Find an entry to be replaced according to the replacement strategy
@@ -145,8 +135,8 @@ TTEntry* TranspositionTable::probe(const Key key, bool& found) const {
 }
 
 
-/// TranspositionTable::hashfull() returns an approximation of the hashtable
-/// occupation during a search. The hash is x permill full, as per UCI protocol.
+// Returns an approximation of the hashtable
+// occupation during a search. The hash is x permill full, as per UCI protocol.
 
 int TranspositionTable::hashfull() const {
 
@@ -159,4 +149,4 @@ int TranspositionTable::hashfull() const {
     return cnt / ClusterSize;
 }
 
-}  // namespace Stockfish
+}  // namespace ShashChess

@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2023 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -15,6 +15,8 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+#include "misc.h"
 
 #ifdef _WIN32
     #if _WIN32_WINNT < 0x0601
@@ -45,19 +47,23 @@ using fun8_t = bool (*)(HANDLE, BOOL, PTOKEN_PRIVILEGES, DWORD, PTOKEN_PRIVILEGE
 }
 #endif
 
+#include <atomic>
 #include <cmath>
 #include <cstdlib>
 #include <fstream>
-#include <functional>
 #include <iomanip>
 #include <iostream>
+#include <mutex>
 #include <sstream>
 #include <string_view>
-#include <vector>
+//from ShashChess begin
+#include <algorithm>
 #include <stdarg.h>
+//from ShashChess end
+
+#include "types.h"
 
 #if defined(__linux__) && !defined(__ANDROID__)
-    #include <stdlib.h>
     #include <sys/mman.h>
 #endif
 
@@ -68,37 +74,31 @@ using fun8_t = bool (*)(HANDLE, BOOL, PTOKEN_PRIVILEGES, DWORD, PTOKEN_PRIVILEGE
     #include <stdlib.h>
 #endif
 
-#include "misc.h"
-#include "thread.h"
-#include "syzygy/tbprobe.h"
-
-using namespace std;
-
-namespace Stockfish {
+namespace ShashChess {
 
 namespace {
 
-/// Version number or dev.
-constexpr string_view version = "34.6";
+// Version number or dev.
+constexpr std::string_view version = "35";
 
-/// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
-/// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
-/// can toggle the logging of std::cout and std:cin at runtime whilst preserving
-/// usual I/O functionality, all without changing a single line of code!
-/// Idea from http://groups.google.com/group/comp.lang.c++/msg/1d941c0f26ea0d81
+// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
+// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
+// can toggle the logging of std::cout and std:cin at runtime whilst preserving
+// usual I/O functionality, all without changing a single line of code!
+// Idea from http://groups.google.com/group/comp.lang.c++/msg/1d941c0f26ea0d81
 
-struct Tie: public streambuf {  // MSVC requires split streambuf for cin and cout
+struct Tie: public std::streambuf {  // MSVC requires split streambuf for cin and cout
 
-    Tie(streambuf* b, streambuf* l) :
+    Tie(std::streambuf* b, std::streambuf* l) :
         buf(b),
         logBuf(l) {}
 
     int sync() override { return logBuf->pubsync(), buf->pubsync(); }
-    int overflow(int c) override { return log(buf->sputc((char) c), "<< "); }
+    int overflow(int c) override { return log(buf->sputc(char(c)), "<< "); }
     int underflow() override { return buf->sgetc(); }
     int uflow() override { return log(buf->sbumpc(), ">> "); }
 
-    streambuf *buf, *logBuf;
+    std::streambuf *buf, *logBuf;
 
     int log(int c, const char* prefix) {
 
@@ -107,19 +107,19 @@ struct Tie: public streambuf {  // MSVC requires split streambuf for cin and cou
         if (last == '\n')
             logBuf->sputn(prefix, 3);
 
-        return last = logBuf->sputc((char) c);
+        return last = logBuf->sputc(char(c));
     }
 };
 
 class Logger {
 
     Logger() :
-        in(cin.rdbuf(), file.rdbuf()),
-        out(cout.rdbuf(), file.rdbuf()) {}
+        in(std::cin.rdbuf(), file.rdbuf()),
+        out(std::cout.rdbuf(), file.rdbuf()) {}
     ~Logger() { start(""); }
 
-    ofstream file;
-    Tie      in, out;
+    std::ofstream file;
+    Tie           in, out;
 
    public:
     static void start(const std::string& fname) {
@@ -128,42 +128,43 @@ class Logger {
 
         if (l.file.is_open())
         {
-            cout.rdbuf(l.out.buf);
-            cin.rdbuf(l.in.buf);
+            std::cout.rdbuf(l.out.buf);
+            std::cin.rdbuf(l.in.buf);
             l.file.close();
         }
 
         if (!fname.empty())
         {
-            l.file.open(fname, ifstream::out);
+            l.file.open(fname, std::ifstream::out);
 
             if (!l.file.is_open())
             {
-                cerr << "Unable to open debug log file " << fname << endl;
+                std::cerr << "Unable to open debug log file " << fname << std::endl;
                 exit(EXIT_FAILURE);
             }
 
-            cin.rdbuf(&l.in);
-            cout.rdbuf(&l.out);
+            std::cin.rdbuf(&l.in);
+            std::cout.rdbuf(&l.out);
         }
     }
 };
 
 }  // namespace
 
-/// engine_info() returns the full name of the current ShashChess version.
-/// For local dev compiles we try to append the commit sha and commit date
-/// from git if that fails only the local compilation date is set and "nogit" is specified:
-/// ShashChess dev-YYYYMMDD-SHA
-/// or
-/// ShashChess dev-YYYYMMDD-nogit
-///
-/// For releases (non dev builds) we only include the version number:
-/// ShashChess version
 
-string engine_info(bool to_uci) {
-    stringstream ss;
-    ss << "ShashChess " << version << setfill('0');
+// Returns the full name of the current ShashChess version.
+// For local dev compiles we try to append the commit sha and commit date
+// from git if that fails only the local compilation date is set and "nogit" is specified:
+// ShashChess dev-YYYYMMDD-SHA
+// or
+// ShashChess dev-YYYYMMDD-nogit
+//
+// For releases (non-dev builds) we only include the version number:
+// ShashChess version
+
+std::string engine_info(bool to_uci) {
+    std::stringstream ss;
+    ss << "ShashChess " << version << std::setfill('0');
 
     if constexpr (version == "dev")
     {
@@ -171,13 +172,13 @@ string engine_info(bool to_uci) {
 #ifdef GIT_DATE
         ss << stringify(GIT_DATE);
 #else
-        constexpr string_view months("Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec");
-        string                month, day, year;
-        stringstream          date(__DATE__);  // From compiler, format is "Sep 21 2008"
+        constexpr std::string_view months("Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec");
+        std::string                month, day, year;
+        std::stringstream          date(__DATE__);  // From compiler, format is "Sep 21 2008"
 
         date >> month >> day >> year;
-        ss << year << setw(2) << setfill('0') << (1 + months.find(month) / 4) << setw(2)
-           << setfill('0') << day;
+        ss << year << std::setw(2) << std::setfill('0') << (1 + months.find(month) / 4)
+           << std::setw(2) << std::setfill('0') << day;
 #endif
 
         ss << "-";
@@ -196,31 +197,29 @@ string engine_info(bool to_uci) {
 }
 
 
-/// compiler_info() returns a string trying to describe the compiler we use
-
+// Returns a string trying to describe the compiler we use
 std::string compiler_info() {
 
 #define make_version_string(major, minor, patch) \
     stringify(major) "." stringify(minor) "." stringify(patch)
 
-    /// Predefined macros hell:
-    ///
-    /// __GNUC__           Compiler is gcc, Clang or Intel on Linux
-    /// __INTEL_COMPILER   Compiler is Intel
-    /// _MSC_VER           Compiler is MSVC or Intel on Windows
-    /// _WIN32             Building on Windows (any)
-    /// _WIN64             Building on Windows 64 bit
+    // Predefined macros hell:
+    //
+    // __GNUC__                Compiler is GCC, Clang or ICX
+    // __clang__               Compiler is Clang or ICX
+    // __INTEL_LLVM_COMPILER   Compiler is ICX
+    // _MSC_VER                Compiler is MSVC
+    // _WIN32                  Building on Windows (any)
+    // _WIN64                  Building on Windows 64 bit
 
-    std::string compiler = "\nCompiled by ";
+    std::string compiler = "\nCompiled by                : ";
 
-#ifdef __clang__
+#if defined(__INTEL_LLVM_COMPILER)
+    compiler += "ICX ";
+    compiler += stringify(__INTEL_LLVM_COMPILER);
+#elif defined(__clang__)
     compiler += "clang++ ";
     compiler += make_version_string(__clang_major__, __clang_minor__, __clang_patchlevel__);
-#elif __INTEL_COMPILER
-    compiler += "Intel compiler ";
-    compiler += "(version ";
-    compiler += stringify(__INTEL_COMPILER) " update " stringify(__INTEL_COMPILER_UPDATE);
-    compiler += ")";
 #elif _MSC_VER
     compiler += "MSVC ";
     compiler += "(version ";
@@ -228,9 +227,9 @@ std::string compiler_info() {
     compiler += ")";
 #elif defined(__e2k__) && defined(__LCC__)
     #define dot_ver2(n) \
-        compiler += (char) '.'; \
-        compiler += (char) ('0' + (n) / 10); \
-        compiler += (char) ('0' + (n) % 10);
+        compiler += char('.'); \
+        compiler += char('0' + (n) / 10); \
+        compiler += char('0' + (n) % 10);
 
     compiler += "MCST LCC ";
     compiler += "(version ";
@@ -264,8 +263,15 @@ std::string compiler_info() {
     compiler += " on unknown system";
 #endif
 
-    compiler += "\nCompilation settings include: ";
-    compiler += (Is64Bit ? " 64bit" : " 32bit");
+    compiler += "\nCompilation architecture   : ";
+#if defined(ARCH)
+    compiler += stringify(ARCH);
+#else
+    compiler += "(undefined architecture)";
+#endif
+
+    compiler += "\nCompilation settings       : ";
+    compiler += (Is64Bit ? "64bit" : "32bit");
 #if defined(USE_VNNI)
     compiler += " VNNI";
 #endif
@@ -286,10 +292,9 @@ std::string compiler_info() {
     compiler += " SSE2";
 #endif
     compiler += (HasPopCnt ? " POPCNT" : "");
-#if defined(USE_MMX)
-    compiler += " MMX";
-#endif
-#if defined(USE_NEON)
+#if defined(USE_NEON_DOTPROD)
+    compiler += " NEON_DOTPROD";
+#elif defined(USE_NEON)
     compiler += " NEON";
 #endif
 
@@ -297,19 +302,20 @@ std::string compiler_info() {
     compiler += " DEBUG";
 #endif
 
-    compiler += "\n__VERSION__ macro expands to: ";
+    compiler += "\nCompiler __VERSION__ macro : ";
 #ifdef __VERSION__
     compiler += __VERSION__;
 #else
     compiler += "(undefined macro)";
 #endif
+
     compiler += "\n";
 
     return compiler;
 }
 
 
-/// Debug functions used mainly to collect run-time statistics
+// Debug functions used mainly to collect run-time statistics
 constexpr int MaxDebugSlots = 32;
 
 namespace {
@@ -378,7 +384,7 @@ void dbg_print() {
     for (int i = 0; i < MaxDebugSlots; ++i)
         if ((n = stdev[i][0]))
         {
-            double r = sqrtl(E(stdev[i][2]) - sqr(E(stdev[i][1])));
+            double r = sqrt(E(stdev[i][2]) - sqr(E(stdev[i][1])));
             std::cerr << "Stdev #" << i << ": Total " << n << " Stdev " << r << std::endl;
         }
 
@@ -386,16 +392,15 @@ void dbg_print() {
         if ((n = correl[i][0]))
         {
             double r = (E(correl[i][5]) - E(correl[i][1]) * E(correl[i][3]))
-                     / (sqrtl(E(correl[i][2]) - sqr(E(correl[i][1])))
-                        * sqrtl(E(correl[i][4]) - sqr(E(correl[i][3]))));
+                     / (sqrt(E(correl[i][2]) - sqr(E(correl[i][1])))
+                        * sqrt(E(correl[i][4]) - sqr(E(correl[i][3]))));
             std::cerr << "Correl. #" << i << ": Total " << n << " Coefficient " << r << std::endl;
         }
 }
 
 
-/// Used to serialize access to std::cout to avoid multiple threads writing at
-/// the same time.
-
+// Used to serialize access to std::cout
+// to avoid multiple threads writing at the same time.
 std::ostream& operator<<(std::ostream& os, SyncCout sc) {
 
     static std::mutex m;
@@ -410,13 +415,10 @@ std::ostream& operator<<(std::ostream& os, SyncCout sc) {
 }
 
 
-/// Trampoline helper to avoid moving Logger to misc.h
+// Trampoline helper to avoid moving Logger to misc.h
 void start_logger(const std::string& fname) { Logger::start(fname); }
 
 
-/// prefetch() preloads the given address in L1/L2 cache. This is a non-blocking
-/// function that doesn't stall the CPU waiting for data to be loaded from memory,
-/// which can be quite slow.
 #ifdef NO_PREFETCH
 
 void prefetch(void*) {}
@@ -425,13 +427,7 @@ void prefetch(void*) {}
 
 void prefetch(void* addr) {
 
-    #if defined(__INTEL_COMPILER)
-    // This hack prevents prefetches from being optimized away by
-    // Intel compiler. Both MSVC and gcc seem not be affected by this.
-    __asm__("");
-    #endif
-
-    #if defined(__INTEL_COMPILER) || defined(_MSC_VER)
+    #if defined(_MSC_VER)
     _mm_prefetch((char*) addr, _MM_HINT_T0);
     #else
     __builtin_prefetch(addr);
@@ -441,10 +437,9 @@ void prefetch(void* addr) {
 #endif
 
 
-/// std_aligned_alloc() is our wrapper for systems where the c++17 implementation
-/// does not guarantee the availability of aligned_alloc(). Memory allocated with
-/// std_aligned_alloc() must be freed with std_aligned_free().
-
+// Wrapper for systems where the c++17 implementation
+// does not guarantee the availability of aligned_alloc(). Memory allocated with
+// std_aligned_alloc() must be freed with std_aligned_free().
 void* std_aligned_alloc(size_t alignment, size_t size) {
 
 #if defined(POSIXALIGNEDALLOC)
@@ -472,7 +467,7 @@ void std_aligned_free(void* ptr) {
 #endif
 }
 
-/// aligned_large_pages_alloc() will return suitably aligned memory, if possible using large pages.
+// aligned_large_pages_alloc() will return suitably aligned memory, if possible using large pages.
 
 #if defined(_WIN32)
 
@@ -497,13 +492,13 @@ static void* aligned_large_pages_alloc_windows([[maybe_unused]] size_t allocSize
     if (!hAdvapi32)
         hAdvapi32 = LoadLibrary(TEXT("advapi32.dll"));
 
-    auto fun6 = (fun6_t) (void (*)()) GetProcAddress(hAdvapi32, "OpenProcessToken");
+    auto fun6 = fun6_t((void (*)()) GetProcAddress(hAdvapi32, "OpenProcessToken"));
     if (!fun6)
         return nullptr;
-    auto fun7 = (fun7_t) (void (*)()) GetProcAddress(hAdvapi32, "LookupPrivilegeValueA");
+    auto fun7 = fun7_t((void (*)()) GetProcAddress(hAdvapi32, "LookupPrivilegeValueA"));
     if (!fun7)
         return nullptr;
-    auto fun8 = (fun8_t) (void (*)()) GetProcAddress(hAdvapi32, "AdjustTokenPrivileges");
+    auto fun8 = fun8_t((void (*)()) GetProcAddress(hAdvapi32, "AdjustTokenPrivileges"));
     if (!fun8)
         return nullptr;
 
@@ -552,7 +547,7 @@ void* aligned_large_pages_alloc(size_t allocSize) {
     // Try to allocate large pages
     void* mem = aligned_large_pages_alloc_windows(allocSize);
 
-    // Fall back to regular, page aligned, allocation if necessary
+    // Fall back to regular, page-aligned, allocation if necessary
     if (!mem)
         mem = VirtualAlloc(nullptr, allocSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
@@ -569,7 +564,7 @@ void* aligned_large_pages_alloc(size_t allocSize) {
     constexpr size_t alignment = 4096;  // assumed small page size
     #endif
 
-    // round up to multiples of alignment
+    // Round up to multiples of alignment
     size_t size = ((allocSize + alignment - 1) / alignment) * alignment;
     void*  mem  = std_aligned_alloc(alignment, size);
     #if defined(MADV_HUGEPAGE)
@@ -581,7 +576,7 @@ void* aligned_large_pages_alloc(size_t allocSize) {
 #endif
 
 
-/// aligned_large_pages_free() will free the previously allocated ttmem
+// aligned_large_pages_free() will free the previously allocated ttmem
 
 #if defined(_WIN32)
 
@@ -611,10 +606,9 @@ void bindThisThread(size_t) {}
 
 #else
 
-/// best_node() retrieves logical processor information using Windows specific
-/// API and returns the best node id for the thread with index idx. Original
-/// code from Texel by Peter Österlund.
-
+// Retrieves logical processor information using Windows-specific
+// API and returns the best node id for the thread with index idx. Original
+// code from Texel by Peter Österlund.
 static int best_node(size_t idx) {
 
     int   threads      = 0;
@@ -665,15 +659,14 @@ static int best_node(size_t idx) {
 
     std::vector<int> groups;
 
-    // Run as many threads as possible on the same node until core limit is
-    // reached, then move on filling the next node.
+    // Run as many threads as possible on the same node until the core limit is
+    // reached, then move on to filling the next node.
     for (int n = 0; n < nodes; n++)
         for (int i = 0; i < cores / nodes; i++)
             groups.push_back(n);
 
     // In case a core has more than one logical processor (we assume 2) and we
-    // have still threads to allocate, then spread them evenly across available
-    // nodes.
+    // still have threads to allocate, spread them evenly across available nodes.
     for (int t = 0; t < threads - cores; t++)
         groups.push_back(t % nodes);
 
@@ -683,8 +676,7 @@ static int best_node(size_t idx) {
 }
 
 
-/// bindThisThread() set the group affinity of the current thread
-
+// Sets the group affinity of the current thread
 void bindThisThread(size_t idx) {
 
     // Use only local variables to be thread-safe
@@ -695,10 +687,10 @@ void bindThisThread(size_t idx) {
 
     // Early exit if the needed API are not available at runtime
     HMODULE k32  = GetModuleHandle(TEXT("Kernel32.dll"));
-    auto    fun2 = (fun2_t) (void (*)()) GetProcAddress(k32, "GetNumaNodeProcessorMaskEx");
-    auto    fun3 = (fun3_t) (void (*)()) GetProcAddress(k32, "SetThreadGroupAffinity");
-    auto    fun4 = (fun4_t) (void (*)()) GetProcAddress(k32, "GetNumaNodeProcessorMask2");
-    auto    fun5 = (fun5_t) (void (*)()) GetProcAddress(k32, "GetMaximumProcessorGroupCount");
+    auto    fun2 = fun2_t((void (*)()) GetProcAddress(k32, "GetNumaNodeProcessorMaskEx"));
+    auto    fun3 = fun3_t((void (*)()) GetProcAddress(k32, "SetThreadGroupAffinity"));
+    auto    fun4 = fun4_t((void (*)()) GetProcAddress(k32, "GetNumaNodeProcessorMask2"));
+    auto    fun5 = fun5_t((void (*)()) GetProcAddress(k32, "GetMaximumProcessorGroupCount"));
 
     if (!fun2 || !fun3)
         return;
@@ -735,23 +727,19 @@ void bindThisThread(size_t idx) {
     #define GETCWD getcwd
 #endif
 
-namespace CommandLine {
+CommandLine::CommandLine(int _argc, char** _argv) :
+    argc(_argc),
+    argv(_argv) {
+    std::string pathSeparator;
 
-string argv0;             // path+name of the executable binary, as given by argv[0]
-string binaryDirectory;   // path of the executable directory
-string workingDirectory;  // path of the working directory
-
-void init([[maybe_unused]] int argc, char* argv[]) {
-    string pathSeparator;
-
-    // extract the path+name of the executable binary
-    argv0 = argv[0];
+    // Extract the path+name of the executable binary
+    std::string argv0 = argv[0];
 
 #ifdef _WIN32
     pathSeparator = "\\";
     #ifdef _MSC_VER
     // Under windows argv[0] may not have the extension. Also _get_pgmptr() had
-    // issues in some windows 10 versions, so check returned values carefully.
+    // issues in some Windows 10 versions, so check returned values carefully.
     char* pgmptr = nullptr;
     if (!_get_pgmptr(&pgmptr) && pgmptr != nullptr && *pgmptr)
         argv0 = pgmptr;
@@ -760,14 +748,14 @@ void init([[maybe_unused]] int argc, char* argv[]) {
     pathSeparator = "/";
 #endif
 
-    // extract the working directory
+    // Extract the working directory
     workingDirectory = "";
     char  buff[40000];
     char* cwd = GETCWD(buff, 40000);
     if (cwd)
         workingDirectory = cwd;
 
-    // extract the binary directory path from argv0
+    // Extract the binary directory path from argv0
     binaryDirectory = argv0;
     size_t pos      = binaryDirectory.find_last_of("\\/");
     if (pos == std::string::npos)
@@ -775,27 +763,28 @@ void init([[maybe_unused]] int argc, char* argv[]) {
     else
         binaryDirectory.resize(pos + 1);
 
-    // pattern replacement: "./" at the start of path is replaced by the working directory
+    // Pattern replacement: "./" at the start of path is replaced by the working directory
+    //from Khalid begin
     if (binaryDirectory.find("." + pathSeparator) == 0)
+    {
         binaryDirectory.replace(0, 1, workingDirectory);
+    }
+    Util::init(this);
+    //from Khalid end
 }
 
+/*static*/ CommandLine* Util::cli = nullptr;
 
-}  // namespace CommandLine
-//book mangement and learning begin
-namespace Utility {
-//begin learning from Khalid
-string myFolder;
+/*static*/ void Util::init(CommandLine* _cli) {
+    cli = _cli;
 
-void init(const char* arg0) {
-    string s = arg0;
-    size_t i = s.find_last_of(DirectorySeparator);
-    if (i != string::npos)
-        myFolder = s.substr(0, i);
+    //Ugly, I know. But who cares!
+    cli->binaryDirectory  = fix_path(cli->binaryDirectory);
+    cli->workingDirectory = fix_path(cli->workingDirectory);
 }
-//end learning from Khalid
-string unquote(const string& s) {
-    string s1 = s;
+
+/*static*/ std::string Util::unquote(const std::string& s) {
+    std::string s1 = s;
 
     if (s1.size() > 2)
     {
@@ -808,33 +797,33 @@ string unquote(const string& s) {
     return s1;
 }
 
-bool is_empty_filename(const string& fn) {
+/*static*/ bool Util::is_empty_filename(const std::string& fn) {
     if (fn.empty())
         return true;
 
-    static string Empty = EMPTY;
-    return equal(fn.begin(), fn.end(), Empty.begin(), Empty.end(),
-                 [](char a, char b) { return tolower(a) == tolower(b); });
+    static std::string Empty = EMPTY;
+    return std::equal(fn.begin(), fn.end(), Empty.begin(), Empty.end(),
+                      [](char a, char b) { return tolower(a) == tolower(b); });
 }
 
-string fix_path(const string& p) {
+/*static*/ std::string Util::fix_path(const std::string& p) {
     if (is_empty_filename(p))
         return p;
 
-    string p1 = unquote(p);
-    replace(p1.begin(), p1.end(), ReverseDirectorySeparator, DirectorySeparator);
+    std::string p1 = unquote(p);
+    std::replace(p1.begin(), p1.end(), ReverseDirectorySeparator, DirectorySeparator);
 
     return p1;
 }
 
-string combine_path(const string& p1, const string& p2) {
+/*static*/ std::string Util::combine_path(const std::string& p1, const std::string& p2) {
     //We don't expect the first part of the path to be empty!
     assert(is_empty_filename(p1) == false);
 
     if (is_empty_filename(p2))
         return p2;
 
-    string p;
+    std::string p;
     if (p1.back() == DirectorySeparator || p1.back() == ReverseDirectorySeparator)
         p = p1 + p2;
     else
@@ -843,56 +832,58 @@ string combine_path(const string& p1, const string& p2) {
     return fix_path(p);
 }
 
-string map_path(const string& p) {
+/*static*/ std::string Util::map_path(const std::string& p) {
     if (is_empty_filename(p))
         return p;
 
-    string p2 = fix_path(p);
+    std::string p2 = fix_path(p);
 
     //Make sure we can map this path
-    if (p2.find(DirectorySeparator) == string::npos)
-        p2 = combine_path(CommandLine::binaryDirectory, p);
+    if (p2.find(DirectorySeparator) == std::string::npos)
+        p2 = combine_path(cli->binaryDirectory, p);
 
     return p2;
 }
 
-size_t get_file_size(const string& f) {
+/*static*/ size_t Util::get_file_size(const std::string& f) {
     if (is_empty_filename(f))
         return (size_t) -1;
 
-    ifstream in(map_path(f), ifstream::ate | ifstream::binary);
+    std::ifstream in(map_path(f), std::ifstream::ate | std::ifstream::binary);
     if (!in.is_open())
         return (size_t) -1;
 
     return (size_t) in.tellg();
 }
 
-bool is_same_file(const string& f1, const string& f2) { return map_path(f1) == map_path(f2); }
+/*static*/ bool Util::is_same_file(const std::string& f1, const std::string& f2) {
+    return map_path(f1) == map_path(f2);
+}
 
-string format_bytes(uint64_t bytes, int decimals) {
+/*static*/ std::string Util::format_bytes(uint64_t bytes, int decimals) {
     static const uint64_t KB = 1024;
     static const uint64_t MB = KB * 1024;
     static const uint64_t GB = MB * 1024;
     static const uint64_t TB = GB * 1024;
 
-    stringstream ss;
+    std::stringstream ss;
 
     if (bytes < KB)
         ss << bytes << " B";
     else if (bytes < MB)
-        ss << fixed << setprecision(decimals) << ((double) bytes / KB) << "KB";
+        ss << std::fixed << std::setprecision(decimals) << (double(bytes) / KB) << "KB";
     else if (bytes < GB)
-        ss << fixed << setprecision(decimals) << ((double) bytes / MB) << "MB";
+        ss << std::fixed << std::setprecision(decimals) << (double(bytes) / MB) << "MB";
     else if (bytes < TB)
-        ss << fixed << setprecision(decimals) << ((double) bytes / GB) << "GB";
+        ss << std::fixed << std::setprecision(decimals) << (double(bytes) / GB) << "GB";
     else
-        ss << fixed << setprecision(decimals) << ((double) bytes / TB) << "TB";
+        ss << std::fixed << std::setprecision(decimals) << (double(bytes) / TB) << "TB";
 
     return ss.str();
 }
 
 //Code is an `edited` version of: https://stackoverflow.com/a/49812018
-string format_string(const char* const fmt, ...) {
+/*static*/ std::string Util::format_string(const char* const fmt, ...) {
     //Initialize use of the variable arguments
     va_list vaArgs;
     va_start(vaArgs, fmt);
@@ -904,34 +895,14 @@ string format_string(const char* const fmt, ...) {
 
 
     //Allocate enough buffer and format
-    vector<char> v(len + 1);
+    std::vector<char> v(len + 1);
 
     va_start(vaArgs, fmt);
     vsnprintf(v.data(), v.size(), fmt, vaArgs);
     va_end(vaArgs);
 
-    return string(v.data(), len);
+    return std::string(v.data(), len);
 }
-bool is_game_decided(const Position& pos, Value lastScore) {
-    static constexpr const Value DecidedGameEvalThreeshold = PawnValueEg * 5;
-    static constexpr const int   DecidedGameMaxPly         = 150;
-    static constexpr const int   DecidedGameMaxPieceCount  = 5;
-
-    //Assume game is decided if |last sent score| is above DecidedGameEvalThreeshold
-    if (lastScore != VALUE_NONE && std::abs(lastScore) > DecidedGameEvalThreeshold)
-        return true;
-
-    //Assume game is decided (draw) if game ply is above 150
-    if (pos.game_ply() > DecidedGameMaxPly)
-        return true;
-
-    if (pos.count<ALL_PIECES>() < DecidedGameMaxPieceCount)
-        return true;
-
-    //Assume game is not decided!
-    return false;
-}
-}  // namespace Utility
 //Book management and learning end
 
-}  // namespace Stockfish
+}  // namespace ShashChess

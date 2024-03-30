@@ -1,13 +1,13 @@
 /*
-  Stockfish, a UCI chess playing engine derived from Glaurung 2.1
-  Copyright (C) 2004-2023 The Stockfish developers (see AUTHORS file)
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2024 The ShashChess developers (see AUTHORS file)
 
-  Stockfish is free software: you can redistribute it and/or modify
+  ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Stockfish is distributed in the hope that it will be useful,
+  ShashChess is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -21,9 +21,13 @@
 #ifndef NNUE_LAYERS_CLIPPED_RELU_H_INCLUDED
 #define NNUE_LAYERS_CLIPPED_RELU_H_INCLUDED
 
+#include <algorithm>
+#include <cstdint>
+#include <iosfwd>
+
 #include "../nnue_common.h"
 
-namespace Stockfish::Eval::NNUE::Layers {
+namespace ShashChess::Eval::NNUE::Layers {
 
 // Clipped ReLU
 template<IndexType InDims>
@@ -55,7 +59,7 @@ class ClippedReLU {
     bool write_parameters(std::ostream&) const { return true; }
 
     // Forward propagation
-    const OutputType* propagate(const InputType* input, OutputType* output) const {
+    void propagate(const InputType* input, OutputType* output) const {
 
 #if defined(USE_AVX2)
         if constexpr (InputDimensions % SimdWidth == 0)
@@ -134,23 +138,6 @@ class ClippedReLU {
         }
         constexpr IndexType Start = NumChunks * SimdWidth;
 
-#elif defined(USE_MMX)
-        constexpr IndexType NumChunks = InputDimensions / SimdWidth;
-        const __m64         k0x80s    = _mm_set1_pi8(-128);
-        const auto          in        = reinterpret_cast<const __m64*>(input);
-        const auto          out       = reinterpret_cast<__m64*>(output);
-        for (IndexType i = 0; i < NumChunks; ++i)
-        {
-            const __m64 words0 =
-              _mm_srai_pi16(_mm_packs_pi32(in[i * 4 + 0], in[i * 4 + 1]), WeightScaleBits);
-            const __m64 words1 =
-              _mm_srai_pi16(_mm_packs_pi32(in[i * 4 + 2], in[i * 4 + 3]), WeightScaleBits);
-            const __m64 packedbytes = _mm_packs_pi16(words0, words1);
-            out[i]                  = _mm_subs_pi8(_mm_adds_pi8(packedbytes, k0x80s), k0x80s);
-        }
-        _mm_empty();
-        constexpr IndexType Start = NumChunks * SimdWidth;
-
 #elif defined(USE_NEON)
         constexpr IndexType NumChunks = InputDimensions / (SimdWidth / 2);
         const int8x8_t      Zero      = {0};
@@ -171,14 +158,11 @@ class ClippedReLU {
 
         for (IndexType i = Start; i < InputDimensions; ++i)
         {
-            output[i] =
-              static_cast<OutputType>(std::max(0, std::min(127, input[i] >> WeightScaleBits)));
+            output[i] = static_cast<OutputType>(std::clamp(input[i] >> WeightScaleBits, 0, 127));
         }
-
-        return output;
     }
 };
 
-}  // namespace Stockfish::Eval::NNUE::Layers
+}  // namespace ShashChess::Eval::NNUE::Layers
 
 #endif  // NNUE_LAYERS_CLIPPED_RELU_H_INCLUDED

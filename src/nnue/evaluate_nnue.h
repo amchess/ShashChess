@@ -1,13 +1,13 @@
 /*
-  Stockfish, a UCI chess playing engine derived from Glaurung 2.1
-  Copyright (C) 2004-2023 The Stockfish developers (see AUTHORS file)
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2024 The ShashChess developers (see AUTHORS file)
 
-  Stockfish is free software: you can redistribute it and/or modify
+  ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Stockfish is distributed in the hope that it will be useful,
+  ShashChess is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -21,16 +21,35 @@
 #ifndef NNUE_EVALUATE_NNUE_H_INCLUDED
 #define NNUE_EVALUATE_NNUE_H_INCLUDED
 
+#include <cstdint>
+#include <iosfwd>
+#include <memory>
+#include <optional>
+#include <string>
+#include <unordered_map>
+
+#include "../misc.h"
+#include "../types.h"
+#include "nnue_architecture.h"
 #include "nnue_feature_transformer.h"
 
-#include <memory>
+namespace ShashChess {
+class Position;
 
-namespace Stockfish::Eval::NNUE {
+namespace Eval {
+struct EvalFile;
+}
+
+}
+
+namespace ShashChess::Eval::NNUE {
 
 // Hash value of evaluation function structure
-constexpr std::uint32_t HashValue =
-  FeatureTransformer::get_hash_value() ^ Network::get_hash_value();
-
+constexpr std::uint32_t HashValue[2] = {
+  FeatureTransformer<TransformedFeatureDimensionsBig, nullptr>::get_hash_value()
+    ^ Network<TransformedFeatureDimensionsBig, L2Big, L3Big>::get_hash_value(),
+  FeatureTransformer<TransformedFeatureDimensionsSmall, nullptr>::get_hash_value()
+    ^ Network<TransformedFeatureDimensionsSmall, L2Small, L3Small>::get_hash_value()};
 
 // Deleter for automating release of memory area
 template<typename T>
@@ -56,13 +75,19 @@ template<typename T>
 using LargePagePtr = std::unique_ptr<T, LargePageDeleter<T>>;
 
 std::string trace(Position& pos);
-Value       evaluate(const Position& pos, bool adjusted = false, int* complexity = nullptr);
-void        hint_common_parent_position(const Position& pos);
+template<NetSize Net_Size>
+Value evaluate(const Position& pos, bool adjusted = false, int* complexity = nullptr);
+void  hint_common_parent_position(const Position& pos);
 
-bool load_eval(std::string name, std::istream& stream);
-bool save_eval(std::ostream& stream);
-bool save_eval(const std::optional<std::string>& filename);
+std::optional<std::string> load_eval(std::istream& stream, NetSize netSize);
+bool                       save_eval(std::ostream&      stream,
+                                     NetSize            netSize,
+                                     const std::string& name,
+                                     const std::string& netDescription);
+bool                       save_eval(const std::optional<std::string>& filename,
+                                     NetSize                           netSize,
+                                     const std::unordered_map<Eval::NNUE::NetSize, Eval::EvalFile>&);
 
-}  // namespace Stockfish::Eval::NNUE
+}  // namespace ShashChess::Eval::NNUE
 
 #endif  // #ifndef NNUE_EVALUATE_NNUE_H_INCLUDED

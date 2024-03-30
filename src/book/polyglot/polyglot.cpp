@@ -2,14 +2,12 @@
 #include <sstream>
 #include <iomanip>
 #include <random>
-#include <map>
-#include "../../movegen.h"
+#include "../../position.h"
 #include "../../uci.h"
+#include "../file_mapping.h"
 #include "polyglot.h"
 
-using namespace std;
-using namespace Stockfish;
-
+namespace ShashChess {
 namespace {
 // A Polyglot book is a series of "entries" of 16 bytes. All integers are
 // stored in big-endian format, with the highest byte first (regardless of
@@ -271,9 +269,9 @@ Move make_move(const PolyglotEntry& e) {
     // all other cases, we can directly compare with a Move after having masked
     // out the special Move flags (bit 14-15) that are not supported by Polyglot.
     Move move = Move(e.move);
-    int  pt   = (move >> 12) & 7;
+    int  pt   = (move.raw() >> 12) & 7;
     if (pt)
-        move = make<PROMOTION>(from_sq(move), to_sq(move), PieceType(pt + 1));
+        move = Move::make<PROMOTION>(move.from_sq(), move.to_sq(), PieceType(pt + 1));
 
     return move;
 }
@@ -293,7 +291,7 @@ struct PolyglotBookMove {
     PolyglotEntry entry;
 
     PolyglotBookMove() {
-        move = MOVE_NONE;
+        move = Move::none();
         memset(&entry, 0, sizeof(PolyglotEntry));
     }
     PolyglotBookMove(const PolyglotEntry& e, Move m) {
@@ -302,10 +300,10 @@ struct PolyglotBookMove {
     }
 };
 
-auto randomEngine = default_random_engine(now());
-}  // namespace
+auto randomEngine = std::default_random_engine(now());
+}
 
-namespace Stockfish::Book::Polyglot {
+namespace Book::Polyglot {
 unsigned char* PolyglotBook::data() const { return bookData; }
 
 size_t PolyglotBook::data_size() const { return bookDataLength; }
@@ -348,7 +346,7 @@ size_t PolyglotBook::total_entries() const {
     return bookDataLength / sizeof(PolyglotEntry);
 }
 
-void PolyglotBook::get_moves(const Position& pos, vector<PolyglotBookMove>& bookMoves) const {
+void PolyglotBook::get_moves(const Position& pos, std::vector<PolyglotBookMove>& bookMoves) const {
     //Clear
     bookMoves.clear();
 
@@ -373,9 +371,9 @@ void PolyglotBook::get_moves(const Position& pos, vector<PolyglotBookMove>& book
         Move move = make_move(e);
         for (const auto& m : MoveList<LEGAL>(pos))
         {
-            if (move == (m.move ^ type_of(m.move)))
+            if (move.raw() == (m.raw() ^ m.type_of()))
             {
-                bookMoves.push_back(PolyglotBookMove(e, m.move));
+                bookMoves.push_back(PolyglotBookMove(e, m));
             }
         }
     }
@@ -388,7 +386,7 @@ PolyglotBook::PolyglotBook() :
 
 PolyglotBook::~PolyglotBook() { close(); }
 
-string PolyglotBook::type() const { return "BIN"; }
+std::string PolyglotBook::type() const { return "BIN"; }
 
 void PolyglotBook::close() {
     if (bookData)
@@ -399,20 +397,20 @@ void PolyglotBook::close() {
     filename.clear();
 }
 
-bool PolyglotBook::open(const string& f) {
+bool PolyglotBook::open(const std::string& f) {
     //If same file and same size -> nothing to do
-    if (Utility::is_same_file(f, filename) && Utility::get_file_size(f) == bookDataLength)
+    if (Util::is_same_file(f, filename) && Util::get_file_size(f) == bookDataLength)
         return true;
 
     //Close current file
     close();
 
     //If no file name is given -> nothing to do
-    if (Utility::is_empty_filename(f))
+    if (Util::is_empty_filename(f))
         return true;
 
-    Utility::FileMapping fm;
-    if (!fm.map(Utility::map_path(f), false))
+    FileMapping fm;
+    if (!fm.map(Util::map_path(f), false))
     {
         sync_cout << "info string Could not open book file: " << f << sync_endl;
         return false;
@@ -421,7 +419,7 @@ bool PolyglotBook::open(const string& f) {
     void* inData = malloc(fm.data_size());
     if (!inData)
     {
-        sync_cout << "info string Could not allocate " << Utility::format_bytes(fm.data_size(), 2)
+        sync_cout << "info string Could not allocate " << Util::format_bytes(fm.data_size(), 2)
                   << " of memory for reading book file: " << f << sync_endl;
         return false;
     }
@@ -444,13 +442,13 @@ bool PolyglotBook::open(const string& f) {
 
 Move PolyglotBook::probe(const Position& pos, size_t width, bool /*onlyGreen*/) const {
     if (!has_data())
-        return MOVE_NONE;
+        return Move::none();
 
-    vector<PolyglotBookMove> bookMoves;
+    std::vector<PolyglotBookMove> bookMoves;
     get_moves(pos, bookMoves);
 
     if (!bookMoves.size())
-        return MOVE_NONE;
+        return Move::none();
 
 #if 1
     //Remove any move with REALLY low weight compared to the total weight of all moves
@@ -464,7 +462,7 @@ Move PolyglotBook::probe(const Position& pos, size_t width, bool /*onlyGreen*/) 
     //Remove moves with weight percentage less than 0.5%
     bookMoves.erase(remove_if(bookMoves.begin(), bookMoves.end(),
                               [&totalWeight](const PolyglotBookMove& x) {
-                                  return (uint64_t) x.entry.count * 200 < totalWeight;
+                                  return uint64_t(x.entry.count) * 200 < totalWeight;
                               }),
                     bookMoves.end());
 #endif
@@ -497,39 +495,40 @@ Move PolyglotBook::probe(const Position& pos, size_t width, bool /*onlyGreen*/) 
 }
 
 void PolyglotBook::show_moves(const Position& pos) const {
-    stringstream ss;
+    std::stringstream ss;
 
     if (!has_data())
     {
         assert(false);
-        ss << "No book loaded" << endl;
+        ss << "No book loaded" << std::endl;
     }
     else
     {
-        vector<PolyglotBookMove> bookMoves;
+        std::vector<PolyglotBookMove> bookMoves;
         get_moves(pos, bookMoves);
 
         if (bookMoves.size() == 0)
         {
-            ss << "No moves found for this position" << endl;
+            ss << "No moves found for this position" << std::endl;
         }
         else
         {
-            stable_sort(bookMoves.begin(), bookMoves.end(),
-                        [](const PolyglotBookMove& bm1, const PolyglotBookMove& bm2) {
-                            return bm1.entry.count > bm2.entry.count;
-                        });
+            std::stable_sort(bookMoves.begin(), bookMoves.end(),
+                             [](const PolyglotBookMove& bm1, const PolyglotBookMove& bm2) {
+                                 return bm1.entry.count > bm2.entry.count;
+                             });
 
             for (size_t i = 0; i < bookMoves.size(); ++i)
             {
-                ss << setw(2) << setfill(' ') << left << (i + 1) << ": " << setw(5) << setfill(' ')
-                   << left << UCI::move(bookMoves[i].move, pos.is_chess960())
-                   << ", count: " << setw(4) << setfill(' ') << left << bookMoves[i].entry.count
-                   << endl;
+                ss << std::setw(2) << std::setfill(' ') << std::left << (i + 1) << ": "
+                   << std::setw(5) << std::setfill(' ') << std::left
+                   << UCI::move(bookMoves[i].move, pos.is_chess960()) << ", count: " << std::setw(4)
+                   << std::setfill(' ') << std::left << bookMoves[i].entry.count << std::endl;
             }
         }
     }
 
-    cout << ss.str() << endl;
+    std::cout << ss.str() << std::endl;
+}
 }
 }

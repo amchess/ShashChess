@@ -1,0 +1,329 @@
+[ECO "C55"]
+[Opening "Two knights defence, Keidanz variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d4 exd4 5. e5 d5 6. Bb5 Ne4 7. Nxd4 Bc5 
+8. Nxc6 Bxf2+ 9. Kf1 Qh4 *
+
+[ECO "C55"]
+[Opening "Two knights defence, Perreux variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d4 exd4 5. Ng5 *
+
+[ECO "C55"]
+[Opening "Two knights defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d4 exd4 5. O-O *
+
+[ECO "C55"]
+[Opening "two knights"]
+[Variation "Max Lange attack"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d4 exd4 5. O-O Bc5 6. e5 *
+
+[ECO "C55"]
+[Opening "two knights"]
+[Variation "Max Lange attack, Berger variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d4 exd4 5. O-O Bc5 6. e5 d5 7. exf6 dxc4
+8. Re1+ Be6 9. Ng5 Qd5 10. Nc3 Qf5 11. g4 Qg6 12. Nce4 Bb6 13. f4 O-O-O *
+
+[ECO "C55"]
+[Opening "two knights"]
+[Variation "Max Lange attack, Marshall variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d4 exd4 5. O-O Bc5 6. e5 d5 7. exf6 dxc4
+8. Re1+ Be6 9. Ng5 Qd5 10. Nc3 Qf5 11. Nce4 *
+
+[ECO "C55"]
+[Opening "two knights"]
+[Variation "Max Lange attack, Rubinstein variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d4 exd4 5. O-O Bc5 6. e5 d5 7. exf6 dxc4
+8. Re1+ Be6 9. Ng5 Qd5 10. Nc3 Qf5 11. Nce4 Bf8 *
+
+[ECO "C55"]
+[Opening "two knights"]
+[Variation "Max Lange attack, Loman defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d4 exd4 5. O-O Bc5 6. e5 d5 7. exf6 dxc4
+8. Re1+ Be6 9. Ng5 g6 *
+
+[ECO "C55"]
+[Opening "two knights"]
+[Variation "Max Lange attack, Schlechter variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d4 exd4 5. O-O Bc5 6. e5 d5 7. exf6 dxc4
+8. Re1+ Be6 9. fxg7 *
+
+[ECO "C55"]
+[Opening "two knights"]
+[Variation "Max Lange attack, Steinitz variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d4 exd4 5. O-O Bc5 6. e5 Ng4 *
+
+[ECO "C55"]
+[Opening "two knights"]
+[Variation "Max Lange attack, Krause variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d4 exd4 5. O-O Bc5 6. e5 Ng4 7. c3 *
+
+[ECO "C56"]
+[Opening "Two knights defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d4 exd4 5. O-O Nxe4 *
+
+[ECO "C56"]
+[Opening "two knights defence"]
+[Variation "Yurdansky attack"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d4 exd4 5. O-O Nxe4 6. Re1 d5 7. Bxd5 
+Qxd5 8. Nc3 Qa5 9. Nxe4 Be6 10. Bg5 h6 11. Bh4 g5 12. Nf6+ Ke7 13. b4 *
+
+[ECO "C56"]
+[Opening "two knights defence"]
+[Variation "Canal variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d4 exd4 5. O-O Nxe4 6. Re1 d5 7. Nc3 *
+
+[ECO "C57"]
+[Opening "Two knights defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 *
+
+[ECO "C57"]
+[Opening "two knights defence"]
+[Variation "Wilkes Barre (Traxler) variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 Bc5 *
+
+[ECO "C57"]
+[Opening "two knights defence"]
+[Variation "Ulvestad variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 b5 *
+
+[ECO "C57"]
+[Opening "two knights defence"]
+[Variation "Fritz variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Nd4 *
+
+[ECO "C57"]
+[Opening "two knights defence"]
+[Variation "Fritz, Gruber variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Nd4 6. c3 b5 7. Bf1 Nxd5 
+8. Ne4 *
+
+[ECO "C57"]
+[Opening "two knights defence"]
+[Variation "Lolli attack"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Nxd5 6. d4 *
+
+[ECO "C57"]
+[Opening "two knights defence"]
+[Variation "Pincus variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Nxd5 6. d4 Bb4+ *
+
+[ECO "C57"]
+[Opening "two knights defence"]
+[Variation "Fegatello attack"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Nxd5 6. Nxf7 *
+
+[ECO "C57"]
+[Opening "two knights defence"]
+[Variation "Fegatello attack, Leonhardt variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Nxd5 6. Nxf7 Kxf7 7. Qf3+
+Ke6 8. Nc3 Nb4 9. Qe4 c6 10. a3 Na6 11. d4 Nc7 *
+
+[ECO "C57"]
+[Opening "two knights defence"]
+[Variation "Fegatello attack, Polerio defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Nxd5 6. Nxf7 Kxf7 7. Qf3+
+Ke6 8. Nc3 Ne7 *
+
+[ECO "C58"]
+[Opening "two knights defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Na5 *
+
+[ECO "C58"]
+[Opening "two knights defence"]
+[Variation "Kieseritsky variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Na5 6. d3 *
+
+[ECO "C58"]
+[Opening "two knights defence"]
+[Variation "Yankovich variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Na5 6. d3 h6 7. Nf3 e4 8.
+Qe2 Nxc4 9. dxc4 Bc5 10. Nfd2 *
+
+[ECO "C58"]
+[Opening "two knights defence"]
+[Variation "Maroczy variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Na5 6. d3 h6 7. Nf3 e4 8.
+Qe2 Nxc4 9. dxc4 Be7 *
+
+[ECO "C58"]
+[Opening "Two knights defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Na5 6. Bb5+ *
+
+[ECO "C58"]
+[Opening "two knights defence"]
+[Variation "Bogolyubov variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Na5 6. Bb5+ c6 7. dxc6 
+bxc6 8. Qf3 *
+
+[ECO "C58"]
+[Opening "two knights defence"]
+[Variation "Paoli variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Na5 6. Bb5+ c6 7. dxc6 
+bxc6 8. Qf3 Qc7 9. Bd3 *
+
+[ECO "C58"]
+[Opening "two knights defence"]
+[Variation "Colman variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Na5 6. Bb5+ c6 7. dxc6 
+bxc6 8. Qf3 Rb8 *
+
+[ECO "C58"]
+[Opening "two knights defence"]
+[Variation "Blackburne variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Na5 6. Bb5+ c6 7. dxc6 
+bxc6 8. Qf3 cxb5 *
+
+[ECO "C58"]
+[Opening "Two knights defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Na5 6. Bb5+ c6 7. dxc6 
+bxc6 8. Be2 *
+
+[ECO "C59"]
+[Opening "Two knights defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Na5 6. Bb5+ c6 7. dxc6 
+bxc6 8. Be2 h6 *
+
+[ECO "C59"]
+[Opening "two knights defence"]
+[Variation "Knorre variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Na5 6. Bb5+ c6 7. dxc6 
+bxc6 8. Be2 h6 9. Nf3 e4 10. Ne5 Bd6 11. d4 Qc7 12. Bd2 *
+
+[ECO "C59"]
+[Opening "two knights defence"]
+[Variation "Goering variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Na5 6. Bb5+ c6 7. dxc6 
+bxc6 8. Be2 h6 9. Nf3 e4 10. Ne5 Qc7 *
+
+[ECO "C59"]
+[Opening "two knights defence"]
+[Variation "Steinitz variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Na5 6. Bb5+ c6 7. dxc6 
+bxc6 8. Be2 h6 9. Nh3 *
+
+[ECO "C60"]
+[Opening "Ruy Lopez (Spanish opening)"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 *
+
+[ECO "C60"]
+[Opening "Ruy Lopez"]
+[Variation "Nuernberg variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 f6 *
+
+[ECO "C60"]
+[Opening "Ruy Lopez"]
+[Variation "Pollock defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Na5 *
+
+[ECO "C60"]
+[Opening "Ruy Lopez"]
+[Variation "Lucena defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Be7 *
+
+[ECO "C60"]
+[Opening "Ruy Lopez"]
+[Variation "Vinogradov variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Qe7 *
+
+[ECO "C60"]
+[Opening "Ruy Lopez"]
+[Variation "Brentano defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 g5 *
+
+[ECO "C60"]
+[Opening "Ruy Lopez"]
+[Variation "fianchetto (Smyslov/Barnes) defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 g6 *
+
+[ECO "C60"]
+[Opening "Ruy Lopez"]
+[Variation "Cozio defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nge7 *
+
+[ECO "C60"]
+[Opening "Ruy Lopez"]
+[Variation "Cozio defence, Paulsen variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nge7 4. Nc3 g6 *
+
+[ECO "C61"]
+[Opening "Ruy Lopez"]
+[Variation "Bird's defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nd4 *
+
+[ECO "C61"]
+[Opening "Ruy Lopez"]
+[Variation "Bird's defence, Paulsen variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nd4 4. Nxd4 exd4 5. O-O Ne7 *
+
+[ECO "C62"]
+[Opening "Ruy Lopez"]
+[Variation "old Steinitz defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 d6 *
+
+[ECO "C62"]
+[Opening "Ruy Lopez"]
+[Variation "old Steinitz defence, Nimzovich attack"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 d6 4. d4 Bd7 5. Nc3 Nf6 6. Bxc6 *
+
+[ECO "C62"]
+[Opening "Ruy Lopez"]
+[Variation "old Steinitz defence, semi-Duras variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 d6 4. d4 Bd7 5. c4 *
+
+[ECO "C63"]
+[Opening "Ruy Lopez"]
+[Variation "Schliemann defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 f5 *
+

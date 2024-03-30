@@ -1,0 +1,318 @@
+[ECO "C44"]
+[Opening "Scotch"]
+[Variation "Sea-cadet mate"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. c3 dxc3 5. Nxc3 d6 6. Bc4 Bg4 7. O-O Ne5
+8. Nxe5 Bxd1 9. Bxf7+ Ke7 10. Nd5# *
+
+[ECO "C44"]
+[Opening "Scotch"]
+[Variation "Goering gambit"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. c3 dxc3 5. Nxc3 Bb4 *
+
+[ECO "C44"]
+[Opening "Scotch"]
+[Variation "Goering gambit, Bardeleben variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. c3 dxc3 5. Nxc3 Bb4 6. Bc4 Nf6 *
+
+[ECO "C44"]
+[Opening "Scotch gambit"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Bc4 *
+
+[ECO "C44"]
+[Opening "Scotch gambit"]
+[Variation "Anderssen (Paulsen, Suhle) counter-attack"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Bc4 Bc5 5. O-O d6 6. c3 Bg4 *
+
+[ECO "C44"]
+[Opening "Scotch gambit"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Bc4 Bc5 5. Ng5 *
+
+[ECO "C44"]
+[Opening "Scotch gambit"]
+[Variation "Cochrane-Shumov defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Bc4 Bc5 5. Ng5 Nh6 6. Nxf7 Nxf7 7. Bxf7+
+Kxf7 8. Qh5+ g6 9. Qxc5 d5 *
+
+[ECO "C44"]
+[Opening "Scotch gambit"]
+[Variation "Vitzhum attack"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Bc4 Bc5 5. Ng5 Nh6 6. Qh5 *
+
+[ECO "C44"]
+[Opening "Scotch gambit"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Bc4 Bb4+ *
+
+[ECO "C44"]
+[Opening "Scotch gambit"]
+[Variation "Hanneken variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Bc4 Bb4+ 5. c3 dxc3 6. O-O cxb2 7. Bxb2 
+Nf6 8. Ng5 O-O 9. e5 Nxe5 *
+
+[ECO "C44"]
+[Opening "Scotch gambit"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Bc4 Bb4+ 5. c3 dxc3 6. bxc3 *
+
+[ECO "C44"]
+[Opening "Scotch gambit"]
+[Variation "Cochrane variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Bc4 Bb4+ 5. c3 dxc3 6. bxc3 Ba5 7. e5 *
+
+[ECO "C44"]
+[Opening "Scotch gambit"]
+[Variation "Benima defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Bc4 Be7 *
+
+[ECO "C44"]
+[Opening "Scotch gambit"]
+[Variation "Dubois-Reti defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Bc4 Nf6 *
+
+[ECO "C45"]
+[Opening "Scotch game"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 *
+
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Ghulam Kassim variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Nxd4 5. Qxd4 d6 6. Bd3 *
+
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Pulling counter-attack"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Qh4 *
+
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Horwitz attack"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Qh4 5. Nb5 *
+
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Berger variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Qh4 5. Nb5 Bb4+ 6. Nd2 Qxe4+ 7. Be2
+Qxg2 8. Bf3 Qh3 9. Nxc7+ Kd8 10. Nxa8 Nf6 11. a3 *
+
+[ECO "C45"]
+[Opening "Scotch game"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Qh4 5. Nb5 Bb4+ 6. Bd2 *
+
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Rosenthal variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Qh4 5. Nb5 Bb4+ 6. Bd2 Qxe4+ 7. Be2
+Kd8 8. O-O Bxd2 9. Nxd2 Qg6 *
+
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Fraser attack"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Qh4 5. Nf3 *
+
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Steinitz variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Qh4 5. Nc3 *
+
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Schmidt variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Nf6 *
+
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Mieses variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Nf6 5. Nxc6 bxc6 6. e5 *
+
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Tartakower variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Nf6 5. Nxc6 bxc6 6. Nd2 *
+
+[ECO "C45"]
+[Opening "Scotch game"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 *
+
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Blackburne attack"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 5. Be3 Qf6 6. c3 Nge7 7. Qd2 *
+
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Gottschall variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 5. Be3 Qf6 6. c3 Nge7 7. Qd2 d5
+8. Nb5 Bxe3 9. Qxe3 O-O 10. Nxc7 Rb8 11. Nxd5 Nxd5 12. exd5 Nb4 *
+
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Paulsen attack"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 5. Be3 Qf6 6. c3 Nge7 7. Bb5 *
+
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Paulsen, Gunsberg defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 5. Be3 Qf6 6. c3 Nge7 7. Bb5 Nd8
+*
+
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Meitner variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 5. Be3 Qf6 6. c3 Nge7 7. Nc2 *
+
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Blumenfeld attack"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 5. Be3 Qf6 6. Nb5 *
+
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Potter variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 5. Nb3 *
+
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Romanishin variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 5. Nb3 Bb4+ *
+
+[ECO "C46"]
+[Opening "Three knights game"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 *
+
+[ECO "C46"]
+[Opening "Three knights"]
+[Variation "Schlechter variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Bb4 4. Nd5 Nf6 *
+
+[ECO "C46"]
+[Opening "Three knights"]
+[Variation "Winawer defence (Gothic defence)"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 f5 *
+
+[ECO "C46"]
+[Opening "Three knights"]
+[Variation "Steinitz variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 g6 *
+
+[ECO "C46"]
+[Opening "Three knights"]
+[Variation "Steinitz, Rosenthal variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 g6 4. d4 exd4 5. Nd5 *
+
+[ECO "C46"]
+[Opening "Four knights game"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 *
+
+[ECO "C46"]
+[Opening "Four knights"]
+[Variation "Schultze-Mueller gambit"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. Nxe5 *
+
+[ECO "C46"]
+[Opening "Four knights"]
+[Variation "Italian variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. Bc4 *
+
+[ECO "C46"]
+[Opening "Four knights"]
+[Variation "Gunsberg variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. a3 *
+
+[ECO "C47"]
+[Opening "Four knights"]
+[Variation "Scotch variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. d4 *
+
+[ECO "C47"]
+[Opening "Four knights"]
+[Variation "Scotch, Krause variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. d4 Bb4 5. Nxe5 *
+
+[ECO "C47"]
+[Opening "Four knights"]
+[Variation "Scotch, 4...exd4"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. d4 exd4 *
+
+[ECO "C47"]
+[Opening "Four knights"]
+[Variation "Belgrade gambit"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. d4 exd4 5. Nd5 *
+
+[ECO "C48"]
+[Opening "Four knights"]
+[Variation "Spanish variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. Bb5 *
+
+[ECO "C48"]
+[Opening "Four knights"]
+[Variation "Ranken variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. Bb5 a6 5. Bxc6 *
+
+[ECO "C48"]
+[Opening "Four knights"]
+[Variation "Spielmann variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. Bb5 a6 5. Bxc6 dxc6 6. Nxe5 Nxe4 7. Nxe4
+Qd4 8. O-O Qxe5 9. Re1 Be6 10. d4 Qd5 *
+
+[ECO "C48"]
+[Opening "Four knights"]
+[Variation "Spanish, classical defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. Bb5 Bc5 *
+
+[ECO "C48"]
+[Opening "Four knights"]
+[Variation "Bardeleben variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. Bb5 Bc5 5. O-O O-O 6. Nxe5 Nxe5 7. d4 Bd6
+8. f4 Nc6 9. e5 Bb4 *
+

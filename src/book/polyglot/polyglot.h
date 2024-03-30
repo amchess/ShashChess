@@ -1,15 +1,15 @@
 #ifndef POLYGLOT_BOOK_H_INCLUDED
 #define POLYGLOT_BOOK_H_INCLUDED
 
-#include <vector>
 #include "../book.h"
 
+namespace ShashChess {
 namespace {
 struct PolyglotEntry;
 struct PolyglotBookMove;
 }
 
-namespace Stockfish::Book::Polyglot {
+namespace Book::Polyglot {
 class PolyglotBook: public Book {
    private:
     std::string    filename;
@@ -42,5 +42,5 @@ class PolyglotBook: public Book {
     void show_moves(const Position& pos) const;
 };
 }
-
-#endif
+}
+#endif  // #ifndef POLYGLOT_BOOK_H_INCLUDED

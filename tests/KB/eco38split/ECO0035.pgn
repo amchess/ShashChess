@@ -1,0 +1,326 @@
+[ECO "E15"]
+[Opening "Queen's Indian"]
+[Variation "4.g3 Bb7"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. g3 Bb7 *
+
+[ECO "E15"]
+[Opening "Queen's Indian"]
+[Variation "Rubinstein variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. g3 Bb7 5. Bg2 c5 6. d5 exd5 7. Nh4 *
+
+[ECO "E15"]
+[Opening "Queen's Indian"]
+[Variation "Buerger variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. g3 Bb7 5. Bg2 c5 6. d5 exd5 7. Ng5 *
+
+[ECO "E16"]
+[Opening "Queen's Indian"]
+[Variation "Capablanca variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. g3 Bb7 5. Bg2 Bb4+ *
+
+[ECO "E16"]
+[Opening "Queen's Indian"]
+[Variation "Yates variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. g3 Bb7 5. Bg2 Bb4+ 6. Bd2 a5 *
+
+[ECO "E16"]
+[Opening "Queen's Indian"]
+[Variation "Riumin variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. g3 Bb7 5. Bg2 Bb4+ 6. Bd2 Be7 *
+
+[ECO "E17"]
+[Opening "Queen's Indian"]
+[Variation "5.Bg2 Be7"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. g3 Bb7 5. Bg2 Be7 *
+
+[ECO "E17"]
+[Opening "Queen's Indian"]
+[Variation "anti-Queen's Indian system"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. g3 Bb7 5. Bg2 Be7 6. Nc3 *
+
+[ECO "E17"]
+[Opening "Queen's Indian"]
+[Variation "Opovcensky variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. g3 Bb7 5. Bg2 Be7 6. Nc3 Ne4 7. Bd2 *
+
+[ECO "E17"]
+[Opening "Queen's Indian"]
+[Variation "old main line, 6.O-O"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. g3 Bb7 5. Bg2 Be7 6. O-O *
+
+[ECO "E17"]
+[Opening "Queen's Indian"]
+[Variation "Euwe variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. g3 Bb7 5. Bg2 Be7 6. O-O O-O 7. b3 *
+
+[ECO "E18"]
+[Opening "Queen's Indian"]
+[Variation "old main line, 7.Nc3"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. g3 Bb7 5. Bg2 Be7 6. O-O O-O 7. Nc3 *
+
+[ECO "E19"]
+[Opening "Queen's Indian"]
+[Variation "old main line, 9.Qxc3"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. g3 Bb7 5. Bg2 Be7 6. O-O O-O 7. Nc3 Ne4 8.
+Qc2 Nxc3 9. Qxc3 *
+
+[ECO "E20"]
+[Opening "Nimzo-Indian defence"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 *
+
+[ECO "E20"]
+[Opening "Nimzo-Indian"]
+[Variation "Kmoch variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. f3 *
+
+[ECO "E20"]
+[Opening "Nimzo-Indian"]
+[Variation "Mikenas attack"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qd3 *
+
+[ECO "E20"]
+[Opening "Nimzo-Indian"]
+[Variation "Romanishin-Kasparov (Steiner) system"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. g3 *
+
+[ECO "E21"]
+[Opening "Nimzo-Indian"]
+[Variation "three knights variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Nf3 *
+
+[ECO "E21"]
+[Opening "Nimzo-Indian"]
+[Variation "three knights, Korchnoi variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Nf3 c5 5. d5 *
+
+[ECO "E21"]
+[Opening "Nimzo-Indian"]
+[Variation "three knights, Euwe variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Nf3 c5 5. d5 Ne4 *
+
+[ECO "E22"]
+[Opening "Nimzo-Indian"]
+[Variation "Spielmann variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qb3 *
+
+[ECO "E23"]
+[Opening "Nimzo-Indian"]
+[Variation "Spielmann, 4...c5, 5.dc Nc6"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qb3 c5 5. dxc5 Nc6 *
+
+[ECO "E23"]
+[Opening "Nimzo-Indian"]
+[Variation "Spielmann, Karlsbad variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qb3 c5 5. dxc5 Nc6 6. Nf3 Ne4 7. Bd2 Nxd2
+*
+
+[ECO "E23"]
+[Opening "Nimzo-Indian"]
+[Variation "Spielmann, San Remo variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qb3 c5 5. dxc5 Nc6 6. Nf3 Ne4 7. Bd2 Nxc5
+*
+
+[ECO "E23"]
+[Opening "Nimzo-Indian"]
+[Variation "Spielmann, Staahlberg variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qb3 c5 5. dxc5 Nc6 6. Nf3 Ne4 7. Bd2 Nxc5
+8. Qc2 f5 9. g3 *
+
+[ECO "E24"]
+[Opening "Nimzo-Indian"]
+[Variation "Saemisch variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. a3 Bxc3+ 5. bxc3 *
+
+[ECO "E24"]
+[Opening "Nimzo-Indian"]
+[Variation "Saemisch, Botvinnik variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. a3 Bxc3+ 5. bxc3 c5 6. f3 d5 7. e3 O-O 8.
+cxd5 Nxd5 *
+
+[ECO "E25"]
+[Opening "Nimzo-Indian"]
+[Variation "Saemisch variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. a3 Bxc3+ 5. bxc3 c5 6. f3 d5 7. cxd5 *
+
+[ECO "E25"]
+[Opening "Nimzo-Indian"]
+[Variation "Saemisch, Keres variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. a3 Bxc3+ 5. bxc3 c5 6. f3 d5 7. cxd5 Nxd5
+8. dxc5 *
+
+[ECO "E25"]
+[Opening "Nimzo-Indian"]
+[Variation "Saemisch, Romanovsky variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. a3 Bxc3+ 5. bxc3 c5 6. f3 d5 7. cxd5 Nxd5
+8. dxc5 f5 *
+
+[ECO "E26"]
+[Opening "Nimzo-Indian"]
+[Variation "Saemisch variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. a3 Bxc3+ 5. bxc3 c5 6. e3 *
+
+[ECO "E26"]
+[Opening "Nimzo-Indian"]
+[Variation "Saemisch, O'Kelly variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. a3 Bxc3+ 5. bxc3 c5 6. e3 b6 *
+
+[ECO "E27"]
+[Opening "Nimzo-Indian"]
+[Variation "Saemisch variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. a3 Bxc3+ 5. bxc3 O-O *
+
+[ECO "E28"]
+[Opening "Nimzo-Indian"]
+[Variation "Saemisch variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. a3 Bxc3+ 5. bxc3 O-O 6. e3 *
+
+[ECO "E29"]
+[Opening "Nimzo-Indian"]
+[Variation "Saemisch, main line"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. a3 Bxc3+ 5. bxc3 O-O 6. e3 c5 7. Bd3 Nc6 *
+
+[ECO "E29"]
+[Opening "Nimzo-Indian"]
+[Variation "Saemisch, Capablanca variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. a3 Bxc3+ 5. bxc3 O-O 6. e3 c5 7. Bd3 Nc6 
+8. Ne2 b6 9. e4 Ne8 *
+
+[ECO "E30"]
+[Opening "Nimzo-Indian"]
+[Variation "Leningrad variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Bg5 *
+
+[ECO "E30"]
+[Opening "Nimzo-Indian"]
+[Variation "Leningrad, ...b5 gambit"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Bg5 h6 5. Bh4 c5 6. d5 b5 *
+
+[ECO "E31"]
+[Opening "Nimzo-Indian"]
+[Variation "Leningrad, main line"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Bg5 h6 5. Bh4 c5 6. d5 d6 *
+
+[ECO "E32"]
+[Opening "Nimzo-Indian"]
+[Variation "classical variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 *
+
+[ECO "E32"]
+[Opening "Nimzo-Indian"]
+[Variation "classical, Adorjan gambit"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 O-O 5. a3 Bxc3+ 6. Qxc3 b5 *
+
+[ECO "E33"]
+[Opening "Nimzo-Indian"]
+[Variation "classical, 4...Nc6"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 Nc6 *
+
+[ECO "E33"]
+[Opening "Nimzo-Indian"]
+[Variation "classical, Milner-Barry (Zurich) variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 Nc6 5. Nf3 d6 *
+
+[ECO "E34"]
+[Opening "Nimzo-Indian"]
+[Variation "classical, Noa variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 d5 *
+
+[ECO "E35"]
+[Opening "Nimzo-Indian"]
+[Variation "classical, Noa variation, 5.cd ed"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 d5 5. cxd5 exd5 *
+
+[ECO "E36"]
+[Opening "Nimzo-Indian"]
+[Variation "classical, Noa variation, 5.a3"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 d5 5. a3 *
+
+[ECO "E36"]
+[Opening "Nimzo-Indian"]
+[Variation "classical, Botvinnik variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 d5 5. a3 Bxc3+ 6. Qxc3 Nc6 *
+
+[ECO "E36"]
+[Opening "Nimzo-Indian"]
+[Variation "classical, Noa variation, main line"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 d5 5. a3 Bxc3+ 6. Qxc3 Ne4 *
+
+[ECO "E37"]
+[Opening "Nimzo-Indian"]
+[Variation "classical, Noa variation, main line, 7.Qc2"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 d5 5. a3 Bxc3+ 6. Qxc3 Ne4 7. Qc2 *
+
+[ECO "E37"]
+[Opening "Nimzo-Indian"]
+[Variation "classical, San Remo variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 d5 5. a3 Bxc3+ 6. Qxc3 Ne4 7. Qc2 Nc6
+8. e3 e5 *
+
+[ECO "E38"]
+[Opening "Nimzo-Indian"]
+[Variation "classical, 4...c5"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 c5 *
+
+[ECO "E39"]
+[Opening "Nimzo-Indian"]
+[Variation "classical, Pirc variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 c5 5. dxc5 O-O *
+
+[ECO "E40"]
+[Opening "Nimzo-Indian"]
+[Variation "4.e3"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. e3 *
+

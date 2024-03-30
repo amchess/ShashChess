@@ -1,13 +1,13 @@
 /*
-  Stockfish, a UCI chess playing engine derived from Glaurung 2.1
-  Copyright (C) 2004-2023 The Stockfish developers (see AUTHORS file)
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
 
-  Stockfish is free software: you can redistribute it and/or modify
+  ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Stockfish is distributed in the hope that it will be useful,
+  ShashChess is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -16,36 +16,55 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "timeman.h"
+
 #include <algorithm>
-#include <cfloat>
+#include <cassert>
 #include <cmath>
+#include <cstdint>
 
 #include "search.h"
-#include "timeman.h"
-#include "uci.h"
+#include "ucioption.h"
 
-namespace Stockfish {
-
-TimeManagement Time;  // Our global time management object
+namespace ShashChess {
 
 
-/// TimeManagement::init() is called at the beginning of the search and calculates
-/// the bounds of time allowed for the current game ply. We currently support:
+TimePoint TimeManagement::optimum() const { return optimumTime; }
+TimePoint TimeManagement::maximum() const { return maximumTime; }
+TimePoint TimeManagement::elapsed(size_t nodes) const {
+    return useNodesTime ? TimePoint(nodes) : now() - startTime;
+}
+
+void TimeManagement::clear() {
+    availableNodes = 0;  // When in 'nodes as time' mode
+}
+
+void TimeManagement::advance_nodes_time(std::int64_t nodes) {
+    assert(useNodesTime);
+    availableNodes += nodes;
+}
+
+// Called at the beginning of the search and calculates
+// the bounds of time allowed for the current game ply. We currently support:
 //      1) x basetime (+ z increment)
 //      2) x moves in y seconds (+ z increment)
-
-void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
-
-    // if we have no time, no need to initialize TM, except for the start time,
+void TimeManagement::init(Search::LimitsType& limits,
+                          Color               us,
+                          int                 ply,
+                          const OptionsMap&   options) {
+    // If we have no time, no need to initialize TM, except for the start time,
     // which is used by movetime.
     startTime = limits.startTime;
+    //minThinkingTime begin
     if (limits.time[us] == 0)
+    {
         return;
-
-    TimePoint minThinkingTime = TimePoint(Options["Minimum Thinking Time"]);
-    TimePoint moveOverhead    = TimePoint(Options["Move Overhead"]);
-    TimePoint slowMover       = TimePoint(Options["Slow Mover"]);
-    TimePoint npmsec          = NODES_TIME;
+    }
+    TimePoint minThinkingTime = TimePoint(options["Minimum Thinking Time"]);
+    //minThinkigTime end
+    TimePoint moveOverhead = TimePoint(options["Move Overhead"]);
+    TimePoint slowMover    = TimePoint(options["Slow Mover"]);  //for SlowMover
+    TimePoint npmsec       = TimePoint(options["nodestime"]);
 
     // optScale is a percentage of available time to use for the current move.
     // maxScale is a multiplier applied to optimumTime.
@@ -57,6 +76,8 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
     // must be much lower than the real engine speed.
     if (npmsec)
     {
+        useNodesTime = true;
+
         if (!availableNodes)                            // Only once at game start
             availableNodes = npmsec * limits.time[us];  // Time is in msec
 
@@ -72,23 +93,29 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
     // Make sure timeLeft is > 0 since we may use it as a divisor
     TimePoint timeLeft = std::max(TimePoint(1), limits.time[us] + limits.inc[us] * (mtg - 1)
                                                   - moveOverhead * (2 + mtg));
-
-    // Use extra time with larger increments
-    double optExtra = std::clamp(1.0 + 12.0 * limits.inc[us] / limits.time[us], 1.0, 1.12);
-
+    //from SlowMover begin
     // A user may scale time usage by setting UCI option "Slow Mover"
     // Default is 100 and changing this value will probably lose elo.
     timeLeft = slowMover * timeLeft / 100;
+    //from SlowMover end
 
     // x basetime (+ z increment)
     // If there is a healthy increment, timeLeft can exceed actual available
     // game time for the current move, so also cap to 20% of available game time.
     if (limits.movestogo == 0)
     {
-        optScale = std::min(0.0120 + std::pow(ply + 3.0, 0.45) * 0.0039,
-                            0.2 * limits.time[us] / double(timeLeft))
+        // Use extra time with larger increments
+        double optExtra = std::clamp(1.0 + 12.5 * limits.inc[us] / limits.time[us], 1.0, 1.11);
+
+        // Calculate time constants based on current time left.
+        double optConstant =
+          std::min(0.00334 + 0.0003 * std::log10(limits.time[us] / 1000.0), 0.0049);
+        double maxConstant = std::max(3.4 + 3.0 * std::log10(limits.time[us] / 1000.0), 2.76);
+
+        optScale = std::min(0.0120 + std::pow(ply + 3.1, 0.44) * optConstant,
+                            0.21 * limits.time[us] / double(timeLeft))
                  * optExtra;
-        maxScale = std::min(7.0, 4.0 + ply / 12.0);
+        maxScale = std::min(6.9, maxConstant + ply / 12.2);
     }
 
     // x moves in y seconds (+ z increment)
@@ -98,12 +125,13 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
         maxScale = std::min(6.3, 1.5 + 0.11 * mtg);
     }
 
-    // Never use more than 80% of the available time for this move
-    optimumTime = std::max(minThinkingTime, TimePoint(optScale * timeLeft));
-    maximumTime = TimePoint(std::min(0.8 * limits.time[us] - moveOverhead, maxScale * optimumTime));
+    // Limit the maximum possible time for this move
+    optimumTime = std::max(minThinkingTime, TimePoint(optScale * timeLeft));  //minThinkingTime
+    maximumTime =
+      TimePoint(std::min(0.84 * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
 
-    if (Options["Ponder"])
+    if (options["Ponder"])
         optimumTime += optimumTime / 4;
 }
 
-}  // namespace Stockfish
+}  // namespace ShashChess

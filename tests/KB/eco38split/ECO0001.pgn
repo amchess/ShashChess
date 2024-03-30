@@ -1,0 +1,305 @@
+[ECO "A04"]
+[Opening "Reti"]
+[Variation "Lisitsin gambit deferred"]
+
+1. Nf3 f5 2. d3 Nf6 3. e4 *
+
+[ECO "A04"]
+[Opening "Reti opening"]
+
+1. Nf3 d6 *
+
+[ECO "A04"]
+[Opening "Reti"]
+[Variation "Wade defence"]
+
+1. Nf3 d6 2. e4 Bg4 *
+
+[ECO "A04"]
+[Opening "Reti"]
+[Variation "Herrstroem gambit"]
+
+1. Nf3 g5 *
+
+[ECO "A05"]
+[Opening "Reti opening"]
+
+1. Nf3 Nf6 *
+
+[ECO "A05"]
+[Opening "Reti"]
+[Variation "King's Indian attack, Spassky's variation"]
+
+1. Nf3 Nf6 2. g3 b5 *
+
+[ECO "A05"]
+[Opening "Reti"]
+[Variation "King's Indian attack"]
+
+1. Nf3 Nf6 2. g3 g6 *
+
+[ECO "A05"]
+[Opening "Reti"]
+[Variation "King's Indian attack, Reti-Smyslov variation"]
+
+1. Nf3 Nf6 2. g3 g6 3. b4 *
+
+[ECO "A06"]
+[Opening "Reti opening"]
+
+1. Nf3 d5 *
+
+[ECO "A06"]
+[Opening "Reti"]
+[Variation "old Indian attack"]
+
+1. Nf3 d5 2. d3 *
+
+[ECO "A06"]
+[Opening "Santasiere's folly"]
+
+1. Nf3 d5 2. b4 *
+
+[ECO "A06"]
+[Opening "Tennison (Lemberg, Zukertort) gambit"]
+
+1. Nf3 d5 2. e4 *
+
+[ECO "A06"]
+[Opening "Reti"]
+[Variation "Nimzovich-Larsen attack"]
+
+1. Nf3 d5 2. b3 *
+
+[ECO "A07"]
+[Opening "Reti"]
+[Variation "King's Indian attack (Barcza system)"]
+
+1. Nf3 d5 2. g3 *
+
+[ECO "A07"]
+[Opening "Reti"]
+[Variation "King's Indian attack, Yugoslav variation"]
+
+1. Nf3 d5 2. g3 Nf6 3. Bg2 c6 4. O-O Bg4 *
+
+[ECO "A07"]
+[Opening "Reti"]
+[Variation "King's Indian attack, Keres variation"]
+
+1. Nf3 d5 2. g3 Bg4 3. Bg2 Nd7 *
+
+[ECO "A07"]
+[Opening "Reti"]
+[Variation "King's Indian attack"]
+
+1. Nf3 d5 2. g3 g6 *
+
+[ECO "A07"]
+[Opening "Reti"]
+[Variation "King's Indian attack, Pachman system"]
+
+1. Nf3 d5 2. g3 g6 3. Bg2 Bg7 4. O-O e5 5. d3 Ne7 *
+
+[ECO "A07"]
+[Opening "Reti"]
+[Variation "King's Indian attack (with ...c5)"]
+
+1. Nf3 d5 2. g3 c5 *
+
+[ECO "A08"]
+[Opening "Reti"]
+[Variation "King's Indian attack"]
+
+1. Nf3 d5 2. g3 c5 3. Bg2 *
+
+[ECO "A08"]
+[Opening "Reti"]
+[Variation "King's Indian attack, French variation"]
+
+1. Nf3 d5 2. g3 c5 3. Bg2 Nc6 4. O-O e6 5. d3 Nf6 6. Nbd2 Be7 7. e4 O-O 8.
+Re1 *
+
+[ECO "A09"]
+[Opening "Reti opening"]
+
+1. Nf3 d5 2. c4 *
+
+[ECO "A09"]
+[Opening "Reti"]
+[Variation "advance variation"]
+
+1. Nf3 d5 2. c4 d4 *
+
+[ECO "A09"]
+[Opening "Reti accepted"]
+
+1. Nf3 d5 2. c4 dxc4 *
+
+[ECO "A09"]
+[Opening "Reti accepted"]
+[Variation "Keres variation"]
+
+1. Nf3 d5 2. c4 dxc4 3. e3 Be6 *
+
+[ECO "A10"]
+[Opening "English opening"]
+
+1. c4 *
+
+[ECO "A10"]
+[Opening "English opening"]
+
+1. c4 g6 *
+
+[ECO "A10"]
+[Opening "English"]
+[Variation "Adorjan defence"]
+
+1. c4 g6 2. e4 e5 *
+
+[ECO "A10"]
+[Opening "English"]
+[Variation "Jaenisch gambit"]
+
+1. c4 b5 *
+
+[ECO "A10"]
+[Opening "English"]
+[Variation "Anglo-Dutch defense"]
+
+1. c4 f5 *
+
+[ECO "A11"]
+[Opening "English"]
+[Variation "Caro-Kann defensive system"]
+
+1. c4 c6 *
+
+[ECO "A12"]
+[Opening "English"]
+[Variation "Caro-Kann defensive system"]
+
+1. c4 c6 2. Nf3 d5 3. b3 *
+
+[ECO "A12"]
+[Opening "English"]
+[Variation "Torre defensive system"]
+
+1. c4 c6 2. Nf3 d5 3. b3 Nf6 4. g3 Bg4 *
+
+[ECO "A12"]
+[Opening "English"]
+[Variation "London defensive system"]
+
+1. c4 c6 2. Nf3 d5 3. b3 Nf6 4. g3 Bf5 *
+
+[ECO "A12"]
+[Opening "English"]
+[Variation "Caro-Kann defensive system"]
+
+1. c4 c6 2. Nf3 d5 3. b3 Nf6 4. Bb2 *
+
+[ECO "A12"]
+[Opening "English"]
+[Variation "Bled variation"]
+
+1. c4 c6 2. Nf3 d5 3. b3 Nf6 4. Bb2 g6 *
+
+[ECO "A12"]
+[Opening "English"]
+[Variation "New York (London) defensive system"]
+
+1. c4 c6 2. Nf3 d5 3. b3 Nf6 4. Bb2 Bf5 *
+
+[ECO "A12"]
+[Opening "English"]
+[Variation "Capablanca's variation"]
+
+1. c4 c6 2. Nf3 d5 3. b3 Nf6 4. Bb2 Bg4 *
+
+[ECO "A12"]
+[Opening "English"]
+[Variation "Caro-Kann defensive system, Bogolyubov variation"]
+
+1. c4 c6 2. Nf3 d5 3. b3 Bg4 *
+
+[ECO "A13"]
+[Opening "English opening"]
+
+1. c4 e6 *
+
+[ECO "A13"]
+[Opening "English"]
+[Variation "Romanishin gambit"]
+
+1. c4 e6 2. Nf3 Nf6 3. g3 a6 4. Bg2 b5 *
+
+[ECO "A13"]
+[Opening "English opening"]
+[Variation "Agincourt variation"]
+
+1. c4 e6 2. Nf3 d5 *
+
+[ECO "A13"]
+[Opening "English"]
+[Variation "Wimpey system"]
+
+1. c4 e6 2. Nf3 d5 3. b3 Nf6 4. Bb2 c5 5. e3 *
+
+[ECO "A13"]
+[Opening "English opening"]
+[Variation "Agincourt variation"]
+
+1. c4 e6 2. Nf3 d5 3. g3 *
+
+[ECO "A13"]
+[Opening "English"]
+[Variation "Kurajica defence"]
+
+1. c4 e6 2. Nf3 d5 3. g3 c6 *
+
+[ECO "A13"]
+[Opening "English"]
+[Variation "Neo-Catalan"]
+
+1. c4 e6 2. Nf3 d5 3. g3 Nf6 *
+
+[ECO "A13"]
+[Opening "English"]
+[Variation "Neo-Catalan accepted"]
+
+1. c4 e6 2. Nf3 d5 3. g3 Nf6 4. Bg2 dxc4 *
+
+[ECO "A14"]
+[Opening "English"]
+[Variation "Neo-Catalan declined"]
+
+1. c4 e6 2. Nf3 d5 3. g3 Nf6 4. Bg2 Be7 5. O-O *
+
+[ECO "A14"]
+[Opening "English"]
+[Variation "Symmetrical, Keres defence"]
+
+1. c4 e6 2. Nf3 d5 3. g3 Nf6 4. Bg2 Be7 5. O-O c5 6. cxd5 Nxd5 7. Nc3 Nc6 *
+
+[ECO "A15"]
+[Opening "English, 1...Nf6 (Anglo-Indian defense)"]
+
+1. c4 Nf6 *
+
+[ECO "A15"]
+[Opening "English orang-utan"]
+
+1. c4 Nf6 2. b4 *
+
+[ECO "A15"]
+[Opening "English opening"]
+
+1. c4 Nf6 2. Nf3 *
+
+[ECO "A16"]
+[Opening "English opening"]
+
+1. c4 Nf6 2. Nc3 *
+

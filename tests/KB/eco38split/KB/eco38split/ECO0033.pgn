@@ -1,0 +1,323 @@
+[ECO "D67"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Bd3 line"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 c6 8.
+Bd3 dxc4 9. Bxc4 Nd5 10. Bxe7 Qxe7 *
+
+[ECO "D67"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Bd3 line, Alekhine variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 c6 8.
+Bd3 dxc4 9. Bxc4 Nd5 10. Bxe7 Qxe7 11. Ne4 *
+
+[ECO "D67"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Bd3 line, 11.O-O"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 c6 8.
+Bd3 dxc4 9. Bxc4 Nd5 10. Bxe7 Qxe7 11. O-O *
+
+[ECO "D68"]
+[Opening "QGD"]
+[Variation "Orthodox defence, classical variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 c6 8.
+Bd3 dxc4 9. Bxc4 Nd5 10. Bxe7 Qxe7 11. O-O Nxc3 12. Rxc3 e5 *
+
+[ECO "D68"]
+[Opening "QGD"]
+[Variation "Orthodox defence, classical, 13.d1b1 (Maroczy)"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 c6 8.
+Bd3 dxc4 9. Bxc4 Nd5 10. Bxe7 Qxe7 11. O-O Nxc3 12. Rxc3 e5 13. Qb1 *
+
+[ECO "D68"]
+[Opening "QGD"]
+[Variation "Orthodox defence, classical, 13.d1c2 (Vidmar)"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 c6 8.
+Bd3 dxc4 9. Bxc4 Nd5 10. Bxe7 Qxe7 11. O-O Nxc3 12. Rxc3 e5 13. Qc2 *
+
+[ECO "D69"]
+[Opening "QGD"]
+[Variation "Orthodox defence, classical, 13.de"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 c6 8.
+Bd3 dxc4 9. Bxc4 Nd5 10. Bxe7 Qxe7 11. O-O Nxc3 12. Rxc3 e5 13. dxe5 Nxe5 
+14. Nxe5 Qxe5 *
+
+[ECO "D70"]
+[Opening "Neo-Gruenfeld defence"]
+
+1. d4 Nf6 2. c4 g6 3. f3 d5 *
+
+[ECO "D70"]
+[Opening "Neo-Gruenfeld (Kemeri) defence"]
+
+1. d4 Nf6 2. c4 g6 3. g3 d5 *
+
+[ECO "D71"]
+[Opening "Neo-Gruenfeld, 5.cd"]
+
+1. d4 Nf6 2. c4 g6 3. g3 d5 4. Bg2 Bg7 5. cxd5 Nxd5 *
+
+[ECO "D72"]
+[Opening "Neo-Gruenfeld, 5.cd, main line"]
+
+1. d4 Nf6 2. c4 g6 3. g3 d5 4. Bg2 Bg7 5. cxd5 Nxd5 6. e4 Nb6 7. Ne2 *
+
+[ECO "D73"]
+[Opening "Neo-Gruenfeld, 5.Nf3"]
+
+1. d4 Nf6 2. c4 g6 3. g3 d5 4. Bg2 Bg7 5. Nf3 *
+
+[ECO "D74"]
+[Opening "Neo-Gruenfeld, 6.cd Nxd5, 7.O-O"]
+
+1. d4 Nf6 2. c4 g6 3. g3 d5 4. Bg2 Bg7 5. Nf3 O-O 6. cxd5 Nxd5 7. O-O *
+
+[ECO "D75"]
+[Opening "Neo-Gruenfeld, 6.cd Nxd5, 7.O-O c5, 8.Nc3"]
+
+1. d4 Nf6 2. c4 g6 3. g3 d5 4. Bg2 Bg7 5. Nf3 O-O 6. cxd5 Nxd5 7. O-O c5 8.
+Nc3 *
+
+[ECO "D75"]
+[Opening "Neo-Gruenfeld, 6.cd Nxd5, 7.O-O c5, 8.dc"]
+
+1. d4 Nf6 2. c4 g6 3. g3 d5 4. Bg2 Bg7 5. Nf3 O-O 6. cxd5 Nxd5 7. O-O c5 8.
+dxc5 *
+
+[ECO "D76"]
+[Opening "Neo-Gruenfeld, 6.cd Nxd5, 7.O-O Nb6"]
+
+1. d4 Nf6 2. c4 g6 3. g3 d5 4. Bg2 Bg7 5. Nf3 O-O 6. cxd5 Nxd5 7. O-O Nb6 *
+
+[ECO "D77"]
+[Opening "Neo-Gruenfeld, 6.O-O"]
+
+1. d4 Nf6 2. c4 g6 3. g3 d5 4. Bg2 Bg7 5. Nf3 O-O 6. O-O *
+
+[ECO "D78"]
+[Opening "Neo-Gruenfeld, 6.O-O c6"]
+
+1. d4 Nf6 2. c4 g6 3. g3 d5 4. Bg2 Bg7 5. Nf3 O-O 6. O-O c6 *
+
+[ECO "D79"]
+[Opening "Neo-Gruenfeld, 6.O-O, main line"]
+
+1. d4 Nf6 2. c4 g6 3. g3 d5 4. Bg2 Bg7 5. Nf3 O-O 6. O-O c6 7. cxd5 cxd5 *
+
+[ECO "D80"]
+[Opening "Gruenfeld defence"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 *
+
+[ECO "D80"]
+[Opening "Gruenfeld"]
+[Variation "Spike gambit"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. g4 *
+
+[ECO "D80"]
+[Opening "Gruenfeld"]
+[Variation "Stockholm variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Bg5 *
+
+[ECO "D80"]
+[Opening "Gruenfeld"]
+[Variation "Lundin variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Bg5 Ne4 5. Nxe4 dxe4 6. Qd2 c5 *
+
+[ECO "D81"]
+[Opening "Gruenfeld"]
+[Variation "Russian variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Qb3 *
+
+[ECO "D82"]
+[Opening "Gruenfeld"]
+[Variation "4.Bf4"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Bf4 *
+
+[ECO "D83"]
+[Opening "Gruenfeld"]
+[Variation "Gruenfeld gambit"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Bf4 Bg7 5. e3 O-O *
+
+[ECO "D83"]
+[Opening "Gruenfeld"]
+[Variation "Gruenfeld gambit, Capablanca variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Bf4 Bg7 5. e3 O-O 6. Rc1 *
+
+[ECO "D83"]
+[Opening "Gruenfeld"]
+[Variation "Gruenfeld gambit, Botvinnik variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Bf4 Bg7 5. e3 O-O 6. Rc1 c5 7. dxc5 Be6 *
+
+[ECO "D84"]
+[Opening "Gruenfeld"]
+[Variation "Gruenfeld gambit accepted"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Bf4 Bg7 5. e3 O-O 6. cxd5 Nxd5 7. Nxd5 Qxd5
+8. Bxc7 *
+
+[ECO "D85"]
+[Opening "Gruenfeld"]
+[Variation "exchange variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. cxd5 Nxd5 *
+
+[ECO "D85"]
+[Opening "Gruenfeld"]
+[Variation "modern exchange variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. cxd5 Nxd5 5. e4 Nxc3 6. bxc3 Bg7 7. Nf3 *
+
+[ECO "D86"]
+[Opening "Gruenfeld"]
+[Variation "exchange, classical variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. cxd5 Nxd5 5. e4 Nxc3 6. bxc3 Bg7 7. Bc4 *
+
+[ECO "D86"]
+[Opening "Gruenfeld"]
+[Variation "exchange, Larsen variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. cxd5 Nxd5 5. e4 Nxc3 6. bxc3 Bg7 7. Bc4 O-O
+8. Ne2 Qd7 9. O-O b6 *
+
+[ECO "D86"]
+[Opening "Gruenfeld"]
+[Variation "exchange, Simagin's lesser variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. cxd5 Nxd5 5. e4 Nxc3 6. bxc3 Bg7 7. Bc4 O-O
+8. Ne2 b6 *
+
+[ECO "D86"]
+[Opening "Gruenfeld"]
+[Variation "exchange, Simagin's improved variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. cxd5 Nxd5 5. e4 Nxc3 6. bxc3 Bg7 7. Bc4 O-O
+8. Ne2 Nc6 *
+
+[ECO "D87"]
+[Opening "Gruenfeld"]
+[Variation "exchange, Spassky variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. cxd5 Nxd5 5. e4 Nxc3 6. bxc3 Bg7 7. Bc4 O-O
+8. Ne2 c5 *
+
+[ECO "D87"]
+[Opening "Gruenfeld"]
+[Variation "exchange, Seville variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. cxd5 Nxd5 5. e4 Nxc3 6. bxc3 Bg7 7. Bc4 O-O
+8. Ne2 c5 9. O-O Nc6 10. Be3 Bg4 11. f3 Na5 12. Bxf7+ *
+
+[ECO "D88"]
+[Opening "Gruenfeld"]
+[Variation "Spassky variation, main line, 10...cd, 11.cd"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. cxd5 Nxd5 5. e4 Nxc3 6. bxc3 Bg7 7. Bc4 O-O
+8. Ne2 c5 9. O-O Nc6 10. Be3 cxd4 11. cxd4 *
+
+[ECO "D89"]
+[Opening "Gruenfeld"]
+[Variation "Spassky variation, main line, 13.Bd3"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. cxd5 Nxd5 5. e4 Nxc3 6. bxc3 Bg7 7. Bc4 O-O
+8. Ne2 c5 9. O-O Nc6 10. Be3 cxd4 11. cxd4 Bg4 12. f3 Na5 13. Bd3 Be6 *
+
+[ECO "D89"]
+[Opening "Gruenfeld"]
+[Variation "exchange, Sokolsky variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. cxd5 Nxd5 5. e4 Nxc3 6. bxc3 Bg7 7. Bc4 O-O
+8. Ne2 c5 9. O-O Nc6 10. Be3 cxd4 11. cxd4 Bg4 12. f3 Na5 13. Bd3 Be6 14. 
+d5 *
+
+[ECO "D90"]
+[Opening "Gruenfeld"]
+[Variation "Three knights variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 *
+
+[ECO "D90"]
+[Opening "Gruenfeld"]
+[Variation "Schlechter variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 c6 *
+
+[ECO "D90"]
+[Opening "Gruenfeld"]
+[Variation "Three knights variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 *
+
+[ECO "D90"]
+[Opening "Gruenfeld"]
+[Variation "Flohr variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. Qa4+ *
+
+[ECO "D91"]
+[Opening "Gruenfeld"]
+[Variation "5.Bg5"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. Bg5 *
+
+[ECO "D92"]
+[Opening "Gruenfeld"]
+[Variation "5.Bf4"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. Bf4 *
+
+[ECO "D93"]
+[Opening "Gruenfeld with Bf4    e3"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. Bf4 O-O 6. e3 *
+
+[ECO "D94"]
+[Opening "Gruenfeld"]
+[Variation "5.e3"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. e3 *
+
+[ECO "D94"]
+[Opening "Gruenfeld"]
+[Variation "Makogonov variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. e3 O-O 6. b4 *
+
+[ECO "D94"]
+[Opening "Gruenfeld"]
+[Variation "Opovcensky variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. e3 O-O 6. Bd2 *
+
+[ECO "D94"]
+[Opening "Gruenfeld with e3    Bd3"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. e3 O-O 6. Bd3 *
+
+[ECO "D94"]
+[Opening "Gruenfeld"]
+[Variation "Smyslov defence"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. e3 O-O 6. Bd3 c6 7. O-O Bg4 *
+
+[ECO "D94"]
+[Opening "Gruenfeld"]
+[Variation "Flohr defence"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. e3 O-O 6. Bd3 c6 7. O-O Bf5 *
+

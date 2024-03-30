@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2023 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,33 +21,31 @@
 
 #include <cassert>
 #include <deque>
-#include <iostream>
-#include <memory>  // For std::unique_ptr
+#include <iosfwd>
+#include <memory>
 #include <string>
 
 #include "bitboard.h"
-#include "evaluate.h"
-#include "psqt.h"
-#include "misc.h"
+#include "nnue/nnue_accumulator.h"
+#include "nnue/nnue_architecture.h"
 #include "types.h"
 
-#include "nnue/nnue_accumulator.h"
-
-namespace Stockfish {
+namespace ShashChess {
 //Kelly begin
 extern void setStartPoint();
 extern void putGameLineIntoLearningTable();
 //Kelly end
+class TranspositionTable;
 
-/// StateInfo struct stores information needed to restore a Position object to
-/// its previous state when we retract a move. Whenever a move is made on the
-/// board (by calling Position::do_move), a StateInfo object must be passed.
+// StateInfo struct stores information needed to restore a Position object to
+// its previous state when we retract a move. Whenever a move is made on the
+// board (by calling Position::do_move), a StateInfo object must be passed.
 
 struct StateInfo {
 
     // Copied when making a move
-    Key    pawnKey;
     Key    materialKey;
+    Key    pawnKey;
     Value  nonPawnMaterial[COLOR_NB];
     int    castlingRights;
     int    rule50;
@@ -65,24 +63,23 @@ struct StateInfo {
     int        repetition;
 
     // Used by NNUE
-    Eval::NNUE::Accumulator accumulator;
-    DirtyPiece              dirtyPiece;
+    Eval::NNUE::Accumulator<Eval::NNUE::TransformedFeatureDimensionsBig>   accumulatorBig;
+    Eval::NNUE::Accumulator<Eval::NNUE::TransformedFeatureDimensionsSmall> accumulatorSmall;
+    DirtyPiece                                                             dirtyPiece;
 };
 
 
-/// A list to keep track of the position states along the setup moves (from the
-/// start position to the position just before the search starts). Needed by
-/// 'draw by repetition' detection. Use a std::deque because pointers to
-/// elements are not invalidated upon list resizing.
+// A list to keep track of the position states along the setup moves (from the
+// start position to the position just before the search starts). Needed by
+// 'draw by repetition' detection. Use a std::deque because pointers to
+// elements are not invalidated upon list resizing.
 using StateListPtr = std::unique_ptr<std::deque<StateInfo>>;
 
 
-/// Position class stores information regarding the board representation as
-/// pieces, side to move, hash keys, castling info, etc. Important methods are
-/// do_move() and undo_move(), used by the search to update node info when
-/// traversing the search tree.
-class Thread;
-
+// Position class stores information regarding the board representation as
+// pieces, side to move, hash keys, castling info, etc. Important methods are
+// do_move() and undo_move(), used by the search to update node info when
+// traversing the search tree.
 class Position {
    public:
     static void init();
@@ -92,12 +89,12 @@ class Position {
     Position& operator=(const Position&) = delete;
 
     // FEN string input/output
-    Position&   set(const std::string& fenStr, bool isChess960, StateInfo* si, Thread* th);
+    Position&   set(const std::string& fenStr, bool isChess960, StateInfo* si);
     Position&   set(const std::string& code, Color c, StateInfo* si);
     std::string fen() const;
 
     // Position representation
-    Bitboard pieces(PieceType pt) const;
+    Bitboard pieces(PieceType pt = ALL_PIECES) const;
     template<typename... PieceTypes>
     Bitboard pieces(PieceType pt, PieceTypes... pts) const;
     Bitboard pieces(Color c) const;
@@ -112,7 +109,6 @@ class Position {
     int count() const;
     template<PieceType Pt>
     Square square(Color c) const;
-    bool   is_on_semiopen_file(Color c, Square s) const;
 
     // Castling
     CastlingRights castling_rights(Color c) const;
@@ -129,7 +125,7 @@ class Position {
     // Attacks to/from a given square
     Bitboard attackers_to(Square s) const;
     Bitboard attackers_to(Square s, Bitboard occupied) const;
-    Bitboard slider_blockers(Bitboard sliders, Square s, Bitboard& pinners) const;
+    void     update_slider_blockers(Color c) const;
     template<PieceType Pt>
     Bitboard attacks_by(Color c) const;
 
@@ -142,21 +138,15 @@ class Position {
     Piece moved_piece(Move m) const;
     Piece captured_piece() const;
 
-    // Piece specific
-    bool pawn_passed(Color c, Square s) const;
-    bool opposite_bishops() const;
-    int  pawns_on_same_color_squares(Color c, Square s) const;
-
     // Doing and undoing moves
     void do_move(Move m, StateInfo& newSt);
     void do_move(Move m, StateInfo& newSt, bool givesCheck);
     void undo_move(Move m);
-    void do_null_move(StateInfo& newSt);
+    void do_null_move(StateInfo& newSt, TranspositionTable& tt);
     void undo_null_move();
 
     // Static Exchange Evaluation
-    bool see_ge(Move m, Value threshold = VALUE_ZERO) const;
-    bool see_ge(Move m, Bitboard& occupied, Value threshold = VALUE_ZERO) const;
+    bool see_ge(Move m, int threshold = 0) const;
 
     // Accessing hash keys
     Key key() const;
@@ -165,19 +155,16 @@ class Position {
     Key pawn_key() const;
 
     // Other properties of the position
-    Color   side_to_move() const;
-    int     game_ply() const;
-    bool    is_chess960() const;
-    Thread* this_thread() const;
-    bool    is_draw(int ply) const;
-    bool    has_game_cycle(int ply) const;
-    bool    has_repeated() const;
+    Color side_to_move() const;
+    int   game_ply() const;
+    bool  is_chess960() const;
+    bool  is_draw(int ply) const;
+    bool  has_game_cycle(int ply) const;
+    bool  has_repeated() const;
     //from Crystal begin
-    bool king_danger() const;
+    bool king_danger(Color c) const;
     //from Crystal end
     int   rule50_count() const;
-    Score psq_score() const;
-    Value psq_eg_stm() const;
     Value non_pawn_material(Color c) const;
     Value non_pawn_material() const;
 
@@ -212,11 +199,9 @@ class Position {
     int        castlingRightsMask[SQUARE_NB];
     Square     castlingRookSquare[CASTLING_RIGHT_NB];
     Bitboard   castlingPath[CASTLING_RIGHT_NB];
-    Thread*    thisThread;
     StateInfo* st;
     int        gamePly;
     Color      sideToMove;
-    Score      psq;
     bool       chess960;
 };
 
@@ -231,9 +216,9 @@ inline Piece Position::piece_on(Square s) const {
 
 inline bool Position::empty(Square s) const { return piece_on(s) == NO_PIECE; }
 
-inline Piece Position::moved_piece(Move m) const { return piece_on(from_sq(m)); }
+inline Piece Position::moved_piece(Move m) const { return piece_on(m.from_sq()); }
 
-inline Bitboard Position::pieces(PieceType pt = ALL_PIECES) const { return byTypeBB[pt]; }
+inline Bitboard Position::pieces(PieceType pt) const { return byTypeBB[pt]; }
 
 template<typename... PieceTypes>
 inline Bitboard Position::pieces(PieceType pt, PieceTypes... pts) const {
@@ -265,10 +250,6 @@ inline Square Position::square(Color c) const {
 
 inline Square Position::ep_square() const { return st->epSquare; }
 
-inline bool Position::is_on_semiopen_file(Color c, Square s) const {
-    return !(pieces(c, PAWN) & file_bb(s));
-}
-
 inline bool Position::can_castle(CastlingRights cr) const { return st->castlingRights & cr; }
 
 inline CastlingRights Position::castling_rights(Color c) const {
@@ -277,13 +258,11 @@ inline CastlingRights Position::castling_rights(Color c) const {
 
 inline bool Position::castling_impeded(CastlingRights cr) const {
     assert(cr == WHITE_OO || cr == WHITE_OOO || cr == BLACK_OO || cr == BLACK_OOO);
-
     return pieces() & castlingPath[cr];
 }
 
 inline Square Position::castling_rook_square(CastlingRights cr) const {
     assert(cr == WHITE_OO || cr == WHITE_OOO || cr == BLACK_OO || cr == BLACK_OOO);
-
     return castlingRookSquare[cr];
 }
 
@@ -313,14 +292,6 @@ inline Bitboard Position::pinners(Color c) const { return st->pinners[c]; }
 
 inline Bitboard Position::check_squares(PieceType pt) const { return st->checkSquares[pt]; }
 
-inline bool Position::pawn_passed(Color c, Square s) const {
-    return !(pieces(~c, PAWN) & passed_pawn_span(c, s));
-}
-
-inline int Position::pawns_on_same_color_squares(Color c, Square s) const {
-    return popcount(pieces(c, PAWN) & ((DarkSquares & s) ? DarkSquares : ~DarkSquares));
-}
-
 inline Key Position::key() const { return adjust_key50<false>(st->key); }
 
 template<bool AfterMove>
@@ -332,10 +303,6 @@ inline Key Position::pawn_key() const { return st->pawnKey; }
 
 inline Key Position::material_key() const { return st->materialKey; }
 
-inline Score Position::psq_score() const { return psq; }
-
-inline Value Position::psq_eg_stm() const { return (sideToMove == WHITE ? 1 : -1) * eg_value(psq); }
-
 inline Value Position::non_pawn_material(Color c) const { return st->nonPawnMaterial[c]; }
 
 inline Value Position::non_pawn_material() const {
@@ -346,29 +313,22 @@ inline int Position::game_ply() const { return gamePly; }
 
 inline int Position::rule50_count() const { return st->rule50; }
 
-inline bool Position::opposite_bishops() const {
-    return count<BISHOP>(WHITE) == 1 && count<BISHOP>(BLACK) == 1
-        && opposite_colors(square<BISHOP>(WHITE), square<BISHOP>(BLACK));
-}
-
 inline bool Position::is_chess960() const { return chess960; }
 
 inline bool Position::capture(Move m) const {
-    assert(is_ok(m));
-    return (!empty(to_sq(m)) && type_of(m) != CASTLING) || type_of(m) == EN_PASSANT;
+    assert(m.is_ok());
+    return (!empty(m.to_sq()) && m.type_of() != CASTLING) || m.type_of() == EN_PASSANT;
 }
 
-// returns true if a move is generated from the capture stage
-// having also queen promotions covered, i.e. consistency with the capture stage move generation
+// Returns true if a move is generated from the capture stage, having also
+// queen promotions covered, i.e. consistency with the capture stage move generation
 // is needed to avoid the generation of duplicate moves.
 inline bool Position::capture_stage(Move m) const {
-    assert(is_ok(m));
-    return capture(m) || promotion_type(m) == QUEEN;
+    assert(m.is_ok());
+    return capture(m) || m.promotion_type() == QUEEN;
 }
 
 inline Piece Position::captured_piece() const { return st->capturedPiece; }
-
-inline Thread* Position::this_thread() const { return thisThread; }
 
 inline void Position::put_piece(Piece pc, Square s) {
 
@@ -377,7 +337,6 @@ inline void Position::put_piece(Piece pc, Square s) {
     byColorBB[color_of(pc)] |= s;
     pieceCount[pc]++;
     pieceCount[make_piece(color_of(pc), ALL_PIECES)]++;
-    psq += PSQT::psq[pc][s];
 }
 
 inline void Position::remove_piece(Square s) {
@@ -389,7 +348,6 @@ inline void Position::remove_piece(Square s) {
     board[s] = NO_PIECE;
     pieceCount[pc]--;
     pieceCount[make_piece(color_of(pc), ALL_PIECES)]--;
-    psq -= PSQT::psq[pc][s];
 }
 
 inline void Position::move_piece(Square from, Square to) {
@@ -401,13 +359,12 @@ inline void Position::move_piece(Square from, Square to) {
     byColorBB[color_of(pc)] ^= fromTo;
     board[from] = NO_PIECE;
     board[to]   = pc;
-    psq += PSQT::psq[pc][to] - PSQT::psq[pc][from];
 }
 
 inline void Position::do_move(Move m, StateInfo& newSt) { do_move(m, newSt, gives_check(m)); }
 
 inline StateInfo* Position::state() const { return st; }
 
-}  // namespace Stockfish
+}  // namespace ShashChess
 
 #endif  // #ifndef POSITION_H_INCLUDED

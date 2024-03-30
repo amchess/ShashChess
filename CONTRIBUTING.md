@@ -1,12 +1,12 @@
-# Contributing to Brainlearn
+# Contributing to ShashChess
 
-Welcome to the Brainlearn project! We are excited that you are interested in
+Welcome to the ShashChess project! We are excited that you are interested in
 contributing. This document outlines the guidelines and steps to follow when
-making contributions to Brainlearn.
+making contributions to ShashChess.
 
 ## Table of Contents
 
-- [Building Brainlearn](#building-brainlearn)
+- [Building ShashChess](#building-shashchess)
 - [Making Contributions](#making-contributions)
   - [Reporting Issues](#reporting-issues)
   - [Submitting Pull Requests](#submitting-pull-requests)
@@ -14,7 +14,7 @@ making contributions to Brainlearn.
 - [Community and Communication](#community-and-communication)
 - [License](#license)
 
-## Building Brainlearn
+## Building ShashChess
 
 In case you do not have a C++ compiler installed, you can follow the
 instructions from our wiki.
@@ -32,7 +32,7 @@ If you find a bug, please open an issue on the
 like your operating system, build environment, and a detailed description of the
 problem.
 
-_Please note that Brainlearn's development is not focused on adding new features.
+_Please note that ShashChess's development is not focused on adding new features.
 Thus any issue regarding missing features will potentially be closed without
 further discussion._
 
@@ -51,37 +51,47 @@ further discussion._
 
 _First time contributors should add their name to [AUTHORS](../AUTHORS)._
 
-_Brainlearn's development is not focused on adding new features. Thus any pull
+_ShashChess's development is not focused on adding new features. Thus any pull
 request introducing new features will potentially be closed without further
 discussion._
 
 ## Code Style
 
-Changes to Brainlearn C++ code should respect our coding style defined by
+Changes to ShashChess C++ code should respect our coding style defined by
 [.clang-format](.clang-format). You can format your changes by running
 `make format`. This requires clang-format version 17 to be installed on your system.
 
+## Navigate
+
+For experienced Git users who frequently use git blame, it is recommended to
+configure the blame.ignoreRevsFile setting.
+This setting is useful for excluding noisy formatting commits.
+
+```bash
+git config blame.ignoreRevsFile .git-blame-ignore-revs
+```
+
 ## Community and Communication
 
-- Join the [Brainlearn discord][discord-link] to discuss ideas, issues, and
+- Join the [ShashChess discord][discord-link] to discuss ideas, issues, and
   development.
-- Participate in the [Brainlearn GitHub discussions][discussions-link] for
+- Participate in the [ShashChess GitHub discussions][discussions-link] for
   broader conversations.
 
 ## License
 
-By contributing to Brainlearn, you agree that your contributions will be licensed
+By contributing to ShashChess, you agree that your contributions will be licensed
 under the GNU General Public License v3.0. See [Copying.txt][copying-link] for
 more details.
 
-Thank you for contributing to Brainlearn and helping us make it even better!
+Thank you for contributing to ShashChess and helping us make it even better!
 
 
-[copying-link]:           https://github.com/official-brainlearn/Brainlearn/blob/master/Copying.txt
+[copying-link]:           https://github.com/official-shashchess/ShashChess/blob/master/Copying.txt
 [discord-link]:           https://discord.gg/GWDRS3kU6R
-[discussions-link]:       https://github.com/official-brainlearn/Brainlearn/discussions/new
-[creating-my-first-test]: https://github.com/official-brainlearn/fishtest/wiki/Creating-my-first-test#create-your-test
-[issue-tracker-link]:     https://github.com/official-brainlearn/Brainlearn/issues
-[linux-compiling-link]:   https://github.com/official-brainlearn/Brainlearn/wiki/Compiling-from-source#linux
-[windows-compiling-link]: https://github.com/official-brainlearn/Brainlearn/wiki/Compiling-from-source#windows
-[macos-compiling-link]:   https://github.com/official-brainlearn/Brainlearn/wiki/Compiling-from-source#macos
+[discussions-link]:       https://github.com/official-shashchess/ShashChess/discussions/new
+[creating-my-first-test]: https://github.com/official-shashchess/fishtest/wiki/Creating-my-first-test#create-your-test
+[issue-tracker-link]:     https://github.com/official-shashchess/ShashChess/issues
+[linux-compiling-link]:   https://github.com/official-shashchess/ShashChess/wiki/Compiling-from-source#linux
+[windows-compiling-link]: https://github.com/official-shashchess/ShashChess/wiki/Compiling-from-source#windows
+[macos-compiling-link]:   https://github.com/official-shashchess/ShashChess/wiki/Compiling-from-source#macos

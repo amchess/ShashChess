@@ -1,0 +1,316 @@
+[ECO "B15"]
+[Opening "Caro-Kann defence"]
+
+1. e4 c6 2. d4 d5 3. Nc3 *
+
+[ECO "B15"]
+[Opening "Caro-Kann"]
+[Variation "Gurgenidze counter-attack"]
+
+1. e4 c6 2. d4 d5 3. Nc3 b5 *
+
+[ECO "B15"]
+[Opening "Caro-Kann"]
+[Variation "Gurgenidze system"]
+
+1. e4 c6 2. d4 d5 3. Nc3 g6 *
+
+[ECO "B15"]
+[Opening "Caro-Kann"]
+[Variation "Rasa-Studier gambit"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. f3 *
+
+[ECO "B15"]
+[Opening "Caro-Kann defence"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 *
+
+[ECO "B15"]
+[Opening "Caro-Kann"]
+[Variation "Alekhine gambit"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Bd3 *
+
+[ECO "B15"]
+[Opening "Caro-Kann"]
+[Variation "Tartakower (Nimzovich) variation"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Nxf6+ exf6 *
+
+[ECO "B15"]
+[Opening "Caro-Kann"]
+[Variation "Forgacs variation"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Nxf6+ exf6 6. Bc4 *
+
+[ECO "B16"]
+[Opening "Caro-Kann"]
+[Variation "Bronstein-Larsen variation"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Nxf6+ gxf6 *
+
+[ECO "B17"]
+[Opening "Caro-Kann"]
+[Variation "Steinitz variation"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nd7 *
+
+[ECO "B18"]
+[Opening "Caro-Kann"]
+[Variation "classical variation"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5 *
+
+[ECO "B18"]
+[Opening "Caro-Kann"]
+[Variation "classical, Flohr variation"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5 5. Ng3 Bg6 6. Nh3 *
+
+[ECO "B18"]
+[Opening "Caro-Kann"]
+[Variation "classical, Maroczy attack"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5 5. Ng3 Bg6 6. f4 *
+
+[ECO "B18"]
+[Opening "Caro-Kann"]
+[Variation "classical, 6.h4"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5 5. Ng3 Bg6 6. h4 *
+
+[ECO "B19"]
+[Opening "Caro-Kann"]
+[Variation "classical, 7...Nd7"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5 5. Ng3 Bg6 6. h4 h6 7. Nf3 Nd7 *
+
+[ECO "B19"]
+[Opening "Caro-Kann"]
+[Variation "classical, Spassky variation"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5 5. Ng3 Bg6 6. h4 h6 7. Nf3 Nd7 8.
+h5 *
+
+[ECO "B20"]
+[Opening "Sicilian defence"]
+
+1. e4 c5 *
+
+[ECO "B20"]
+[Opening "Sicilian"]
+[Variation "Gloria variation"]
+
+1. e4 c5 2. c4 d6 3. Nc3 Nc6 4. g3 h5 *
+
+[ECO "B20"]
+[Opening "Sicilian"]
+[Variation "Steinitz variation"]
+
+1. e4 c5 2. g3 *
+
+[ECO "B20"]
+[Opening "Sicilian"]
+[Variation "wing gambit"]
+
+1. e4 c5 2. b4 *
+
+[ECO "B20"]
+[Opening "Sicilian"]
+[Variation "wing gambit, Santasiere variation"]
+
+1. e4 c5 2. b4 cxb4 3. c4 *
+
+[ECO "B20"]
+[Opening "Sicilian"]
+[Variation "wing gambit, Marshall variation"]
+
+1. e4 c5 2. b4 cxb4 3. a3 *
+
+[ECO "B20"]
+[Opening "Sicilian"]
+[Variation "wing gambit, Marienbad variation"]
+
+1. e4 c5 2. b4 cxb4 3. a3 d5 4. exd5 Qxd5 5. Bb2 *
+
+[ECO "B20"]
+[Opening "Sicilian"]
+[Variation "wing gambit, Carlsbad variation"]
+
+1. e4 c5 2. b4 cxb4 3. a3 bxa3 *
+
+[ECO "B20"]
+[Opening "Sicilian"]
+[Variation "Keres variation (2.Ne2)"]
+
+1. e4 c5 2. Ne2 *
+
+[ECO "B21"]
+[Opening "Sicilian"]
+[Variation "Grand Prix attack"]
+
+1. e4 c5 2. f4 *
+
+[ECO "B21"]
+[Opening "Sicilian"]
+[Variation "Smith-Morra gambit"]
+
+1. e4 c5 2. d4 *
+
+[ECO "B21"]
+[Opening "Sicilian"]
+[Variation "Andreaschek gambit"]
+
+1. e4 c5 2. d4 cxd4 3. Nf3 e5 4. c3 *
+
+[ECO "B21"]
+[Opening "Sicilian"]
+[Variation "Smith-Morra gambit"]
+
+1. e4 c5 2. d4 cxd4 3. c3 *
+
+[ECO "B21"]
+[Opening "Sicilian"]
+[Variation "Smith-Morra gambit, Chicago defence"]
+
+1. e4 c5 2. d4 cxd4 3. c3 dxc3 4. Nxc3 Nc6 5. Nf3 d6 6. Bc4 e6 7. O-O a6 8.
+Qe2 b5 9. Bb3 Ra7 *
+
+[ECO "B22"]
+[Opening "Sicilian"]
+[Variation "Alapin's variation (2.c3)"]
+
+1. e4 c5 2. c3 *
+
+[ECO "B22"]
+[Opening "Sicilian"]
+[Variation "2.c3, Heidenfeld variation"]
+
+1. e4 c5 2. c3 Nf6 3. e5 Nd5 4. Nf3 Nc6 5. Na3 *
+
+[ECO "B23"]
+[Opening "Sicilian"]
+[Variation "closed"]
+
+1. e4 c5 2. Nc3 *
+
+[ECO "B23"]
+[Opening "Sicilian"]
+[Variation "closed, Korchnoi variation"]
+
+1. e4 c5 2. Nc3 e6 3. g3 d5 *
+
+[ECO "B23"]
+[Opening "Sicilian"]
+[Variation "closed, 2...Nc6"]
+
+1. e4 c5 2. Nc3 Nc6 *
+
+[ECO "B23"]
+[Opening "Sicilian"]
+[Variation "chameleon variation"]
+
+1. e4 c5 2. Nc3 Nc6 3. Nge2 *
+
+[ECO "B23"]
+[Opening "Sicilian"]
+[Variation "Grand Prix attack"]
+
+1. e4 c5 2. Nc3 Nc6 3. f4 *
+
+[ECO "B23"]
+[Opening "Sicilian"]
+[Variation "Grand Prix attack, Schofman variation"]
+
+1. e4 c5 2. Nc3 Nc6 3. f4 g6 4. Nf3 Bg7 5. Bc4 e6 6. f5 *
+
+[ECO "B24"]
+[Opening "Sicilian"]
+[Variation "closed"]
+
+1. e4 c5 2. Nc3 Nc6 3. g3 *
+
+[ECO "B24"]
+[Opening "Sicilian"]
+[Variation "closed, Smyslov variation"]
+
+1. e4 c5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 5. d3 e6 6. Be3 Nd4 7. Nce2 *
+
+[ECO "B25"]
+[Opening "Sicilian"]
+[Variation "closed"]
+
+1. e4 c5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 5. d3 d6 *
+
+[ECO "B25"]
+[Opening "Sicilian"]
+[Variation "closed, 6.Ne2 e5 (Botvinnik)"]
+
+1. e4 c5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 5. d3 d6 6. Nge2 e5 *
+
+[ECO "B25"]
+[Opening "Sicilian"]
+[Variation "closed, 6.f4"]
+
+1. e4 c5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 5. d3 d6 6. f4 *
+
+[ECO "B25"]
+[Opening "Sicilian"]
+[Variation "closed, 6.f4 e5 (Botvinnik)"]
+
+1. e4 c5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 5. d3 d6 6. f4 e5 *
+
+[ECO "B26"]
+[Opening "Sicilian"]
+[Variation "closed, 6.Be3"]
+
+1. e4 c5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 5. d3 d6 6. Be3 *
+
+[ECO "B27"]
+[Opening "Sicilian defence"]
+
+1. e4 c5 2. Nf3 *
+
+[ECO "B27"]
+[Opening "Sicilian"]
+[Variation "Stiletto (Althouse) variation"]
+
+1. e4 c5 2. Nf3 Qa5 *
+
+[ECO "B27"]
+[Opening "Sicilian"]
+[Variation "Quinteros variation"]
+
+1. e4 c5 2. Nf3 Qc7 *
+
+[ECO "B27"]
+[Opening "Sicilian"]
+[Variation "Katalimov variation"]
+
+1. e4 c5 2. Nf3 b6 *
+
+[ECO "B27"]
+[Opening "Sicilian"]
+[Variation "Hungarian variation"]
+
+1. e4 c5 2. Nf3 g6 *
+
+[ECO "B27"]
+[Opening "Sicilian"]
+[Variation "Acton extension"]
+
+1. e4 c5 2. Nf3 g6 3. c4 Bh6 *
+
+[ECO "B28"]
+[Opening "Sicilian"]
+[Variation "O'Kelly variation"]
+
+1. e4 c5 2. Nf3 a6 *
+
+[ECO "B29"]
+[Opening "Sicilian"]
+[Variation "Nimzovich-Rubinstein variation"]
+
+1. e4 c5 2. Nf3 Nf6 *
+

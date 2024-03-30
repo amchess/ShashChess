@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2023 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,107 +21,81 @@
 
 #include <atomic>
 #include <condition_variable>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
 #include <mutex>
-#include <thread>
 #include <vector>
 
-#include "material.h"
-#include "movepick.h"
-#include "pawns.h"
 #include "position.h"
 #include "search.h"
 #include "thread_win32_osx.h"
 
-namespace Stockfish {
+namespace ShashChess {
 
-/// Thread class keeps together all the thread-related stuff. We use
-/// per-thread pawn and material hash tables so that once we get a
-/// pointer to an entry its life time is unlimited and we don't have
-/// to care about someone changing the entry under our feet.
+class OptionsMap;
+using Value = int;
 
+// Abstraction of a thread. It contains a pointer to the worker and a native thread.
+// After construction, the native thread is started with idle_loop()
+// waiting for a signal to start searching.
+// When the signal is received, the thread starts searching and when
+// the search is finished, it goes back to idle_loop() waiting for a new signal.
 class Thread {
+   public:
+    Thread(Search::SharedState&, std::unique_ptr<Search::ISearchManager>, size_t);
+    virtual ~Thread();
 
+    void   idle_loop();
+    void   start_searching();
+    void   wait_for_search_finished();
+    size_t id() const { return idx; }
+
+    std::unique_ptr<Search::Worker> worker;
+
+   private:
     std::mutex              mutex;
     std::condition_variable cv;
-    size_t                  idx;
+    size_t                  idx, nthreads;
     bool                    exit = false, searching = true;  // Set before starting std::thread
     NativeThread            stdThread;
+};
+
+
+// ThreadPool struct handles all the threads-related stuff like init, starting,
+// parking and, most importantly, launching a thread. All the access to threads
+// is done through this class.
+class ThreadPool {
 
    public:
-    explicit Thread(size_t);
-    virtual ~Thread();
-    virtual void search();
-    void         clear();
-    void         idle_loop();
-    void         start_searching();
-    void         wait_for_search_finished();
-    size_t       id() const { return idx; }
+    ~ThreadPool() {
+        // destroy any existing thread(s)
+        if (threads.size() > 0)
+        {
+            main_thread()->wait_for_search_finished();
 
-    Pawns::Table          pawnsTable;
-    Material::Table       materialTable;
-    size_t                pvIdx, pvLast;
-    std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
-    int                   selDepth, nmpMinPly, nmpSide;  //crystal
-    Value                 bestValue, optimism[COLOR_NB];
-    Value                 pvValue;  //from Crystal
+            while (threads.size() > 0)
+                delete threads.back(), threads.pop_back();
+        }
+    }
 
-    bool                  nmpGuard, nmpGuardV;  //from Crystal
-    Position              rootPos;
-    StateInfo             rootState;
-    Search::RootMoves     rootMoves;
-    Depth                 rootDepth, completedDepth;
-    Value                 rootDelta;
-    CounterMoveHistory    counterMoves;
-    ButterflyHistory      mainHistory;
-    CapturePieceToHistory captureHistory;
-    ContinuationHistory   continuationHistory[2][2];
-    bool                  fullSearch;  //full threads patch
-    //begin from Shashin
-    int8_t shashinWinProbabilityRange = 0;
-    int    shashinPly                 = 0;
-    //end from Shashin
-    bool isMCTS;  //from montecarlo
-};
-
-
-/// MainThread is a derived class specific for main thread
-
-struct MainThread: public Thread {
-
-    using Thread::Thread;
-
-    void search() override;
-    void check_time();
-
-    double           previousTimeReduction;
-    Value            bestPreviousScore;
-    Value            bestPreviousAverageScore;
-    Value            iterValue[4];
-    int              callsCnt;
-    bool             stopOnPonderhit;
-    std::atomic_bool ponder;
-};
-
-
-/// ThreadPool struct handles all the threads-related stuff like init, starting,
-/// parking and, most importantly, launching a thread. All the access to threads
-/// is done through this class.
-
-struct ThreadPool {
-
-    void start_thinking(Position&, StateListPtr&, const Search::LimitsType&, bool = false);
+    void
+    start_thinking(const OptionsMap&, Position&, StateListPtr&, Search::LimitsType, bool = false);
     void clear();
-    void set(size_t);
+    void set(Search::SharedState);
     void setFull(size_t);  //full threads patch
 
-    MainThread* main() const { return static_cast<MainThread*>(threads.front()); }
-    uint64_t    nodes_searched() const { return accumulate(&Thread::nodes); }
-    uint64_t    tb_hits() const { return accumulate(&Thread::tbHits); }
-    Thread*     get_best_thread() const;
-    void        start_searching();
-    void        wait_for_search_finished() const;
+    Search::SearchManager* main_manager() const {
+        return static_cast<Search::SearchManager*>(main_thread()->worker.get()->manager.get());
+    };
+    Thread*  main_thread() const { return threads.front(); }
+    uint64_t nodes_searched() const { return accumulate(&Search::Worker::nodes); }
+    uint64_t tb_hits() const { return accumulate(&Search::Worker::tbHits); }
+    Thread*  get_best_thread() const;
+    void     start_searching();
+    void     wait_for_search_finished() const;
 
-    std::atomic_bool stop, increaseDepth;
+    std::atomic_bool stop, abortedSearch, increaseDepth;
 
     auto cbegin() const noexcept { return threads.cbegin(); }
     auto begin() noexcept { return threads.begin(); }
@@ -134,17 +108,15 @@ struct ThreadPool {
     StateListPtr         setupStates;
     std::vector<Thread*> threads;
 
-    uint64_t accumulate(std::atomic<uint64_t> Thread::*member) const {
+    uint64_t accumulate(std::atomic<uint64_t> Search::Worker::*member) const {
 
         uint64_t sum = 0;
         for (Thread* th : threads)
-            sum += (th->*member).load(std::memory_order_relaxed);
+            sum += (th->worker.get()->*member).load(std::memory_order_relaxed);
         return sum;
     }
 };
 
-extern ThreadPool Threads;
-
-}  // namespace Stockfish
+}  // namespace ShashChess
 
 #endif  // #ifndef THREAD_H_INCLUDED

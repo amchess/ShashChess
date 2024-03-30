@@ -3,13 +3,11 @@
 #include <vector>
 #include <sstream>
 #include <iomanip>
-#include "../../movegen.h"
+#include "../../position.h"
 #include "../../uci.h"
 #include "ctg.h"
 
-using namespace std;
-using namespace Stockfish;
-
+namespace ShashChess {
 namespace {
 uint32_t hashCodes[] = {
   0x3100D2BF, 0x3118E3DE, 0x34AB1372, 0x2807A847, 0x1633F566, 0x2143B359, 0x26D56488, 0x3B9E6F59,
@@ -116,7 +114,7 @@ constexpr size_t MoveEncSize = sizeof(moveTable) / sizeof(moveTable[0]);
 }
 
 namespace {
-static default_random_engine randomEngine = default_random_engine(now());
+static std::default_random_engine randomEngine = std::default_random_engine(now());
 
 enum class CtgMoveAnnotation {
     None            = 0x00,
@@ -189,14 +187,14 @@ struct CtgMove: CtgMoveStats {
 
     CtgMove() :
         CtgMoveStats() {
-        pseudoMove = MOVE_NONE;
-        sfMove     = MOVE_NONE;
+        pseudoMove = Move::none();
+        sfMove     = Move::none();
 
         annotation     = CtgMoveAnnotation::Unknown;
         recommendation = CtgMoveRecommendation::Unknown;
         commentary     = CtgMoveCommentary::Unknown;
 
-        moveWeight = numeric_limits<int64_t>::min();
+        moveWeight = std::numeric_limits<int64_t>::min();
     }
 
     void set_from_to(const Position& pos, Square from, Square to) {
@@ -221,39 +219,40 @@ struct CtgMove: CtgMoveStats {
                  && type_of(pos.piece_on(from)) == PAWN)
             promotionPiece = QUEEN;
 
-        pseudoMove = promotionPiece == NO_PIECE_TYPE ? make_move(from, to)
-                                                     : make<PROMOTION>(from, to, promotionPiece);
+        pseudoMove = promotionPiece == NO_PIECE_TYPE
+                     ? Move(from, to)
+                     : Move::make<PROMOTION>(from, to, promotionPiece);
     }
 
     Move pseudo_move() const {
-        assert(pseudoMove != MOVE_NONE);
+        assert(pseudoMove != Move::none());
         return pseudoMove;
     }
 
     Move set_sf_move(Move m) { return sfMove = m; }
 
     Move sf_move() const {
-        assert(sfMove != MOVE_NONE);
+        assert(sfMove != Move::none());
         return sfMove;
     }
 
     int64_t weight() const {
-        assert(moveWeight != numeric_limits<int64_t>::min());
+        assert(moveWeight != std::numeric_limits<int64_t>::min());
         return moveWeight;
     }
 
     bool green() const {
-        return ((int) recommendation & (int) CtgMoveRecommendation::GreenMove)
+        return (int(recommendation) & int(CtgMoveRecommendation::GreenMove))
             && annotation != CtgMoveAnnotation::BadMove
             && annotation != CtgMoveAnnotation::LosingMove
             && annotation != CtgMoveAnnotation::InterestingMove
             && annotation != CtgMoveAnnotation::DubiousMove;
     }
 
-    bool red() const { return ((int) recommendation & (int) CtgMoveRecommendation::RedMove); }
+    bool red() const { return (int(recommendation) & int(CtgMoveRecommendation::RedMove)); }
 };
 
-struct CtgMoveList: public vector<CtgMove> {
+struct CtgMoveList: public std::vector<CtgMove> {
     CtgMoveStats positionStats;
 
     void calculate_weights() {
@@ -261,8 +260,8 @@ struct CtgMoveList: public vector<CtgMove> {
             return;
 
         auto calculate_pseudo_weight = [](CtgMove& m, int win, int loss, int draw) -> int64_t {
-            static constexpr int64_t MAX_WEIGHT = numeric_limits<int16_t>::max();
-            static constexpr int64_t MIN_WEIGHT = numeric_limits<int16_t>::min();
+            static constexpr int64_t MAX_WEIGHT = std::numeric_limits<int16_t>::max();
+            static constexpr int64_t MIN_WEIGHT = std::numeric_limits<int16_t>::min();
 
             int64_t           winFactor  = 2;
             int64_t           lossFactor = 2;
@@ -335,16 +334,16 @@ struct CtgMoveList: public vector<CtgMove> {
         // calculated average number of games, by adding (or removing)
         // an equal number of won, lost, and drawn games to each move
         //Also calculate minimum and maximum for normalization later
-        int64_t maxWeight = numeric_limits<int64_t>::min();
-        int64_t minWeight = numeric_limits<int64_t>::max();
+        int64_t maxWeight = std::numeric_limits<int64_t>::min();
+        int64_t minWeight = std::numeric_limits<int64_t>::max();
         for (CtgMove& m : *this)
         {
             int64_t games = m.win + m.loss + m.draw;
             int64_t diff  = (avgGames - games) / 3;
 
-            int64_t win  = max<int64_t>(m.win + diff, 0);
-            int64_t loss = max<int64_t>(m.loss + diff, 0);
-            int64_t draw = max<int64_t>(m.draw + diff, 0);
+            int64_t win  = std::max<int64_t>(m.win + diff, 0);
+            int64_t loss = std::max<int64_t>(m.loss + diff, 0);
+            int64_t draw = std::max<int64_t>(m.draw + diff, 0);
 
             assert(win + draw + loss >= 0);
             if (win + loss + draw == 0)
@@ -410,7 +409,7 @@ struct CtgPositionData {
 };
 }
 
-namespace Stockfish::Book::CTG {
+namespace Book::CTG {
 bool CtgBook::decode(const Position& pos, CtgPositionData& positionData) const {
     positionData.epSquare = pos.ep_square();
     positionData.invert   = pos.side_to_move() == BLACK;
@@ -438,7 +437,7 @@ bool CtgBook::decode(const Position& pos, CtgPositionData& positionData) const {
 }
 
 void CtgBook::decode_board(const Position& pos, CtgPositionData& positionData) const {
-    static constexpr string_view PieceToChar(" PNBRQK  pnbrqk");
+    static constexpr std::string_view PieceToChar(" PNBRQK  pnbrqk");
 
     //Clear the internal board representation
     memset(positionData.board, 0, sizeof(positionData.board));
@@ -816,14 +815,12 @@ void CtgBook::get_stats(const CtgPositionData& positionData,
     CtgMove& ctgMove = (CtgMove&) stats;
 
     //Recommendations
-    ctgMove.recommendation =
-      (CtgMoveRecommendation)
-        positionData.positionPage[(uint32_t) positionData.positionPage[0] + 3 + 9 + 4 + 7 + 7];
+    ctgMove.recommendation = CtgMoveRecommendation(
+      positionData.positionPage[uint32_t(positionData.positionPage[0]) + 3 + 9 + 4 + 7 + 7]);
 
     //Commentary
-    ctgMove.commentary =
-      (CtgMoveCommentary)
-        positionData.positionPage[(uint32_t) positionData.positionPage[0] + 3 + 9 + 4 + 7 + 7 + 1];
+    ctgMove.commentary = CtgMoveCommentary(
+      positionData.positionPage[uint32_t(positionData.positionPage[0]) + 3 + 9 + 4 + 7 + 7 + 1]);
 }
 
 Move CtgBook::get_pseudo_move(const CtgPositionData& positionData, int moveNum) const {
@@ -841,7 +838,7 @@ Move CtgBook::get_pseudo_move(const CtgPositionData& positionData, int moveNum) 
 
     //Check
     if (index == MoveEncSize)
-        return MOVE_NONE;
+        return Move::none();
 
     //Find/Read the move
     const MoveEnc& moveEnc = moveTable[index];
@@ -859,14 +856,14 @@ Move CtgBook::get_pseudo_move(const CtgPositionData& positionData, int moveNum) 
                 Square to   = make_square(File((x + 8 + moveEnc.right) % 8),
                                           Rank((y + 8 + moveEnc.forward) % 8));
 
-                return make_move(from, to);
+                return Move(from, to);
             }
         }
     }
 
     //Should never get here
     assert(false);
-    return MOVE_NONE;
+    return Move::none();
 }
 
 bool CtgBook::get_move(const Position&        pos,
@@ -874,11 +871,11 @@ bool CtgBook::get_move(const Position&        pos,
                        int                    moveNum,
                        CtgMove&               ctgMove) const {
     Move m = get_pseudo_move(positionData, moveNum);
-    if (m == MOVE_NONE)
+    if (m == Move::none())
         return false;
 
-    Square from = from_sq(m);
-    Square to   = to_sq(m);
+    Square from = m.from_sq();
+    Square to   = m.to_sq();
 
     if (positionData.invert)
     {
@@ -910,7 +907,7 @@ void CtgBook::get_moves(const Position&        pos,
     //Position object to be used to play the moves
     StateInfo si[2];
     Position  p;
-    p.set(pos.fen(), pos.is_chess960(), &si[0], pos.this_thread());
+    p.set(pos.fen(), pos.is_chess960(), &si[0]);
 
     //Read position statistics
     get_stats(positionData, ctgMoveList.positionStats, false);
@@ -923,10 +920,10 @@ void CtgBook::get_moves(const Position&        pos,
         {
             for (const auto& m : legalMoves)
             {
-                if (ctgMove.pseudo_move() == (m.move ^ type_of(m.move)))
+                if (ctgMove.pseudo_move().raw() == (m.raw() ^ m.type_of()))
                 {
                     //Assign the move
-                    ctgMove.set_sf_move(m.move);
+                    ctgMove.set_sf_move(m);
 
                     //Play the move
                     p.do_move(ctgMove.sf_move(), si[1]);
@@ -945,7 +942,7 @@ void CtgBook::get_moves(const Position&        pos,
                 }
             }
 
-            assert(ctgMove.sf_move() != MOVE_NONE);
+            assert(ctgMove.sf_move() != Move::none());
         }
     }
 
@@ -962,19 +959,19 @@ CtgBook::CtgBook() :
 
 CtgBook::~CtgBook() { close(); }
 
-string CtgBook::type() const { return "CTG"; }
+std::string CtgBook::type() const { return "CTG"; }
 
-bool CtgBook::open(const string& f) {
+bool CtgBook::open(const std::string& f) {
     //Close current file
     close();
 
     //If no file name is given -> nothing to do
-    if (Utility::is_empty_filename(f))
+    if (Util::is_empty_filename(f))
         return true;
 
     //CTG
-    string fn      = Utility::map_path(f);
-    string ctgFile = fn.substr(0, fn.find_last_of('.')) + ".ctg";
+    std::string fn      = Util::map_path(f);
+    std::string ctgFile = fn.substr(0, fn.find_last_of('.')) + ".ctg";
     if (!ctg.map(ctgFile.c_str(), true))
     {
         close();
@@ -984,7 +981,7 @@ bool CtgBook::open(const string& f) {
     }
 
     //CTO
-    string ctoFile = ctgFile.substr(0, ctgFile.find_last_of('.')) + ".cto";
+    std::string ctoFile = ctgFile.substr(0, ctgFile.find_last_of('.')) + ".cto";
     if (!cto.map(ctoFile.c_str(), true))
     {
         close();
@@ -994,8 +991,8 @@ bool CtgBook::open(const string& f) {
     }
 
     //CTB
-    string               ctbFile = ctgFile.substr(0, ctgFile.find_last_of('.')) + ".ctb";
-    Utility::FileMapping ctb;
+    std::string ctbFile = ctgFile.substr(0, ctgFile.find_last_of('.')) + ".ctb";
+    FileMapping ctb;
     if (!ctb.map(ctbFile.c_str(), true))
     {
         close();
@@ -1032,17 +1029,17 @@ bool CtgBook::is_open() const { return isOpen; }
 
 Move CtgBook::probe(const Position& pos, size_t width, bool onlyGreen) const {
     if (!is_open())
-        return MOVE_NONE;
+        return Move::none();
 
     CtgPositionData positionData;
     if (!decode(pos, positionData))
-        return MOVE_NONE;
+        return Move::none();
 
     CtgMoveList ctgMoveList;
     get_moves(pos, positionData, ctgMoveList);
 
     if (ctgMoveList.size() == 0)
-        return MOVE_NONE;
+        return Move::none();
 
     //Remove red moves and any moves with negative weight
     ctgMoveList.erase(remove_if(ctgMoveList.begin(), ctgMoveList.end(),
@@ -1050,6 +1047,10 @@ Move CtgBook::probe(const Position& pos, size_t width, bool onlyGreen) const {
                                     return x.red() || (onlyGreen && !x.green()) || x.weight() < 0;
                                 }),
                       ctgMoveList.end());
+
+    //Check move list again after removing unwanted moves
+    if (ctgMoveList.size() == 0)
+        return Move::none();
 
     //Sort moves accorging to their weights
     stable_sort(ctgMoveList.begin(), ctgMoveList.end(),
@@ -1073,19 +1074,19 @@ Move CtgBook::probe(const Position& pos, size_t width, bool onlyGreen) const {
 }
 
 void CtgBook::show_moves(const Position& pos) const {
-    stringstream ss;
+    std::stringstream ss;
 
     if (!is_open())
     {
         assert(false);
-        ss << "No book loaded" << endl;
+        ss << "No book loaded" << std::endl;
     }
     else
     {
         CtgPositionData positionData;
         if (!decode(pos, positionData))
         {
-            ss << "Position not found in book" << endl;
+            ss << "Position not found in book" << std::endl;
         }
         else
         {
@@ -1094,23 +1095,25 @@ void CtgBook::show_moves(const Position& pos) const {
 
             if (ctgMoveList.size() == 0)
             {
-                ss << "No moves found for this position" << endl;
+                ss << "No moves found for this position" << std::endl;
             }
             else
             {
-                ss << "MOVE      WIN       DRAW      LOSS      WEIGHT" << endl;
+                ss << "MOVE      WIN       DRAW      LOSS      WEIGHT" << std::endl;
 
                 for (const CtgMove& m : ctgMoveList)
                 {
-                    ss << setw(10) << left << UCI::move(m.sf_move(), pos.is_chess960()) << setw(10)
-                       << left << m.win << setw(10) << left << m.draw << setw(10) << left << m.loss
-                       << setw(10) << left << m.weight() << endl;
+                    ss << std::setw(10) << std::left << UCI::move(m.sf_move(), pos.is_chess960())
+                       << std::setw(10) << std::left << m.win << std::setw(10) << std::left
+                       << m.draw << std::setw(10) << std::left << m.loss << std::setw(10)
+                       << std::left << m.weight() << std::endl;
                 }
             }
         }
     }
 
     //Not using sync_cout/sync_endl
-    cout << ss.str() << endl;
+    std::cout << ss.str() << std::endl;
+}
 }
 }

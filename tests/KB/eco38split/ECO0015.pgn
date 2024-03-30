@@ -1,0 +1,313 @@
+[ECO "C18"]
+[Opening "French"]
+[Variation "Winawer, advance variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 c5 5. a3 Bxc3+ 6. bxc3 *
+
+[ECO "C18"]
+[Opening "French"]
+[Variation "Winawer, classical variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 c5 5. a3 Bxc3+ 6. bxc3 Qc7 *
+
+[ECO "C19"]
+[Opening "French"]
+[Variation "Winawer, advance, 6...Ne7"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 c5 5. a3 Bxc3+ 6. bxc3 Ne7 *
+
+[ECO "C19"]
+[Opening "French"]
+[Variation "Winawer, advance, Smyslov variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 c5 5. a3 Bxc3+ 6. bxc3 Ne7 7. a4 *
+
+[ECO "C19"]
+[Opening "French"]
+[Variation "Winawer, advance, positional main line"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 c5 5. a3 Bxc3+ 6. bxc3 Ne7 7. Nf3 *
+
+[ECO "C19"]
+[Opening "French"]
+[Variation "Winawer, advance, poisoned pawn variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 c5 5. a3 Bxc3+ 6. bxc3 Ne7 7. Qg4 *
+
+[ECO "C19"]
+[Opening "French"]
+[Variation "Winawer, advance, poisoned pawn, Euwe-Gligoric variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 c5 5. a3 Bxc3+ 6. bxc3 Ne7 7. Qg4 Qc7 8.
+Qxg7 Rg8 9. Qxh7 cxd4 10. Kd1 *
+
+[ECO "C19"]
+[Opening "French"]
+[Variation "Winawer, advance, poisoned pawn, Konstantinopolsky variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 c5 5. a3 Bxc3+ 6. bxc3 Ne7 7. Qg4 Qc7 8.
+Qxg7 Rg8 9. Qxh7 cxd4 10. Ne2 *
+
+[ECO "C20"]
+[Opening "King's pawn game"]
+
+1. e4 e5 *
+
+[ECO "C20"]
+[Opening "KP"]
+[Variation "Indian opening"]
+
+1. e4 e5 2. d3 *
+
+[ECO "C20"]
+[Opening "KP"]
+[Variation "Mengarini's opening"]
+
+1. e4 e5 2. a3 *
+
+[ECO "C20"]
+[Opening "KP"]
+[Variation "King's head opening"]
+
+1. e4 e5 2. f3 *
+
+[ECO "C20"]
+[Opening "KP"]
+[Variation "Patzer opening"]
+
+1. e4 e5 2. Qh5 *
+
+[ECO "C20"]
+[Opening "KP"]
+[Variation "Napoleon's opening"]
+
+1. e4 e5 2. Qf3 *
+
+[ECO "C20"]
+[Opening "KP"]
+[Variation "Lopez opening"]
+
+1. e4 e5 2. c3 *
+
+[ECO "C20"]
+[Opening "Alapin's opening"]
+
+1. e4 e5 2. Ne2 *
+
+[ECO "C21"]
+[Opening "Centre game"]
+
+1. e4 e5 2. d4 exd4 *
+
+[ECO "C21"]
+[Opening "Centre game, Kieseritsky variation"]
+
+1. e4 e5 2. d4 exd4 3. Nf3 c5 4. Bc4 b5 *
+
+[ECO "C21"]
+[Opening "Halasz gambit"]
+
+1. e4 e5 2. d4 exd4 3. f4 *
+
+[ECO "C21"]
+[Opening "Danish gambit"]
+
+1. e4 e5 2. d4 exd4 3. c3 *
+
+[ECO "C21"]
+[Opening "Danish gambit"]
+[Variation "Collijn defence"]
+
+1. e4 e5 2. d4 exd4 3. c3 dxc3 4. Bc4 cxb2 5. Bxb2 Qe7 *
+
+[ECO "C21"]
+[Opening "Danish gambit"]
+[Variation "Schlechter defence"]
+
+1. e4 e5 2. d4 exd4 3. c3 dxc3 4. Bc4 cxb2 5. Bxb2 d5 *
+
+[ECO "C21"]
+[Opening "Danish gambit"]
+[Variation "Soerensen defence"]
+
+1. e4 e5 2. d4 exd4 3. c3 d5 *
+
+[ECO "C21"]
+[Opening "Centre game"]
+
+1. e4 e5 2. d4 exd4 3. Qxd4 *
+
+[ECO "C22"]
+[Opening "Centre game"]
+
+1. e4 e5 2. d4 exd4 3. Qxd4 Nc6 *
+
+[ECO "C22"]
+[Opening "Centre game"]
+[Variation "Paulsen attack"]
+
+1. e4 e5 2. d4 exd4 3. Qxd4 Nc6 4. Qe3 *
+
+[ECO "C22"]
+[Opening "Centre game"]
+[Variation "Charousek variation"]
+
+1. e4 e5 2. d4 exd4 3. Qxd4 Nc6 4. Qe3 Bb4+ 5. c3 Be7 *
+
+[ECO "C22"]
+[Opening "Centre game"]
+[Variation "l'Hermet variation"]
+
+1. e4 e5 2. d4 exd4 3. Qxd4 Nc6 4. Qe3 f5 *
+
+[ECO "C22"]
+[Opening "Centre game"]
+[Variation "Berger variation"]
+
+1. e4 e5 2. d4 exd4 3. Qxd4 Nc6 4. Qe3 Nf6 *
+
+[ECO "C22"]
+[Opening "Centre game"]
+[Variation "Kupreichik variation"]
+
+1. e4 e5 2. d4 exd4 3. Qxd4 Nc6 4. Qe3 Nf6 5. Nc3 Bb4 6. Bd2 O-O 7. O-O-O 
+Re8 8. Bc4 d6 9. Nh3 *
+
+[ECO "C22"]
+[Opening "Centre game"]
+[Variation "Hall variation"]
+
+1. e4 e5 2. d4 exd4 3. Qxd4 Nc6 4. Qc4 *
+
+[ECO "C23"]
+[Opening "Bishop's opening"]
+
+1. e4 e5 2. Bc4 *
+
+[ECO "C23"]
+[Opening "Bishop's opening"]
+[Variation "Philidor counter-attack"]
+
+1. e4 e5 2. Bc4 c6 *
+
+[ECO "C23"]
+[Opening "Bishop's opening"]
+[Variation "Lisitsyn variation"]
+
+1. e4 e5 2. Bc4 c6 3. d4 d5 4. exd5 cxd5 5. Bb5+ Bd7 6. Bxd7+ Nxd7 7. dxe5
+Nxe5 8. Ne2 *
+
+[ECO "C23"]
+[Opening "Bishop's opening"]
+[Variation "Calabrese counter-gambit"]
+
+1. e4 e5 2. Bc4 f5 *
+
+[ECO "C23"]
+[Opening "Bishop's opening"]
+[Variation "Calabrese counter-gambit, Jaenisch variation"]
+
+1. e4 e5 2. Bc4 f5 3. d3 *
+
+[ECO "C23"]
+[Opening "Bishop's opening"]
+[Variation "Classical variation"]
+
+1. e4 e5 2. Bc4 Bc5 *
+
+[ECO "C23"]
+[Opening "Bishop's opening"]
+[Variation "Lopez gambit"]
+
+1. e4 e5 2. Bc4 Bc5 3. Qe2 Nc6 4. c3 Nf6 5. f4 *
+
+[ECO "C23"]
+[Opening "Bishop's opening"]
+[Variation "Philidor variation"]
+
+1. e4 e5 2. Bc4 Bc5 3. c3 *
+
+[ECO "C23"]
+[Opening "Bishop's opening"]
+[Variation "Pratt variation"]
+
+1. e4 e5 2. Bc4 Bc5 3. c3 Nf6 4. d4 exd4 5. e5 d5 6. exf6 dxc4 7. Qh5 O-O *
+
+[ECO "C23"]
+[Opening "Bishop's opening"]
+[Variation "Lewis counter-gambit"]
+
+1. e4 e5 2. Bc4 Bc5 3. c3 d5 *
+
+[ECO "C23"]
+[Opening "Bishop's opening"]
+[Variation "del Rio variation"]
+
+1. e4 e5 2. Bc4 Bc5 3. c3 Qg5 *
+
+[ECO "C23"]
+[Opening "Bishop's opening"]
+[Variation "Lewis gambit"]
+
+1. e4 e5 2. Bc4 Bc5 3. d4 *
+
+[ECO "C23"]
+[Opening "Bishop's opening"]
+[Variation "Wing gambit"]
+
+1. e4 e5 2. Bc4 Bc5 3. b4 *
+
+[ECO "C23"]
+[Opening "Bishop's opening"]
+[Variation "MacDonnell double gambit"]
+
+1. e4 e5 2. Bc4 Bc5 3. b4 Bxb4 4. f4 *
+
+[ECO "C23"]
+[Opening "Bishop's opening"]
+[Variation "Four pawns' gambit"]
+
+1. e4 e5 2. Bc4 Bc5 3. b4 Bxb4 4. f4 exf4 5. Nf3 Be7 6. d4 Bh4+ 7. g3 fxg3
+8. O-O gxh2+ 9. Kh1 *
+
+[ECO "C24"]
+[Opening "Bishop's opening"]
+[Variation "Berlin defence"]
+
+1. e4 e5 2. Bc4 Nf6 *
+
+[ECO "C24"]
+[Opening "Bishop's opening"]
+[Variation "Greco gambit"]
+
+1. e4 e5 2. Bc4 Nf6 3. f4 *
+
+[ECO "C24"]
+[Opening "Bishop's opening"]
+[Variation "Ponziani gambit"]
+
+1. e4 e5 2. Bc4 Nf6 3. d4 *
+
+[ECO "C24"]
+[Opening "Bishop's opening"]
+[Variation "Urusov gambit"]
+
+1. e4 e5 2. Bc4 Nf6 3. d4 exd4 4. Nf3 *
+
+[ECO "C24"]
+[Opening "Bishop's opening"]
+[Variation "Urusov gambit, Panov variation"]
+
+1. e4 e5 2. Bc4 Nf6 3. d4 exd4 4. Nf3 d5 5. exd5 Bb4+ 6. c3 Qe7+ *
+
+[ECO "C25"]
+[Opening "Vienna game"]
+
+1. e4 e5 2. Nc3 *
+
+[ECO "C25"]
+[Opening "Vienna"]
+[Variation "Zhuravlev countergambit"]
+
+1. e4 e5 2. Nc3 Bb4 3. Qg4 Nf6 *
+

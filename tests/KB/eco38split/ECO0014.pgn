@@ -1,0 +1,325 @@
+[ECO "C11"]
+[Opening "French"]
+[Variation "Henneberger variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Be3 *
+
+[ECO "C11"]
+[Opening "French"]
+[Variation "Steinitz variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. e5 *
+
+[ECO "C11"]
+[Opening "French"]
+[Variation "Steinitz, Bradford attack"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. e5 Nfd7 5. f4 c5 6. dxc5 Bxc5 7. Qg4 *
+
+[ECO "C11"]
+[Opening "French"]
+[Variation "Steinitz variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. e5 Nfd7 5. f4 c5 6. dxc5 Nc6 *
+
+[ECO "C11"]
+[Opening "French"]
+[Variation "Steinitz, Brodsky-Jones variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. e5 Nfd7 5. f4 c5 6. dxc5 Nc6 7. a3 Bxc5 8.
+Qg4 O-O 9. Nf3 f6 *
+
+[ECO "C11"]
+[Opening "French"]
+[Variation "Steinitz variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. e5 Nfd7 5. f4 c5 6. Nf3 *
+
+[ECO "C11"]
+[Opening "French"]
+[Variation "Steinitz, Boleslavsky variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. e5 Nfd7 5. f4 c5 6. Nf3 Nc6 7. Be3 *
+
+[ECO "C11"]
+[Opening "French"]
+[Variation "Steinitz, Gledhill attack"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. e5 Nfd7 5. Qg4 *
+
+[ECO "C11"]
+[Opening "French"]
+[Variation "Burn variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 dxe4 *
+
+[ECO "C12"]
+[Opening "French"]
+[Variation "MacCutcheon variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Bb4 *
+
+[ECO "C12"]
+[Opening "French"]
+[Variation "MacCutcheon, Bogolyubov variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Bb4 5. exd5 Qxd5 6. Bxf6 gxf6 7. Qd2 
+Qa5 *
+
+[ECO "C12"]
+[Opening "French"]
+[Variation "MacCutcheon, advance variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Bb4 5. e5 *
+
+[ECO "C12"]
+[Opening "French"]
+[Variation "MacCutcheon, Chigorin variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Bb4 5. e5 h6 6. exf6 *
+
+[ECO "C12"]
+[Opening "French"]
+[Variation "MacCutcheon, Grigoriev variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Bb4 5. e5 h6 6. exf6 hxg5 7. fxg7 Rg8 
+8. h4 gxh4 9. Qg4 *
+
+[ECO "C12"]
+[Opening "French"]
+[Variation "MacCutcheon, Bernstein variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Bb4 5. e5 h6 6. Bh4 *
+
+[ECO "C12"]
+[Opening "French"]
+[Variation "MacCutcheon, Janowski variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Bb4 5. e5 h6 6. Be3 *
+
+[ECO "C12"]
+[Opening "French"]
+[Variation "MacCutcheon, Dr. Olland (Dutch) variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Bb4 5. e5 h6 6. Bc1 *
+
+[ECO "C12"]
+[Opening "French"]
+[Variation "MacCutcheon, Tartakower variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Bb4 5. e5 h6 6. Bd2 Nfd7 *
+
+[ECO "C12"]
+[Opening "French"]
+[Variation "MacCutcheon, Lasker variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Bb4 5. e5 h6 6. Bd2 Bxc3 *
+
+[ECO "C12"]
+[Opening "French"]
+[Variation "MacCutcheon, Duras variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Bb4 5. e5 h6 6. Bd2 Bxc3 7. bxc3 Ne4 8.
+Qg4 Kf8 9. Bc1 *
+
+[ECO "C12"]
+[Opening "French"]
+[Variation "MacCutcheon, Lasker variation, 8...g6"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Bb4 5. e5 h6 6. Bd2 Bxc3 7. bxc3 Ne4 8.
+Qg4 g6 *
+
+[ECO "C13"]
+[Opening "French"]
+[Variation "classical"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 *
+
+[ECO "C13"]
+[Opening "French"]
+[Variation "classical, Anderssen variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. Bxf6 *
+
+[ECO "C13"]
+[Opening "French"]
+[Variation "classical, Anderssen-Richter variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. Bxf6 Bxf6 6. e5 Be7 7. Qg4 *
+
+[ECO "C13"]
+[Opening "French"]
+[Variation "classical, Vistaneckis (Nimzovich) variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. e5 Ng8 *
+
+[ECO "C13"]
+[Opening "French"]
+[Variation "classical, Frankfurt variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. e5 Ng8 6. Be3 b6 *
+
+[ECO "C13"]
+[Opening "French"]
+[Variation "classical, Tartakower variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. e5 Ne4 *
+
+[ECO "C13"]
+[Opening "French"]
+[Variation "Albin-Alekhine-Chatard attack"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. e5 Nfd7 6. h4 *
+
+[ECO "C13"]
+[Opening "French"]
+[Variation "Albin-Alekhine-Chatard attack, Maroczy variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. e5 Nfd7 6. h4 a6 *
+
+[ECO "C13"]
+[Opening "French"]
+[Variation "Albin-Alekhine-Chatard attack, Breyer variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. e5 Nfd7 6. h4 c5 *
+
+[ECO "C13"]
+[Opening "French"]
+[Variation "Albin-Alekhine-Chatard attack, Teichmann variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. e5 Nfd7 6. h4 f6 *
+
+[ECO "C13"]
+[Opening "French"]
+[Variation "Albin-Alekhine-Chatard attack, Spielmann variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. e5 Nfd7 6. h4 O-O *
+
+[ECO "C14"]
+[Opening "French"]
+[Variation "classical variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. e5 Nfd7 6. Bxe7 Qxe7 *
+
+[ECO "C14"]
+[Opening "French"]
+[Variation "classical, Tarrasch variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. e5 Nfd7 6. Bxe7 Qxe7 7. Bd3 *
+
+[ECO "C14"]
+[Opening "French"]
+[Variation "classical, Rubinstein variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. e5 Nfd7 6. Bxe7 Qxe7 7. Qd2 *
+
+[ECO "C14"]
+[Opening "French"]
+[Variation "classical, Alapin variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. e5 Nfd7 6. Bxe7 Qxe7 7. Nb5 *
+
+[ECO "C14"]
+[Opening "French"]
+[Variation "classical, Pollock variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. e5 Nfd7 6. Bxe7 Qxe7 7. Qg4 *
+
+[ECO "C14"]
+[Opening "French"]
+[Variation "classical, Steinitz variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. e5 Nfd7 6. Bxe7 Qxe7 7. f4 *
+
+[ECO "C14"]
+[Opening "French"]
+[Variation "classical, Stahlberg variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. e5 Nfd7 6. Bxe7 Qxe7 7. f4 O-O 
+8. Nf3 c5 9. Qd2 Nc6 10. O-O-O c4 *
+
+[ECO "C15"]
+[Opening "French"]
+[Variation "Winawer (Nimzovich) variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 *
+
+[ECO "C15"]
+[Opening "French"]
+[Variation "Winawer, Kondratiyev variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. Bd3 c5 5. exd5 Qxd5 6. Bd2 *
+
+[ECO "C15"]
+[Opening "French"]
+[Variation "Winawer, fingerslip variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. Bd2 *
+
+[ECO "C15"]
+[Opening "French"]
+[Variation "Winawer, Alekhine (Maroczy) gambit"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. Ne2 *
+
+[ECO "C15"]
+[Opening "French"]
+[Variation "Winawer, Alekhine gambit, Alatortsev variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. Ne2 dxe4 5. a3 Be7 6. Nxe4 Nf6 7. N2g3 O-O
+8. Be2 Nc6 *
+
+[ECO "C15"]
+[Opening "French"]
+[Variation "Winawer, Alekhine gambit"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. Ne2 dxe4 5. a3 Bxc3+ *
+
+[ECO "C15"]
+[Opening "French"]
+[Variation "Winawer, Alekhine gambit, Kan variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. Ne2 dxe4 5. a3 Bxc3+ 6. Nxc3 Nc6 *
+
+[ECO "C16"]
+[Opening "French"]
+[Variation "Winawer, advance variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 *
+
+[ECO "C16"]
+[Opening "French"]
+[Variation "Winawer, Petrosian variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 Qd7 *
+
+[ECO "C17"]
+[Opening "French"]
+[Variation "Winawer, advance variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 c5 *
+
+[ECO "C17"]
+[Opening "French"]
+[Variation "Winawer, advance, Bogolyubov variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 c5 5. Bd2 *
+
+[ECO "C17"]
+[Opening "French"]
+[Variation "Winawer, advance, Russian variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 c5 5. Qg4 *
+
+[ECO "C17"]
+[Opening "French"]
+[Variation "Winawer, advance, 5.a3"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 c5 5. a3 *
+
+[ECO "C17"]
+[Opening "French"]
+[Variation "Winawer, advance, Rauzer variation"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 c5 5. a3 cxd4 6. axb4 dxc3 7. Nf3 *
+

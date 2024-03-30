@@ -1,0 +1,315 @@
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Kieseritsky, Brentano defence, Caro variation"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ne5 d5 6. d4 Nf6 7. Bxf4 Nxe4 8.
+Nd2 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Kieseritsky, Salvio (Rosenthal) defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ne5 Qe7 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Kieseritsky, Salvio defence, Cozio variation"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ne5 Qe7 6. d4 f5 7. Bc4 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Kieseritsky, Polerio defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ne5 Be7 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Kieseritsky, Neumann defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ne5 Nc6 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Kieseritsky, Kolisch defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ne5 d6 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Kieseritsky, Berlin defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ne5 Nf6 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Kieseritsky, Berlin defence, Riviere variation"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ne5 Nf6 6. Nxg4 d5 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Kieseritsky, Berlin defence, 6.Bc4"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ne5 Nf6 6. Bc4 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Kieseritsky, Rice gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ne5 Nf6 6. Bc4 d5 7. exd5 Bd6 8.
+O-O *
+
+[ECO "C40"]
+[Opening "King's knight opening"]
+
+1. e4 e5 2. Nf3 *
+
+[ECO "C40"]
+[Opening "Gunderam defence"]
+
+1. e4 e5 2. Nf3 Qe7 *
+
+[ECO "C40"]
+[Opening "Greco defence"]
+
+1. e4 e5 2. Nf3 Qf6 *
+
+[ECO "C40"]
+[Opening "Damiano's defence"]
+
+1. e4 e5 2. Nf3 f6 *
+
+[ECO "C40"]
+[Opening "QP counter-gambit (elephant gambit)"]
+
+1. e4 e5 2. Nf3 d5 *
+
+[ECO "C40"]
+[Opening "QP counter-gambit"]
+[Variation "Maroczy gambit"]
+
+1. e4 e5 2. Nf3 d5 3. exd5 Bd6 *
+
+[ECO "C40"]
+[Opening "Latvian counter-gambit"]
+
+1. e4 e5 2. Nf3 f5 *
+
+[ECO "C40"]
+[Opening "Latvian"]
+[Variation "Nimzovich variation"]
+
+1. e4 e5 2. Nf3 f5 3. Nxe5 Qf6 4. d4 d6 5. Nc4 fxe4 6. Ne3 *
+
+[ECO "C40"]
+[Opening "Latvian"]
+[Variation "Fraser defence"]
+
+1. e4 e5 2. Nf3 f5 3. Nxe5 Nc6 *
+
+[ECO "C40"]
+[Opening "Latvian gambit, 3.Bc4"]
+
+1. e4 e5 2. Nf3 f5 3. Bc4 *
+
+[ECO "C40"]
+[Opening "Latvian"]
+[Variation "Behting variation"]
+
+1. e4 e5 2. Nf3 f5 3. Bc4 fxe4 4. Nxe5 Qg5 5. Nf7 Qxg2 6. Rf1 d5 7. Nxh8 
+Nf6 *
+
+[ECO "C40"]
+[Opening "Latvian"]
+[Variation "Polerio variation"]
+
+1. e4 e5 2. Nf3 f5 3. Bc4 fxe4 4. Nxe5 d5 *
+
+[ECO "C40"]
+[Opening "Latvian"]
+[Variation "corkscrew counter-gambit"]
+
+1. e4 e5 2. Nf3 f5 3. Bc4 fxe4 4. Nxe5 Nf6 *
+
+[ECO "C41"]
+[Opening "Philidor's defence"]
+
+1. e4 e5 2. Nf3 d6 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Steinitz variation"]
+
+1. e4 e5 2. Nf3 d6 3. Bc4 Be7 4. c3 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Lopez counter-gambit"]
+
+1. e4 e5 2. Nf3 d6 3. Bc4 f5 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Lopez counter-gambit, Jaenisch variation"]
+
+1. e4 e5 2. Nf3 d6 3. Bc4 f5 4. d4 exd4 5. Ng5 Nh6 6. Nxh7 *
+
+[ECO "C41"]
+[Opening "Philidor's defence"]
+
+1. e4 e5 2. Nf3 d6 3. d4 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Philidor counter-gambit"]
+
+1. e4 e5 2. Nf3 d6 3. d4 f5 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Philidor counter-gambit, del Rio attack"]
+
+1. e4 e5 2. Nf3 d6 3. d4 f5 4. dxe5 fxe4 5. Ng5 d5 6. e6 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Philidor counter-gambit, Berger variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 f5 4. dxe5 fxe4 5. Ng5 d5 6. e6 Bc5 7. Nc3 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Philidor counter-gambit, Zukertort variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 f5 4. Nc3 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "exchange variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 exd4 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Boden variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 exd4 4. Qxd4 Bd7 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "exchange variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 exd4 4. Nxd4 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Paulsen attack"]
+
+1. e4 e5 2. Nf3 d6 3. d4 exd4 4. Nxd4 d5 5. exd5 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "exchange variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 exd4 4. Nxd4 Nf6 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Berger variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 exd4 4. Nxd4 Nf6 5. Nc3 Be7 6. Be2 O-O 7. O-O c5 
+8. Nf3 Nc6 9. Bg5 Be6 10. Re1 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Larsen variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 exd4 4. Nxd4 g6 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Nimzovich (Jaenisch) variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Nf6 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Improved Hanham variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Nf6 4. Nc3 Nbd7 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Nimzovich, Sozin variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Nf6 4. Nc3 Nbd7 5. Bc4 Be7 6. O-O O-O 7. Qe2 c6 8.
+a4 exd4 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Nimzovich, Larobok variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Nf6 4. Nc3 Nbd7 5. Bc4 Be7 6. Ng5 O-O 7. Bxf7+ *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Nimzovich variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Nf6 4. dxe5 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Nimzovich, Sokolsky variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Nf6 4. dxe5 Nxe4 5. Nbd2 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Nimzovich, Rellstab variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Nf6 4. dxe5 Nxe4 5. Qd5 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Nimzovich, Locock variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Nf6 4. Ng5 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Nimzovich, Klein variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Nf6 4. Bc4 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Hanham variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Nd7 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Hanham, Krause variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Nd7 4. Bc4 c6 5. O-O *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Hanham, Steiner variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Nd7 4. Bc4 c6 5. O-O Be7 6. dxe5 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Hanham, Kmoch variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Nd7 4. Bc4 c6 5. Ng5 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Hanham, Berger variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Nd7 4. Bc4 c6 5. Ng5 Nh6 6. f4 Be7 7. O-O O-O 8. 
+c3 d5 *
+

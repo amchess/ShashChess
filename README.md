@@ -110,45 +110,6 @@ In ms, the default value seems to be the best on Linux systems, but must be incr
 _Default 84, min 10, max 1000_
  "Time usage percent": how much the engine thinks on a move. Many engines seem to move faster and the engine is behind in time clock. With lower values it plays faster, with higher values slower - of course always within the time control.
 
-### Handicap mode
-
-#### UCI_LimitStrength
-
-Activate the handicap mode and the related following options: in this case, the evaluation function is always the classical one.
-
-#### UCI_Elo (CB only for chessbase products users)
-
-_Default 2850, min 1350, max 2850_
-UCI-protocol compliant version of Strength parameter.
-A very refined handicap mode based on the four famous sovietic chess school levels:
-Internally the UCI_Elo value will be converted to a Strength value according to the following table:
-
-- _beginner: elo < 2000_
-- _intermediate: 2000 <= elo < 2200_
-- _advanced: 2200 <= elo < 2400_
-- _expert: elo > 2400_
-
-Every school corresponds to a different evaluation function, more and more refined.
-The UCI_Elo feature is controlled by the chess GUI, and usually doesn't appear in the configuration
-window.
-
-#### Handicapped Depth
-The engine stop calculating when it joins the handicapped depth, based on the following table:
-
-Elo range     | Handicapped Depth |
-| ----------- | ----------------- |
-| [0,1999]    | [1,6]             |
-| [2000,2199] | [7,9]             |
-| [2200,2399] | [10,12]           |
-| [2400,3190] | [13,20]           |
-
-#### Handicapped avatar player
-If enabled, the engine not only simulates the thought process of a player of a certain level but also the mistakes he can make. These mistakes become more frequent the lower the player's Elo rating. This is the handicap mode implemented by Stockfish, but when combined with the previous options that simulate a player's thinking system, it truly approximates a "human avatar".
-
-#### Avatar File
-A file in .avt format with the profile of a player. You can edit this file containing the weigths of Stockfish classical eval terms, from 0 to 100, but with a private tool,
-we can generate those values to simulate a real player.
-
 ### Sygyzy End Game table bases
 
 Download at [http://olympuschess.com/egtb/sbases](http://olympuschess.com/egtb/sbases) (by Ronald De Man)
@@ -263,11 +224,6 @@ _Boolean, Default: False_
 Set this option to true when running under CuteChess and you experiences problems with concurrency > 1
 When this option is true, the saved experience file name will be modified to something like experience-64a4c665c57504a4.bin
 (64a4c665c57504a4 is random). Each concurrent instance of BrainLearn will have its own experience file name, however, all the concurrent instances will read "experience.bin" at start up.
-
-  * #### Use NNUE
-    Toggle between the NNUE and classical evaluation functions. If set to "true",
-    the network parameters must be available to load from file (see also EvalFile),
-    if they are not embedded in the binary.
 
 ### Persisted learning
 
@@ -387,10 +343,8 @@ Cute Chess, eboard, Arena, Sigma Chess, Shredder, Chess Partner or Fritz) in ord
 to be used comfortably. Read the documentation for your GUI of choice for information
 about how to use Stockfish with it.
 
-The Stockfish engine features two evaluation functions for chess, the classical
-evaluation based on handcrafted terms, and the NNUE evaluation based on efficiently
-updateable neural networks. The classical evaluation runs efficiently on almost all
-CPU architectures, while the NNUE evaluation benefits from the vector
+The Stockfish engine features the NNUE evaluation based on efficiently
+updateable neural networks. The NNUE evaluation benefits from the vector
 intrinsics available on most CPUs (sse2, avx2, neon, or similar).
 
 
@@ -491,14 +445,6 @@ Currently, Stockfish has the following UCI options:
     Limit Syzygy tablebase probing to positions with at most this many pieces left
     (including kings and pawns).
 
-  * #### Contempt
-    A positive value for contempt favors middle game positions and avoids draws,
-    effective for the classical evaluation only.
-
-  * #### Analysis Contempt
-    By default, contempt is set to prefer the side to move. Set this option to "White"
-    or "Black" to analyse with contempt for that side, or "Off" to disable contempt.
-
   * #### Move Overhead
     Assume a time delay of x ms due to network and GUI overheads. This is useful to
     avoid losses on time in those cases.
@@ -520,11 +466,8 @@ Currently, Stockfish has the following UCI options:
   * #### Debug Log File
     Write all communication to and from the engine into a text file.
 
-## A note on classical and NNUE evaluation
+## A note on the NNUE evaluation
 
-Both approaches assign a value to a position that is used in alpha-beta (PVS) search
-to find the best move. The classical evaluation computes this value as a function
-of various chess concepts, handcrafted by experts, tested and tuned using fishtest.
 The NNUE evaluation computes this value with a neural network based on basic
 inputs (e.g. piece positions only). The network is optimized and trained
 on the evaluations of millions of positions at moderate search depth.

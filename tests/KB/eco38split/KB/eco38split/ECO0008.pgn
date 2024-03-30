@@ -1,0 +1,309 @@
+[ECO "B06"]
+[Opening "Robatsch defence"]
+[Variation "two knights, Suttles variation"]
+
+1. e4 g6 2. d4 Bg7 3. Nc3 d6 4. Nf3 c6 *
+
+[ECO "B06"]
+[Opening "Robatsch defence"]
+[Variation "Pseudo-Austrian attack"]
+
+1. e4 g6 2. d4 Bg7 3. Nc3 d6 4. f4 *
+
+[ECO "B07"]
+[Opening "Pirc defence"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 *
+
+[ECO "B07"]
+[Opening "Pirc"]
+[Variation "Ufimtsev-Pytel variation"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 c6 *
+
+[ECO "B07"]
+[Opening "Pirc defence"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 *
+
+[ECO "B07"]
+[Opening "Pirc"]
+[Variation "150 attack"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Be3 c6 5. Qd2 *
+
+[ECO "B07"]
+[Opening "Pirc"]
+[Variation "Sveshnikov system"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. g3 *
+
+[ECO "B07"]
+[Opening "Pirc"]
+[Variation "Holmov system"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Bc4 *
+
+[ECO "B07"]
+[Opening "Pirc"]
+[Variation "Byrne variation"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Bg5 *
+
+[ECO "B07"]
+[Opening "Pirc defence"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Be2 *
+
+[ECO "B07"]
+[Opening "Pirc"]
+[Variation "Chinese variation"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Be2 Bg7 5. g4 *
+
+[ECO "B07"]
+[Opening "Pirc"]
+[Variation "bayonet (Mariotti) attack"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Be2 Bg7 5. h4 *
+
+[ECO "B07"]
+[Opening "Robatsch defence"]
+[Variation "Geller's system"]
+
+1. e4 g6 2. d4 Bg7 3. Nf3 d6 4. c3 *
+
+[ECO "B08"]
+[Opening "Pirc"]
+[Variation "classical (two knights) system"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Nf3 *
+
+[ECO "B08"]
+[Opening "Pirc"]
+[Variation "classical (two knights) system"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Nf3 Bg7 *
+
+[ECO "B08"]
+[Opening "Pirc"]
+[Variation "classical, h3 system"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Nf3 Bg7 5. h3 *
+
+[ECO "B08"]
+[Opening "Pirc"]
+[Variation "classical system, 5.Be2"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Nf3 Bg7 5. Be2 *
+
+[ECO "B09"]
+[Opening "Pirc"]
+[Variation "Austrian attack"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. f4 *
+
+[ECO "B09"]
+[Opening "Pirc"]
+[Variation "Austrian attack"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. f4 Bg7 5. Nf3 O-O *
+
+[ECO "B09"]
+[Opening "Pirc"]
+[Variation "Austrian attack, 6.e5"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. f4 Bg7 5. Nf3 O-O 6. e5 *
+
+[ECO "B09"]
+[Opening "Pirc"]
+[Variation "Austrian attack, 6.Be3"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. f4 Bg7 5. Nf3 O-O 6. Be3 *
+
+[ECO "B09"]
+[Opening "Pirc"]
+[Variation "Austrian attack, 6.Bd3"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. f4 Bg7 5. Nf3 O-O 6. Bd3 *
+
+[ECO "B09"]
+[Opening "Pirc"]
+[Variation "Austrian attack, dragon formation"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. f4 Bg7 5. Nf3 c5 *
+
+[ECO "B09"]
+[Opening "Pirc"]
+[Variation "Austrian attack, Ljubojevic variation"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. f4 Bg7 5. Bc4 *
+
+[ECO "B10"]
+[Opening "Caro-Kann defence"]
+
+1. e4 c6 *
+
+[ECO "B10"]
+[Opening "Caro-Kann"]
+[Variation "Hillbilly attack"]
+
+1. e4 c6 2. Bc4 *
+
+[ECO "B10"]
+[Opening "Caro-Kann"]
+[Variation "anti-Caro-Kann defence"]
+
+1. e4 c6 2. c4 *
+
+[ECO "B10"]
+[Opening "Caro-Kann"]
+[Variation "anti-anti-Caro-Kann defence"]
+
+1. e4 c6 2. c4 d5 *
+
+[ECO "B10"]
+[Opening "Caro-Kann"]
+[Variation "closed (Breyer) variation"]
+
+1. e4 c6 2. d3 *
+
+[ECO "B10"]
+[Opening "Caro-Kann defence"]
+
+1. e4 c6 2. Nc3 *
+
+[ECO "B10"]
+[Opening "Caro-Kann"]
+[Variation "Goldman (Spielmann) variation"]
+
+1. e4 c6 2. Nc3 d5 3. Qf3 *
+
+[ECO "B10"]
+[Opening "Caro-Kann"]
+[Variation "two knights variation"]
+
+1. e4 c6 2. Nc3 d5 3. Nf3 *
+
+[ECO "B11"]
+[Opening "Caro-Kann"]
+[Variation "two knights, 3...Bg4"]
+
+1. e4 c6 2. Nc3 d5 3. Nf3 Bg4 *
+
+[ECO "B12"]
+[Opening "Caro-Kann defence"]
+
+1. e4 c6 2. d4 *
+
+[ECO "B12"]
+[Opening "de Bruycker defence"]
+
+1. e4 c6 2. d4 Na6 3. Nc3 Nc7 *
+
+[ECO "B12"]
+[Opening "Caro-Masi defence"]
+
+1. e4 c6 2. d4 Nf6 *
+
+[ECO "B12"]
+[Opening "Caro-Kann defence"]
+
+1. e4 c6 2. d4 d5 *
+
+[ECO "B12"]
+[Opening "Caro-Kann"]
+[Variation "Tartakower (fantasy) variation"]
+
+1. e4 c6 2. d4 d5 3. f3 *
+
+[ECO "B12"]
+[Opening "Caro-Kann"]
+[Variation "3.Nd2"]
+
+1. e4 c6 2. d4 d5 3. Nd2 *
+
+[ECO "B12"]
+[Opening "Caro-Kann"]
+[Variation "Edinburgh variation"]
+
+1. e4 c6 2. d4 d5 3. Nd2 Qb6 *
+
+[ECO "B12"]
+[Opening "Caro-Kann"]
+[Variation "advance variation"]
+
+1. e4 c6 2. d4 d5 3. e5 *
+
+[ECO "B12"]
+[Opening "Caro-Kann"]
+[Variation "advance, Short variation"]
+
+1. e4 c6 2. d4 d5 3. e5 Bf5 4. c3 e6 5. Be2 *
+
+[ECO "B13"]
+[Opening "Caro-Kann"]
+[Variation "exchange variation"]
+
+1. e4 c6 2. d4 d5 3. exd5 *
+
+[ECO "B13"]
+[Opening "Caro-Kann"]
+[Variation "exchange, Rubinstein variation"]
+
+1. e4 c6 2. d4 d5 3. exd5 cxd5 4. Bd3 Nc6 5. c3 Nf6 6. Bf4 *
+
+[ECO "B13"]
+[Opening "Caro-Kann"]
+[Variation "Panov-Botvinnik attack"]
+
+1. e4 c6 2. d4 d5 3. exd5 cxd5 4. c4 *
+
+[ECO "B13"]
+[Opening "Caro-Kann"]
+[Variation "Panov-Botvinnik, Gunderam attack"]
+
+1. e4 c6 2. d4 d5 3. exd5 cxd5 4. c4 Nf6 5. c5 *
+
+[ECO "B13"]
+[Opening "Caro-Kann"]
+[Variation "Panov-Botvinnik attack"]
+
+1. e4 c6 2. d4 d5 3. exd5 cxd5 4. c4 Nf6 5. Nc3 *
+
+[ECO "B13"]
+[Opening "Caro-Kann"]
+[Variation "Panov-Botvinnik, Herzog defence"]
+
+1. e4 c6 2. d4 d5 3. exd5 cxd5 4. c4 Nf6 5. Nc3 Nc6 6. Bg5 dxc4 7. d5 Na5 *
+
+[ECO "B13"]
+[Opening "Caro-Kann"]
+[Variation "Panov-Botvinnik, normal variation"]
+
+1. e4 c6 2. d4 d5 3. exd5 cxd5 4. c4 Nf6 5. Nc3 Nc6 6. Bg5 e6 *
+
+[ECO "B13"]
+[Opening "Caro-Kann"]
+[Variation "Panov-Botvinnik, Czerniak variation"]
+
+1. e4 c6 2. d4 d5 3. exd5 cxd5 4. c4 Nf6 5. Nc3 Nc6 6. Bg5 Qa5 *
+
+[ECO "B13"]
+[Opening "Caro-Kann"]
+[Variation "Panov-Botvinnik, Reifir (Spielmann) variation"]
+
+1. e4 c6 2. d4 d5 3. exd5 cxd5 4. c4 Nf6 5. Nc3 Nc6 6. Bg5 Qb6 *
+
+[ECO "B14"]
+[Opening "Caro-Kann"]
+[Variation "Panov-Botvinnik attack, 5...e6"]
+
+1. e4 c6 2. d4 d5 3. exd5 cxd5 4. c4 Nf6 5. Nc3 e6 *
+
+[ECO "B14"]
+[Opening "Caro-Kann"]
+[Variation "Panov-Botvinnik attack, 5...g6"]
+
+1. e4 c6 2. d4 d5 3. exd5 cxd5 4. c4 Nf6 5. Nc3 g6 *
+

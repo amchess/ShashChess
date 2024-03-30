@@ -1,0 +1,339 @@
+[ECO "D51"]
+[Opening "QGD"]
+[Variation "4.Bg5 Nbd7"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Nbd7 *
+
+[ECO "D51"]
+[Opening "QGD"]
+[Variation "Rochlin variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Nbd7 5. Nf3 c6 6. Rc1 Qa5 7. Bd2 *
+
+[ECO "D51"]
+[Opening "QGD"]
+[Variation "Alekhine variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Nbd7 5. Nf3 c6 6. e4 *
+
+[ECO "D51"]
+[Opening "QGD"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Nbd7 5. e3 *
+
+[ECO "D51"]
+[Opening "QGD"]
+[Variation "Manhattan variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Nbd7 5. e3 Bb4 *
+
+[ECO "D51"]
+[Opening "QGD"]
+[Variation "5...c6"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Nbd7 5. e3 c6 *
+
+[ECO "D51"]
+[Opening "QGD"]
+[Variation "Capablanca anti-Cambridge Springs variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Nbd7 5. e3 c6 6. a3 *
+
+[ECO "D52"]
+[Opening "QGD"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Nbd7 5. e3 c6 6. Nf3 *
+
+[ECO "D52"]
+[Opening "QGD"]
+[Variation "Cambridge Springs defence"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Nbd7 5. e3 c6 6. Nf3 Qa5 *
+
+[ECO "D52"]
+[Opening "QGD"]
+[Variation "Cambridge Springs defence, Bogoljubow variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Nbd7 5. e3 c6 6. Nf3 Qa5 7. Nd2 Bb4 8.
+Qc2 *
+
+[ECO "D52"]
+[Opening "QGD"]
+[Variation "Cambridge Springs defence, Argentine variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Nbd7 5. e3 c6 6. Nf3 Qa5 7. Nd2 Bb4 8.
+Qc2 O-O 9. Bh4 *
+
+[ECO "D52"]
+[Opening "QGD"]
+[Variation "Cambridge Springs defence, Rubinstein variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Nbd7 5. e3 c6 6. Nf3 Qa5 7. Nd2 dxc4 *
+
+[ECO "D52"]
+[Opening "QGD"]
+[Variation "Cambridge Springs defence, Capablanca variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Nbd7 5. e3 c6 6. Nf3 Qa5 7. Bxf6 *
+
+[ECO "D52"]
+[Opening "QGD"]
+[Variation "Cambridge Springs defence, 7.cd"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Nbd7 5. e3 c6 6. Nf3 Qa5 7. cxd5 *
+
+[ECO "D52"]
+[Opening "QGD"]
+[Variation "Cambridge Springs defence, Yugoslav variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Nbd7 5. e3 c6 6. Nf3 Qa5 7. cxd5 Nxd5 *
+
+[ECO "D53"]
+[Opening "QGD"]
+[Variation "4.Bg5 Be7"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 *
+
+[ECO "D53"]
+[Opening "QGD"]
+[Variation "Lasker variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 Ne4 *
+
+[ECO "D53"]
+[Opening "QGD"]
+[Variation "4.Bg5 Be7, 5.e3 O-O"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O *
+
+[ECO "D54"]
+[Opening "QGD"]
+[Variation "Anti-neo-orthodox variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Rc1 *
+
+[ECO "D55"]
+[Opening "QGD"]
+[Variation "6.Nf3"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 *
+
+[ECO "D55"]
+[Opening "QGD"]
+[Variation "Pillsbury attack"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 b6 7. Bd3 Bb7 8. 
+cxd5 exd5 9. Ne5 *
+
+[ECO "D55"]
+[Opening "QGD"]
+[Variation "Neo-orthodox variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 h6 *
+
+[ECO "D55"]
+[Opening "QGD"]
+[Variation "Neo-orthodox variation, 7.Bxf6"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 h6 7. Bxf6 *
+
+[ECO "D55"]
+[Opening "QGD"]
+[Variation "Petrosian variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 h6 7. Bxf6 Bxf6 8.
+Rc1 c6 9. Bd3 Nd7 10. O-O dxc4 11. Bxc4 *
+
+[ECO "D55"]
+[Opening "QGD"]
+[Variation "Neo-orthodox variation, 7.Bh4"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 h6 7. Bh4 *
+
+[ECO "D56"]
+[Opening "QGD"]
+[Variation "Lasker defence"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 h6 7. Bh4 Ne4 *
+
+[ECO "D56"]
+[Opening "QGD"]
+[Variation "Lasker defence, Teichmann variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 h6 7. Bh4 Ne4 8. 
+Bxe7 Qxe7 9. Qc2 *
+
+[ECO "D56"]
+[Opening "QGD"]
+[Variation "Lasker defence, Russian variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 h6 7. Bh4 Ne4 8. 
+Bxe7 Qxe7 9. Qc2 Nf6 10. Bd3 dxc4 11. Bxc4 c5 12. O-O Nc6 13. Rfd1 Bd7 *
+
+[ECO "D57"]
+[Opening "QGD"]
+[Variation "Lasker defence, main line"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 h6 7. Bh4 Ne4 8. 
+Bxe7 Qxe7 9. cxd5 Nxc3 10. bxc3 *
+
+[ECO "D57"]
+[Opening "QGD"]
+[Variation "Lasker defence, Bernstein variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 h6 7. Bh4 Ne4 8. 
+Bxe7 Qxe7 9. cxd5 Nxc3 10. bxc3 exd5 11. Qb3 Qd6 *
+
+[ECO "D58"]
+[Opening "QGD"]
+[Variation "Tartakower (Makagonov-Bondarevsky) system"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 h6 7. Bh4 b6 *
+
+[ECO "D59"]
+[Opening "QGD"]
+[Variation "Tartakower (Makagonov-Bondarevsky) system, 8.cd Nxd5"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 h6 7. Bh4 b6 8. 
+cxd5 Nxd5 *
+
+[ECO "D59"]
+[Opening "QGD"]
+[Variation "Tartakower variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 h6 7. Bh4 b6 8. 
+cxd5 Nxd5 9. Bxe7 Qxe7 10. Nxd5 exd5 11. Rc1 Be6 *
+
+[ECO "D60"]
+[Opening "QGD"]
+[Variation "Orthodox defence"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 *
+
+[ECO "D60"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Botvinnik variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Bd3 *
+
+[ECO "D60"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Rauzer variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Qb3 *
+
+[ECO "D61"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Rubinstein variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Qc2 *
+
+[ECO "D62"]
+[Opening "QGD"]
+[Variation "Orthodox defence, 7.Qc2 c5, 8.cd (Rubinstein)"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Qc2 c5 8.
+cxd5 *
+
+[ECO "D63"]
+[Opening "QGD"]
+[Variation "Orthodox defence, 7.Rc1"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 *
+
+[ECO "D63"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Pillsbury attack"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 b6 8.
+cxd5 exd5 9. Bd3 *
+
+[ECO "D63"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Capablanca variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 b6 8.
+cxd5 exd5 9. Bb5 *
+
+[ECO "D63"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Swiss (Henneberger) variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 a6 *
+
+[ECO "D63"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Swiss, Karlsbad variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 a6 8.
+cxd5 *
+
+[ECO "D63"]
+[Opening "QGD"]
+[Variation "Orthodox defence"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 c6 *
+
+[ECO "D64"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Rubinstein attack (with Rc1)"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 c6 8.
+Qc2 *
+
+[ECO "D64"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Rubinstein attack, Wolf variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 c6 8.
+Qc2 Ne4 *
+
+[ECO "D64"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Rubinstein attack, Karlsbad variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 c6 8.
+Qc2 a6 *
+
+[ECO "D64"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Rubinstein attack, Gruenfeld variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 c6 8.
+Qc2 a6 9. a3 *
+
+[ECO "D65"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Rubinstein attack, main line"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 c6 8.
+Qc2 a6 9. cxd5 *
+
+[ECO "D66"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Bd3 line"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 c6 8.
+Bd3 *
+
+[ECO "D66"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Bd3 line, fianchetto variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 c6 8.
+Bd3 dxc4 9. Bxc4 b5 *
+
+[ECO "D67"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Bd3 line, Capablanca freeing manoevre"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 c6 8.
+Bd3 dxc4 9. Bxc4 Nd5 *
+
+[ECO "D67"]
+[Opening "QGD"]
+[Variation "Orthodox defence, Bd3 line, Janowski variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 Nbd7 7. Rc1 c6 8.
+Bd3 dxc4 9. Bxc4 Nd5 10. h4 *
+

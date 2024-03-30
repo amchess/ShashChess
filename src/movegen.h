@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2023 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,11 +19,12 @@
 #ifndef MOVEGEN_H_INCLUDED
 #define MOVEGEN_H_INCLUDED
 
-#include <algorithm>
+#include <algorithm>  // IWYU pragma: keep
+#include <cstddef>
 
 #include "types.h"
 
-namespace Stockfish {
+namespace ShashChess {
 
 class Position;
 
@@ -36,12 +37,10 @@ enum GenType {
     LEGAL
 };
 
-struct ExtMove {
-    Move move;
-    int  value;
+struct ExtMove: public Move {
+    int value;
 
-    operator Move() const { return move; }
-    void operator=(Move m) { move = m; }
+    void operator=(Move m) { data = m.raw(); }
 
     // Inhibit unwanted implicit conversions to Move
     // with an ambiguity that yields to a compile error.
@@ -53,8 +52,9 @@ inline bool operator<(const ExtMove& f, const ExtMove& s) { return f.value < s.v
 template<GenType>
 ExtMove* generate(const Position& pos, ExtMove* moveList);
 
-/// The MoveList struct is a simple wrapper around generate(). It sometimes comes
-/// in handy to use this class instead of the low level generate() function.
+// The MoveList struct wraps the generate() function and returns a convenient
+// list of moves. Using MoveList is sometimes preferable to directly calling
+// the lower level generate() function.
 template<GenType T>
 struct MoveList {
 
@@ -69,6 +69,6 @@ struct MoveList {
     ExtMove moveList[MAX_MOVES], *last;
 };
 
-}  // namespace Stockfish
+}  // namespace ShashChess
 
 #endif  // #ifndef MOVEGEN_H_INCLUDED

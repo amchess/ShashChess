@@ -1,0 +1,299 @@
+[ECO "A32"]
+[Opening "English"]
+[Variation "symmetrical variation"]
+
+1. c4 c5 2. Nf3 Nf6 3. d4 cxd4 4. Nxd4 e6 *
+
+[ECO "A33"]
+[Opening "English"]
+[Variation "symmetrical variation"]
+
+1. c4 c5 2. Nf3 Nf6 3. d4 cxd4 4. Nxd4 e6 5. Nc3 Nc6 *
+
+[ECO "A33"]
+[Opening "English"]
+[Variation "symmetrical, Geller variation"]
+
+1. c4 c5 2. Nf3 Nf6 3. d4 cxd4 4. Nxd4 e6 5. Nc3 Nc6 6. g3 Qb6 *
+
+[ECO "A34"]
+[Opening "English"]
+[Variation "symmetrical variation"]
+
+1. c4 c5 2. Nc3 *
+
+[ECO "A34"]
+[Opening "English"]
+[Variation "symmetrical, three knights system"]
+
+1. c4 c5 2. Nc3 Nf6 3. Nf3 d5 4. cxd5 Nxd5 *
+
+[ECO "A34"]
+[Opening "English"]
+[Variation "symmetrical variation"]
+
+1. c4 c5 2. Nc3 Nf6 3. g3 *
+
+[ECO "A34"]
+[Opening "English"]
+[Variation "symmetrical, Rubinstein system"]
+
+1. c4 c5 2. Nc3 Nf6 3. g3 d5 4. cxd5 Nxd5 5. Bg2 Nc7 *
+
+[ECO "A35"]
+[Opening "English"]
+[Variation "symmetrical variation"]
+
+1. c4 c5 2. Nc3 Nc6 *
+
+[ECO "A35"]
+[Opening "English"]
+[Variation "symmetrical, four knights system"]
+
+1. c4 c5 2. Nc3 Nc6 3. Nf3 Nf6 *
+
+[ECO "A36"]
+[Opening "English"]
+[Variation "symmetrical variation"]
+
+1. c4 c5 2. Nc3 Nc6 3. g3 *
+
+[ECO "A36"]
+[Opening "English"]
+[Variation "ultra-symmetrical variation"]
+
+1. c4 c5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 *
+
+[ECO "A36"]
+[Opening "English"]
+[Variation "symmetrical, Botvinnik system reversed"]
+
+1. c4 c5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 5. e3 e5 *
+
+[ECO "A36"]
+[Opening "English"]
+[Variation "symmetrical, Botvinnik system"]
+
+1. c4 c5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 5. e4 *
+
+[ECO "A37"]
+[Opening "English"]
+[Variation "symmetrical variation"]
+
+1. c4 c5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 5. Nf3 *
+
+[ECO "A37"]
+[Opening "English"]
+[Variation "symmetrical, Botvinnik system reversed"]
+
+1. c4 c5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 5. Nf3 e5 *
+
+[ECO "A38"]
+[Opening "English"]
+[Variation "symmetrical variation"]
+
+1. c4 c5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 5. Nf3 Nf6 *
+
+[ECO "A38"]
+[Opening "English"]
+[Variation "symmetrical, main line with d3"]
+
+1. c4 c5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 5. Nf3 Nf6 6. O-O O-O 7. d3 *
+
+[ECO "A38"]
+[Opening "English"]
+[Variation "symmetrical, main line with b3"]
+
+1. c4 c5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 5. Nf3 Nf6 6. O-O O-O 7. b3 *
+
+[ECO "A39"]
+[Opening "English"]
+[Variation "symmetrical, main line with d4"]
+
+1. c4 c5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 5. Nf3 Nf6 6. O-O O-O 7. d4 *
+
+[ECO "A40"]
+[Opening "Queen's pawn"]
+
+1. d4 *
+
+[ECO "A40"]
+[Opening "Queen's pawn"]
+[Variation "Lundin (Kevitz-Mikenas) defence"]
+
+1. d4 Nc6 *
+
+[ECO "A40"]
+[Opening "Queen's pawn"]
+[Variation "Charlick (Englund) gambit"]
+
+1. d4 e5 *
+
+[ECO "A40"]
+[Opening "Queen's pawn"]
+[Variation "Englund gambit"]
+
+1. d4 e5 2. dxe5 Nc6 3. Nf3 Qe7 4. Qd5 f6 5. exf6 Nxf6 *
+
+[ECO "A40"]
+[Opening "Queen's pawn"]
+[Variation "English defence"]
+
+1. d4 b6 *
+
+[ECO "A40"]
+[Opening "Polish defence"]
+
+1. d4 b5 *
+
+[ECO "A40"]
+[Opening "Queen's pawn"]
+
+1. d4 e6 *
+
+[ECO "A40"]
+[Opening "Queen's pawn"]
+[Variation "Keres defence"]
+
+1. d4 e6 2. c4 b6 *
+
+[ECO "A40"]
+[Opening "Queen's pawn"]
+[Variation "Franco-Indian (Keres) defence"]
+
+1. d4 e6 2. c4 Bb4+ *
+
+[ECO "A40"]
+[Opening "Modern defence"]
+
+1. d4 g6 *
+
+[ECO "A40"]
+[Opening "Beefeater defence"]
+
+1. d4 g6 2. c4 Bg7 3. Nc3 c5 4. d5 Bxc3+ 5. bxc3 f5 *
+
+[ECO "A41"]
+[Opening "Queen's Pawn"]
+
+1. d4 d6 *
+
+[ECO "A41"]
+[Opening "Old Indian"]
+[Variation "Tartakower (Wade) variation"]
+
+1. d4 d6 2. Nf3 Bg4 *
+
+[ECO "A41"]
+[Opening "Old Indian defence"]
+
+1. d4 d6 2. c4 *
+
+[ECO "A41"]
+[Opening "Modern defence"]
+
+1. d4 d6 2. c4 g6 3. Nc3 Bg7 *
+
+[ECO "A41"]
+[Opening "Robatsch defence"]
+[Variation "Rossolimo variation"]
+
+1. e4 g6 2. d4 Bg7 3. Nf3 d6 4. c4 Bg4 *
+
+[ECO "A42"]
+[Opening "Modern defence"]
+[Variation "Averbakh system"]
+
+1. d4 d6 2. c4 g6 3. Nc3 Bg7 4. e4 *
+
+[ECO "A42"]
+[Opening "Pterodactyl defence"]
+
+1. d4 d6 2. c4 g6 3. Nc3 Bg7 4. e4 c5 5. Nf3 Qa5 *
+
+[ECO "A42"]
+[Opening "Modern defence"]
+[Variation "Averbakh system, Randspringer variation"]
+
+1. d4 d6 2. c4 g6 3. Nc3 Bg7 4. e4 f5 *
+
+[ECO "A42"]
+[Opening "Modern defence"]
+[Variation "Averbakh system, Kotov variation"]
+
+1. d4 d6 2. c4 g6 3. Nc3 Bg7 4. e4 Nc6 *
+
+[ECO "A43"]
+[Opening "Old Benoni defence"]
+
+1. d4 c5 *
+
+[ECO "A43"]
+[Opening "Old Benoni"]
+[Variation "Franco-Benoni defence"]
+
+1. d4 c5 2. d5 e6 3. e4 *
+
+[ECO "A43"]
+[Opening "Old Benoni"]
+[Variation "Mujannah formation"]
+
+1. d4 c5 2. d5 f5 *
+
+[ECO "A43"]
+[Opening "Old Benoni defence"]
+
+1. d4 c5 2. d5 Nf6 *
+
+[ECO "A43"]
+[Opening "Woozle defence"]
+
+1. d4 c5 2. d5 Nf6 3. Nc3 Qa5 *
+
+[ECO "A43"]
+[Opening "Old Benoni defence"]
+
+1. d4 c5 2. d5 Nf6 3. Nf3 *
+
+[ECO "A43"]
+[Opening "Hawk (Habichd) defence"]
+
+1. d4 c5 2. d5 Nf6 3. Nf3 c4 *
+
+[ECO "A43"]
+[Opening "Old Benoni defence"]
+
+1. d4 c5 2. d5 d6 *
+
+[ECO "A43"]
+[Opening "Old Benoni"]
+[Variation "Schmid's system"]
+
+1. d4 c5 2. d5 d6 3. Nc3 g6 *
+
+[ECO "A44"]
+[Opening "Old Benoni defence"]
+
+1. d4 c5 2. d5 e5 *
+
+[ECO "A44"]
+[Opening "Semi-Benoni (`blockade variation')"]
+
+1. d4 c5 2. d5 e5 3. e4 d6 *
+
+[ECO "A45"]
+[Opening "Queen's pawn game"]
+
+1. d4 Nf6 *
+
+[ECO "A45"]
+[Opening "Queen's pawn"]
+[Variation "Bronstein gambit"]
+
+1. d4 Nf6 2. g4 *
+
+[ECO "A45"]
+[Opening "Canard opening"]
+
+1. d4 Nf6 2. f4 *
+

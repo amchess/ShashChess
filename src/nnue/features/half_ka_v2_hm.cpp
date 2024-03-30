@@ -1,13 +1,13 @@
 /*
-  Stockfish, a UCI chess playing engine derived from Glaurung 2.1
-  Copyright (C) 2004-2023 The Stockfish developers (see AUTHORS file)
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2024 The ShashChess developers (see AUTHORS file)
 
-  Stockfish is free software: you can redistribute it and/or modify
+  ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Stockfish is distributed in the hope that it will be useful,
+  ShashChess is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -20,9 +20,12 @@
 
 #include "half_ka_v2_hm.h"
 
+#include "../../bitboard.h"
 #include "../../position.h"
+#include "../../types.h"
+#include "../nnue_common.h"
 
-namespace Stockfish::Eval::NNUE::Features {
+namespace ShashChess::Eval::NNUE::Features {
 
 // Index of a feature for a given king position and another piece on some square
 template<Color Perspective>
@@ -47,7 +50,7 @@ void HalfKAv2_hm::append_active_indices(const Position& pos, IndexList& active) 
 template void HalfKAv2_hm::append_active_indices<WHITE>(const Position& pos, IndexList& active);
 template void HalfKAv2_hm::append_active_indices<BLACK>(const Position& pos, IndexList& active);
 
-// append_changed_indices() : get a list of indices for recently changed features
+// Get a list of indices for recently changed features
 template<Color Perspective>
 void HalfKAv2_hm::append_changed_indices(Square            ksq,
                                          const DirtyPiece& dp,
@@ -80,4 +83,4 @@ bool HalfKAv2_hm::requires_refresh(const StateInfo* st, Color perspective) {
     return st->dirtyPiece.piece[0] == make_piece(perspective, KING);
 }
 
-}  // namespace Stockfish::Eval::NNUE::Features
+}  // namespace ShashChess::Eval::NNUE::Features

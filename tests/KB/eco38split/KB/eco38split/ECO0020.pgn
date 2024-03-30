@@ -1,0 +1,313 @@
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Hanham, Schlechter variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Nd7 4. Bc4 c6 5. Nc3 *
+
+[ECO "C41"]
+[Opening "Philidor"]
+[Variation "Hanham, Delmar variation"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Nd7 4. Bc4 c6 5. c3 *
+
+[ECO "C42"]
+[Opening "Petrov's defence"]
+
+1. e4 e5 2. Nf3 Nf6 *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "French attack"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d3 *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "Kaufmann attack"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. c4 *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "Nimzovich attack"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. Nc3 *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "Cozio (Lasker) attack"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. Qe2 *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "classical attack"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d4 *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "classical attack, Chigorin variation"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d4 d5 6. Bd3 Be7 7. O-O Nc6 
+8. Re1 *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "classical attack, Berger variation"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d4 d5 6. Bd3 Be7 7. O-O Nc6 
+8. Re1 Bg4 9. c3 f5 10. Nbd2 *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "classical attack, Krause variation"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d4 d5 6. Bd3 Be7 7. O-O Nc6 
+8. Re1 Bg4 9. c3 f5 10. c4 *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "classical attack, Maroczy variation"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d4 d5 6. Bd3 Be7 7. O-O Nc6 
+8. Re1 Bg4 9. c3 f5 10. c4 Bh4 *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "classical attack, Jaenisch variation"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d4 d5 6. Bd3 Be7 7. O-O Nc6 
+8. c4 *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "classical attack, Mason variation"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d4 d5 6. Bd3 Be7 7. O-O O-O *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "classical attack, Marshall variation"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d4 d5 6. Bd3 Bd6 *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "classical attack, Tarrasch variation"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d4 d5 6. Bd3 Bd6 7. O-O O-O 
+8. c4 Bg4 *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "classical attack, Marshall trap"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d4 d5 6. Bd3 Bd6 7. O-O O-O 
+8. c4 Bg4 9. cxd5 f5 10. Re1 Bxh2+ *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "classical attack, close variation"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d4 Nf6 *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "Cochrane gambit"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nxf7 *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "Paulsen attack"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nc4 *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "Damiano variation"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nxe4 *
+
+[ECO "C42"]
+[Opening "Petrov three knights game"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nc3 *
+
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "Italian variation"]
+
+1. e4 e5 2. Nf3 Nf6 3. Bc4 *
+
+[ECO "C43"]
+[Opening "Petrov"]
+[Variation "modern (Steinitz) attack"]
+
+1. e4 e5 2. Nf3 Nf6 3. d4 *
+
+[ECO "C43"]
+[Opening "Petrov"]
+[Variation "modern attack, main line"]
+
+1. e4 e5 2. Nf3 Nf6 3. d4 exd4 4. e5 Ne4 5. Qxd4 *
+
+[ECO "C43"]
+[Opening "Petrov"]
+[Variation "modern attack, Steinitz variation"]
+
+1. e4 e5 2. Nf3 Nf6 3. d4 exd4 4. e5 Ne4 5. Qe2 *
+
+[ECO "C43"]
+[Opening "Petrov"]
+[Variation "modern attack, Bardeleben variation"]
+
+1. e4 e5 2. Nf3 Nf6 3. d4 exd4 4. e5 Ne4 5. Qe2 Nc5 6. Nxd4 Nc6 *
+
+[ECO "C43"]
+[Opening "Petrov"]
+[Variation "Urusov gambit"]
+
+1. e4 e5 2. Nf3 Nf6 3. d4 exd4 4. Bc4 *
+
+[ECO "C43"]
+[Opening "Petrov"]
+[Variation "modern attack, Symmetrical variation"]
+
+1. e4 e5 2. Nf3 Nf6 3. d4 Nxe4 *
+
+[ECO "C43"]
+[Opening "Petrov"]
+[Variation "modern attack, Trifunovic variation"]
+
+1. e4 e5 2. Nf3 Nf6 3. d4 Nxe4 4. Bd3 d5 5. Nxe5 Bd6 6. O-O O-O 7. c4 Bxe5
+*
+
+[ECO "C44"]
+[Opening "King's pawn game"]
+
+1. e4 e5 2. Nf3 Nc6 *
+
+[ECO "C44"]
+[Opening "Irish (Chicago) gambit"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nxe5 Nxe5 4. d4 *
+
+[ECO "C44"]
+[Opening "Konstantinopolsky opening"]
+
+1. e4 e5 2. Nf3 Nc6 3. g3 *
+
+[ECO "C44"]
+[Opening "Dresden opening"]
+
+1. e4 e5 2. Nf3 Nc6 3. c4 *
+
+[ECO "C44"]
+[Opening "Inverted Hungarian"]
+
+1. e4 e5 2. Nf3 Nc6 3. Be2 *
+
+[ECO "C44"]
+[Opening "Inverted Hanham"]
+
+1. e4 e5 2. Nf3 Nc6 3. Be2 Nf6 4. d3 d5 5. Nbd2 *
+
+[ECO "C44"]
+[Opening "Tayler opening"]
+
+1. e4 e5 2. Nf3 Nc6 3. Be2 Nf6 4. d4 *
+
+[ECO "C44"]
+[Opening "Ponziani opening"]
+
+1. e4 e5 2. Nf3 Nc6 3. c3 *
+
+[ECO "C44"]
+[Opening "Ponziani"]
+[Variation "Caro variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. c3 d5 4. Qa4 Bd7 *
+
+[ECO "C44"]
+[Opening "Ponziani"]
+[Variation "Leonhardt variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. c3 d5 4. Qa4 Nf6 *
+
+[ECO "C44"]
+[Opening "Ponziani"]
+[Variation "Steinitz variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. c3 d5 4. Qa4 f6 *
+
+[ECO "C44"]
+[Opening "Ponziani"]
+[Variation "Jaenisch counter-attack"]
+
+1. e4 e5 2. Nf3 Nc6 3. c3 Nf6 *
+
+[ECO "C44"]
+[Opening "Ponziani"]
+[Variation "Fraser defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. c3 Nf6 4. d4 Nxe4 5. d5 Bc5 *
+
+[ECO "C44"]
+[Opening "Ponziani"]
+[Variation "Reti variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. c3 Nge7 *
+
+[ECO "C44"]
+[Opening "Ponziani"]
+[Variation "Romanishin variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. c3 Be7 *
+
+[ECO "C44"]
+[Opening "Ponziani counter-gambit"]
+
+1. e4 e5 2. Nf3 Nc6 3. c3 f5 *
+
+[ECO "C44"]
+[Opening "Ponziani counter-gambit, Schmidt attack"]
+
+1. e4 e5 2. Nf3 Nc6 3. c3 f5 4. d4 d6 5. d5 *
+
+[ECO "C44"]
+[Opening "Ponziani counter-gambit, Cordel variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. c3 f5 4. d4 d6 5. d5 fxe4 6. Ng5 Nb8 7. Nxe4 Nf6 8.
+Bd3 Be7 *
+
+[ECO "C44"]
+[Opening "Scotch opening"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 *
+
+[ECO "C44"]
+[Opening "Scotch"]
+[Variation "Lolli variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 Nxd4 *
+
+[ECO "C44"]
+[Opening "Scotch"]
+[Variation "Cochrane variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 Nxd4 4. Nxe5 Ne6 5. Bc4 c6 6. O-O Nf6 7. Nxf7 *
+
+[ECO "C44"]
+[Opening "Scotch"]
+[Variation "Relfsson gambit ('MacLopez')"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Bb5 *
+
+[ECO "C44"]
+[Opening "Scotch"]
+[Variation "Goering gambit"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. c3 *
+

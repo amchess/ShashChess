@@ -1,0 +1,310 @@
+[ECO "C25"]
+[Opening "Vienna game, Max Lange defence"]
+
+1. e4 e5 2. Nc3 Nc6 *
+
+[ECO "C25"]
+[Opening "Vienna"]
+[Variation "Paulsen variation"]
+
+1. e4 e5 2. Nc3 Nc6 3. g3 *
+
+[ECO "C25"]
+[Opening "Vienna"]
+[Variation "Fyfe gambit"]
+
+1. e4 e5 2. Nc3 Nc6 3. d4 *
+
+[ECO "C25"]
+[Opening "Vienna gambit"]
+
+1. e4 e5 2. Nc3 Nc6 3. f4 *
+
+[ECO "C25"]
+[Opening "Vienna"]
+[Variation "Steinitz gambit"]
+
+1. e4 e5 2. Nc3 Nc6 3. f4 exf4 4. d4 *
+
+[ECO "C25"]
+[Opening "Vienna"]
+[Variation "Steinitz gambit, Zukertort defence"]
+
+1. e4 e5 2. Nc3 Nc6 3. f4 exf4 4. d4 Qh4+ 5. Ke2 d5 *
+
+[ECO "C25"]
+[Opening "Vienna"]
+[Variation "Steinitz gambit, Fraser-Minckwitz variation"]
+
+1. e4 e5 2. Nc3 Nc6 3. f4 exf4 4. d4 Qh4+ 5. Ke2 b6 *
+
+[ECO "C25"]
+[Opening "Vienna gambit"]
+
+1. e4 e5 2. Nc3 Nc6 3. f4 exf4 4. Nf3 *
+
+[ECO "C25"]
+[Opening "Vienna"]
+[Variation "Hamppe-Allgaier gambit"]
+
+1. e4 e5 2. Nc3 Nc6 3. f4 exf4 4. Nf3 g5 5. h4 g4 6. Ng5 *
+
+[ECO "C25"]
+[Opening "Vienna"]
+[Variation "Hamppe-Allgaier gambit, Alapin variation"]
+
+1. e4 e5 2. Nc3 Nc6 3. f4 exf4 4. Nf3 g5 5. h4 g4 6. Ng5 d6 *
+
+[ECO "C25"]
+[Opening "Vienna"]
+[Variation "Hamppe-Muzio gambit"]
+
+1. e4 e5 2. Nc3 Nc6 3. f4 exf4 4. Nf3 g5 5. Bc4 g4 6. O-O *
+
+[ECO "C25"]
+[Opening "Vienna"]
+[Variation "Hamppe-Muzio, Dubois variation"]
+
+1. e4 e5 2. Nc3 Nc6 3. f4 exf4 4. Nf3 g5 5. Bc4 g4 6. O-O gxf3 7. Qxf3 Ne5
+8. Qxf4 Qf6 *
+
+[ECO "C25"]
+[Opening "Vienna"]
+[Variation "Pierce gambit"]
+
+1. e4 e5 2. Nc3 Nc6 3. f4 exf4 4. Nf3 g5 5. d4 *
+
+[ECO "C25"]
+[Opening "Vienna"]
+[Variation "Pierce gambit, Rushmere attack"]
+
+1. e4 e5 2. Nc3 Nc6 3. f4 exf4 4. Nf3 g5 5. d4 g4 6. Bc4 gxf3 7. O-O d5 8.
+exd5 Bg4 9. dxc6 *
+
+[ECO "C26"]
+[Opening "Vienna"]
+[Variation "Falkbeer variation"]
+
+1. e4 e5 2. Nc3 Nf6 *
+
+[ECO "C26"]
+[Opening "Vienna"]
+[Variation "Mengarini variation"]
+
+1. e4 e5 2. Nc3 Nf6 3. a3 *
+
+[ECO "C26"]
+[Opening "Vienna"]
+[Variation "Paulsen-Mieses variation"]
+
+1. e4 e5 2. Nc3 Nf6 3. g3 *
+
+[ECO "C26"]
+[Opening "Vienna game"]
+
+1. e4 e5 2. Nc3 Nf6 3. Bc4 *
+
+[ECO "C27"]
+[Opening "Vienna game"]
+
+1. e4 e5 2. Nc3 Nf6 3. Bc4 Nxe4 *
+
+[ECO "C27"]
+[Opening "Vienna"]
+[Variation "`Frankenstein-Dracula' variation"]
+
+1. e4 e5 2. Nc3 Nf6 3. Bc4 Nxe4 4. Qh5 Nd6 5. Bb3 Nc6 6. Nb5 g6 7. Qf3 f5 
+8. Qd5 Qe7 9. Nxc7+ Kd8 10. Nxa8 b6 *
+
+[ECO "C27"]
+[Opening "Vienna"]
+[Variation "Adams' gambit"]
+
+1. e4 e5 2. Nc3 Nf6 3. Bc4 Nxe4 4. Qh5 Nd6 5. Bb3 Nc6 6. d4 *
+
+[ECO "C27"]
+[Opening "Vienna game"]
+
+1. e4 e5 2. Nc3 Nf6 3. Bc4 Nxe4 4. Qh5 Nd6 5. Bb3 Be7 *
+
+[ECO "C27"]
+[Opening "Vienna"]
+[Variation "Alekhine variation"]
+
+1. e4 e5 2. Nc3 Nf6 3. Bc4 Nxe4 4. Qh5 Nd6 5. Bb3 Be7 6. Nf3 Nc6 7. Nxe5 *
+
+[ECO "C27"]
+[Opening "Boden-Kieseritsky gambit"]
+
+1. e4 e5 2. Nc3 Nf6 3. Bc4 Nxe4 4. Nf3 *
+
+[ECO "C27"]
+[Opening "Boden-Kieseritsky gambit"]
+[Variation "Lichtenhein defence"]
+
+1. e4 e5 2. Nc3 Nf6 3. Bc4 Nxe4 4. Nf3 d5 *
+
+[ECO "C28"]
+[Opening "Vienna game"]
+
+1. e4 e5 2. Nc3 Nf6 3. Bc4 Nc6 *
+
+[ECO "C29"]
+[Opening "Vienna gambit"]
+
+1. e4 e5 2. Nc3 Nf6 3. f4 d5 *
+
+[ECO "C29"]
+[Opening "Vienna gambit"]
+[Variation "Kaufmann variation"]
+
+1. e4 e5 2. Nc3 Nf6 3. f4 d5 4. fxe5 Nxe4 5. Nf3 Bg4 6. Qe2 *
+
+[ECO "C29"]
+[Opening "Vienna gambit"]
+[Variation "Breyer variation"]
+
+1. e4 e5 2. Nc3 Nf6 3. f4 d5 4. fxe5 Nxe4 5. Nf3 Be7 *
+
+[ECO "C29"]
+[Opening "Vienna gambit"]
+[Variation "Paulsen attack"]
+
+1. e4 e5 2. Nc3 Nf6 3. f4 d5 4. fxe5 Nxe4 5. Qf3 *
+
+[ECO "C29"]
+[Opening "Vienna gambit"]
+[Variation "Bardeleben variation"]
+
+1. e4 e5 2. Nc3 Nf6 3. f4 d5 4. fxe5 Nxe4 5. Qf3 f5 *
+
+[ECO "C29"]
+[Opening "Vienna gambit"]
+[Variation "Heyde variation"]
+
+1. e4 e5 2. Nc3 Nf6 3. f4 d5 4. fxe5 Nxe4 5. Qf3 f5 6. d4 *
+
+[ECO "C29"]
+[Opening "Vienna gambit"]
+
+1. e4 e5 2. Nc3 Nf6 3. f4 d5 4. fxe5 Nxe4 5. d3 *
+
+[ECO "C29"]
+[Opening "Vienna gambit, Wurzburger trap"]
+
+1. e4 e5 2. Nc3 Nf6 3. f4 d5 4. fxe5 Nxe4 5. d3 Qh4+ 6. g3 Nxg3 7. Nf3 Qh5
+8. Nxd5 *
+
+[ECO "C29"]
+[Opening "Vienna gambit, Steinitz variation"]
+
+1. e4 e5 2. Nc3 Nf6 3. f4 d5 4. d3 *
+
+[ECO "C30"]
+[Opening "King's gambit"]
+
+1. e4 e5 2. f4 *
+
+[ECO "C30"]
+[Opening "KGD"]
+[Variation "Keene's defence"]
+
+1. e4 e5 2. f4 Qh4+ 3. g3 Qe7 *
+
+[ECO "C30"]
+[Opening "KGD"]
+[Variation "Mafia defence"]
+
+1. e4 e5 2. f4 c5 *
+
+[ECO "C30"]
+[Opening "KGD"]
+[Variation "Norwalde variation"]
+
+1. e4 e5 2. f4 Qf6 *
+
+[ECO "C30"]
+[Opening "KGD"]
+[Variation "Norwalde variation, Buecker gambit"]
+
+1. e4 e5 2. f4 Qf6 3. Nf3 Qxf4 4. Nc3 Bb4 5. Bc4 *
+
+[ECO "C30"]
+[Opening "KGD"]
+[Variation "classical variation"]
+
+1. e4 e5 2. f4 Bc5 *
+
+[ECO "C30"]
+[Opening "KGD"]
+[Variation "classical, Svenonius variation"]
+
+1. e4 e5 2. f4 Bc5 3. Nf3 d6 4. Nc3 Nf6 5. Bc4 Nc6 6. d3 Bg4 7. h3 Bxf3 8.
+Qxf3 exf4 *
+
+[ECO "C30"]
+[Opening "KGD"]
+[Variation "classical, Hanham variation"]
+
+1. e4 e5 2. f4 Bc5 3. Nf3 d6 4. Nc3 Nd7 *
+
+[ECO "C30"]
+[Opening "KGD"]
+[Variation "classical, 4.c3"]
+
+1. e4 e5 2. f4 Bc5 3. Nf3 d6 4. c3 *
+
+[ECO "C30"]
+[Opening "KGD"]
+[Variation "classical, Marshall attack"]
+
+1. e4 e5 2. f4 Bc5 3. Nf3 d6 4. c3 Bg4 5. fxe5 dxe5 6. Qa4+ *
+
+[ECO "C30"]
+[Opening "KGD"]
+[Variation "classical counter-gambit"]
+
+1. e4 e5 2. f4 Bc5 3. Nf3 d6 4. c3 f5 *
+
+[ECO "C30"]
+[Opening "KGD"]
+[Variation "classical, Reti variation"]
+
+1. e4 e5 2. f4 Bc5 3. Nf3 d6 4. c3 f5 5. fxe5 dxe5 6. d4 exd4 7. Bc4 *
+
+[ECO "C30"]
+[Opening "KGD"]
+[Variation "classical, Soldatenkov variation"]
+
+1. e4 e5 2. f4 Bc5 3. Nf3 d6 4. fxe5 *
+
+[ECO "C30"]
+[Opening "KGD"]
+[Variation "classical, Heath variation"]
+
+1. e4 e5 2. f4 Bc5 3. Nf3 d6 4. b4 *
+
+[ECO "C30"]
+[Opening "KGD"]
+[Variation "2...Nf6"]
+
+1. e4 e5 2. f4 Nf6 *
+
+[ECO "C31"]
+[Opening "KGD"]
+[Variation "Falkbeer counter-gambit"]
+
+1. e4 e5 2. f4 d5 *
+
+[ECO "C31"]
+[Opening "KGD"]
+[Variation "Falkbeer, Tartakower variation"]
+
+1. e4 e5 2. f4 d5 3. Nf3 *
+
+[ECO "C31"]
+[Opening "KGD"]
+[Variation "Falkbeer, Milner-Barry variation"]
+
+1. e4 e5 2. f4 d5 3. Nc3 *
+

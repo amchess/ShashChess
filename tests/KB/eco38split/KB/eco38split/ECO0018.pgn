@@ -1,0 +1,326 @@
+[ECO "C34"]
+[Opening "KGA"]
+[Variation "Bonsch-Osmolovsky variation"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 Ne7 *
+
+[ECO "C34"]
+[Opening "KGA"]
+[Variation "Gianutio counter-gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 f5 *
+
+[ECO "C34"]
+[Opening "KGA"]
+[Variation "Fischer defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 d6 *
+
+[ECO "C34"]
+[Opening "KGA"]
+[Variation "Becker defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 h6 *
+
+[ECO "C34"]
+[Opening "KGA"]
+[Variation "Schallop defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 Nf6 *
+
+[ECO "C35"]
+[Opening "KGA"]
+[Variation "Cunningham defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 Be7 *
+
+[ECO "C35"]
+[Opening "KGA"]
+[Variation "Cunningham, Bertin gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 Be7 4. Bc4 Bh4+ 5. g3 *
+
+[ECO "C35"]
+[Opening "KGA"]
+[Variation "Cunningham, three pawns gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 Be7 4. Bc4 Bh4+ 5. g3 fxg3 6. O-O gxh2+ 7. Kh1 *
+
+[ECO "C35"]
+[Opening "KGA"]
+[Variation "Cunningham, Euwe defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 Be7 4. Bc4 Nf6 *
+
+[ECO "C36"]
+[Opening "KGA"]
+[Variation "Abbazia defence (classical defence, modern defence[!])"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 d5 *
+
+[ECO "C36"]
+[Opening "KGA"]
+[Variation "Abbazia defence, modern variation"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 d5 4. exd5 Nf6 *
+
+[ECO "C36"]
+[Opening "KGA"]
+[Variation "Abbazia defence, Botvinnik variation"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 d5 4. exd5 Nf6 5. Bb5+ c6 6. dxc6 bxc6 7. Bc4 
+Nd5 *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "Quaade gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Nc3 *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "Rosentreter gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. d4 *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "Soerensen gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. d4 g4 5. Ne5 *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "King's knight's gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "Blachly gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 Nc6 *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "Lolli gambit (wild Muzio gambit)"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 g4 5. Bxf7+ *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "Lolli gambit, Young variation"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 g4 5. Bxf7+ Kxf7 6. O-O gxf3 7. Qxf3 
+Qf6 8. d4 Qxd4+ 9. Be3 Qf6 10. Nc3 *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "Ghulam Kassim gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 g4 5. d4 *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "MacDonnell gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 g4 5. Nc3 *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "Salvio gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 g4 5. Ne5 *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "Silberschmidt gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 g4 5. Ne5 Qh4+ 6. Kf1 Nh6 7. d4 f3 *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "Salvio gambit, Anderssen counter-attack"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 g4 5. Ne5 Qh4+ 6. Kf1 Nh6 7. d4 d6 *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "Cochrane gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 g4 5. Ne5 Qh4+ 6. Kf1 f3 *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "Herzfeld gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 g4 5. Ne5 Qh4+ 6. Kf1 Nc6 *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "Muzio gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 g4 5. O-O *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "Muzio gambit, Paulsen variation"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 g4 5. O-O gxf3 6. Qxf3 Qf6 7. e5 Qxe5
+8. d3 Bh6 9. Nc3 Ne7 10. Bd2 Nbc6 11. Rae1 *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "double Muzio gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 g4 5. O-O gxf3 6. Qxf3 Qf6 7. e5 Qxe5
+8. Bxf7+ *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "Muzio gambit, From defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 g4 5. O-O gxf3 6. Qxf3 Qe7 *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "Muzio gambit, Holloway defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 g4 5. O-O gxf3 6. Qxf3 Nc6 *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "Muzio gambit, Kling and Horwitz counter-attack"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 g4 5. O-O Qe7 *
+
+[ECO "C37"]
+[Opening "KGA"]
+[Variation "Muzio gambit, Brentano defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 g4 5. O-O d5 *
+
+[ECO "C38"]
+[Opening "King's knight's gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 Bg7 *
+
+[ECO "C38"]
+[Opening "KGA"]
+[Variation "Hanstein gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 Bg7 5. O-O *
+
+[ECO "C38"]
+[Opening "KGA"]
+[Variation "Philidor gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 Bg7 5. h4 *
+
+[ECO "C38"]
+[Opening "KGA"]
+[Variation "Greco gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 Bg7 5. h4 h6 6. d4 d6 7. Nc3 c6 8. 
+hxg5 hxg5 9. Rxh8 Bxh8 10. Ne5 *
+
+[ECO "C38"]
+[Opening "KGA"]
+[Variation "Philidor gambit, Schultz variation"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. Bc4 Bg7 5. h4 h6 6. d4 d6 7. Qd3 *
+
+[ECO "C39"]
+[Opening "King's knight's gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Allgaier gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ng5 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Allgaier, Horny defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ng5 h6 6. Nxf7 Kxf7 7. Qxg4 Nf6 
+8. Qxf4 Bd6 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Allgaier, Thorold variation"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ng5 h6 6. Nxf7 Kxf7 7. d4 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Allgaier, Cook variation"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ng5 h6 6. Nxf7 Kxf7 7. d4 d5 8. 
+Bxf4 dxe4 9. Bc4+ Kg7 10. Be5+ *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Allgaier, Blackburne gambit"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ng5 h6 6. Nxf7 Kxf7 7. Nc3 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Allgaier, Walker attack"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ng5 h6 6. Nxf7 Kxf7 7. Bc4+ *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Allgaier, Urusov attack"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ng5 h6 6. Nxf7 Kxf7 7. Bc4+ d5 8.
+Bxd5+ Kg7 9. d4 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Allgaier, Schlechter defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ng5 Nf6 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Kieseritsky, Paulsen defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ne5 Bg7 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Kieseritsky, long whip (Stockwhip, classical) defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ne5 h5 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Kieseritsky, long whip defence, Jaenisch variation"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ne5 h5 6. Bc4 Rh7 7. d4 Bh6 8. 
+Nc3 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Kieseritsky, Brentano (Campbell) defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ne5 d5 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Kieseritsky, Brentano defence, Kaplanek variation"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ne5 d5 6. d4 Nf6 7. exd5 Qxd5 8.
+Nc3 Bb4 9. Kf2 *
+
+[ECO "C39"]
+[Opening "KGA"]
+[Variation "Kieseritsky, Brentano defence"]
+
+1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4 g4 5. Ne5 d5 6. d4 Nf6 7. Bxf4 *
+

@@ -1,9 +1,10 @@
 #ifndef CTG_BOOK_H_INCLUDED
 #define CTG_BOOK_H_INCLUDED
 
-#include "../../misc.h"
+#include "../file_mapping.h"
 #include "../book.h"
 
+namespace ShashChess {
 namespace {
 struct CtgPositionData;
 struct CtgMoveList;
@@ -11,14 +12,14 @@ struct CtgMove;
 struct CtgMoveStats;
 }
 
-namespace Stockfish::Book::CTG {
+namespace Book::CTG {
 class CtgBook: public Book {
    private:
-    Utility::FileMapping cto;
-    Utility::FileMapping ctg;
-    uint32_t             pageLowerBound;
-    uint32_t             pageUpperBound;
-    bool                 isOpen;
+    FileMapping cto;
+    FileMapping ctg;
+    uint32_t    pageLowerBound;
+    uint32_t    pageUpperBound;
+    bool        isOpen;
 
    private:
     bool decode(const Position& pos, CtgPositionData& positionData) const;
@@ -61,5 +62,5 @@ class CtgBook: public Book {
     virtual void show_moves(const Position& pos) const;
 };
 }
-
-#endif
+}
+#endif  // #ifndef CTG_BOOK_H_INCLUDED

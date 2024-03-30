@@ -1,13 +1,13 @@
 /*
-  Stockfish, a UCI chess playing engine derived from Glaurung 2.1
-  Copyright (C) 2004-2023 The Stockfish developers (see AUTHORS file)
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2024 The ShashChess developers (see AUTHORS file)
 
-  Stockfish is free software: you can redistribute it and/or modify
+  ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Stockfish is distributed in the hope that it will be useful,
+  ShashChess is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -21,22 +21,24 @@
 #ifndef NNUE_FEATURES_HALF_KA_V2_HM_H_INCLUDED
 #define NNUE_FEATURES_HALF_KA_V2_HM_H_INCLUDED
 
+#include <cstdint>
+
+#include "../../misc.h"
+#include "../../types.h"
 #include "../nnue_common.h"
 
-#include "../../evaluate.h"
-#include "../../misc.h"
-
-namespace Stockfish {
+namespace ShashChess {
 struct StateInfo;
+class Position;
 }
 
-namespace Stockfish::Eval::NNUE::Features {
+namespace ShashChess::Eval::NNUE::Features {
 
-// Feature HalfKAv2_hm: Combination of the position of own king
-// and the position of pieces. Position mirrored such that king always on e..h files.
+// Feature HalfKAv2_hm: Combination of the position of own king and the
+// position of pieces. Position mirrored such that king is always on e..h files.
 class HalfKAv2_hm {
 
-    // unique number for each piece type on each square
+    // Unique number for each piece type on each square
     enum {
         PS_NONE     = 0,
         PS_W_PAWN   = 0,
@@ -54,8 +56,8 @@ class HalfKAv2_hm {
     };
 
     static constexpr IndexType PieceSquareIndex[COLOR_NB][PIECE_NB] = {
-      // convention: W - us, B - them
-      // viewed from other side, W and B are reversed
+      // Convention: W - us, B - them
+      // Viewed from other side, W and B are reversed
       {PS_NONE, PS_W_PAWN, PS_W_KNIGHT, PS_W_BISHOP, PS_W_ROOK, PS_W_QUEEN, PS_KING, PS_NONE,
        PS_NONE, PS_B_PAWN, PS_B_KNIGHT, PS_B_BISHOP, PS_B_ROOK, PS_B_QUEEN, PS_KING, PS_NONE},
       {PS_NONE, PS_B_PAWN, PS_B_KNIGHT, PS_B_BISHOP, PS_B_ROOK, PS_B_QUEEN, PS_KING, PS_NONE,
@@ -77,31 +79,48 @@ class HalfKAv2_hm {
       static_cast<IndexType>(SQUARE_NB) * static_cast<IndexType>(PS_NB) / 2;
 
 #define B(v) (v * PS_NB)
+    // clang-format off
     static constexpr int KingBuckets[COLOR_NB][SQUARE_NB] = {
-      {B(28), B(29), B(30), B(31), B(31), B(30), B(29), B(28), B(24), B(25), B(26), B(27), B(27),
-       B(26), B(25), B(24), B(20), B(21), B(22), B(23), B(23), B(22), B(21), B(20), B(16), B(17),
-       B(18), B(19), B(19), B(18), B(17), B(16), B(12), B(13), B(14), B(15), B(15), B(14), B(13),
-       B(12), B(8),  B(9),  B(10), B(11), B(11), B(10), B(9),  B(8),  B(4),  B(5),  B(6),  B(7),
-       B(7),  B(6),  B(5),  B(4),  B(0),  B(1),  B(2),  B(3),  B(3),  B(2),  B(1),  B(0)},
-      {B(0),  B(1),  B(2),  B(3),  B(3),  B(2),  B(1),  B(0),  B(4),  B(5),  B(6),  B(7),  B(7),
-       B(6),  B(5),  B(4),  B(8),  B(9),  B(10), B(11), B(11), B(10), B(9),  B(8),  B(12), B(13),
-       B(14), B(15), B(15), B(14), B(13), B(12), B(16), B(17), B(18), B(19), B(19), B(18), B(17),
-       B(16), B(20), B(21), B(22), B(23), B(23), B(22), B(21), B(20), B(24), B(25), B(26), B(27),
-       B(27), B(26), B(25), B(24), B(28), B(29), B(30), B(31), B(31), B(30), B(29), B(28)}};
+      { B(28), B(29), B(30), B(31), B(31), B(30), B(29), B(28),
+        B(24), B(25), B(26), B(27), B(27), B(26), B(25), B(24),
+        B(20), B(21), B(22), B(23), B(23), B(22), B(21), B(20),
+        B(16), B(17), B(18), B(19), B(19), B(18), B(17), B(16),
+        B(12), B(13), B(14), B(15), B(15), B(14), B(13), B(12),
+        B( 8), B( 9), B(10), B(11), B(11), B(10), B( 9), B( 8),
+        B( 4), B( 5), B( 6), B( 7), B( 7), B( 6), B( 5), B( 4),
+        B( 0), B( 1), B( 2), B( 3), B( 3), B( 2), B( 1), B( 0) },
+      { B( 0), B( 1), B( 2), B( 3), B( 3), B( 2), B( 1), B( 0),
+        B( 4), B( 5), B( 6), B( 7), B( 7), B( 6), B( 5), B( 4),
+        B( 8), B( 9), B(10), B(11), B(11), B(10), B( 9), B( 8),
+        B(12), B(13), B(14), B(15), B(15), B(14), B(13), B(12),
+        B(16), B(17), B(18), B(19), B(19), B(18), B(17), B(16),
+        B(20), B(21), B(22), B(23), B(23), B(22), B(21), B(20),
+        B(24), B(25), B(26), B(27), B(27), B(26), B(25), B(24),
+        B(28), B(29), B(30), B(31), B(31), B(30), B(29), B(28) }
+    };
+    // clang-format on
 #undef B
-
+    // clang-format off
     // Orient a square according to perspective (rotates by 180 for black)
     static constexpr int OrientTBL[COLOR_NB][SQUARE_NB] = {
-      {SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1, SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1,
-       SQ_A1, SQ_A1, SQ_A1, SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1, SQ_H1, SQ_H1,
-       SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1, SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1,
-       SQ_A1, SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1, SQ_H1, SQ_H1, SQ_H1, SQ_H1,
-       SQ_A1, SQ_A1, SQ_A1, SQ_A1, SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1},
-      {SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8, SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8,
-       SQ_A8, SQ_A8, SQ_A8, SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8, SQ_H8, SQ_H8,
-       SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8, SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8,
-       SQ_A8, SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8, SQ_H8, SQ_H8, SQ_H8, SQ_H8,
-       SQ_A8, SQ_A8, SQ_A8, SQ_A8, SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8}};
+      { SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1,
+        SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1,
+        SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1,
+        SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1,
+        SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1,
+        SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1,
+        SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1,
+        SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1 },
+      { SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8,
+        SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8,
+        SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8,
+        SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8,
+        SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8,
+        SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8,
+        SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8,
+        SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8 }
+    };
+    // clang-format on
 
     // Maximum number of simultaneously active features.
     static constexpr IndexType MaxActiveDimensions = 32;
@@ -121,11 +140,11 @@ class HalfKAv2_hm {
     static int update_cost(const StateInfo* st);
     static int refresh_cost(const Position& pos);
 
-    // Returns whether the change stored in this StateInfo means that
-    // a full accumulator refresh is required.
+    // Returns whether the change stored in this StateInfo means
+    // that a full accumulator refresh is required.
     static bool requires_refresh(const StateInfo* st, Color perspective);
 };
 
-}  // namespace Stockfish::Eval::NNUE::Features
+}  // namespace ShashChess::Eval::NNUE::Features
 
 #endif  // #ifndef NNUE_FEATURES_HALF_KA_V2_HM_H_INCLUDED

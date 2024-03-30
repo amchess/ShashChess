@@ -1,0 +1,310 @@
+[ECO "B01"]
+[Opening "Scandinavian defence"]
+
+1. e4 d5 2. exd5 Nf6 3. d4 *
+
+[ECO "B01"]
+[Opening "Scandinavian"]
+[Variation "Marshall variation"]
+
+1. e4 d5 2. exd5 Nf6 3. d4 Nxd5 *
+
+[ECO "B01"]
+[Opening "Scandinavian"]
+[Variation "Kiel variation"]
+
+1. e4 d5 2. exd5 Nf6 3. d4 Nxd5 4. c4 Nb4 *
+
+[ECO "B01"]
+[Opening "Scandinavian"]
+[Variation "Richter variation"]
+
+1. e4 d5 2. exd5 Nf6 3. d4 g6 *
+
+[ECO "B02"]
+[Opening "Alekhine's defence"]
+
+1. e4 Nf6 *
+
+[ECO "B02"]
+[Opening "Alekhine's defence"]
+[Variation "Scandinavian variation"]
+
+1. e4 Nf6 2. Nc3 d5 *
+
+[ECO "B02"]
+[Opening "Alekhine's defence"]
+[Variation "Spielmann variation"]
+
+1. e4 Nf6 2. Nc3 d5 3. e5 Nfd7 4. e6 *
+
+[ECO "B02"]
+[Opening "Alekhine's defence"]
+[Variation "Maroczy variation"]
+
+1. e4 Nf6 2. d3 *
+
+[ECO "B02"]
+[Opening "Alekhine's defence"]
+[Variation "Krejcik variation"]
+
+1. e4 Nf6 2. Bc4 *
+
+[ECO "B02"]
+[Opening "Alekhine's defence"]
+[Variation "Mokele Mbembe (Buecker) variation"]
+
+1. e4 Nf6 2. e5 Ne4 *
+
+[ECO "B02"]
+[Opening "Alekhine's defence"]
+[Variation "Brooklyn defence"]
+
+1. e4 Nf6 2. e5 Ng8 *
+
+[ECO "B02"]
+[Opening "Alekhine's defence"]
+
+1. e4 Nf6 2. e5 Nd5 *
+
+[ECO "B02"]
+[Opening "Alekhine's defence"]
+[Variation "Kmoch variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. Bc4 Nb6 4. Bb3 c5 5. d3 *
+
+[ECO "B02"]
+[Opening "Alekhine's defence"]
+[Variation "Saemisch attack"]
+
+1. e4 Nf6 2. e5 Nd5 3. Nc3 *
+
+[ECO "B02"]
+[Opening "Alekhine's defence"]
+[Variation "Welling variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. b3 *
+
+[ECO "B02"]
+[Opening "Alekhine's defence"]
+
+1. e4 Nf6 2. e5 Nd5 3. c4 *
+
+[ECO "B02"]
+[Opening "Alekhine's defence"]
+[Variation "Steiner variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. c4 Nb6 4. b3 *
+
+[ECO "B02"]
+[Opening "Alekhine's defence"]
+[Variation "two pawns' (Lasker's) attack"]
+
+1. e4 Nf6 2. e5 Nd5 3. c4 Nb6 4. c5 *
+
+[ECO "B02"]
+[Opening "Alekhine's defence"]
+[Variation "two pawns' attack, Mikenas variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. c4 Nb6 4. c5 Nd5 5. Bc4 e6 6. Nc3 d6 *
+
+[ECO "B03"]
+[Opening "Alekhine's defence"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 *
+
+[ECO "B03"]
+[Opening "Alekhine's defence"]
+[Variation "O'Sullivan gambit"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 b5 *
+
+[ECO "B03"]
+[Opening "Alekhine's defence"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 *
+
+[ECO "B03"]
+[Opening "Alekhine's defence"]
+[Variation "Balogh variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. Bc4 *
+
+[ECO "B03"]
+[Opening "Alekhine's defence"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. c4 *
+
+[ECO "B03"]
+[Opening "Alekhine's defence"]
+[Variation "exchange variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. c4 Nb6 5. exd6 *
+
+[ECO "B03"]
+[Opening "Alekhine's defence"]
+[Variation "exchange, Karpov variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. c4 Nb6 5. exd6 cxd6 6. Nf3 g6 7. Be2 Bg7 8.
+O-O O-O 9. h3 Nc6 10. Nc3 Bf5 11. Bf4 *
+
+[ECO "B03"]
+[Opening "Alekhine's defence"]
+[Variation "four pawns attack"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. c4 Nb6 5. f4 *
+
+[ECO "B03"]
+[Opening "Alekhine's defence"]
+[Variation "four pawns attack, Korchnoi variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. c4 Nb6 5. f4 dxe5 6. fxe5 Bf5 7. Nc3 e6 8.
+Nf3 Be7 9. Be2 O-O 10. O-O f6 *
+
+[ECO "B03"]
+[Opening "Alekhine's defence"]
+[Variation "four pawns attack, 6...Nc6"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. c4 Nb6 5. f4 dxe5 6. fxe5 Nc6 *
+
+[ECO "B03"]
+[Opening "Alekhine's defence"]
+[Variation "four pawns attack, Ilyin-Genevsky var."]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. c4 Nb6 5. f4 dxe5 6. fxe5 Nc6 7. Nf3 Bg4 8.
+e6 fxe6 9. c5 *
+
+[ECO "B03"]
+[Opening "Alekhine's defence"]
+[Variation "four pawns attack, 7.Be3"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. c4 Nb6 5. f4 dxe5 6. fxe5 Nc6 7. Be3 *
+
+[ECO "B03"]
+[Opening "Alekhine's defence"]
+[Variation "four pawns attack, Tartakower variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. c4 Nb6 5. f4 dxe5 6. fxe5 Nc6 7. Be3 Bf5 8.
+Nc3 e6 9. Nf3 Qd7 10. Be2 O-O-O 11. O-O Be7 *
+
+[ECO "B03"]
+[Opening "Alekhine's defence"]
+[Variation "four pawns attack, Planinc variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. c4 Nb6 5. f4 g5 *
+
+[ECO "B03"]
+[Opening "Alekhine's defence"]
+[Variation "four pawns attack, fianchetto variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. c4 Nb6 5. f4 g6 *
+
+[ECO "B03"]
+[Opening "Alekhine's defence"]
+[Variation "four pawns attack, Trifunovic variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. c4 Nb6 5. f4 Bf5 *
+
+[ECO "B04"]
+[Opening "Alekhine's defence"]
+[Variation "modern variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. Nf3 *
+
+[ECO "B04"]
+[Opening "Alekhine's defence"]
+[Variation "modern, Larsen variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. Nf3 dxe5 *
+
+[ECO "B04"]
+[Opening "Alekhine's defence"]
+[Variation "modern, Schmid variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. Nf3 Nb6 *
+
+[ECO "B04"]
+[Opening "Alekhine's defence"]
+[Variation "modern, fianchetto variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. Nf3 g6 *
+
+[ECO "B04"]
+[Opening "Alekhine's defence"]
+[Variation "modern, Keres variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. Nf3 g6 5. Bc4 Nb6 6. Bb3 Bg7 7. a4 *
+
+[ECO "B05"]
+[Opening "Alekhine's defence"]
+[Variation "modern variation, 4...Bg4"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. Nf3 Bg4 *
+
+[ECO "B05"]
+[Opening "Alekhine's defence"]
+[Variation "modern, Flohr variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. Nf3 Bg4 5. Be2 c6 *
+
+[ECO "B05"]
+[Opening "Alekhine's defence"]
+[Variation "modern, Panov variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. Nf3 Bg4 5. h3 *
+
+[ECO "B05"]
+[Opening "Alekhine's defence"]
+[Variation "modern, Alekhine variation"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. Nf3 Bg4 5. c4 *
+
+[ECO "B05"]
+[Opening "Alekhine's defence"]
+[Variation "modern, Vitolins attack"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. Nf3 Bg4 5. c4 Nb6 6. d5 *
+
+[ECO "B06"]
+[Opening "Robatsch (modern) defence"]
+
+1. e4 g6 *
+
+[ECO "B06"]
+[Opening "Norwegian defence"]
+
+1. e4 g6 2. d4 Nf6 3. e5 Nh5 4. g4 Ng7 *
+
+[ECO "B06"]
+[Opening "Robatsch (modern) defence"]
+
+1. e4 g6 2. d4 Bg7 *
+
+[ECO "B06"]
+[Opening "Robatsch defence"]
+[Variation "three pawns attack"]
+
+1. e4 g6 2. d4 Bg7 3. f4 *
+
+[ECO "B06"]
+[Opening "Robatsch defence"]
+
+1. e4 g6 2. d4 Bg7 3. Nc3 *
+
+[ECO "B06"]
+[Opening "Robatsch defence"]
+[Variation "Gurgenidze variation"]
+
+1. e4 g6 2. d4 Bg7 3. Nc3 c6 4. f4 d5 5. e5 h5 *
+
+[ECO "B06"]
+[Opening "Robatsch (modern) defence"]
+
+1. e4 g6 2. d4 Bg7 3. Nc3 d6 *
+
+[ECO "B06"]
+[Opening "Robatsch defence"]
+[Variation "two knights variation"]
+
+1. e4 g6 2. d4 Bg7 3. Nc3 d6 4. Nf3 *
+

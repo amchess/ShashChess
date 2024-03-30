@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2023 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -16,26 +16,32 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "position.h"
+
 #include <algorithm>
+#include <array>
 #include <cassert>
-#include <cstddef>  // For offsetof()
-#include <cstring>  // For std::memset, std::memcmp
+#include <cctype>
+#include <cstddef>
+#include <cstring>
+#include <initializer_list>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 #include <string_view>
+#include <utility>
 
 #include "bitboard.h"
 #include "misc.h"
 #include "movegen.h"
-#include "position.h"
-#include "thread.h"
+#include "nnue/nnue_common.h"
+#include "syzygy/tbprobe.h"
 #include "tt.h"
 #include "uci.h"
-#include "syzygy/tbprobe.h"
 
 using std::string;
 
-namespace Stockfish {
+namespace ShashChess {
 
 namespace Zobrist {
 
@@ -54,8 +60,7 @@ constexpr Piece Pieces[] = {W_PAWN, W_KNIGHT, W_BISHOP, W_ROOK, W_QUEEN, W_KING,
 }  // namespace
 
 
-/// operator<<(Position) returns an ASCII representation of the position
-
+// Returns an ASCII representation of the position
 std::ostream& operator<<(std::ostream& os, const Position& pos) {
 
     os << "\n +---+---+---+---+---+---+---+---+\n";
@@ -81,7 +86,7 @@ std::ostream& operator<<(std::ostream& os, const Position& pos) {
         ASSERT_ALIGNED(&st, Eval::NNUE::CacheLineSize);
 
         Position p;
-        p.set(pos.fen(), pos.is_chess960(), &st, pos.this_thread());
+        p.set(pos.fen(), pos.is_chess960(), &st);
         Tablebases::ProbeState s1, s2;
         Tablebases::WDLScore   wdl = Tablebases::probe_wdl(p, &s1);
         int                    dtz = Tablebases::probe_dtz(p, &s2);
@@ -93,8 +98,9 @@ std::ostream& operator<<(std::ostream& os, const Position& pos) {
 }
 
 
-// Marcel van Kervinck's cuckoo algorithm for fast detection of "upcoming repetition"
-// situations. Description of the algorithm in the following paper:
+// Implements Marcel van Kervinck's cuckoo algorithm to detect repetition of positions
+// for 3-fold repetition draws. The algorithm uses two hash tables with Zobrist hashes
+// to allow fast detection of recurring positions. For details see:
 // http://web.archive.org/web/20201107002606/https://marcelk.net/2013-04-06/paper/upcoming-rep-v2.pdf
 
 // First and second hash functions for indexing the cuckoo tables
@@ -102,12 +108,10 @@ inline int H1(Key h) { return h & 0x1fff; }
 inline int H2(Key h) { return (h >> 16) & 0x1fff; }
 
 // Cuckoo tables with Zobrist hashes of valid reversible moves, and the moves themselves
-Key  cuckoo[8192];
-Move cuckooMove[8192];
+std::array<Key, 8192>  cuckoo;
+std::array<Move, 8192> cuckooMove;
 
-
-/// Position::init() initializes at startup the various arrays used to compute hash keys
-
+// Initializes at startup the various arrays used to compute hash keys
 void Position::init() {
     //Kelly begin
     Zobrist::psq[1][0]    = 591679071752537765U;
@@ -907,22 +911,22 @@ void Position::init() {
     //Kelly end
 
     // Prepare the cuckoo tables
-    std::memset(cuckoo, 0, sizeof(cuckoo));
-    std::memset(cuckooMove, 0, sizeof(cuckooMove));
+    cuckoo.fill(0);
+    cuckooMove.fill(Move::none());
     [[maybe_unused]] int count = 0;
     for (Piece pc : Pieces)
         for (Square s1 = SQ_A1; s1 <= SQ_H8; ++s1)
             for (Square s2 = Square(s1 + 1); s2 <= SQ_H8; ++s2)
                 if ((type_of(pc) != PAWN) && (attacks_bb(type_of(pc), s1, 0) & s2))
                 {
-                    Move move = make_move(s1, s2);
+                    Move move = Move(s1, s2);
                     Key  key  = Zobrist::psq[pc][s1] ^ Zobrist::psq[pc][s2] ^ Zobrist::side;
                     int  i    = H1(key);
                     while (true)
                     {
                         std::swap(cuckoo[i], key);
                         std::swap(cuckooMove[i], move);
-                        if (move == MOVE_NONE)  // Arrived at empty slot?
+                        if (move == Move::none())  // Arrived at empty slot?
                             break;
                         i = (i == H1(key)) ? H2(key) : H1(key);  // Push victim to alternative slot
                     }
@@ -932,11 +936,10 @@ void Position::init() {
 }
 
 
-/// Position::set() initializes the position object with the given FEN string.
-/// This function is not very robust - make sure that input FENs are correct,
-/// this is assumed to be the responsibility of the GUI.
-
-Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Thread* th) {
+// Initializes the position object with the given FEN string.
+// This function is not very robust - make sure that input FENs are correct,
+// this is assumed to be the responsibility of the GUI.
+Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si) {
     /*
    A FEN string defines a particular position using only the ASCII character set.
 
@@ -960,9 +963,9 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
 
    4) En passant target square (in algebraic notation). If there's no en passant
       target square, this is "-". If a pawn has just made a 2-square move, this
-      is the position "behind" the pawn. Following X-FEN standard, this is recorded only
-      if there is a pawn in position to make an en passant capture, and if there really
-      is a pawn that might have advanced two squares.
+      is the position "behind" the pawn. Following X-FEN standard, this is recorded
+      only if there is a pawn in position to make an en passant capture, and if
+      there really is a pawn that might have advanced two squares.
 
    5) Halfmove clock. This is the number of halfmoves since the last pawn advance
       or capture. This is used to determine if a draw can be claimed under the
@@ -1062,8 +1065,7 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
     // handle also common incorrect FEN with fullmove = 0.
     gamePly = std::max(2 * (gamePly - 1), 0) + (sideToMove == BLACK);
 
-    chess960   = isChess960;
-    thisThread = th;
+    chess960 = isChess960;
     set_state();
 
     assert(pos_is_ok());
@@ -1072,9 +1074,8 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
 }
 
 
-/// Position::set_castling_right() is a helper function used to set castling
-/// rights given the corresponding color and the rook starting square.
-
+// Helper function used to set castling
+// rights given the corresponding color and the rook starting square.
 void Position::set_castling_right(Color c, Square rfrom) {
 
     Square         kfrom = square<KING>(c);
@@ -1092,14 +1093,11 @@ void Position::set_castling_right(Color c, Square rfrom) {
 }
 
 
-/// Position::set_check_info() sets king attacks to detect if a move gives check
-
+// Sets king attacks to detect if a move gives check
 void Position::set_check_info() const {
 
-    st->blockersForKing[WHITE] =
-      slider_blockers(pieces(BLACK), square<KING>(WHITE), st->pinners[BLACK]);
-    st->blockersForKing[BLACK] =
-      slider_blockers(pieces(WHITE), square<KING>(BLACK), st->pinners[WHITE]);
+    update_slider_blockers(WHITE);
+    update_slider_blockers(BLACK);
 
     Square ksq = square<KING>(~sideToMove);
 
@@ -1112,10 +1110,9 @@ void Position::set_check_info() const {
 }
 
 
-/// Position::set_state() computes the hash keys of the position, and other
-/// data that once computed is updated incrementally as moves are made.
-/// The function is only used when a new position is set up
-
+// Computes the hash keys of the position, and other
+// data that once computed is updated incrementally as moves are made.
+// The function is only used when a new position is set up
 void Position::set_state() const {
 
     st->key = st->materialKey  = 0;
@@ -1135,7 +1132,7 @@ void Position::set_state() const {
             st->pawnKey ^= Zobrist::psq[pc][s];
 
         else if (type_of(pc) != KING)
-            st->nonPawnMaterial[color_of(pc)] += PieceValue[MG][pc];
+            st->nonPawnMaterial[color_of(pc)] += PieceValue[pc];
     }
 
     if (st->epSquare != SQ_NONE)
@@ -1152,10 +1149,8 @@ void Position::set_state() const {
 }
 
 
-/// Position::set() is an overload to initialize the position object with
-/// the given endgame code string like "KBPKN". It is mainly a helper to
-/// get the material key out of an endgame code.
-
+// Overload to initialize the position object with the given endgame code string
+// like "KBPKN". It's mainly a helper to get the material key out of an endgame code.
 Position& Position::set(const string& code, Color c, StateInfo* si) {
 
     assert(code[0] == 'K');
@@ -1171,13 +1166,12 @@ Position& Position::set(const string& code, Color c, StateInfo* si) {
     string fenStr = "8/" + sides[0] + char(8 - sides[0].length() + '0') + "/8/8/8/8/" + sides[1]
                   + char(8 - sides[1].length() + '0') + "/8 w - - 0 10";
 
-    return set(fenStr, false, si, nullptr);
+    return set(fenStr, false, si);
 }
 
 
-/// Position::fen() returns a FEN representation of the position. In case of
-/// Chess960 the Shredder-FEN notation is used. This is mainly a debugging function.
-
+// Returns a FEN representation of the position. In case of
+// Chess960 the Shredder-FEN notation is used. This is mainly a debugging function.
 string Position::fen() const {
 
     int                emptyCnt;
@@ -1224,44 +1218,39 @@ string Position::fen() const {
     return ss.str();
 }
 
+// Calculates st->blockersForKing[c] and st->pinners[~c],
+// which store respectively the pieces preventing king of color c from being in check
+// and the slider pieces of color ~c pinning pieces of color c to the king.
+void Position::update_slider_blockers(Color c) const {
 
-/// Position::slider_blockers() returns a bitboard of all the pieces (both colors)
-/// that are blocking attacks on the square 's' from 'sliders'. A piece blocks a
-/// slider if removing that piece from the board would result in a position where
-/// square 's' is attacked. For example, a king-attack blocking piece can be either
-/// a pinned or a discovered check piece, according if its color is the opposite
-/// or the same of the color of the slider.
+    Square ksq = square<KING>(c);
 
-Bitboard Position::slider_blockers(Bitboard sliders, Square s, Bitboard& pinners) const {
-
-    Bitboard blockers = 0;
-    pinners           = 0;
+    st->blockersForKing[c] = 0;
+    st->pinners[~c]        = 0;
 
     // Snipers are sliders that attack 's' when a piece and other snipers are removed
-    Bitboard snipers = ((attacks_bb<ROOK>(s) & pieces(QUEEN, ROOK))
-                        | (attacks_bb<BISHOP>(s) & pieces(QUEEN, BISHOP)))
-                     & sliders;
+    Bitboard snipers = ((attacks_bb<ROOK>(ksq) & pieces(QUEEN, ROOK))
+                        | (attacks_bb<BISHOP>(ksq) & pieces(QUEEN, BISHOP)))
+                     & pieces(~c);
     Bitboard occupancy = pieces() ^ snipers;
 
     while (snipers)
     {
         Square   sniperSq = pop_lsb(snipers);
-        Bitboard b        = between_bb(s, sniperSq) & occupancy;
+        Bitboard b        = between_bb(ksq, sniperSq) & occupancy;
 
         if (b && !more_than_one(b))
         {
-            blockers |= b;
-            if (b & pieces(color_of(piece_on(s))))
-                pinners |= sniperSq;
+            st->blockersForKing[c] |= b;
+            if (b & pieces(c))
+                st->pinners[~c] |= sniperSq;
         }
     }
-    return blockers;
 }
 
 
-/// Position::attackers_to() computes a bitboard of all pieces which attack a
-/// given square. Slider attacks use the occupied bitboard to indicate occupancy.
-
+// Computes a bitboard of all pieces which attack a given square.
+// Slider attacks use the occupied bitboard to indicate occupancy.
 Bitboard Position::attackers_to(Square s, Bitboard occupied) const {
 
     return (pawn_attacks_bb(BLACK, s) & pieces(WHITE, PAWN))
@@ -1273,15 +1262,14 @@ Bitboard Position::attackers_to(Square s, Bitboard occupied) const {
 }
 
 
-/// Position::legal() tests whether a pseudo-legal move is legal
-
+// Tests whether a pseudo-legal move is legal
 bool Position::legal(Move m) const {
 
-    assert(is_ok(m));
+    assert(m.is_ok());
 
     Color  us   = sideToMove;
-    Square from = from_sq(m);
-    Square to   = to_sq(m);
+    Square from = m.from_sq();
+    Square to   = m.to_sq();
 
     assert(color_of(moved_piece(m)) == us);
     assert(piece_on(square<KING>(us)) == make_piece(us, KING));
@@ -1289,7 +1277,7 @@ bool Position::legal(Move m) const {
     // En passant captures are a tricky special case. Because they are rather
     // uncommon, we do it simply by testing whether the king is attacked after
     // the move is made.
-    if (type_of(m) == EN_PASSANT)
+    if (m.type_of() == EN_PASSANT)
     {
         Square   ksq      = square<KING>(us);
         Square   capsq    = to - pawn_push(us);
@@ -1306,7 +1294,7 @@ bool Position::legal(Move m) const {
 
     // Castling moves generation does not check if the castling path is clear of
     // enemy attacks, it is delayed at a later time: now!
-    if (type_of(m) == CASTLING)
+    if (m.type_of() == CASTLING)
     {
         // After castling, the rook and king final positions are the same in
         // Chess960 as they would be in standard chess.
@@ -1317,9 +1305,9 @@ bool Position::legal(Move m) const {
             if (attackers_to(s) & pieces(~us))
                 return false;
 
-        // In case of Chess960, verify if the Rook blocks some checks
+        // In case of Chess960, verify if the Rook blocks some checks.
         // For instance an enemy queen in SQ_A1 when castling rook is in SQ_B1.
-        return !chess960 || !(blockers_for_king(us) & to_sq(m));
+        return !chess960 || !(blockers_for_king(us) & m.to_sq());
     }
 
     // If the moving piece is a king, check whether the destination square is
@@ -1333,25 +1321,24 @@ bool Position::legal(Move m) const {
 }
 
 
-/// Position::pseudo_legal() takes a random move and tests whether the move is
-/// pseudo legal. It is used to validate moves from TT that can be corrupted
-/// due to SMP concurrent access or hash position key aliasing.
-
+// Takes a random move and tests whether the move is
+// pseudo-legal. It is used to validate moves from TT that can be corrupted
+// due to SMP concurrent access or hash position key aliasing.
 bool Position::pseudo_legal(const Move m) const {
 
     Color  us   = sideToMove;
-    Square from = from_sq(m);
-    Square to   = to_sq(m);
+    Square from = m.from_sq();
+    Square to   = m.to_sq();
     Piece  pc   = moved_piece(m);
 
     // Use a slower but simpler function for uncommon cases
     // yet we skip the legality check of MoveList<LEGAL>().
-    if (type_of(m) != NORMAL)
+    if (m.type_of() != NORMAL)
         return checkers() ? MoveList<EVASIONS>(*this).contains(m)
                           : MoveList<NON_EVASIONS>(*this).contains(m);
 
-    // Is not a promotion, so promotion piece must be empty
-    assert(promotion_type(m) - KNIGHT == NO_PIECE_TYPE);
+    // Is not a promotion, so the promotion piece must be empty
+    assert(m.promotion_type() - KNIGHT == NO_PIECE_TYPE);
 
     // If the 'from' square is not occupied by a piece belonging to the side to
     // move, the move is obviously not legal.
@@ -1365,8 +1352,7 @@ bool Position::pseudo_legal(const Move m) const {
     // Handle the special case of a pawn move
     if (type_of(pc) == PAWN)
     {
-        // We have already handled promotion moves, so destination
-        // cannot be on the 8th/1st rank.
+        // We have already handled promotion moves, so destination cannot be on the 8th/1st rank
         if ((Rank8BB | Rank1BB) & to)
             return false;
 
@@ -1386,7 +1372,7 @@ bool Position::pseudo_legal(const Move m) const {
     {
         if (type_of(pc) != KING)
         {
-            // Double check? In this case a king move is required
+            // Double check? In this case, a king move is required
             if (more_than_one(checkers()))
                 return false;
 
@@ -1394,7 +1380,7 @@ bool Position::pseudo_legal(const Move m) const {
             if (!(between_bb(square<KING>(us), lsb(checkers())) & to))
                 return false;
         }
-        // In case of king moves under check we have to remove king so as to catch
+        // In case of king moves under check we have to remove the king so as to catch
         // invalid moves like b1a1 when opposite queen is on c1.
         else if (attackers_to(to, pieces() ^ from) & pieces(~us))
             return false;
@@ -1404,36 +1390,34 @@ bool Position::pseudo_legal(const Move m) const {
 }
 
 
-/// Position::gives_check() tests whether a pseudo-legal move gives a check
-
+// Tests whether a pseudo-legal move gives a check
 bool Position::gives_check(Move m) const {
 
-    assert(is_ok(m));
+    assert(m.is_ok());
     assert(color_of(moved_piece(m)) == sideToMove);
 
-    Square from = from_sq(m);
-    Square to   = to_sq(m);
+    Square from = m.from_sq();
+    Square to   = m.to_sq();
 
     // Is there a direct check?
     if (check_squares(type_of(piece_on(from))) & to)
         return true;
 
     // Is there a discovered check?
-    if ((blockers_for_king(~sideToMove) & from) && !aligned(from, to, square<KING>(~sideToMove)))
-        return true;
+    if (blockers_for_king(~sideToMove) & from)
+        return !aligned(from, to, square<KING>(~sideToMove)) || m.type_of() == CASTLING;
 
-    switch (type_of(m))
+    switch (m.type_of())
     {
     case NORMAL :
         return false;
 
     case PROMOTION :
-        return attacks_bb(promotion_type(m), to, pieces() ^ from) & square<KING>(~sideToMove);
+        return attacks_bb(m.promotion_type(), to, pieces() ^ from) & square<KING>(~sideToMove);
 
-    // En passant capture with check? We have already handled the case
-    // of direct checks and ordinary discovered check, so the only case we
-    // need to handle is the unusual case of a discovered check through
-    // the captured pawn.
+    // En passant capture with check? We have already handled the case of direct
+    // checks and ordinary discovered check, so the only case we need to handle
+    // is the unusual case of a discovered check through the captured pawn.
     case EN_PASSANT : {
         Square   capsq = make_square(file_of(to), rank_of(from));
         Bitboard b     = (pieces() ^ from ^ capsq) | to;
@@ -1445,25 +1429,22 @@ bool Position::gives_check(Move m) const {
     default :  //CASTLING
     {
         // Castling is encoded as 'king captures the rook'
-        Square ksq = square<KING>(~sideToMove);
         Square rto = relative_square(sideToMove, to > from ? SQ_F1 : SQ_D1);
 
-        return (attacks_bb<ROOK>(rto) & ksq) && (attacks_bb<ROOK>(rto, pieces() ^ from ^ to) & ksq);
+        return check_squares(ROOK) & rto;
     }
     }
 }
 
 
-/// Position::do_move() makes a move, and saves all information necessary
-/// to a StateInfo object. The move is assumed to be legal. Pseudo-legal
-/// moves should be filtered out before this function is called.
-
+// Makes a move, and saves all information necessary
+// to a StateInfo object. The move is assumed to be legal. Pseudo-legal
+// moves should be filtered out before this function is called.
 void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
 
-    assert(is_ok(m));
+    assert(m.is_ok());
     assert(&newSt != st);
 
-    thisThread->nodes.fetch_add(1, std::memory_order_relaxed);
     Key k = st->key ^ Zobrist::side;
 
     // Copy some fields of the old state to our new StateInfo object except the
@@ -1480,23 +1461,23 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
     ++st->pliesFromNull;
 
     // Used by NNUE
-    st->accumulator.computed[WHITE] = false;
-    st->accumulator.computed[BLACK] = false;
-    auto& dp                        = st->dirtyPiece;
-    dp.dirty_num                    = 1;
+    st->accumulatorBig.computed[WHITE]     = st->accumulatorBig.computed[BLACK] =
+      st->accumulatorSmall.computed[WHITE] = st->accumulatorSmall.computed[BLACK] = false;
+    auto& dp                                                                      = st->dirtyPiece;
+    dp.dirty_num                                                                  = 1;
 
     Color  us       = sideToMove;
     Color  them     = ~us;
-    Square from     = from_sq(m);
-    Square to       = to_sq(m);
+    Square from     = m.from_sq();
+    Square to       = m.to_sq();
     Piece  pc       = piece_on(from);
-    Piece  captured = type_of(m) == EN_PASSANT ? make_piece(them, PAWN) : piece_on(to);
+    Piece  captured = m.type_of() == EN_PASSANT ? make_piece(them, PAWN) : piece_on(to);
 
     assert(color_of(pc) == us);
-    assert(captured == NO_PIECE || color_of(captured) == (type_of(m) != CASTLING ? them : us));
+    assert(captured == NO_PIECE || color_of(captured) == (m.type_of() != CASTLING ? them : us));
     assert(type_of(captured) != KING);
 
-    if (type_of(m) == CASTLING)
+    if (m.type_of() == CASTLING)
     {
         assert(pc == make_piece(us, KING));
         assert(captured == make_piece(us, ROOK));
@@ -1516,7 +1497,7 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
         // update non-pawn material.
         if (type_of(captured) == PAWN)
         {
-            if (type_of(m) == EN_PASSANT)
+            if (m.type_of() == EN_PASSANT)
             {
                 capsq -= pawn_push(us);
 
@@ -1530,15 +1511,12 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
             st->pawnKey ^= Zobrist::psq[captured][capsq];
         }
         else
-            st->nonPawnMaterial[them] -= PieceValue[MG][captured];
+            st->nonPawnMaterial[them] -= PieceValue[captured];
 
-        if (Eval::useNNUE)
-        {
-            dp.dirty_num = 2;  // 1 piece moved, 1 piece captured
-            dp.piece[1]  = captured;
-            dp.from[1]   = capsq;
-            dp.to[1]     = SQ_NONE;
-        }
+        dp.dirty_num = 2;  // 1 piece moved, 1 piece captured
+        dp.piece[1]  = captured;
+        dp.from[1]   = capsq;
+        dp.to[1]     = SQ_NONE;
 
         // Update board and piece lists
         remove_piece(capsq);
@@ -1546,7 +1524,6 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
         // Update material hash key and prefetch access to materialTable
         k ^= Zobrist::psq[captured][capsq];
         st->materialKey ^= Zobrist::psq[captured][pieceCount[captured]];
-        prefetch(thisThread->materialTable[st->materialKey]);
 
         // Reset rule 50 counter
         st->rule50 = 0;
@@ -1571,14 +1548,11 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
     }
 
     // Move the piece. The tricky Chess960 castling is handled earlier
-    if (type_of(m) != CASTLING)
+    if (m.type_of() != CASTLING)
     {
-        if (Eval::useNNUE)
-        {
-            dp.piece[0] = pc;
-            dp.from[0]  = from;
-            dp.to[0]    = to;
-        }
+        dp.piece[0] = pc;
+        dp.from[0]  = from;
+        dp.to[0]    = to;
 
         move_piece(from, to);
     }
@@ -1594,9 +1568,9 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
             k ^= Zobrist::enpassant[file_of(st->epSquare)];
         }
 
-        else if (type_of(m) == PROMOTION)
+        else if (m.type_of() == PROMOTION)
         {
-            Piece promotion = make_piece(us, promotion_type(m));
+            Piece promotion = make_piece(us, m.promotion_type());
 
             assert(relative_rank(us, to) == RANK_8);
             assert(type_of(promotion) >= KNIGHT && type_of(promotion) <= QUEEN);
@@ -1604,15 +1578,12 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
             remove_piece(to);
             put_piece(promotion, to);
 
-            if (Eval::useNNUE)
-            {
-                // Promoting pawn to SQ_NONE, promoted piece from SQ_NONE
-                dp.to[0]               = SQ_NONE;
-                dp.piece[dp.dirty_num] = promotion;
-                dp.from[dp.dirty_num]  = SQ_NONE;
-                dp.to[dp.dirty_num]    = to;
-                dp.dirty_num++;
-            }
+            // Promoting pawn to SQ_NONE, promoted piece from SQ_NONE
+            dp.to[0]               = SQ_NONE;
+            dp.piece[dp.dirty_num] = promotion;
+            dp.from[dp.dirty_num]  = SQ_NONE;
+            dp.to[dp.dirty_num]    = to;
+            dp.dirty_num++;
 
             // Update hash keys
             k ^= Zobrist::psq[pc][to] ^ Zobrist::psq[promotion][to];
@@ -1621,7 +1592,7 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
               Zobrist::psq[promotion][pieceCount[promotion] - 1] ^ Zobrist::psq[pc][pieceCount[pc]];
 
             // Update material
-            st->nonPawnMaterial[us] += PieceValue[MG][promotion];
+            st->nonPawnMaterial[us] += PieceValue[promotion];
         }
 
         // Update pawn hash key
@@ -1668,27 +1639,26 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
 }
 
 
-/// Position::undo_move() unmakes a move. When it returns, the position should
-/// be restored to exactly the same state as before the move was made.
-
+// Unmakes a move. When it returns, the position should
+// be restored to exactly the same state as before the move was made.
 void Position::undo_move(Move m) {
 
-    assert(is_ok(m));
+    assert(m.is_ok());
 
     sideToMove = ~sideToMove;
 
     Color  us   = sideToMove;
-    Square from = from_sq(m);
-    Square to   = to_sq(m);
+    Square from = m.from_sq();
+    Square to   = m.to_sq();
     Piece  pc   = piece_on(to);
 
-    assert(empty(from) || type_of(m) == CASTLING);
+    assert(empty(from) || m.type_of() == CASTLING);
     assert(type_of(st->capturedPiece) != KING);
 
-    if (type_of(m) == PROMOTION)
+    if (m.type_of() == PROMOTION)
     {
         assert(relative_rank(us, to) == RANK_8);
-        assert(type_of(pc) == promotion_type(m));
+        assert(type_of(pc) == m.promotion_type());
         assert(type_of(pc) >= KNIGHT && type_of(pc) <= QUEEN);
 
         remove_piece(to);
@@ -1696,7 +1666,7 @@ void Position::undo_move(Move m) {
         put_piece(pc, to);
     }
 
-    if (type_of(m) == CASTLING)
+    if (m.type_of() == CASTLING)
     {
         Square rfrom, rto;
         do_castling<false>(us, from, to, rfrom, rto);
@@ -1709,7 +1679,7 @@ void Position::undo_move(Move m) {
         {
             Square capsq = to;
 
-            if (type_of(m) == EN_PASSANT)
+            if (m.type_of() == EN_PASSANT)
             {
                 capsq -= pawn_push(us);
 
@@ -1732,8 +1702,8 @@ void Position::undo_move(Move m) {
 }
 
 
-/// Position::do_castling() is a helper used to do/undo a castling move. This
-/// is a bit tricky in Chess960 where from/to squares can overlap.
+// Helper used to do/undo a castling move. This is a bit
+// tricky in Chess960 where from/to squares can overlap.
 template<bool Do>
 void Position::do_castling(Color us, Square from, Square& to, Square& rfrom, Square& rto) {
 
@@ -1742,7 +1712,7 @@ void Position::do_castling(Color us, Square from, Square& to, Square& rfrom, Squ
     rto           = relative_square(us, kingSide ? SQ_F1 : SQ_D1);
     to            = relative_square(us, kingSide ? SQ_G1 : SQ_C1);
 
-    if (Do && Eval::useNNUE)
+    if (Do)
     {
         auto& dp     = st->dirtyPiece;
         dp.piece[0]  = make_piece(us, KING);
@@ -1758,29 +1728,28 @@ void Position::do_castling(Color us, Square from, Square& to, Square& rfrom, Squ
     remove_piece(Do ? from : to);
     remove_piece(Do ? rfrom : rto);
     board[Do ? from : to] = board[Do ? rfrom : rto] =
-      NO_PIECE;  // Since remove_piece doesn't do this for us
+      NO_PIECE;  // remove_piece does not do this for us
     put_piece(make_piece(us, KING), Do ? to : from);
     put_piece(make_piece(us, ROOK), Do ? rto : rfrom);
 }
 
 
-/// Position::do_null_move() is used to do a "null move": it flips
-/// the side to move without executing any move on the board.
-
-void Position::do_null_move(StateInfo& newSt) {
+// Used to do a "null move": it flips
+// the side to move without executing any move on the board.
+void Position::do_null_move(StateInfo& newSt, TranspositionTable& tt) {
 
     assert(!checkers());
     assert(&newSt != st);
 
-    std::memcpy(&newSt, st, offsetof(StateInfo, accumulator));
+    std::memcpy(&newSt, st, offsetof(StateInfo, accumulatorBig));
 
     newSt.previous = st;
     st             = &newSt;
 
-    st->dirtyPiece.dirty_num        = 0;
-    st->dirtyPiece.piece[0]         = NO_PIECE;  // Avoid checks in UpdateAccumulator()
-    st->accumulator.computed[WHITE] = false;
-    st->accumulator.computed[BLACK] = false;
+    st->dirtyPiece.dirty_num               = 0;
+    st->dirtyPiece.piece[0]                = NO_PIECE;  // Avoid checks in UpdateAccumulator()
+    st->accumulatorBig.computed[WHITE]     = st->accumulatorBig.computed[BLACK] =
+      st->accumulatorSmall.computed[WHITE] = st->accumulatorSmall.computed[BLACK] = false;
 
     if (st->epSquare != SQ_NONE)
     {
@@ -1790,7 +1759,7 @@ void Position::do_null_move(StateInfo& newSt) {
 
     st->key ^= Zobrist::side;
     ++st->rule50;
-    prefetch(TT.first_entry(key()));
+    prefetch(tt.first_entry(key()));
 
     st->pliesFromNull = 0;
 
@@ -1804,8 +1773,7 @@ void Position::do_null_move(StateInfo& newSt) {
 }
 
 
-/// Position::undo_null_move() must be used to undo a "null move"
-
+// Must be used to undo a "null move"
 void Position::undo_null_move() {
 
     assert(!checkers());
@@ -1815,14 +1783,13 @@ void Position::undo_null_move() {
 }
 
 
-/// Position::key_after() computes the new hash key after the given move. Needed
-/// for speculative prefetch. It doesn't recognize special moves like castling,
-/// en passant and promotions.
-
+// Computes the new hash key after the given move. Needed
+// for speculative prefetch. It doesn't recognize special moves like castling,
+// en passant and promotions.
 Key Position::key_after(Move m) const {
 
-    Square from     = from_sq(m);
-    Square to       = to_sq(m);
+    Square from     = m.from_sq();
+    Square to       = m.to_sq();
     Piece  pc       = piece_on(from);
     Piece  captured = piece_on(to);
     Key    k        = st->key ^ Zobrist::side;
@@ -1836,30 +1803,29 @@ Key Position::key_after(Move m) const {
 }
 
 
-/// Position::see_ge (Static Exchange Evaluation Greater or Equal) tests if the
-/// SEE value of move is greater or equal to the given threshold. We'll use an
-/// algorithm similar to alpha-beta pruning with a null window.
+// Tests if the SEE (Static Exchange Evaluation)
+// value of move is greater or equal to the given threshold. We'll use an
+// algorithm similar to alpha-beta pruning with a null window.
+bool Position::see_ge(Move m, int threshold) const {
 
-bool Position::see_ge(Move m, Bitboard& occupied, Value threshold) const {
-
-    assert(is_ok(m));
+    assert(m.is_ok());
 
     // Only deal with normal moves, assume others pass a simple SEE
-    if (type_of(m) != NORMAL)
+    if (m.type_of() != NORMAL)
         return VALUE_ZERO >= threshold;
 
-    Square from = from_sq(m), to = to_sq(m);
+    Square from = m.from_sq(), to = m.to_sq();
 
-    int swap = PieceValue[MG][piece_on(to)] - threshold;
+    int swap = PieceValue[piece_on(to)] - threshold;
     if (swap < 0)
         return false;
 
-    swap = PieceValue[MG][piece_on(from)] - swap;
+    swap = PieceValue[piece_on(from)] - swap;
     if (swap <= 0)
         return true;
 
     assert(color_of(piece_on(from)) == sideToMove);
-    occupied           = pieces() ^ from ^ to;  // xoring to is important for pinned piece logic
+    Bitboard occupied  = pieces() ^ from ^ to;  // xoring to is important for pinned piece logic
     Color    stm       = sideToMove;
     Bitboard attackers = attackers_to(to, occupied);
     Bitboard stmAttackers, bb;
@@ -1890,50 +1856,50 @@ bool Position::see_ge(Move m, Bitboard& occupied, Value threshold) const {
         // the bitboard 'attackers' any X-ray attackers behind it.
         if ((bb = stmAttackers & pieces(PAWN)))
         {
-            occupied ^= least_significant_square_bb(bb);
-            if ((swap = PawnValueMg - swap) < res)
+            if ((swap = PawnValue - swap) < res)
                 break;
+            occupied ^= least_significant_square_bb(bb);
 
             attackers |= attacks_bb<BISHOP>(to, occupied) & pieces(BISHOP, QUEEN);
         }
 
         else if ((bb = stmAttackers & pieces(KNIGHT)))
         {
-            occupied ^= least_significant_square_bb(bb);
-            if ((swap = KnightValueMg - swap) < res)
+            if ((swap = KnightValue - swap) < res)
                 break;
+            occupied ^= least_significant_square_bb(bb);
         }
 
         else if ((bb = stmAttackers & pieces(BISHOP)))
         {
-            occupied ^= least_significant_square_bb(bb);
-            if ((swap = BishopValueMg - swap) < res)
+            if ((swap = BishopValue - swap) < res)
                 break;
+            occupied ^= least_significant_square_bb(bb);
 
             attackers |= attacks_bb<BISHOP>(to, occupied) & pieces(BISHOP, QUEEN);
         }
 
         else if ((bb = stmAttackers & pieces(ROOK)))
         {
-            occupied ^= least_significant_square_bb(bb);
-            if ((swap = RookValueMg - swap) < res)
+            if ((swap = RookValue - swap) < res)
                 break;
+            occupied ^= least_significant_square_bb(bb);
 
             attackers |= attacks_bb<ROOK>(to, occupied) & pieces(ROOK, QUEEN);
         }
 
         else if ((bb = stmAttackers & pieces(QUEEN)))
         {
-            occupied ^= least_significant_square_bb(bb);
-            if ((swap = QueenValueMg - swap) < res)
+            if ((swap = QueenValue - swap) < res)
                 break;
+            occupied ^= least_significant_square_bb(bb);
 
             attackers |= (attacks_bb<BISHOP>(to, occupied) & pieces(BISHOP, QUEEN))
                        | (attacks_bb<ROOK>(to, occupied) & pieces(ROOK, QUEEN));
         }
 
         else  // KING
-              // If we "capture" with the king but opponent still has attackers,
+              // If we "capture" with the king but the opponent still has attackers,
               // reverse the result.
             return (attackers & ~pieces(stm)) ? res ^ 1 : res;
     }
@@ -1941,15 +1907,8 @@ bool Position::see_ge(Move m, Bitboard& occupied, Value threshold) const {
     return bool(res);
 }
 
-bool Position::see_ge(Move m, Value threshold) const {
-    Bitboard occupied;
-    return see_ge(m, occupied, threshold);
-}
-
-
-/// Position::is_draw() tests whether the position is drawn by 50-move rule
-/// or by repetition. It does not detect stalemates.
-
+// Tests whether the position is drawn by 50-move rule
+// or by repetition. It does not detect stalemates.
 bool Position::is_draw(int ply) const {
 
     if (st->rule50 > 99 && (!checkers() || MoveList<LEGAL>(*this).size()))
@@ -1961,9 +1920,8 @@ bool Position::is_draw(int ply) const {
 }
 
 
-// Position::has_repeated() tests whether there has been at least one repetition
+// Tests whether there has been at least one repetition
 // of positions since the last capture or pawn move.
-
 bool Position::has_repeated() const {
 
     StateInfo* stc = st;
@@ -1978,9 +1936,9 @@ bool Position::has_repeated() const {
     return false;
 }
 //from Crystal begin
-bool Position::king_danger() const {
+bool Position::king_danger(Color c) const {
 
-    Square   ksq = square<KING>(sideToMove);
+    Square   ksq = square<KING>(c);
     Bitboard kingRing, kingAttackers, legalKing;
 
     kingRing = kingAttackers = legalKing = 0;
@@ -1990,18 +1948,17 @@ bool Position::king_danger() const {
     while (kingRing)
     {
         Square   to             = pop_lsb(kingRing);
-        Bitboard enemyAttackers = pieces(~sideToMove) & attackers_to(to);
+        Bitboard enemyAttackers = pieces(~c) & attackers_to(to);
         if (!enemyAttackers)
         {
-            if ((pieces(sideToMove) & to) == 0)
+            if ((pieces(c) & to) == 0)
                 legalKing |= to;
         }
 
         while (enemyAttackers)
         {
             Square currentEnemy = pop_lsb(enemyAttackers);
-            if ((currentEnemy & ~kingRing)
-                || (more_than_one(attackers_to(to) & pieces(~sideToMove))))
+            if ((currentEnemy & ~kingRing) || (more_than_one(attackers_to(to) & pieces(~c))))
                 kingAttackers |= currentEnemy;
         }
     }
@@ -2016,9 +1973,8 @@ bool Position::king_danger() const {
 }
 //from Crystal end
 
-/// Position::has_game_cycle() tests if the position has a move which draws by repetition,
-/// or an earlier position has a move that directly reaches the current position.
-
+// Tests if the position has a move which draws by repetition,
+// or an earlier position has a move that directly reaches the current position.
 bool Position::has_game_cycle(int ply) const {
 
     int j;
@@ -2039,8 +1995,8 @@ bool Position::has_game_cycle(int ply) const {
         if ((j = H1(moveKey), cuckoo[j] == moveKey) || (j = H2(moveKey), cuckoo[j] == moveKey))
         {
             Move   move = cuckooMove[j];
-            Square s1   = from_sq(move);
-            Square s2   = to_sq(move);
+            Square s1   = move.from_sq();
+            Square s2   = move.to_sq();
 
             if (!((between_bb(s1, s2) ^ s2) & pieces()))
             {
@@ -2064,9 +2020,8 @@ bool Position::has_game_cycle(int ply) const {
 }
 
 
-/// Position::flip() flips position with the white and black sides reversed. This
-/// is only useful for debugging e.g. for finding evaluation symmetry bugs.
-
+// Flips position with the white and black sides reversed. This
+// is only useful for debugging e.g. for finding evaluation symmetry bugs.
 void Position::flip() {
 
     string            f, token;
@@ -2093,16 +2048,15 @@ void Position::flip() {
     std::getline(ss, token);  // Half and full moves
     f += token;
 
-    set(f, is_chess960(), st, this_thread());
+    set(f, is_chess960(), st);
 
     assert(pos_is_ok());
 }
 
 
-/// Position::pos_is_ok() performs some consistency checks for the
-/// position object and raises an asserts if something wrong is detected.
-/// This is meant to be helpful when debugging.
-
+// Performs some consistency checks for the position object
+// and raise an assert if something wrong is detected.
+// This is meant to be helpful when debugging.
 bool Position::pos_is_ok() const {
 
     constexpr bool Fast = true;  // Quick (default) or full check?
@@ -2152,4 +2106,4 @@ bool Position::pos_is_ok() const {
     return true;
 }
 
-}  // namespace Stockfish
+}  // namespace ShashChess

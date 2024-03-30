@@ -1,0 +1,314 @@
+[ECO "D95"]
+[Opening "Gruenfeld with e3 & Qb3"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. e3 O-O 6. Qb3 *
+
+[ECO "D95"]
+[Opening "Gruenfeld"]
+[Variation "Botvinnik variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. e3 O-O 6. Qb3 e6 *
+
+[ECO "D95"]
+[Opening "Gruenfeld"]
+[Variation "Pachman variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. e3 O-O 6. Qb3 dxc4 7. Bxc4 Nbd7
+8. Ng5 *
+
+[ECO "D96"]
+[Opening "Gruenfeld"]
+[Variation "Russian variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. Qb3 *
+
+[ECO "D97"]
+[Opening "Gruenfeld"]
+[Variation "Russian variation with e4"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. Qb3 dxc4 6. Qxc4 O-O 7. e4 *
+
+[ECO "D97"]
+[Opening "Gruenfeld"]
+[Variation "Russian, Alekhine (Hungarian) variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. Qb3 dxc4 6. Qxc4 O-O 7. e4 a6 *
+
+[ECO "D97"]
+[Opening "Gruenfeld"]
+[Variation "Russian, Szabo (Boleslavsky) variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. Qb3 dxc4 6. Qxc4 O-O 7. e4 c6 *
+
+[ECO "D97"]
+[Opening "Gruenfeld"]
+[Variation "Russian, Levenfish variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. Qb3 dxc4 6. Qxc4 O-O 7. e4 b6 *
+
+[ECO "D97"]
+[Opening "Gruenfeld"]
+[Variation "Russian, Byrne (Simagin) variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. Qb3 dxc4 6. Qxc4 O-O 7. e4 Nc6 *
+
+[ECO "D97"]
+[Opening "Gruenfeld"]
+[Variation "Russian, Prins variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. Qb3 dxc4 6. Qxc4 O-O 7. e4 Na6 *
+
+[ECO "D98"]
+[Opening "Gruenfeld"]
+[Variation "Russian, Smyslov variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. Qb3 dxc4 6. Qxc4 O-O 7. e4 Bg4 *
+
+[ECO "D98"]
+[Opening "Gruenfeld"]
+[Variation "Russian, Keres variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. Qb3 dxc4 6. Qxc4 O-O 7. e4 Bg4 
+8. Be3 Nfd7 9. Be2 Nb6 10. Qd3 Nc6 11. O-O-O *
+
+[ECO "D99"]
+[Opening "Gruenfeld defence"]
+[Variation "Smyslov, main line"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. Qb3 dxc4 6. Qxc4 O-O 7. e4 Bg4 
+8. Be3 Nfd7 9. Qb3 *
+
+[ECO "D99"]
+[Opening "Gruenfeld defence"]
+[Variation "Smyslov, Yugoslav variation"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. Qb3 dxc4 6. Qxc4 O-O 7. e4 Bg4 
+8. Be3 Nfd7 9. Qb3 c5 *
+
+[ECO "E00"]
+[Opening "Queen's pawn game"]
+
+1. d4 Nf6 2. c4 e6 *
+
+[ECO "E00"]
+[Opening "Neo-Indian (Seirawan) attack"]
+
+1. d4 Nf6 2. c4 e6 3. Bg5 *
+
+[ECO "E00"]
+[Opening "Catalan opening"]
+
+1. d4 Nf6 2. c4 e6 3. g3 *
+
+[ECO "E01"]
+[Opening "Catalan"]
+[Variation "closed"]
+
+1. d4 Nf6 2. c4 e6 3. g3 d5 4. Bg2 *
+
+[ECO "E02"]
+[Opening "Catalan"]
+[Variation "open, 5.Qa4"]
+
+1. d4 Nf6 2. c4 e6 3. g3 d5 4. Bg2 dxc4 5. Qa4+ *
+
+[ECO "E03"]
+[Opening "Catalan"]
+[Variation "open, Alekhine variation"]
+
+1. d4 Nf6 2. c4 e6 3. g3 d5 4. Bg2 dxc4 5. Qa4+ Nbd7 6. Qxc4 a6 7. Qc2 *
+
+[ECO "E03"]
+[Opening "Catalan"]
+[Variation "open, 5.Qa4 Nbd7, 6.Qxc4"]
+
+1. d4 Nf6 2. c4 e6 3. g3 d5 4. Bg2 dxc4 5. Qa4+ Nbd7 6. Qxc4 *
+
+[ECO "E04"]
+[Opening "Catalan"]
+[Variation "open, 5.Nf3"]
+
+1. d4 Nf6 2. c4 e6 3. g3 d5 4. Bg2 dxc4 5. Nf3 *
+
+[ECO "E05"]
+[Opening "Catalan"]
+[Variation "open, classical line"]
+
+1. d4 Nf6 2. c4 e6 3. g3 d5 4. Bg2 dxc4 5. Nf3 Be7 *
+
+[ECO "E06"]
+[Opening "Catalan"]
+[Variation "closed, 5.Nf3"]
+
+1. d4 Nf6 2. c4 e6 3. g3 d5 4. Bg2 Be7 5. Nf3 *
+
+[ECO "E07"]
+[Opening "Catalan"]
+[Variation "closed, 6...Nbd7"]
+
+1. d4 Nf6 2. c4 e6 3. g3 d5 4. Bg2 Be7 5. Nf3 O-O 6. O-O Nbd7 *
+
+[ECO "E07"]
+[Opening "Catalan"]
+[Variation "closed, Botvinnik variation"]
+
+1. d4 Nf6 2. c4 e6 3. g3 d5 4. Bg2 Be7 5. Nf3 O-O 6. O-O Nbd7 7. Nc3 c6 8.
+Qd3 *
+
+[ECO "E08"]
+[Opening "Catalan"]
+[Variation "closed, 7.Qc2"]
+
+1. d4 Nf6 2. c4 e6 3. g3 d5 4. Bg2 Be7 5. Nf3 O-O 6. O-O Nbd7 7. Qc2 *
+
+[ECO "E08"]
+[Opening "Catalan"]
+[Variation "closed, Zagoryansky variation"]
+
+1. d4 Nf6 2. c4 e6 3. g3 d5 4. Bg2 Be7 5. Nf3 O-O 6. O-O Nbd7 7. Qc2 c6 8.
+Rd1 b6 9. a4 *
+
+[ECO "E08"]
+[Opening "Catalan"]
+[Variation "closed, Qc2 & b3"]
+
+1. d4 Nf6 2. c4 e6 3. g3 d5 4. Bg2 Be7 5. Nf3 O-O 6. O-O Nbd7 7. Qc2 c6 8.
+b3 *
+
+[ECO "E08"]
+[Opening "Catalan"]
+[Variation "closed, Spassky gambit"]
+
+1. d4 Nf6 2. c4 e6 3. g3 d5 4. Bg2 Be7 5. Nf3 O-O 6. O-O Nbd7 7. Qc2 c6 8.
+b3 b6 9. Rd1 Bb7 10. Nc3 b5 *
+
+[ECO "E09"]
+[Opening "Catalan"]
+[Variation "closed, main line"]
+
+1. d4 Nf6 2. c4 e6 3. g3 d5 4. Bg2 Be7 5. Nf3 O-O 6. O-O Nbd7 7. Qc2 c6 8.
+Nbd2 *
+
+[ECO "E09"]
+[Opening "Catalan"]
+[Variation "closed, Sokolsky variation"]
+
+1. d4 Nf6 2. c4 e6 3. g3 d5 4. Bg2 Be7 5. Nf3 O-O 6. O-O Nbd7 7. Qc2 c6 8.
+Nbd2 b6 9. b3 a5 10. Bb2 Ba6 *
+
+[ECO "E10"]
+[Opening "Queen's pawn game"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 *
+
+[ECO "E10"]
+[Opening "Blumenfeld counter-gambit"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 c5 4. d5 b5 *
+
+[ECO "E10"]
+[Opening "Blumenfeld counter-gambit accepted"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 c5 4. d5 b5 5. dxe6 fxe6 6. cxb5 d5 *
+
+[ECO "E10"]
+[Opening "Blumenfeld counter-gambit, Dus-Chotimursky variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 c5 4. d5 b5 5. Bg5 *
+
+[ECO "E10"]
+[Opening "Blumenfeld counter-gambit, Spielmann variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 c5 4. d5 b5 5. Bg5 exd5 6. cxd5 h6 *
+
+[ECO "E10"]
+[Opening "Dzindzikhashvili defence"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 a6 *
+
+[ECO "E10"]
+[Opening "Doery defence"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 Ne4 *
+
+[ECO "E11"]
+[Opening "Bogo-Indian defence"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 Bb4+ *
+
+[ECO "E11"]
+[Opening "Bogo-Indian defence, Gruenfeld variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 Bb4+ 4. Nbd2 *
+
+[ECO "E11"]
+[Opening "Bogo-Indian defence, Nimzovich variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 Bb4+ 4. Bd2 Qe7 *
+
+[ECO "E11"]
+[Opening "Bogo-Indian defence, Monticelli trap"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 Bb4+ 4. Bd2 Bxd2+ 5. Qxd2 b6 6. g3 Bb7 7. Bg2 O-O
+8. Nc3 Ne4 9. Qc2 Nxc3 10. Ng5 *
+
+[ECO "E12"]
+[Opening "Queen's Indian defence"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 *
+
+[ECO "E12"]
+[Opening "Queen's Indian"]
+[Variation "Miles variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. Bf4 *
+
+[ECO "E12"]
+[Opening "Queen's Indian"]
+[Variation "Petrosian system"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. a3 *
+
+[ECO "E12"]
+[Opening "Queen's Indian"]
+[Variation "4.Nc3"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. Nc3 *
+
+[ECO "E12"]
+[Opening "Queen's Indian"]
+[Variation "4.Nc3, Botvinnik variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. Nc3 Bb7 5. Bg5 h6 6. Bh4 g5 7. Bg3 Nh5 *
+
+[ECO "E13"]
+[Opening "Queen's Indian"]
+[Variation "4.Nc3, main line"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. Nc3 Bb7 5. Bg5 h6 6. Bh4 Bb4 *
+
+[ECO "E14"]
+[Opening "Queen's Indian"]
+[Variation "4.e3"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. e3 *
+
+[ECO "E14"]
+[Opening "Queen's Indian"]
+[Variation "Averbakh variation"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. e3 Bb7 5. Bd3 c5 6. O-O Be7 7. b3 O-O 8. 
+Bb2 cxd4 9. Nxd4 *
+
+[ECO "E15"]
+[Opening "Queen's Indian"]
+[Variation "4.g3"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. g3 *
+
+[ECO "E15"]
+[Opening "Queen's Indian"]
+[Variation "Nimzovich variation (exaggerated fianchetto)"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. g3 Ba6 *
+

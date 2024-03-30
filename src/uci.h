@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2023 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,79 +19,67 @@
 #ifndef UCI_H_INCLUDED
 #define UCI_H_INCLUDED
 
-#include <map>
+#include <iostream>
 #include <string>
+#include <unordered_map>
 
-#include "types.h"
+#include "evaluate.h"
+#include "misc.h"
+#include "position.h"
+#include "thread.h"
+#include "tt.h"
+#include "book/book_manager.h"  //book management
+#include "ucioption.h"
 
-namespace Stockfish {
+namespace ShashChess {
 
-class Position;
+namespace Eval::NNUE {
+enum NetSize : int;
+}
 
-namespace UCI {
+class Move;
+enum Square : int;
+using Value = int;
 
-// Normalizes the internal value as reported by evaluate or search
-// to the UCI centipawn result used in output. This value is derived from
-// the win_rate_model() such that Stockfish outputs an advantage of
-// "100 centipawns" for a position if the engine has a 50% probability to win
-// from this position in selfplay at fishtest LTC time control.
-const int NormalizeToPawnValue = 328;
-
-class Option;
-
-/// Define a custom comparator, because the UCI options should be case-insensitive
-struct CaseInsensitiveLess {
-    bool operator()(const std::string&, const std::string&) const;
-};
-
-/// The options container is defined as a std::map
-using OptionsMap = std::map<std::string, Option, CaseInsensitiveLess>;
-
-/// The Option class implements each option as specified by the UCI protocol
-class Option {
-
-    using OnChange = void (*)(const Option&);
-
+class UCI {
    public:
-    Option(OnChange = nullptr);
-    Option(bool v, OnChange = nullptr);
-    Option(const char* v, OnChange = nullptr);
-    Option(double v, int minv, int maxv, OnChange = nullptr);
-    Option(const char* v, const char* cur, OnChange = nullptr);
+    UCI(int argc, char** argv);
 
-    Option& operator=(const std::string&);
-    void    operator<<(const Option&);
-    operator int() const;
-    operator std::string() const;
-    bool operator==(const char*) const;
+    void loop();
+
+    static int         to_cp(Value v);
+    static std::string value(Value v);
+    static std::string square(Square s);
+    static std::string move(Move m, bool chess960);
+    static std::string wdl(Value v, int ply);
+    static uint8_t     getWinProbability(int v, int ply);
+    static Move        to_move(const Position& pos, std::string& str);
+
+    const std::string& workingDirectory() const { return cli.workingDirectory; }
+
+    OptionsMap options;
+
+    std::unordered_map<Eval::NNUE::NetSize, Eval::EvalFile> evalFiles;
 
    private:
-    friend std::ostream& operator<<(std::ostream&, const OptionsMap&);
+    TranspositionTable tt;
+    ThreadPool         threads;
+    BookManager        bookMan;  //book management
+    CommandLine        cli;
 
-    std::string defaultValue, currentValue, type;
-    int         min, max;
-    size_t      idx;
-    OnChange    on_change;
+    void go(Position& pos, std::istringstream& is, StateListPtr& states);
+    void bench(Position& pos, std::istream& args, StateListPtr& states);
+    void position(Position& pos, std::istringstream& is, StateListPtr& states);
+    void trace_eval(Position& pos);
+    void search_clear();
+    void setoption(std::istringstream& is);
 };
 
-void        init(OptionsMap&);
-void        loop(int argc, char* argv[]);
-std::string value(Value v);
-std::string square(Square s);
-std::string move(Move m, bool chess960);
-std::string pv(const Position& pos, Depth depth);
-std::string wdl(Value v, int ply);
-uint8_t     getWinProbability(Value v, int ply);
-Move        to_move(const Position& pos, std::string& str);
-
-}  // namespace UCI
-
-extern UCI::OptionsMap Options;
-//no uci options, but constants
+//begin no uci option, but constant
 enum {
     NODES_TIME = 0,
 };
-//end no uci options, but constants
-}  // namespace Stockfish
+//end no uci option, but constant
+}  // namespace ShashChess
 
 #endif  // #ifndef UCI_H_INCLUDED

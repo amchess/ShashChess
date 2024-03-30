@@ -1,0 +1,319 @@
+[ECO "A61"]
+[Opening "Benoni"]
+[Variation "Nimzovich (knight's tour) variation"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. Nf3 g6 7. Nd2 *
+
+[ECO "A61"]
+[Opening "Benoni"]
+[Variation "fianchetto variation"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. Nf3 g6 7. g3 *
+
+[ECO "A62"]
+[Opening "Benoni"]
+[Variation "fianchetto variation"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. Nf3 g6 7. g3 Bg7 8. 
+Bg2 O-O *
+
+[ECO "A63"]
+[Opening "Benoni"]
+[Variation "fianchetto, 9...Nbd7"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. Nf3 g6 7. g3 Bg7 8. 
+Bg2 O-O 9. O-O Nbd7 *
+
+[ECO "A64"]
+[Opening "Benoni"]
+[Variation "fianchetto, 11...Re8"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. Nf3 g6 7. g3 Bg7 8. 
+Bg2 O-O 9. O-O Nbd7 10. Nd2 a6 11. a4 Re8 *
+
+[ECO "A65"]
+[Opening "Benoni"]
+[Variation "6.e4"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 *
+
+[ECO "A66"]
+[Opening "Benoni"]
+[Variation "pawn storm variation"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 g6 7. f4 *
+
+[ECO "A66"]
+[Opening "Benoni"]
+[Variation "Mikenas variation"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 g6 7. f4 Bg7 8. e5
+*
+
+[ECO "A67"]
+[Opening "Benoni"]
+[Variation "Taimanov variation"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 g6 7. f4 Bg7 8. 
+Bb5+ *
+
+[ECO "A68"]
+[Opening "Benoni"]
+[Variation "four pawns attack"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 g6 7. f4 Bg7 8. 
+Nf3 O-O *
+
+[ECO "A69"]
+[Opening "Benoni"]
+[Variation "four pawns attack, main line"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 g6 7. f4 Bg7 8. 
+Nf3 O-O 9. Be2 Re8 *
+
+[ECO "A70"]
+[Opening "Benoni"]
+[Variation "classical with e4 and Nf3"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 g6 7. Nf3 *
+
+[ECO "A70"]
+[Opening "Benoni"]
+[Variation "classical without 9.O-O"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 g6 7. Nf3 Bg7 8. 
+Be2 *
+
+[ECO "A71"]
+[Opening "Benoni"]
+[Variation "classical, 8.Bg5"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 g6 7. Nf3 Bg7 8. 
+Bg5 *
+
+[ECO "A72"]
+[Opening "Benoni"]
+[Variation "classical without 9.O-O"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 g6 7. Nf3 Bg7 8. 
+Be2 O-O *
+
+[ECO "A73"]
+[Opening "Benoni"]
+[Variation "classical, 9.O-O"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 g6 7. Nf3 Bg7 8. 
+Be2 O-O 9. O-O *
+
+[ECO "A74"]
+[Opening "Benoni"]
+[Variation "classical, 9...a6, 10.a4"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 g6 7. Nf3 Bg7 8. 
+Be2 O-O 9. O-O a6 10. a4 *
+
+[ECO "A75"]
+[Opening "Benoni"]
+[Variation "classical with ...a6 and 10...Bg4"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 g6 7. Nf3 Bg7 8. 
+Be2 O-O 9. O-O a6 10. a4 Bg4 *
+
+[ECO "A76"]
+[Opening "Benoni"]
+[Variation "classical, 9...Re8"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 g6 7. Nf3 Bg7 8. 
+Be2 O-O 9. O-O Re8 *
+
+[ECO "A77"]
+[Opening "Benoni"]
+[Variation "classical, 9...Re8, 10.Nd2"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 g6 7. Nf3 Bg7 8. 
+Be2 O-O 9. O-O Re8 10. Nd2 *
+
+[ECO "A78"]
+[Opening "Benoni"]
+[Variation "classical with ...Re8 and ...Na6"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 g6 7. Nf3 Bg7 8. 
+Be2 O-O 9. O-O Re8 10. Nd2 Na6 *
+
+[ECO "A79"]
+[Opening "Benoni"]
+[Variation "classical, 11.f3"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6 6. e4 g6 7. Nf3 Bg7 8. 
+Be2 O-O 9. O-O Re8 10. Nd2 Na6 11. f3 *
+
+[ECO "A80"]
+[Opening "Dutch"]
+
+1. d4 f5 *
+
+[ECO "A80"]
+[Opening "Dutch, Spielmann gambit"]
+
+1. d4 f5 2. Nc3 Nf6 3. g4 *
+
+[ECO "A80"]
+[Opening "Dutch, Manhattan (Alapin, Ulvestad) variation"]
+
+1. d4 f5 2. Qd3 *
+
+[ECO "A80"]
+[Opening "Dutch, Von Pretzel gambit"]
+
+1. d4 f5 2. Qd3 e6 3. g4 *
+
+[ECO "A80"]
+[Opening "Dutch, Korchnoi attack"]
+
+1. d4 f5 2. h3 *
+
+[ECO "A80"]
+[Opening "Dutch, Krejcik gambit"]
+
+1. d4 f5 2. g4 *
+
+[ECO "A80"]
+[Opening "Dutch, 2.Bg5 variation"]
+
+1. d4 f5 2. Bg5 *
+
+[ECO "A81"]
+[Opening "Dutch defence"]
+
+1. d4 f5 2. g3 *
+
+[ECO "A81"]
+[Opening "Dutch defence, Blackburne variation"]
+
+1. d4 f5 2. g3 Nf6 3. Bg2 e6 4. Nh3 *
+
+[ECO "A81"]
+[Opening "Dutch defence"]
+
+1. d4 f5 2. g3 Nf6 3. Bg2 g6 *
+
+[ECO "A81"]
+[Opening "Dutch"]
+[Variation "Leningrad, Basman system"]
+
+1. d4 f5 2. g3 g6 3. Bg2 Bg7 4. Nf3 c6 5. O-O Nh6 *
+
+[ECO "A81"]
+[Opening "Dutch"]
+[Variation "Leningrad, Karlsbad variation"]
+
+1. d4 f5 2. g3 g6 3. Bg2 Bg7 4. Nh3 *
+
+[ECO "A82"]
+[Opening "Dutch"]
+[Variation "Staunton gambit"]
+
+1. d4 f5 2. e4 *
+
+[ECO "A82"]
+[Opening "Dutch"]
+[Variation "Balogh defence"]
+
+1. d4 f5 2. e4 d6 *
+
+[ECO "A82"]
+[Opening "Dutch"]
+[Variation "Staunton gambit"]
+
+1. d4 f5 2. e4 fxe4 *
+
+[ECO "A82"]
+[Opening "Dutch"]
+[Variation "Staunton gambit, Tartakower variation"]
+
+1. d4 f5 2. e4 fxe4 3. Nc3 Nf6 4. g4 *
+
+[ECO "A83"]
+[Opening "Dutch"]
+[Variation "Staunton gambit, Staunton's line"]
+
+1. d4 f5 2. e4 fxe4 3. Nc3 Nf6 4. Bg5 *
+
+[ECO "A83"]
+[Opening "Dutch"]
+[Variation "Staunton gambit, Alekhine variation"]
+
+1. d4 f5 2. e4 fxe4 3. Nc3 Nf6 4. Bg5 g6 5. h4 *
+
+[ECO "A83"]
+[Opening "Dutch"]
+[Variation "Staunton gambit, Lasker variation"]
+
+1. d4 f5 2. e4 fxe4 3. Nc3 Nf6 4. Bg5 g6 5. f3 *
+
+[ECO "A83"]
+[Opening "Dutch"]
+[Variation "Staunton gambit, Chigorin variation"]
+
+1. d4 f5 2. e4 fxe4 3. Nc3 Nf6 4. Bg5 c6 *
+
+[ECO "A83"]
+[Opening "Dutch"]
+[Variation "Staunton gambit, Nimzovich variation"]
+
+1. d4 f5 2. e4 fxe4 3. Nc3 Nf6 4. Bg5 b6 *
+
+[ECO "A84"]
+[Opening "Dutch defence"]
+
+1. d4 f5 2. c4 *
+
+[ECO "A84"]
+[Opening "Dutch defence"]
+[Variation "Bladel variation"]
+
+1. d4 f5 2. c4 g6 3. Nc3 Nh6 *
+
+[ECO "A84"]
+[Opening "Dutch defence"]
+
+1. d4 f5 2. c4 e6 *
+
+[ECO "A84"]
+[Opening "Dutch defence, Rubinstein variation"]
+
+1. d4 f5 2. c4 e6 3. Nc3 *
+
+[ECO "A84"]
+[Opening "Dutch"]
+[Variation "Staunton gambit deferred"]
+
+1. d4 f5 2. c4 e6 3. e4 *
+
+[ECO "A84"]
+[Opening "Dutch defence"]
+
+1. d4 f5 2. c4 Nf6 *
+
+[ECO "A85"]
+[Opening "Dutch with c4 & Nc3"]
+
+1. d4 f5 2. c4 Nf6 3. Nc3 *
+
+[ECO "A86"]
+[Opening "Dutch with c4 & g3"]
+
+1. d4 f5 2. c4 Nf6 3. g3 *
+
+[ECO "A86"]
+[Opening "Dutch"]
+[Variation "Hort-Antoshin system"]
+
+1. d4 f5 2. c4 Nf6 3. g3 d6 4. Bg2 c6 5. Nc3 Qc7 *
+
+[ECO "A86"]
+[Opening "Dutch"]
+[Variation "Leningrad variation"]
+
+1. d4 f5 2. c4 Nf6 3. g3 g6 *
+

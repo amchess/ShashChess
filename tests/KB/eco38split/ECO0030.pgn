@@ -1,0 +1,323 @@
+[ECO "D27"]
+[Opening "QGA"]
+[Variation "classical, Rubinstein variation"]
+
+1. d4 d5 2. c4 dxc4 3. Nf3 Nf6 4. e3 e6 5. Bxc4 c5 6. O-O a6 7. a4 *
+
+[ECO "D27"]
+[Opening "QGA"]
+[Variation "classical, Geller variation"]
+
+1. d4 d5 2. c4 dxc4 3. Nf3 Nf6 4. e3 e6 5. Bxc4 c5 6. O-O a6 7. e4 *
+
+[ECO "D28"]
+[Opening "QGA"]
+[Variation "classical, 7.Qe2"]
+
+1. d4 d5 2. c4 dxc4 3. Nf3 Nf6 4. e3 e6 5. Bxc4 c5 6. O-O a6 7. Qe2 *
+
+[ECO "D28"]
+[Opening "QGA"]
+[Variation "classical, 7...b5"]
+
+1. d4 d5 2. c4 dxc4 3. Nf3 Nf6 4. e3 e6 5. Bxc4 c5 6. O-O a6 7. Qe2 b5 *
+
+[ECO "D28"]
+[Opening "QGA"]
+[Variation "classical, Flohr variation"]
+
+1. d4 d5 2. c4 dxc4 3. Nf3 Nf6 4. e3 e6 5. Bxc4 c5 6. O-O a6 7. Qe2 b5 8. 
+Bb3 Nc6 9. Rd1 c4 10. Bc2 Nb4 11. Nc3 Nxc2 12. Qxc2 Bb7 13. d5 Qc7 *
+
+[ECO "D29"]
+[Opening "QGA"]
+[Variation "classical, 8...Bb7"]
+
+1. d4 d5 2. c4 dxc4 3. Nf3 Nf6 4. e3 e6 5. Bxc4 c5 6. O-O a6 7. Qe2 b5 8. 
+Bb3 Bb7 *
+
+[ECO "D29"]
+[Opening "QGA"]
+[Variation "classical, Smyslov variation"]
+
+1. d4 d5 2. c4 dxc4 3. Nf3 Nf6 4. e3 e6 5. Bxc4 c5 6. O-O a6 7. Qe2 b5 8. 
+Bb3 Bb7 9. Rd1 Nbd7 10. Nc3 Bd6 *
+
+[ECO "D30"]
+[Opening "Queen's gambit declined"]
+
+1. d4 d5 2. c4 e6 *
+
+[ECO "D30"]
+[Opening "QGD Slav"]
+
+1. d4 d5 2. c4 e6 3. Nf3 Nf6 4. e3 c6 5. Nbd2 *
+
+[ECO "D30"]
+[Opening "QGD"]
+[Variation "Stonewall variation"]
+
+1. d4 d5 2. c4 e6 3. Nf3 Nf6 4. e3 c6 5. Nbd2 Ne4 6. Bd3 f5 *
+
+[ECO "D30"]
+[Opening "QGD Slav"]
+
+1. d4 d5 2. c4 e6 3. Nf3 Nf6 4. e3 c6 5. Nbd2 Nbd7 *
+
+[ECO "D30"]
+[Opening "QGD Slav"]
+[Variation "Semmering variation"]
+
+1. d4 d5 2. c4 e6 3. Nf3 Nf6 4. e3 c6 5. Nbd2 Nbd7 6. Bd3 c5 *
+
+[ECO "D30"]
+[Opening "QGD"]
+[Variation "Spielmann variation"]
+
+1. d4 d5 2. c4 e6 3. Nf3 Nf6 4. e3 c6 5. Nbd2 g6 *
+
+[ECO "D30"]
+[Opening "QGD"]
+
+1. d4 d5 2. c4 e6 3. Nf3 Nf6 4. Bg5 *
+
+[ECO "D30"]
+[Opening "QGD"]
+[Variation "Capablanca variation"]
+
+1. d4 d5 2. c4 e6 3. Nf3 Nf6 4. Bg5 Nbd7 5. e3 c6 6. Nbd2 *
+
+[ECO "D30"]
+[Opening "QGD"]
+[Variation "Vienna variation"]
+
+1. d4 d5 2. c4 e6 3. Nf3 Nf6 4. Bg5 Bb4+ *
+
+[ECO "D30"]
+[Opening "QGD"]
+[Variation "Capablanca-Duras variation"]
+
+1. d4 d5 2. c4 e6 3. Nf3 Nf6 4. Bg5 h6 *
+
+[ECO "D30"]
+[Opening "QGD"]
+[Variation "Hastings variation"]
+
+1. d4 d5 2. c4 e6 3. Nf3 Nf6 4. Bg5 h6 5. Bxf6 Qxf6 6. Nc3 c6 7. Qb3 *
+
+[ECO "D31"]
+[Opening "QGD"]
+[Variation "3.Nc3"]
+
+1. d4 d5 2. c4 e6 3. Nc3 *
+
+[ECO "D31"]
+[Opening "QGD"]
+[Variation "Janowski variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 a6 *
+
+[ECO "D31"]
+[Opening "QGD"]
+[Variation "Alapin variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 b6 *
+
+[ECO "D31"]
+[Opening "QGD"]
+[Variation "Charousek (Petrosian) variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Be7 *
+
+[ECO "D31"]
+[Opening "QGD"]
+[Variation "semi-Slav"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c6 *
+
+[ECO "D31"]
+[Opening "QGD"]
+[Variation "semi-Slav, Noteboom variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c6 4. Nf3 dxc4 *
+
+[ECO "D31"]
+[Opening "QGD"]
+[Variation "semi-Slav, Koomen variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c6 4. Nf3 dxc4 5. a4 Bb4 6. e3 b5 7. Bd2 Qe7 *
+
+[ECO "D31"]
+[Opening "QGD"]
+[Variation "semi-Slav, Junge variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c6 4. Nf3 dxc4 5. a4 Bb4 6. e3 b5 7. Bd2 Qb6 *
+
+[ECO "D31"]
+[Opening "QGD"]
+[Variation "semi-Slav, Abrahams variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c6 4. Nf3 dxc4 5. a4 Bb4 6. e3 b5 7. Bd2 a5 *
+
+[ECO "D31"]
+[Opening "QGD"]
+[Variation "semi-Slav, Marshall gambit"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c6 4. e4 *
+
+[ECO "D32"]
+[Opening "QGD"]
+[Variation "Tarrasch defence"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c5 *
+
+[ECO "D32"]
+[Opening "QGD"]
+[Variation "Tarrasch, von Hennig-Schara gambit"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 cxd4 *
+
+[ECO "D32"]
+[Opening "QGD"]
+[Variation "Tarrasch defence, 4.cd ed"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 *
+
+[ECO "D32"]
+[Opening "QGD"]
+[Variation "Tarrasch defence, Tarrasch gambit"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 5. dxc5 d4 6. Na4 b5 *
+
+[ECO "D32"]
+[Opening "QGD"]
+[Variation "Tarrasch defence, Marshall gambit"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 5. e4 *
+
+[ECO "D32"]
+[Opening "QGD"]
+[Variation "Tarrasch defence"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 5. Nf3 *
+
+[ECO "D33"]
+[Opening "QGD"]
+[Variation "Tarrasch, Schlechter-Rubinstein system"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 5. Nf3 Nc6 6. g3 *
+
+[ECO "D33"]
+[Opening "QGD"]
+[Variation "Tarrasch, Folkestone (Swedish) variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 5. Nf3 Nc6 6. g3 c4 *
+
+[ECO "D33"]
+[Opening "QGD"]
+[Variation "Tarrasch, Schlechter-Rubinstein system, Rey Ardid variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 5. Nf3 Nc6 6. g3 c4 7. e4 *
+
+[ECO "D33"]
+[Opening "QGD"]
+[Variation "Tarrasch, Prague variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 5. Nf3 Nc6 6. g3 Nf6 *
+
+[ECO "D33"]
+[Opening "QGD"]
+[Variation "Tarrasch, Wagner variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 5. Nf3 Nc6 6. g3 Nf6 7. Bg2 Bg4 *
+
+[ECO "D34"]
+[Opening "QGD"]
+[Variation "Tarrasch, Prague variation, 7...Be7"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 5. Nf3 Nc6 6. g3 Nf6 7. Bg2 Be7 *
+
+[ECO "D34"]
+[Opening "QGD"]
+[Variation "Tarrasch, Prague variation, Normal position"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 5. Nf3 Nc6 6. g3 Nf6 7. Bg2 Be7 8.
+O-O O-O *
+
+[ECO "D34"]
+[Opening "QGD"]
+[Variation "Tarrasch, Reti variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 5. Nf3 Nc6 6. g3 Nf6 7. Bg2 Be7 8.
+O-O O-O 9. dxc5 Bxc5 10. Na4 *
+
+[ECO "D34"]
+[Opening "QGD"]
+[Variation "Tarrasch, Prague variation, 9.Bg5"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 5. Nf3 Nc6 6. g3 Nf6 7. Bg2 Be7 8.
+O-O O-O 9. Bg5 *
+
+[ECO "D34"]
+[Opening "QGD"]
+[Variation "Tarrasch, Bogolyubov variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 5. Nf3 Nc6 6. g3 Nf6 7. Bg2 Be7 8.
+O-O O-O 9. Bg5 Be6 10. Rc1 c4 *
+
+[ECO "D34"]
+[Opening "QGD"]
+[Variation "Tarrasch, Stoltz variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c5 4. cxd5 exd5 5. Nf3 Nc6 6. g3 Nf6 7. Bg2 Be7 8.
+O-O O-O 9. Bg5 Be6 10. Rc1 b6 *
+
+[ECO "D35"]
+[Opening "QGD"]
+[Variation "3...Nf6"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 *
+
+[ECO "D35"]
+[Opening "QGD"]
+[Variation "Harrwitz attack"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bf4 *
+
+[ECO "D35"]
+[Opening "QGD"]
+[Variation "exchange variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 *
+
+[ECO "D35"]
+[Opening "QGD"]
+[Variation "exchange, Saemisch variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5 5. Nf3 Nbd7 6. Bf4 *
+
+[ECO "D35"]
+[Opening "QGD"]
+[Variation "exchange, positional line"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5 5. Bg5 *
+
+[ECO "D35"]
+[Opening "QGD"]
+[Variation "exchange, chameleon variation"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5 5. Bg5 Be7 6. e3 O-O 7. Bd3 Nbd7
+8. Qc2 Re8 9. Nge2 Nf8 10. O-O-O *
+
+[ECO "D35"]
+[Opening "QGD"]
+[Variation "exchange, positional line, 5...c6"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5 5. Bg5 c6 *
+
+[ECO "D36"]
+[Opening "QGD"]
+[Variation "exchange, positional line, 6.Qc2"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5 5. Bg5 c6 6. Qc2 *
+

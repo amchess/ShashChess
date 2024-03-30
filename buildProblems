@@ -1,0 +1,4 @@
+Profile-nnue 
+	avx512
+		eval/nnue/architectures/../layers/affine_transform.h:140:39: error: there are no arguments to ‘_mm512_zextsi256_si512’ that depend on a template parameter, so a declaration of ‘_mm512_zextsi256_si512’ must be available [-fpermissive]
+		           sum = _mm512_add_epi32(sum, _mm512_zextsi256_si512(product256));

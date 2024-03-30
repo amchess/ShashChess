@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2023 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,44 +17,30 @@
 */
 
 #include <iostream>
+#include <unordered_map>
 
 #include "bitboard.h"
-#include "endgame.h"
+#include "evaluate.h"
 #include "misc.h"
 #include "position.h"
-#include "psqt.h"
-#include "search.h"
-#include "syzygy/tbprobe.h"
-#include "thread.h"
-#include "tt.h"
-#include "learn.h"
+#include "tune.h"
+#include "types.h"
 #include "uci.h"
-#include "book/book.h"
-using namespace Stockfish;
+#include "learn/learn.h"  //learning
+using namespace ShashChess;
 
 int main(int argc, char* argv[]) {
 
     std::cout << engine_info() << std::endl;
-
-    CommandLine::init(argc, argv);
-    Utility::init(argv[0]);  //Khalid
-    UCI::init(Options);
-    Tune::init();
-    LD.init();  //Kelly
-    PSQT::init();
+    UCI uci(argc, argv);   //Khalid
+    LD.init(uci.options);  //Kelly
     Bitboards::init();
     Position::init();
-    Bitbases::init();
-    Eval::loadAvatar(Options["Avatar File"]);  //handicap mode
-    Endgames::init();
-    Threads.set(size_t(Options["Threads"]));
-    Threads.setFull(Options["Full depth threads"]);  //Full threads patch
-    Search::clear();                                 // After threads are up
-    Eval::NNUE::init();
-    Book::init();  //Books management
+    Tune::init(uci.options);
 
-    UCI::loop(argc, argv);
+    uci.evalFiles = Eval::NNUE::load_networks(uci.workingDirectory(), uci.options, uci.evalFiles);
 
-    Threads.set(0);
+    uci.loop();
+
     return 0;
 }

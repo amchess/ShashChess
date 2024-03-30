@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2023 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,34 +19,41 @@
 #ifndef TIMEMAN_H_INCLUDED
 #define TIMEMAN_H_INCLUDED
 
+#include <cstddef>
+#include <cstdint>
+
 #include "misc.h"
-#include "search.h"
-#include "thread.h"
+#include "types.h"
 
-namespace Stockfish {
+namespace ShashChess {
+class OptionsMap;
 
-/// The TimeManagement class computes the optimal time to think depending on
-/// the maximum available time, the game move number and other parameters.
+namespace Search {
+struct LimitsType;
+}
 
+// The TimeManagement class computes the optimal time to think depending on
+// the maximum available time, the game move number, and other parameters.
 class TimeManagement {
    public:
-    void      init(Search::LimitsType& limits, Color us, int ply);
-    TimePoint optimum() const { return optimumTime; }
-    TimePoint maximum() const { return maximumTime; }
-    TimePoint elapsed() const {
-        return Search::Limits.npmsec ? TimePoint(Threads.nodes_searched()) : now() - startTime;
-    }
+    void init(Search::LimitsType& limits, Color us, int ply, const OptionsMap& options);
 
-    int64_t availableNodes;  // When in 'nodes as time' mode
+    TimePoint optimum() const;
+    TimePoint maximum() const;
+    TimePoint elapsed(std::size_t nodes) const;
+
+    void clear();
+    void advance_nodes_time(std::int64_t nodes);
 
    private:
     TimePoint startTime;
     TimePoint optimumTime;
     TimePoint maximumTime;
+
+    std::int64_t availableNodes = 0;      // When in 'nodes as time' mode
+    bool         useNodesTime   = false;  // True if we are in 'nodes as time' mode
 };
 
-extern TimeManagement Time;
-
-}  // namespace Stockfish
+}  // namespace ShashChess
 
 #endif  // #ifndef TIMEMAN_H_INCLUDED

@@ -1,0 +1,299 @@
+[ECO "A87"]
+[Opening "Dutch"]
+[Variation "Leningrad, main variation"]
+
+1. d4 f5 2. c4 Nf6 3. g3 g6 4. Bg2 Bg7 5. Nf3 *
+
+[ECO "A88"]
+[Opening "Dutch"]
+[Variation "Leningrad, main variation with c6"]
+
+1. d4 f5 2. c4 Nf6 3. g3 g6 4. Bg2 Bg7 5. Nf3 O-O 6. O-O d6 7. Nc3 c6 *
+
+[ECO "A89"]
+[Opening "Dutch"]
+[Variation "Leningrad, main variation with Nc6"]
+
+1. d4 f5 2. c4 Nf6 3. g3 g6 4. Bg2 Bg7 5. Nf3 O-O 6. O-O d6 7. Nc3 Nc6 *
+
+[ECO "A90"]
+[Opening "Dutch defence"]
+
+1. d4 f5 2. c4 Nf6 3. g3 e6 4. Bg2 *
+
+[ECO "A90"]
+[Opening "Dutch defence"]
+[Variation "Dutch-Indian (Nimzo-Dutch) variation"]
+
+1. d4 f5 2. c4 Nf6 3. g3 e6 4. Bg2 Bb4+ *
+
+[ECO "A90"]
+[Opening "Dutch-Indian, Alekhine variation"]
+
+1. d4 f5 2. c4 Nf6 3. g3 e6 4. Bg2 Bb4+ 5. Bd2 Be7 *
+
+[ECO "A91"]
+[Opening "Dutch defence"]
+
+1. d4 f5 2. c4 Nf6 3. g3 e6 4. Bg2 Be7 *
+
+[ECO "A92"]
+[Opening "Dutch defence"]
+
+1. d4 f5 2. c4 Nf6 3. g3 e6 4. Bg2 Be7 5. Nf3 O-O *
+
+[ECO "A92"]
+[Opening "Dutch defence, Alekhine variation"]
+
+1. d4 f5 2. c4 Nf6 3. g3 e6 4. Bg2 Be7 5. Nf3 O-O 6. O-O Ne4 *
+
+[ECO "A92"]
+[Opening "Dutch"]
+[Variation "stonewall variation"]
+
+1. d4 f5 2. c4 Nf6 3. g3 e6 4. Bg2 Be7 5. Nf3 O-O 6. O-O d5 *
+
+[ECO "A92"]
+[Opening "Dutch"]
+[Variation "stonewall with Nc3"]
+
+1. d4 f5 2. c4 Nf6 3. g3 e6 4. Bg2 Be7 5. Nf3 O-O 6. O-O d5 7. Nc3 *
+
+[ECO "A93"]
+[Opening "Dutch"]
+[Variation "stonewall, Botwinnik variation"]
+
+1. d4 f5 2. c4 Nf6 3. g3 e6 4. Bg2 Be7 5. Nf3 O-O 6. O-O d5 7. b3 *
+
+[ECO "A94"]
+[Opening "Dutch"]
+[Variation "stonewall with Ba3"]
+
+1. d4 f5 2. c4 Nf6 3. g3 e6 4. Bg2 Be7 5. Nf3 O-O 6. O-O d5 7. b3 c6 8. Ba3
+*
+
+[ECO "A95"]
+[Opening "Dutch"]
+[Variation "stonewall with Nc3"]
+
+1. d4 f5 2. c4 Nf6 3. g3 e6 4. Bg2 Be7 5. Nf3 O-O 6. O-O d5 7. Nc3 c6 *
+
+[ECO "A95"]
+[Opening "Dutch"]
+[Variation "stonewall: Chekhover variation"]
+
+1. d4 f5 2. c4 Nf6 3. g3 e6 4. Bg2 Be7 5. Nf3 O-O 6. O-O d5 7. Nc3 c6 8. 
+Qc2 Qe8 9. Bg5 *
+
+[ECO "A96"]
+[Opening "Dutch"]
+[Variation "classical variation"]
+
+1. d4 f5 2. c4 Nf6 3. g3 e6 4. Bg2 Be7 5. Nf3 O-O 6. O-O d6 *
+
+[ECO "A97"]
+[Opening "Dutch"]
+[Variation "Ilyin-Genevsky variation"]
+
+1. d4 f5 2. c4 Nf6 3. g3 e6 4. Bg2 Be7 5. Nf3 O-O 6. O-O d6 7. Nc3 Qe8 *
+
+[ECO "A97"]
+[Opening "Dutch"]
+[Variation "Ilyin-Genevsky, Winter variation"]
+
+1. d4 f5 2. c4 Nf6 3. g3 e6 4. Bg2 Be7 5. Nf3 O-O 6. O-O d6 7. Nc3 Qe8 8. 
+Re1 *
+
+[ECO "A98"]
+[Opening "Dutch"]
+[Variation "Ilyin-Genevsky variation with Qc2"]
+
+1. d4 f5 2. c4 Nf6 3. g3 e6 4. Bg2 Be7 5. Nf3 O-O 6. O-O d6 7. Nc3 Qe8 8. 
+Qc2 *
+
+[ECO "A99"]
+[Opening "Dutch"]
+[Variation "Ilyin-Genevsky variation with b3"]
+
+1. d4 f5 2. c4 Nf6 3. g3 e6 4. Bg2 Be7 5. Nf3 O-O 6. O-O d6 7. Nc3 Qe8 8. 
+b3 *
+
+[ECO "B00"]
+[Opening "King's pawn opening"]
+
+1. e4 *
+
+[ECO "B00"]
+[Opening "Hippopotamus defence"]
+
+1. e4 Nh6 2. d4 g6 3. c4 f6 *
+
+[ECO "B00"]
+[Opening "Corn stalk defence"]
+
+1. e4 a5 *
+
+[ECO "B00"]
+[Opening "Lemming defence"]
+
+1. e4 Na6 *
+
+[ECO "B00"]
+[Opening "Fred"]
+
+1. e4 f5 *
+
+[ECO "B00"]
+[Opening "Barnes defence"]
+
+1. e4 f6 *
+
+[ECO "B00"]
+[Opening "Fried fox defence"]
+
+1. e4 f6 2. d4 Kf7 *
+
+[ECO "B00"]
+[Opening "Carr's defence"]
+
+1. e4 h6 *
+
+[ECO "B00"]
+[Opening "Reversed Grob (Borg/Basman defence/macho Grob)"]
+
+1. e4 g5 *
+
+[ECO "B00"]
+[Opening "St. George (Baker) defence"]
+
+1. e4 a6 *
+
+[ECO "B00"]
+[Opening "Owen defence"]
+
+1. e4 b6 *
+
+[ECO "B00"]
+[Opening "Guatemala defence"]
+
+1. e4 b6 2. d4 Ba6 *
+
+[ECO "B00"]
+[Opening "KP"]
+[Variation "Nimzovich defence"]
+
+1. e4 Nc6 *
+
+[ECO "B00"]
+[Opening "KP"]
+[Variation "Nimzovich defence, Wheeler gambit"]
+
+1. e4 Nc6 2. b4 Nxb4 3. c3 Nc6 4. d4 *
+
+[ECO "B00"]
+[Opening "KP"]
+[Variation "Nimzovich defence"]
+
+1. e4 Nc6 2. Nf3 *
+
+[ECO "B00"]
+[Opening "KP"]
+[Variation "Colorado counter"]
+
+1. e4 Nc6 2. Nf3 f5 *
+
+[ECO "B00"]
+[Opening "KP"]
+[Variation "Nimzovich defence"]
+
+1. e4 Nc6 2. d4 *
+
+[ECO "B00"]
+[Opening "KP"]
+[Variation "Nimzovich defence, Marshall gambit"]
+
+1. e4 Nc6 2. d4 d5 3. exd5 Qxd5 4. Nc3 *
+
+[ECO "B00"]
+[Opening "KP"]
+[Variation "Nimzovich defence, Bogolyubov variation"]
+
+1. e4 Nc6 2. d4 d5 3. Nc3 *
+
+[ECO "B00"]
+[Opening "KP"]
+[Variation "Neo-Mongoloid defence"]
+
+1. e4 Nc6 2. d4 f6 *
+
+[ECO "B01"]
+[Opening "Scandinavian (centre counter) defence"]
+
+1. e4 d5 *
+
+[ECO "B01"]
+[Opening "Scandinavian defence, Lasker variation"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. d4 Nf6 5. Nf3 Bg4 6. h3 *
+
+[ECO "B01"]
+[Opening "Scandinavian defence"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. d4 Nf6 5. Nf3 Bf5 *
+
+[ECO "B01"]
+[Opening "Scandinavian defence, Gruenfeld variation"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. d4 Nf6 5. Nf3 Bf5 6. Ne5 c6 7. g4 *
+
+[ECO "B01"]
+[Opening "Scandinavian"]
+[Variation "Anderssen counter-attack"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. d4 e5 *
+
+[ECO "B01"]
+[Opening "Scandinavian"]
+[Variation "Anderssen counter-attack orthodox attack"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. d4 e5 5. dxe5 Bb4 6. Bd2 Nc6 7. Nf3 *
+
+[ECO "B01"]
+[Opening "Scandinavian"]
+[Variation "Anderssen counter-attack, Goteborg system"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. d4 e5 5. Nf3 *
+
+[ECO "B01"]
+[Opening "Scandinavian"]
+[Variation "Anderssen counter-attack, Collijn variation"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. d4 e5 5. Nf3 Bg4 *
+
+[ECO "B01"]
+[Opening "Scandinavian, Mieses-Kotrvc gambit"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. b4 *
+
+[ECO "B01"]
+[Opening "Scandinavian"]
+[Variation "Pytel-Wade variation"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nc3 Qd6 *
+
+[ECO "B01"]
+[Opening "Scandinavian defence"]
+
+1. e4 d5 2. exd5 Nf6 *
+
+[ECO "B01"]
+[Opening "Scandinavian"]
+[Variation "Icelandic gambit"]
+
+1. e4 d5 2. exd5 Nf6 3. c4 e6 *
+
+[ECO "B01"]
+[Opening "Scandinavian gambit"]
+
+1. e4 d5 2. exd5 Nf6 3. c4 c6 *
+

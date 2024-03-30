@@ -1,13 +1,13 @@
 /*
-  Stockfish, a UCI chess playing engine derived from Glaurung 2.1
-  Copyright (C) 2004-2023 The Stockfish developers (see AUTHORS file)
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
 
-  Stockfish is free software: you can redistribute it and/or modify
+  ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Stockfish is distributed in the hope that it will be useful,
+  ShashChess is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -34,10 +34,11 @@
 #include "../search.h"
 #include "../thread.h"
 #include "../uci.h"
+#include "../syzygy/tbprobe.h"
 
-namespace Stockfish {
+namespace ShashChess {
 
-// MonteCarlo is a class implementing Monte-Carlo Tree Search for Stockfish.
+// MonteCarlo is a class implementing Monte-Carlo Tree Search for ShashChess.
 // We are following the survey http://mcts.ai/pubs/mcts-survey-master.pdf
 // for the notations and the description of the Monte-Carlo algorithm.
 
@@ -97,10 +98,10 @@ class AutoSpinLock {
     AutoSpinLock(const MonteCarlo* mcts, Spinlock& sl) :
         _mcts(mcts),
         _sl(sl) {
-        _sl.acquire(_mcts->thisThread->id());
+        _sl.acquire(_mcts->thisThread->thread_idx);
     }
 
-    ~AutoSpinLock() { _sl.release(_mcts->thisThread->id()); }
+    ~AutoSpinLock() { _sl.release(_mcts->thisThread->thread_idx); }
 };
 
 #define LOCK__(m, n, l) AutoSpinLock asl##l(m, n)
@@ -152,11 +153,11 @@ mctsNodeInfo* get_node(const MonteCarlo* mcts, const Position& p) {
 
     // Node was not found, so we have to create a new one
     node                 = new mctsNodeInfo();
-    node->key1           = key1;       // Zobrist hash of all pieces, including pawns
-    node->key2           = key2;       // Zobrist hash of pawns
-    node->node_visits    = 0;          // number of visits by the Monte-Carlo algorithm
-    node->number_of_sons = 0;          // total number of legal moves
-    node->lastMove       = MOVE_NONE;  // the move between the parent and this node
+    node->key1           = key1;          // Zobrist hash of all pieces, including pawns
+    node->key2           = key2;          // Zobrist hash of pawns
+    node->node_visits    = 0;             // number of visits by the Monte-Carlo algorithm
+    node->number_of_sons = 0;             // total number of legal moves
+    node->lastMove       = Move::none();  // the move between the parent and this node
     node->ttValue        = VALUE_NONE;
     node->AB             = false;
 
@@ -192,21 +193,25 @@ void MonteCarlo::add_prior_to_node(mctsNodeInfo* node, Move m, Reward prior) con
 }
 
 // MonteCarlo::search() is the main function of Monte-Carlo algorithm.
-void MonteCarlo::search() {
+void MonteCarlo::search(ShashChess::ThreadPool&        threads,
+                        ShashChess::Search::LimitsType limits,
+                        bool                           isMainThread,
+                        Search::Worker*                worker,
+                        TranspositionTable&            tt) {
 
     mctsNodeInfo* node = nullptr;
     AB_Rollout         = false;
     Reward reward      = value_to_reward(
       VALUE_DRAW);  //TODO: Perhaps we should use static_value() here instead of 'VALUE_DRAW'
 
-    while (computational_budget() && (node = tree_policy()))
+    while (computational_budget(threads, limits) && (node = tree_policy(threads, limits)))
     {
         LOCK(this, node);
 
         if (AB_Rollout)
         {
             Value value = evaluate_with_minimax(node, std::min(ply, MAX_PLY - ply - 2));
-            if (Threads.stop)
+            if (threads.stop)
                 break;
 
             if (value == VALUE_ZERO)
@@ -232,27 +237,27 @@ void MonteCarlo::search() {
         if (ply >= 1)
             node->ttValue = backup(reward, AB_Rollout);
 
-        if (should_emit_pv())
-            emit_pv();
+        if (should_emit_pv(isMainThread))
+            emit_pv(worker, threads, tt);
     }
 
     if (ply >= 1)
         backup(reward, AB_Rollout);
 
-    if (should_emit_pv())
-        emit_pv();
+    if (should_emit_pv(isMainThread))
+        emit_pv(worker, threads, tt);
 }
 
 /// MonteCarlo::MonteCarlo() is the constructor for the MonteCarlo class
-MonteCarlo::MonteCarlo(Position& p) :
+MonteCarlo::MonteCarlo(Position& p, Search::Worker* worker) :
     pos(p),
-    thisThread(p.this_thread()) {
+    thisThread(worker) {
     default_parameters();
-    create_root();
+    create_root(worker);
 }
 
-/// MonteCarlo::create_root() initializes the Monte-Carlo tree with the given position
-void MonteCarlo::create_root() {
+/// MonteCarlo::create_root(Search::Worker* worker) initializes the Monte-Carlo tree with the given position
+void MonteCarlo::create_root(Search::Worker* worker) {
 
     assert(ply == 0);
     assert(nodes[1] == nullptr);
@@ -269,7 +274,7 @@ void MonteCarlo::create_root() {
 
     for (int i = -7; i <= MAX_PLY + 10; i++)
         stack[i].continuationHistory =
-          &pos.this_thread()->continuationHistory[0][0][NO_PIECE][0];  // Use as a sentinel
+          &worker->continuationHistory[0][0][NO_PIECE][0];  // Use as a sentinel
 
     for (int i = 0; i <= MAX_PLY + 2; ++i)
         stack[i].ply = i;
@@ -290,16 +295,18 @@ void MonteCarlo::create_root() {
 
 /// MonteCarlo::computational_budget() returns true the search is still
 /// in the computational budget (time limit, or number of nodes, etc.)
-bool MonteCarlo::computational_budget() {
+bool MonteCarlo::computational_budget(ShashChess::ThreadPool&        threads,
+                                      ShashChess::Search::LimitsType limits) {
 
-    if (Search::Limits.depth && maximumPly > Search::Limits.depth * 2)
+    if (limits.depth && maximumPly > limits.depth * 2)
         return false;
 
-    return !Threads.stop.load(std::memory_order_relaxed);
+    return !threads.stop.load(std::memory_order_relaxed);
 }
 
 /// MonteCarlo::tree_policy() selects the next node to be expanded
-mctsNodeInfo* MonteCarlo::tree_policy() {
+mctsNodeInfo* MonteCarlo::tree_policy(ShashChess::ThreadPool&        threads,
+                                      ShashChess::Search::LimitsType limits) {
 
     assert(ply == 1);
 
@@ -316,7 +323,7 @@ mctsNodeInfo* MonteCarlo::tree_policy() {
         if (node->node_visits == 0)
             break;
 
-        if (!computational_budget() || is_terminal(node))
+        if (!computational_budget(threads, limits) || is_terminal(node))
             return nullptr;
 
         edges[ply] = best_child(node, STAT_UCB);
@@ -469,9 +476,9 @@ Edge* MonteCarlo::best_child(mctsNodeInfo* node, EdgeStatistic statistic) const 
 /// This function checks if the current thread is the 'main' thread. It also checks how
 /// much time has elapsed since the last time the principal variation has been printed
 /// to avoid cluttering the GUI
-bool MonteCarlo::should_emit_pv() const {
+bool MonteCarlo::should_emit_pv(bool isMainThread) const {
 
-    if (pos.this_thread() != Threads.main())
+    if (!isMainThread)
         return false;
 
     if (ply != 1)
@@ -497,7 +504,9 @@ bool MonteCarlo::should_emit_pv() const {
 
 /// MonteCarlo::emit_pv() emits the principal variation (PV) of the game tree on the
 /// standard output stream, as requested by the UCI protocol.
-void MonteCarlo::emit_pv() {
+void MonteCarlo::emit_pv(Search::Worker*         worker,
+                         ShashChess::ThreadPool& threads,
+                         TranspositionTable&     tt) {
 
     assert(ply == 1);
 
@@ -515,7 +524,7 @@ void MonteCarlo::emit_pv() {
         std::sort(list.begin(), list.begin() + n, CompareRobustChoice);
 
     // Clear the global list of moves for root (Search::RootMoves)
-    Search::RootMoves& rootMoves = pos.this_thread()->rootMoves;
+    Search::RootMoves& rootMoves = thisThread->rootMoves;
     rootMoves.clear();
 
     if (n > 0)
@@ -559,12 +568,12 @@ void MonteCarlo::emit_pv() {
         assert(int(rootMoves.size()) == root->number_of_sons);
         assert(ply == 1);
 
-        pv = UCI::pv(pos, maximumPly);
+        pv = threads.main_manager()->pv(*worker, threads, tt, worker->completedDepth);
     }
     else
     {
         // Mate or stalemate: we put a empty move in the global list of moves at root
-        rootMoves.emplace_back(MOVE_NONE);
+        rootMoves.emplace_back(Move::none());
         pv = "info depth 0 score " + UCI::value(pos.checkers() ? -VALUE_MATE : VALUE_DRAW);
     }
 
@@ -624,8 +633,7 @@ void MonteCarlo::do_move(const Move m) {
     const bool capture     = pos.capture(m);
 
     stack[ply].continuationHistory =
-      &pos.this_thread()
-         ->continuationHistory[stack[ply].inCheck][capture][pos.moved_piece(m)][to_sq(m)];
+      &thisThread->continuationHistory[stack[ply].inCheck][capture][pos.moved_piece(m)][m.to_sq()];
 
     pos.do_move(m, states[ply]);
 
@@ -643,7 +651,7 @@ void MonteCarlo::undo_move() {
     pos.undo_move(stack[ply].currentMove);
 }
 
-/// MonteCarlo::generate_moves() does some Stockfish gimmick to iterate over legal moves
+/// MonteCarlo::generate_moves() does some ShashChess gimmick to iterate over legal moves
 /// of the current position, in a sensible order.
 /// For historical reasons, it is not so easy to get a MovePicker object to
 /// generate moves if we want to have a decent order (captures first, then
@@ -657,31 +665,27 @@ void MonteCarlo::generate_moves(mctsNodeInfo* node) {
     if (node->node_visits != 0)
         return;
 
-    const Thread* thread = pos.this_thread();
-    const Square  prevSq =
-      stack[ply - 1].currentMove == MOVE_NONE ? SQUARE_ZERO : to_sq(stack[ply - 1].currentMove);
-    const Move countermove =
-      prevSq == SQUARE_ZERO ? MOVE_NONE : thread->counterMoves[pos.piece_on(prevSq)][prevSq];
-    constexpr Move  ttMove  = MOVE_NONE;  // FIXME
-    const Move*     killers = stack[ply].killers;
-    constexpr Depth depth   = 30;
+    const Square prevSq =
+      stack[ply - 1].currentMove == Move::none() ? SQUARE_ZERO : stack[ply - 1].currentMove.to_sq();
+    Move countermove =
+      prevSq != SQ_NONE ? thisThread->counterMoves[pos.piece_on(prevSq)][prevSq] : Move::none();
+    Move  ttMove = Move::none();  // FIXME
+    Depth depth  = 30;
 
-    const CapturePieceToHistory* cph        = &thread->captureHistory;
-    const ButterflyHistory*      mh         = &thread->mainHistory;
-    const PieceToHistory*        contHist[] = {stack[ply - 1].continuationHistory,
-                                               stack[ply - 2].continuationHistory,
-                                               nullptr,
-                                               stack[ply - 4].continuationHistory,
-                                               nullptr,
-                                               stack[ply - 6].continuationHistory};
-
-    MovePicker mp(pos, ttMove, depth, mh, cph, contHist, countermove, killers);
+    const PieceToHistory* contHist[] = {stack[ply - 1].continuationHistory,
+                                        stack[ply - 2].continuationHistory,
+                                        stack[ply - 3].continuationHistory,
+                                        stack[ply - 4].continuationHistory,
+                                        nullptr,
+                                        stack[ply - 6].continuationHistory};
+    MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory, &thisThread->captureHistory,
+                  contHist, &thisThread->pawnHistory, countermove, stack->killers);
     Move       move;
     int        moveCount = 0;
 
     // Generate the legal moves and calculate their priors
     Reward bestPrior = REWARD_MATED;
-    while (((move = mp.next_move()) != MOVE_NONE))
+    while (((move = mp.next_move()) != Move::none()))
         if (pos.legal(move))
         {
             stack[ply].moveCount = ++moveCount;
@@ -732,16 +736,16 @@ Reward MonteCarlo::evaluate_terminal(mctsNodeInfo* node) const {
 /// depth==DEPTH_ZERO for a direct quiescence value.
 Value MonteCarlo::evaluate_with_minimax(const Depth d) const {
     stack[ply].ply          = ply;
-    stack[ply].currentMove  = MOVE_NONE;
-    stack[ply].excludedMove = MOVE_NONE;
+    stack[ply].currentMove  = Move::none();
+    stack[ply].excludedMove = Move::none();
 
-    return minimax_value(pos, &stack[ply], d);
+    return thisThread->minimax_value(pos, &stack[ply], d);
 }
 Value MonteCarlo::evaluate_with_minimax(mctsNodeInfo* node, Depth d) const {
 
     stack[ply].ply          = ply;
-    stack[ply].currentMove  = MOVE_NONE;
-    stack[ply].excludedMove = MOVE_NONE;
+    stack[ply].currentMove  = Move::none();
+    stack[ply].excludedMove = Move::none();
 
     constexpr auto delta = static_cast<Value>(18);
 
@@ -755,7 +759,7 @@ Value MonteCarlo::evaluate_with_minimax(mctsNodeInfo* node, Depth d) const {
         beta  = std::min(node->ttValue + delta, VALUE_INFINITE);
     }
 
-    return minimax_value(pos, &stack[ply], d, alpha, beta);
+    return thisThread->minimax_value(pos, &stack[ply], d, alpha, beta);
 }
 
 /// MonteCarlo::calculate_prior() returns the a-priori reward of the move leading to
@@ -774,7 +778,7 @@ Reward MonteCarlo::calculate_prior(const Move m) {
     return prior;
 }
 
-/// MonteCarlo::value_to_reward() transforms a Stockfish value to a reward in [0..1].
+/// MonteCarlo::value_to_reward() transforms a ShashChess value to a reward in [0..1].
 /// We scale the logistic function such that a value of 600 (about three pawns) is
 /// given a probability of win of 0.95, and a value of -600 is given a probability
 /// of win of 0.05
@@ -786,7 +790,7 @@ Reward MonteCarlo::value_to_reward(Value v) const {
     return r;
 }
 
-/// MonteCarlo::reward_to_value() transforms a reward in [0..1] to a Stockfish value.
+/// MonteCarlo::reward_to_value() transforms a reward in [0..1] to a ShashChess value.
 /// The scale is such that a reward of 0.95 corresponds to 600 (about three pawns),
 /// and a reward of 0.05 corresponds to -600 (about minus three pawns).
 Value MonteCarlo::reward_to_value(Reward r) const {
@@ -887,8 +891,8 @@ void MonteCarlo::print_children() {
 
 // List of FIXME/TODO for the monte-carlo branch
 //
-// 1. ttMove = MOVE_NONE in generate_moves() ?
-// 2. what to do with killers in create_root() ?
+// 1. ttMove = Move::none() in generate_moves() ?
+// 2. what to do with killers in create_root(Search::Worker* worker) ?
 // 3. why do we get losses on time with small prior depths ?
 // 4. should we set rm.score to -VALUE_INFINITE for moves >= 2 in emit_principal_variation() ?
 // 5. r2qk2r/1p1b1pb1/4p2p/1p1p4/1n1P4/NQ3PP1/PP2N2P/R1B2RK1 b kq - 23 12

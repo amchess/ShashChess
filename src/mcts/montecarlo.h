@@ -1,13 +1,13 @@
 /*
-  Stockfish, a UCI chess playing engine derived from Glaurung 2.1
-  Copyright (C) 2004-2023 The Stockfish developers (see AUTHORS file)
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
 
-  Stockfish is free software: you can redistribute it and/or modify
+  ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Stockfish is distributed in the hope that it will be useful,
+  ShashChess is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -25,7 +25,7 @@
 #include "../position.h"
 #include "../thread.h"
 
-namespace Stockfish {
+namespace ShashChess {
 // The data structures for the Monte Carlo algorithm
 typedef double Reward;
 
@@ -47,7 +47,7 @@ enum EdgeStatistic {
 struct Edge {
     //Default constructor
     Edge() :
-        move(MOVE_NONE),
+        move(Move::none()),
         visits(0),
         prior(REWARD_NONE),
         actionValue(REWARD_NONE),
@@ -142,11 +142,11 @@ struct mctsNodeInfo {
     Spinlock lock;
 
     // Data members
-    Key                key1           = 0;          // Zobrist hash of all pieces, including pawns
-    Key                key2           = 0;          // Zobrist hash of pawns
-    std::atomic<long>  node_visits    = 0;          // number of visits by the Monte-Carlo algorithm
-    std::atomic<int>   number_of_sons = 0;          // total number of legal moves
-    std::atomic<Move>  lastMove       = MOVE_NONE;  // the move between the parent and this node
+    Key                key1           = 0;  // Zobrist hash of all pieces, including pawns
+    Key                key2           = 0;  // Zobrist hash of pawns
+    std::atomic<long>  node_visits    = 0;  // number of visits by the Monte-Carlo algorithm
+    std::atomic<int>   number_of_sons = 0;  // total number of legal moves
+    std::atomic<Move>  lastMove       = Move::none();  // the move between the parent and this node
     std::atomic<Value> ttValue        = VALUE_NONE;
     std::atomic<bool>  AB             = false;
     EdgeArray          children;
@@ -183,19 +183,25 @@ class MonteCarlo {
 
    public:
     // Constructors
-    MonteCarlo(Position& p);
+    MonteCarlo(Position& p, Search::Worker* worker);
 
     //Prevent copying of this class type
     MonteCarlo(const MonteCarlo&)            = delete;
     MonteCarlo& operator=(const MonteCarlo&) = delete;
 
     // The main function of the class
-    void search();
+    void search(ShashChess::ThreadPool&        threads,
+                ShashChess::Search::LimitsType limits,
+                bool                           isMainThread,
+                Search::Worker*                worker,
+                TranspositionTable&            tt);
 
     // The high-level description of the Monte-Carlo algorithm
-    void          create_root();
-    bool          computational_budget();
-    mctsNodeInfo* tree_policy();
+    void          create_root(Search::Worker* worker);
+    bool          computational_budget(ShashChess::ThreadPool&        threads,
+                                       ShashChess::Search::LimitsType limits);
+    mctsNodeInfo* tree_policy(ShashChess::ThreadPool&        threads,
+                              ShashChess::Search::LimitsType limits);
     Reward        playout_policy(mctsNodeInfo* node);
     Value         backup(Reward r, bool AB_Mode);
     Edge*         best_child(mctsNodeInfo* node, EdgeStatistic statistic) const;
@@ -225,14 +231,14 @@ class MonteCarlo {
     [[nodiscard]] double exploration_constant() const;
 
     // Output of results
-    [[nodiscard]] bool should_emit_pv() const;
-    void               emit_pv();
-    void               print_children();
+    [[nodiscard]] bool should_emit_pv(bool isMainThread) const;
+    void emit_pv(Search::Worker* worker, ShashChess::ThreadPool& threads, TranspositionTable& tt);
+    void print_children();
 
    private:
-    Position&          pos;  // The current position of the tree
-    Stockfish::Thread* thisThread;
-    mctsNodeInfo*      root{};  // A pointer to the root
+    Position&                   pos;  // The current position of the tree
+    ShashChess::Search::Worker* thisThread;
+    mctsNodeInfo*               root{};  // A pointer to the root
 
     // Counters and statistics
     int       ply{};

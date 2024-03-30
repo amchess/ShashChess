@@ -1,0 +1,324 @@
+[ECO "C63"]
+[Opening "Ruy Lopez"]
+[Variation "Schliemann defence, Berger variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 f5 4. Nc3 *
+
+[ECO "C64"]
+[Opening "Ruy Lopez"]
+[Variation "classical (Cordel) defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Bc5 *
+
+[ECO "C64"]
+[Opening "Ruy Lopez"]
+[Variation "classical defence, Zaitsev variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Bc5 4. O-O Nd4 5. b4 *
+
+[ECO "C64"]
+[Opening "Ruy Lopez"]
+[Variation "classical defence, 4.c3"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Bc5 4. c3 *
+
+[ECO "C64"]
+[Opening "Ruy Lopez"]
+[Variation "classical defence, Benelux variation  "]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Bc5 4. c3 Nf6 5. O-O O-O 6. d4 Bb6 *
+
+[ECO "C64"]
+[Opening "Ruy Lopez"]
+[Variation "classical defence, Charousek variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Bc5 4. c3 Bb6 *
+
+[ECO "C64"]
+[Opening "Ruy Lopez"]
+[Variation "classical defence, Boden variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Bc5 4. c3 Qe7 *
+
+[ECO "C64"]
+[Opening "Ruy Lopez"]
+[Variation "Cordel gambit"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Bc5 4. c3 f5 *
+
+[ECO "C65"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 *
+
+[ECO "C65"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, Nyholm attack"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. d4 exd4 5. O-O *
+
+[ECO "C65"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, Mortimer variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. d3 Ne7 *
+
+[ECO "C65"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, Mortimer trap"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. d3 Ne7 5. Nxe5 c6 *
+
+[ECO "C65"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, Anderssen variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. d3 d6 5. Bxc6+ *
+
+[ECO "C65"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, Duras variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. d3 d6 5. c4 *
+
+[ECO "C65"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, Kaufmann variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. d3 Bc5 5. Be3 *
+
+[ECO "C65"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, 4.O-O"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O *
+
+[ECO "C65"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, Beverwijk variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O Bc5 *
+
+[ECO "C66"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, 4.O-O, d6"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O d6 *
+
+[ECO "C66"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, hedgehog variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O d6 5. d4 Bd7 6. Nc3 Be7 *
+
+[ECO "C66"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, Tarrasch trap"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O d6 5. d4 Bd7 6. Nc3 Be7 7. Re1 O-O *
+
+[ECO "C66"]
+[Opening "Ruy Lopez"]
+[Variation "closed Berlin defence, Bernstein variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O d6 5. d4 Bd7 6. Nc3 Be7 7. Bg5 *
+
+[ECO "C66"]
+[Opening "Ruy Lopez"]
+[Variation "closed Berlin defence, Showalter variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O d6 5. d4 Bd7 6. Nc3 Be7 7. Bxc6 *
+
+[ECO "C66"]
+[Opening "Ruy Lopez"]
+[Variation "closed Berlin defence, Wolf variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O d6 5. d4 Bd7 6. Nc3 exd4 *
+
+[ECO "C66"]
+[Opening "Ruy Lopez"]
+[Variation "closed Berlin defence, Chigorin variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O d6 5. d4 Nd7 *
+
+[ECO "C67"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, open variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O Nxe4 *
+
+[ECO "C67"]
+[Opening "Ruy Lopez"]
+[Variation "open Berlin defence, l'Hermet variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O Nxe4 5. d4 Nd6 6. dxe5 *
+
+[ECO "C67"]
+[Opening "Ruy Lopez"]
+[Variation "open Berlin defence, Showalter variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O Nxe4 5. d4 Nd6 6. Ba4 *
+
+[ECO "C67"]
+[Opening "Ruy Lopez"]
+[Variation "open Berlin defence, 5...Be7"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O Nxe4 5. d4 Be7 *
+
+[ECO "C67"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, Rio de Janeiro variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O Nxe4 5. d4 Be7 6. Qe2 Nd6 7. Bxc6 
+bxc6 8. dxe5 Nb7 9. Nc3 O-O 10. Re1 Nc5 11. Nd4 Ne6 12. Be3 Nxd4 13. Bxd4 
+c5 *
+
+[ECO "C67"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, Zukertort variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O Nxe4 5. d4 Be7 6. Qe2 Nd6 7. Bxc6 
+bxc6 8. dxe5 Nb7 9. c4 *
+
+[ECO "C67"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, Pillsbury variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O Nxe4 5. d4 Be7 6. Qe2 Nd6 7. Bxc6 
+bxc6 8. dxe5 Nb7 9. b3 *
+
+[ECO "C67"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, Winawer attack"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O Nxe4 5. d4 Be7 6. Qe2 Nd6 7. Bxc6 
+bxc6 8. dxe5 Nb7 9. Nd4 *
+
+[ECO "C67"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, Cordel variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O Nxe4 5. d4 Be7 6. Qe2 Nd6 7. Bxc6 
+bxc6 8. dxe5 Nf5 *
+
+[ECO "C67"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, Trifunovic variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O Nxe4 5. d4 Be7 6. Qe2 d5 *
+
+[ECO "C67"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, Minckwitz variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O Nxe4 5. d4 Be7 6. dxe5 *
+
+[ECO "C67"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, Rosenthal variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O Nxe4 5. d4 a6 *
+
+[ECO "C68"]
+[Opening "Ruy Lopez"]
+[Variation "exchange variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bxc6 *
+
+[ECO "C68"]
+[Opening "Ruy Lopez"]
+[Variation "exchange, Alekhine variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bxc6 dxc6 5. d4 exd4 6. Qxd4 Qxd4 7. Nxd4
+Bd7 *
+
+[ECO "C68"]
+[Opening "Ruy Lopez"]
+[Variation "exchange, Keres variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bxc6 dxc6 5. Nc3 *
+
+[ECO "C68"]
+[Opening "Ruy Lopez"]
+[Variation "exchange, Romanovsky variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bxc6 dxc6 5. Nc3 f6 6. d3 *
+
+[ECO "C69"]
+[Opening "Ruy Lopez"]
+[Variation "exchange variation, 5.O-O"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bxc6 dxc6 5. O-O *
+
+[ECO "C69"]
+[Opening "Ruy Lopez"]
+[Variation "exchange variation, Alapin gambit"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bxc6 dxc6 5. O-O Bg4 6. h3 h5 *
+
+[ECO "C69"]
+[Opening "Ruy Lopez"]
+[Variation "exchange, Gligoric variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bxc6 dxc6 5. O-O f6 *
+
+[ECO "C69"]
+[Opening "Ruy Lopez"]
+[Variation "exchange, Bronstein variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bxc6 dxc6 5. O-O Qd6 *
+
+[ECO "C70"]
+[Opening "Ruy Lopez"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 *
+
+[ECO "C70"]
+[Opening "Ruy Lopez"]
+[Variation "fianchetto defence deferred"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 g6 *
+
+[ECO "C70"]
+[Opening "Ruy Lopez"]
+[Variation "Cozio defence deferred"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nge7 *
+
+[ECO "C70"]
+[Opening "Ruy Lopez"]
+[Variation "Bird's defence deferred"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nd4 *
+
+[ECO "C70"]
+[Opening "Ruy Lopez"]
+[Variation "Alapin's defence deferred"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Bb4 *
+
+[ECO "C70"]
+[Opening "Ruy Lopez"]
+[Variation "Classical defence deferred"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Bc5 *
+
+[ECO "C70"]
+[Opening "Ruy Lopez"]
+[Variation "Caro variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 b5 *
+
+[ECO "C70"]
+[Opening "Ruy Lopez"]
+[Variation "Graz variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 b5 5. Bb3 Bc5 *
+
+[ECO "C70"]
+[Opening "Ruy Lopez"]
+[Variation "Taimanov (chase/wing/accelerated counterthrust) variation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 b5 5. Bb3 Na5 *
+

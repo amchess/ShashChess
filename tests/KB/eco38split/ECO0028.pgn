@@ -1,0 +1,304 @@
+[ECO "C96"]
+[Opening "Ruy Lopez"]
+[Variation "closed (10...c5)"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 O-O 8.
+c3 d6 9. h3 Na5 10. Bc2 c5 *
+
+[ECO "C96"]
+[Opening "Ruy Lopez"]
+[Variation "closed, Borisenko defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 O-O 8.
+c3 d6 9. h3 Na5 10. Bc2 c5 11. d4 Nc6 *
+
+[ECO "C96"]
+[Opening "Ruy Lopez"]
+[Variation "closed, Keres (...Nd7) defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 O-O 8.
+c3 d6 9. h3 Na5 10. Bc2 c5 11. d4 Nd7 *
+
+[ECO "C97"]
+[Opening "Ruy Lopez"]
+[Variation "closed, Chigorin defence"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 O-O 8.
+c3 d6 9. h3 Na5 10. Bc2 c5 11. d4 Qc7 *
+
+[ECO "C97"]
+[Opening "Ruy Lopez"]
+[Variation "closed, Chigorin, Yugoslav system"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 O-O 8.
+c3 d6 9. h3 Na5 10. Bc2 c5 11. d4 Qc7 12. Nbd2 Bd7 13. Nf1 Rfe8 14. Ne3 g6
+*
+
+[ECO "C98"]
+[Opening "Ruy Lopez"]
+[Variation "closed, Chigorin, 12...Nc6"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 O-O 8.
+c3 d6 9. h3 Na5 10. Bc2 c5 11. d4 Qc7 12. Nbd2 Nc6 *
+
+[ECO "C98"]
+[Opening "Ruy Lopez"]
+[Variation "closed, Chigorin, Rauzer attack"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 O-O 8.
+c3 d6 9. h3 Na5 10. Bc2 c5 11. d4 Qc7 12. Nbd2 Nc6 13. dxc5 *
+
+[ECO "C99"]
+[Opening "Ruy Lopez"]
+[Variation "closed, Chigorin, 12...c5d4"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 O-O 8.
+c3 d6 9. h3 Na5 10. Bc2 c5 11. d4 Qc7 12. Nbd2 cxd4 13. cxd4 *
+
+[ECO "D00"]
+[Opening "Queen's pawn game"]
+
+1. d4 d5 *
+
+[ECO "D00"]
+[Opening "Queen's pawn, Mason variation"]
+
+1. d4 d5 2. Bf4 *
+
+[ECO "D00"]
+[Opening "Queen's pawn, Mason variation, Steinitz counter-gambit"]
+
+1. d4 d5 2. Bf4 c5 *
+
+[ECO "D00"]
+[Opening "Levitsky attack (Queen's bishop attack)"]
+
+1. d4 d5 2. Bg5 *
+
+[ECO "D00"]
+[Opening "Blackmar gambit"]
+
+1. d4 d5 2. e4 *
+
+[ECO "D00"]
+[Opening "Queen's pawn"]
+[Variation "stonewall attack"]
+
+1. d4 d5 2. e3 Nf6 3. Bd3 *
+
+[ECO "D00"]
+[Opening "Queen's pawn"]
+[Variation "Chigorin variation"]
+
+1. d4 d5 2. Nc3 *
+
+[ECO "D00"]
+[Opening "Queen's pawn"]
+[Variation "Anti-Veresov"]
+
+1. d4 d5 2. Nc3 Bg4 *
+
+[ECO "D00"]
+[Opening "Blackmar-Diemer gambit"]
+
+1. d4 d5 2. Nc3 Nf6 3. e4 *
+
+[ECO "D00"]
+[Opening "Blackmar-Diemer"]
+[Variation "Euwe defence"]
+
+1. d4 d5 2. Nc3 Nf6 3. e4 dxe4 4. f3 exf3 5. Nxf3 e6 *
+
+[ECO "D00"]
+[Opening "Blackmar-Diemer"]
+[Variation "Lemberg counter-gambit"]
+
+1. d4 d5 2. Nc3 Nf6 3. e4 e5 *
+
+[ECO "D01"]
+[Opening "Richter-Veresov attack"]
+
+1. d4 d5 2. Nc3 Nf6 3. Bg5 *
+
+[ECO "D01"]
+[Opening "Richter-Veresov attack, Veresov variation"]
+
+1. d4 d5 2. Nc3 Nf6 3. Bg5 Bf5 4. Bxf6 *
+
+[ECO "D01"]
+[Opening "Richter-Veresov attack, Richter variation"]
+
+1. d4 d5 2. Nc3 Nf6 3. Bg5 Bf5 4. f3 *
+
+[ECO "D02"]
+[Opening "Queen's pawn game"]
+
+1. d4 d5 2. Nf3 *
+
+[ECO "D02"]
+[Opening "Queen's pawn game, Chigorin variation"]
+
+1. d4 d5 2. Nf3 Nc6 *
+
+[ECO "D02"]
+[Opening "Queen's pawn game, Krause variation"]
+
+1. d4 d5 2. Nf3 c5 *
+
+[ECO "D02"]
+[Opening "Queen's pawn game"]
+
+1. d4 d5 2. Nf3 Nf6 *
+
+[ECO "D02"]
+[Opening "Queen's bishop game"]
+
+1. d4 d5 2. Nf3 Nf6 3. Bf4 *
+
+[ECO "D03"]
+[Opening "Torre attack (Tartakower variation)"]
+
+1. d4 d5 2. Nf3 Nf6 3. Bg5 *
+
+[ECO "D04"]
+[Opening "Queen's pawn game"]
+
+1. d4 d5 2. Nf3 Nf6 3. e3 *
+
+[ECO "D05"]
+[Opening "Queen's pawn game"]
+
+1. d4 d5 2. Nf3 Nf6 3. e3 e6 *
+
+[ECO "D05"]
+[Opening "Queen's pawn game, Zukertort variation"]
+
+1. d4 d5 2. Nf3 Nf6 3. e3 e6 4. Nbd2 c5 5. b3 *
+
+[ECO "D05"]
+[Opening "Queen's pawn game"]
+
+1. d4 d5 2. Nf3 Nf6 3. e3 e6 4. Bd3 *
+
+[ECO "D05"]
+[Opening "Queen's pawn game, Rubinstein (Colle-Zukertort) variation"]
+
+1. d4 d5 2. Nf3 Nf6 3. e3 e6 4. Bd3 c5 5. b3 *
+
+[ECO "D05"]
+[Opening "Colle system"]
+
+1. d4 d5 2. Nf3 Nf6 3. e3 e6 4. Bd3 c5 5. c3 *
+
+[ECO "D06"]
+[Opening "Queen's Gambit"]
+
+1. d4 d5 2. c4 *
+
+[ECO "D06"]
+[Opening "QGD"]
+[Variation "Grau (Sahovic) defence"]
+
+1. d4 d5 2. c4 Bf5 *
+
+[ECO "D06"]
+[Opening "QGD"]
+[Variation "Marshall defence"]
+
+1. d4 d5 2. c4 Nf6 *
+
+[ECO "D06"]
+[Opening "QGD"]
+[Variation "symmetrical (Austrian) defence"]
+
+1. d4 d5 2. c4 c5 *
+
+[ECO "D07"]
+[Opening "QGD"]
+[Variation "Chigorin defence"]
+
+1. d4 d5 2. c4 Nc6 *
+
+[ECO "D07"]
+[Opening "QGD"]
+[Variation "Chigorin defence, Janowski variation"]
+
+1. d4 d5 2. c4 Nc6 3. Nc3 dxc4 4. Nf3 *
+
+[ECO "D08"]
+[Opening "QGD"]
+[Variation "Albin counter-gambit"]
+
+1. d4 d5 2. c4 e5 *
+
+[ECO "D08"]
+[Opening "QGD"]
+[Variation "Albin counter-gambit, Lasker trap"]
+
+1. d4 d5 2. c4 e5 3. dxe5 d4 4. e3 Bb4+ 5. Bd2 dxe3 *
+
+[ECO "D08"]
+[Opening "QGD"]
+[Variation "Albin counter-gambit"]
+
+1. d4 d5 2. c4 e5 3. dxe5 d4 4. Nf3 *
+
+[ECO "D08"]
+[Opening "QGD"]
+[Variation "Albin counter-gambit, Alapin variation"]
+
+1. d4 d5 2. c4 e5 3. dxe5 d4 4. Nf3 Nc6 5. Nbd2 *
+
+[ECO "D08"]
+[Opening "QGD"]
+[Variation "Albin counter-gambit, Krenosz variation"]
+
+1. d4 d5 2. c4 e5 3. dxe5 d4 4. Nf3 Nc6 5. Nbd2 Bg4 6. h3 Bxf3 7. Nxf3 Bb4+
+8. Bd2 Qe7 *
+
+[ECO "D08"]
+[Opening "QGD"]
+[Variation "Albin counter-gambit, Janowski variation"]
+
+1. d4 d5 2. c4 e5 3. dxe5 d4 4. Nf3 Nc6 5. Nbd2 f6 *
+
+[ECO "D08"]
+[Opening "QGD"]
+[Variation "Albin counter-gambit, Balogh variation"]
+
+1. d4 d5 2. c4 e5 3. dxe5 d4 4. Nf3 Nc6 5. Nbd2 Qe7 *
+
+[ECO "D09"]
+[Opening "QGD"]
+[Variation "Albin counter-gambit, 5.g3"]
+
+1. d4 d5 2. c4 e5 3. dxe5 d4 4. Nf3 Nc6 5. g3 *
+
+[ECO "D10"]
+[Opening "QGD Slav defence"]
+
+1. d4 d5 2. c4 c6 *
+
+[ECO "D10"]
+[Opening "QGD Slav defence, Alekhine variation"]
+
+1. d4 d5 2. c4 c6 3. Nc3 dxc4 4. e4 *
+
+[ECO "D10"]
+[Opening "QGD Slav"]
+[Variation "Winawer counter-gambit"]
+
+1. d4 d5 2. c4 c6 3. Nc3 e5 *
+
+[ECO "D10"]
+[Opening "QGD Slav defence"]
+[Variation "exchange variation"]
+
+1. d4 d5 2. c4 c6 3. cxd5 *
+
+[ECO "D11"]
+[Opening "QGD Slav"]
+[Variation "3.Nf3"]
+
+1. d4 d5 2. c4 c6 3. Nf3 *
+

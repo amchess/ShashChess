@@ -1,6 +1,6 @@
 /*
-  ShashChess, a UCI chess playing engine derived from Glaurung 2.1
-  Copyright (C) 2004-2023 The Stockfish developers (see AUTHORS file)
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -16,20 +16,23 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "tune.h"
+
 #include <algorithm>
 #include <iostream>
+#include <map>
 #include <sstream>
+#include <string>
 
-#include "types.h"
-#include "misc.h"
-#include "uci.h"
+#include "ucioption.h"
 
 using std::string;
 
-namespace Stockfish {
+namespace ShashChess {
 
 bool                              Tune::update_on_last;
-const UCI::Option*                LastOption = nullptr;
+const Option*                     LastOption = nullptr;
+OptionsMap*                       Tune::options;
 static std::map<std::string, int> TuneResults;
 
 string Tune::next(string& names, bool pop) {
@@ -51,13 +54,13 @@ string Tune::next(string& names, bool pop) {
     return name;
 }
 
-static void on_tune(const UCI::Option& o) {
+static void on_tune(const Option& o) {
 
     if (!Tune::update_on_last || LastOption == &o)
         Tune::read_options();
 }
 
-static void make_option(const string& n, int v, const SetRange& r) {
+static void make_option(OptionsMap* options, const string& n, int v, const SetRange& r) {
 
     // Do not generate option when there is nothing to tune (ie. min = max)
     if (r(v).first == r(v).second)
@@ -66,8 +69,8 @@ static void make_option(const string& n, int v, const SetRange& r) {
     if (TuneResults.count(n))
         v = TuneResults[n];
 
-    Options[n] << UCI::Option(v, r(v).first, r(v).second, on_tune);
-    LastOption = &Options[n];
+    (*options)[n] << Option(v, r(v).first, r(v).second, on_tune);
+    LastOption = &((*options)[n]);
 
     // Print formatted parameters, ready to be copy-pasted in Fishtest
     std::cout << n << "," << v << "," << r(v).first << "," << r(v).second << ","
@@ -77,39 +80,13 @@ static void make_option(const string& n, int v, const SetRange& r) {
 
 template<>
 void Tune::Entry<int>::init_option() {
-    make_option(name, value, range);
+    make_option(options, name, value, range);
 }
 
 template<>
 void Tune::Entry<int>::read_option() {
-    if (Options.count(name))
-        value = int(Options[name]);
-}
-
-template<>
-void Tune::Entry<Value>::init_option() {
-    make_option(name, value, range);
-}
-
-template<>
-void Tune::Entry<Value>::read_option() {
-    if (Options.count(name))
-        value = Value(int(Options[name]));
-}
-
-template<>
-void Tune::Entry<Score>::init_option() {
-    make_option("m" + name, mg_value(value), range);
-    make_option("e" + name, eg_value(value), range);
-}
-
-template<>
-void Tune::Entry<Score>::read_option() {
-    if (Options.count("m" + name))
-        value = make_score(int(Options["m" + name]), eg_value(value));
-
-    if (Options.count("e" + name))
-        value = make_score(mg_value(value), int(Options["e" + name]));
+    if (options->count(name))
+        value = int((*options)[name]);
 }
 
 // Instead of a variable here we have a PostUpdate function: just call it
@@ -120,7 +97,7 @@ void Tune::Entry<Tune::PostUpdate>::read_option() {
     value();
 }
 
-}  // namespace Stockfish
+}  // namespace ShashChess
 
 
 // Init options with tuning session results instead of default values. Useful to
@@ -132,11 +109,10 @@ void Tune::Entry<Tune::PostUpdate>::read_option() {
 //
 // Then paste the output below, as the function body
 
-#include <cmath>
 
-namespace Stockfish {
+namespace ShashChess {
 
 void Tune::read_results() { /* ...insert your values here... */
 }
 
-}  // namespace Stockfish
+}  // namespace ShashChess

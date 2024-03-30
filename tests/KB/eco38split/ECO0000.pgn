@@ -1,0 +1,285 @@
+[ECO "A00"]
+[Opening "Polish (Sokolsky) opening"]
+
+1. b4 *
+
+[ECO "A00"]
+[Opening "Polish"]
+[Variation "Tuebingen variation"]
+
+1. b4 Nh6 *
+
+[ECO "A00"]
+[Opening "Polish"]
+[Variation "Outflank variation"]
+
+1. b4 c6 *
+
+[ECO "A00"]
+[Opening "Benko's opening"]
+
+1. g3 *
+
+[ECO "A00"]
+[Opening "Lasker simul special"]
+
+1. g3 h5 *
+
+[ECO "A00"]
+[Opening "Benko's opening"]
+[Variation "reversed Alekhine"]
+
+1. g3 e5 2. Nf3 *
+
+[ECO "A00"]
+[Opening "Grob's attack"]
+
+1. g4 *
+
+[ECO "A00"]
+[Opening "Grob"]
+[Variation "spike attack"]
+
+1. g4 d5 2. Bg2 c6 3. g5 *
+
+[ECO "A00"]
+[Opening "Grob"]
+[Variation "Fritz gambit"]
+
+1. g4 d5 2. Bg2 Bxg4 3. c4 *
+
+[ECO "A00"]
+[Opening "Grob"]
+[Variation "Romford counter-gambit"]
+
+1. g4 d5 2. Bg2 Bxg4 3. c4 d4 *
+
+[ECO "A00"]
+[Opening "Clemenz (Mead's, Basman's or de Klerk's) opening"]
+
+1. h3 *
+
+[ECO "A00"]
+[Opening "Global opening"]
+
+1. h3 e5 2. a3 *
+
+[ECO "A00"]
+[Opening "Amar (Paris) opening"]
+
+1. Nh3 *
+
+[ECO "A00"]
+[Opening "Amar gambit"]
+
+1. Nh3 d5 2. g3 e5 3. f4 Bxh3 4. Bxh3 exf4 *
+
+[ECO "A00"]
+[Opening "Dunst (Sleipner, Heinrichsen) opening"]
+
+1. Nc3 *
+
+[ECO "A00"]
+[Opening "Dunst (Sleipner, Heinrichsen) opening"]
+
+1. Nc3 e5 *
+
+[ECO "A00"]
+[Opening "Battambang opening"]
+
+1. Nc3 e5 2. a3 *
+
+[ECO "A00"]
+[Opening "Novosibirsk opening"]
+
+1. Nc3 c5 2. d4 cxd4 3. Qxd4 Nc6 4. Qh4 *
+
+[ECO "A00"]
+[Opening "Anderssen's opening"]
+
+1. a3 *
+
+[ECO "A00"]
+[Opening "Ware (Meadow Hay) opening"]
+
+1. a4 *
+
+[ECO "A00"]
+[Opening "Crab opening"]
+
+1. a4 e5 2. h4 *
+
+[ECO "A00"]
+[Opening "Saragossa opening"]
+
+1. c3 *
+
+[ECO "A00"]
+[Opening "Mieses opening"]
+
+1. d3 *
+
+[ECO "A00"]
+[Opening "Mieses opening"]
+
+1. d3 e5 *
+
+[ECO "A00"]
+[Opening "Valencia opening"]
+
+1. d3 e5 2. Nd2 *
+
+[ECO "A00"]
+[Opening "Venezolana opening"]
+
+1. d3 c5 2. Nc3 Nc6 3. g3 *
+
+[ECO "A00"]
+[Opening "Van't Kruijs opening"]
+
+1. e3 *
+
+[ECO "A00"]
+[Opening "Amsterdam attack"]
+
+1. e3 e5 2. c4 d6 3. Nc3 Nc6 4. b3 Nf6 *
+
+[ECO "A00"]
+[Opening "Gedult's opening"]
+
+1. f3 *
+
+[ECO "A00"]
+[Opening "Hammerschlag (Fried fox/Pork chop opening)"]
+
+1. f3 e5 2. Kf2 *
+
+[ECO "A00"]
+[Opening "Anti-Borg (Desprez) opening"]
+
+1. h4 *
+
+[ECO "A00"]
+[Opening "Durkin's attack"]
+
+1. Na3 *
+
+[ECO "A01"]
+[Opening "Nimzovich-Larsen attack"]
+
+1. b3 *
+
+[ECO "A01"]
+[Opening "Nimzovich-Larsen attack"]
+[Variation "modern variation"]
+
+1. b3 e5 *
+
+[ECO "A01"]
+[Opening "Nimzovich-Larsen attack"]
+[Variation "Indian variation"]
+
+1. b3 Nf6 *
+
+[ECO "A01"]
+[Opening "Nimzovich-Larsen attack"]
+[Variation "classical variation"]
+
+1. b3 d5 *
+
+[ECO "A01"]
+[Opening "Nimzovich-Larsen attack"]
+[Variation "English variation"]
+
+1. b3 c5 *
+
+[ECO "A01"]
+[Opening "Nimzovich-Larsen attack"]
+[Variation "Dutch variation"]
+
+1. b3 f5 *
+
+[ECO "A01"]
+[Opening "Nimzovich-Larsen attack"]
+[Variation "Polish variation"]
+
+1. b3 b5 *
+
+[ECO "A01"]
+[Opening "Nimzovich-Larsen attack"]
+[Variation "symmetrical variation"]
+
+1. b3 b6 *
+
+[ECO "A02"]
+[Opening "Bird's opening"]
+
+1. f4 *
+
+[ECO "A02"]
+[Opening "Bird"]
+[Variation "From gambit"]
+
+1. f4 e5 *
+
+[ECO "A02"]
+[Opening "Bird"]
+[Variation "From gambit, Lasker variation"]
+
+1. f4 e5 2. fxe5 d6 3. exd6 Bxd6 4. Nf3 g5 *
+
+[ECO "A02"]
+[Opening "Bird"]
+[Variation "From gambit, Lipke variation"]
+
+1. f4 e5 2. fxe5 d6 3. exd6 Bxd6 4. Nf3 Nh6 5. d4 *
+
+[ECO "A02"]
+[Opening "Bird's opening, Swiss gambit"]
+
+1. f4 f5 2. e4 fxe4 3. Nc3 Nf6 4. g4 *
+
+[ECO "A02"]
+[Opening "Bird"]
+[Variation "Hobbs gambit"]
+
+1. f4 g5 *
+
+[ECO "A03"]
+[Opening "Bird's opening"]
+
+1. f4 d5 *
+
+[ECO "A03"]
+[Opening "Mujannah opening"]
+
+1. f4 d5 2. c4 *
+
+[ECO "A03"]
+[Opening "Bird's opening"]
+[Variation "Williams gambit"]
+
+1. f4 d5 2. e4 *
+
+[ECO "A03"]
+[Opening "Bird's opening"]
+[Variation "Lasker variation"]
+
+1. f4 d5 2. Nf3 Nf6 3. e3 c5 *
+
+[ECO "A04"]
+[Opening "Reti opening"]
+
+1. Nf3 *
+
+[ECO "A04"]
+[Opening "Reti v Dutch"]
+
+1. Nf3 f5 *
+
+[ECO "A04"]
+[Opening "Reti"]
+[Variation "Pirc-Lisitsin gambit"]
+
+1. Nf3 f5 2. e4 *
+
