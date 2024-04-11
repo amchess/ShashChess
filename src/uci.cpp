@@ -77,6 +77,7 @@ UCI::UCI(int argc, char** argv) :
     options["Move Overhead"] << Option(10, 0, 5000);
     options["Minimum Thinking Time"] << Option(100, 0, 5000);  //minimum thining time
     options["Slow Mover"] << Option(100, 10, 1000);            //slow mover
+    options["nodestime"] << Option(0, 0, 10000);
     options["UCI_Chess960"] << Option(false);
     options["UCI_ShowWDL"] << Option(true);  //better Win Probability as the default
     //Book management begin

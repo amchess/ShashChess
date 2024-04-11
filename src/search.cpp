@@ -1803,13 +1803,13 @@ moves_loop:  // When in check, search starts here
                        && (this->shashinWinProbabilityRange
                            != SHASHIN_POSITION_CAPABLANCA_PETROSIAN));
                     if (!ss->inCheck
+						&& ss->staticEval + (bestValue < ss->staticEval - 57 ? 144 : 57) 
+						   + 121 * lmrDepth 
+						   <= alpha
                         && ((futilityPruningParentNodeFromCrystal && lmrDepth < (6 * (1 + !ourMove))
-                             && history < 20500 - 3875 * (depth - 1)
-                             && ss->staticEval + (bestValue < ss->staticEval - 57 ? 144 : 57)
-                                    + 121 * lmrDepth
-                                  <= alpha)
-                            || ((!futilityPruningParentNodeFromCrystal) && lmrDepth < 12
-                                && ss->staticEval + 112 + 138 * lmrDepth <= alpha)))
+                             && history < 20500 - 3875 * (depth - 1))
+                            || ((!futilityPruningParentNodeFromCrystal) && lmrDepth < 15)
+								))
                         continue;
                     //end from Crystal
 
