@@ -338,7 +338,7 @@ mctsNodeInfo* MonteCarlo::tree_policy(ShashChess::ThreadPool&        threads,
         edge->visits          = edge->visits + 1.0;
         edge->meanActionValue = edge->actionValue / edge->visits;
 
-        assert(is_ok(m));
+        assert(m.is_ok());
         assert(pos.legal(m));
 
         do_move(m);

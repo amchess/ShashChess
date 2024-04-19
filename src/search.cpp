@@ -88,7 +88,17 @@ Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
 
 
 //from ShashChess begin
-uint8_t WinProbability[8001][241];
+// 8001 * 241 = 1928241
+#define WIN_PROBABILITY_SIZE 1928241
+
+uint8_t WinProbability[WIN_PROBABILITY_SIZE];
+
+// GET_WIN_PROBABILITY(v, m) WinProbability[(v) + 4000][(m) - 10]
+#define GET_WIN_PROBABILITY(v, m) WinProbability[((v) + 4000) * 241 + m]
+
+#undef WIN_PROBABILITY_SIZE
+// uint8_t WinProbability[8001][241];
+
 //from ShashChess end
 
 
@@ -206,7 +216,9 @@ void Search::initWinProbability() {
     {
         for (Depth depth = 0; depth <= 240; ++depth)
         {
-            WinProbability[value + 4000][depth] = UCI::getWinProbability(value, depth);
+            // WinProbability[value + 4000][depth] =
+            GET_WIN_PROBABILITY(value, depth) = UCI::getWinProbability(value, depth);
+
         }
     }
 }
@@ -237,7 +249,8 @@ inline Value static_value(Position& pos, Stack* ss, int optimism) {
 inline int8_t getShashinRange(Value value, int ply) {
     short   capturedValue  = (std::clamp(value, (Value) (-4000), (Value) (4000)));
     uint8_t capturedPly    = std::min(240, ply);
-    uint8_t winProbability = WinProbability[capturedValue + 4000][capturedPly];
+    //uint8_t winProbability = WinProbability[capturedValue + 4000][capturedPly];
+    uint8_t winProbability = GET_WIN_PROBABILITY(capturedValue + 4000, capturedPly);
     if (winProbability <= SHASHIN_HIGH_PETROSIAN_THRESHOLD)
     {
         return SHASHIN_POSITION_HIGH_PETROSIAN;
