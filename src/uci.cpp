@@ -121,23 +121,25 @@ UCI::UCI(int argc, char** argv) :
     //From MCTS end
     //livebook begin
 #ifdef USE_LIVEBOOK
-    options["Live Book"] << Option(false);
+    options["Live Book"] << Option("Off var Off var NoEgtbs var Egtbs var Both", "Off",
+                                            [this](const Option& o) {
+                                                Search::set_livebook(o);
+                                            });
     options["Live Book URL"] << Option("http://www.chessdb.cn/cdb.php",
-                                       [this](const Option& o) { Search::setLiveBookURL(o); });
+                                       [this](const Option& o) { Search::setLiveBookURL(o); });    
     options["Live Book Timeout"] << Option(
       5000, 0, 10000, [this](const Option& o) { Search::setLiveBookTimeout(o); });
-    options["Live Book Retry"] << Option(
-      3, 1, 100, [this](const Option& o) { Search::set_livebook_retry(o); });
+    options["Live Book Retry"] << Option(3, 1, 100);
     options["Live Book Diversity"] << Option(false);
     options["Live Book Contribute"] << Option(false);
     options["Live Book Depth"] << Option(
-      3, 1, 100, [this](const Option& o) { Search::set_livebook_depth(o); });
+      255, 1, 255, [this](const Option& o) { Search::set_livebook_depth(o); });
 #endif
     //livebook end
     options["Opening variety"] << Option(0, 0, 40);  //Opening discoverer
     options["Concurrent Experience"]
       << Option(false);  //for a same experience file on a same folder
-                         //Shashin personalities begin
+    //Shashin personalities begin
     options["High Tal"] << Option(false);
     options["Middle Tal"] << Option(false);
     options["Low Tal"] << Option(false);
@@ -419,8 +421,8 @@ void UCI::search_clear() {
     threads.main_thread()->wait_for_search_finished();
     // livebook begin
 #ifdef USE_LIVEBOOK
-    ShashChess::Search::set_livebook_retry((int) options["Live Book Retry"]);
     ShashChess::Search::set_livebook_depth((int) options["Live Book Depth"]);
+    ShashChess::Search::set_g_inBook((int)options["Live Book Retry"]);
 #endif
     // livebook end
     tt.clear(options["Threads"]);

@@ -40,6 +40,19 @@
 #include "types.h"
 
 namespace ShashChess {
+// livebook begin
+#ifdef USE_LIVEBOOK
+    #define CURL_STATICLIB
+extern "C" {
+    #include <curl/curl.h>
+}
+    #undef min
+    #undef max
+#endif
+// livebook end
+namespace Eval::NNUE {
+struct Networks;
+}
 
 // Different node types, used as a template parameter
 enum NodeType {
@@ -285,10 +298,11 @@ class Worker {
 
 //livebook begin
 #ifdef USE_LIVEBOOK
+void set_livebook(const std::string& livebook);
 void setLiveBookURL(const std::string& newURL);
 void setLiveBookTimeout(size_t newTimeoutMS);
-void set_livebook_retry(int retry);
-void set_livebook_depth(int book_depth);
+void set_livebook_depth(int book_depth);//livebook_depth
+void set_g_inBook(int livebook_retry);
 #endif
 //livebook end
 
