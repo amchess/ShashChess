@@ -261,10 +261,6 @@ If activated, the learning file is only read.
 
 ### Shashin section
 
-### Shashin section
-
-### Shashin section
-
 _Default: no option settled_
 The engine will determine dynamically the position's type starting from a "Capablanca/default
 positions".
