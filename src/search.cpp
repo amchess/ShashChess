@@ -81,7 +81,20 @@ Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
 uint8_t WinProbability[WIN_PROBABILITY_SIZE];
 
 // GET_WIN_PROBABILITY(v, m) WinProbability[(v) + 4000][(m) - 10]
-#define GET_WIN_PROBABILITY(v, m) WinProbability[((v) + 4000) * 241 + m]
+
+inline size_t index(Value v, Depth d) {
+    assert(v >= -4000 && v <= 4000);
+    assert(d >= 0 && d <= 240);
+
+    return (v + 4000) * 241 + d;
+}
+
+inline uint8_t getWinProbability(Value v, Depth d) {
+    return WinProbability[index(v, d)];
+}
+
+// #define GET_WIN_PROBABILITY(v, p) WinProbability[index(v, p)]
+
 
 #undef WIN_PROBABILITY_SIZE
 // uint8_t WinProbability[8001][241];
@@ -204,9 +217,8 @@ void Search::initWinProbability() {
     {
         for (Depth depth = 0; depth <= 240; ++depth)
         {
-            // WinProbability[value + 4000][depth] =
-            GET_WIN_PROBABILITY(value, depth) = UCI::getWinProbability(value, depth);
-
+            // GET_WIN_PROBABILITY(value, depth) = UCI::getWinProbability(value, depth);
+            WinProbability[index(value, depth)] = UCI::getWinProbability(value, depth);
         }
     }
 }
@@ -238,7 +250,10 @@ inline int8_t getShashinRange(Value value, int ply) {
     short   capturedValue  = (std::clamp(value, (Value) (-4000), (Value) (4000)));
     uint8_t capturedPly    = std::min(240, ply);
     //uint8_t winProbability = WinProbability[capturedValue + 4000][capturedPly];
-    uint8_t winProbability = GET_WIN_PROBABILITY(capturedValue + 4000, capturedPly);
+
+    uint8_t winProbability = // GET_WIN_PROBABILITY(capturedValue + 4000, capturedPly);
+        getWinProbability(capturedValue, capturedPly);
+
     if (winProbability <= SHASHIN_HIGH_PETROSIAN_THRESHOLD)
     {
         return SHASHIN_POSITION_HIGH_PETROSIAN;
@@ -2452,6 +2467,9 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
         }
     }
     // from Hypnos adapted
+    if(std::abs(bestValue)==VALUE_INFINITE){
+        openingVariety=0;
+    }
     if (openingVariety)
     {
         const auto normalizedVariety = openingVariety * NormalizeToPawnValue / 100;

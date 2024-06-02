@@ -79,7 +79,7 @@ namespace ShashChess {
 namespace {
 
 // Version number or dev.
-constexpr std::string_view version = "35.3";
+constexpr std::string_view version = "36Candidate";
 
 // Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 // cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
