@@ -1,6 +1,4 @@
-# 1. ShashChess
-
-![Discord](https://img.shields.io/discord/1268503283505303634?style=social&logo=discord&label=Discord)
+# 1. ShashChess  ![Discord](https://img.shields.io/discord/1268503283505303634?style=social&logo=discord&label=Discord)
 
 ![ShashChess](logo/ShashChess.bmp)
 
@@ -88,7 +86,6 @@ The number of threads to use during the search. This number should be set to the
 _Boolean, Default: True_
 Also called "Permanent Brain" : whether or not the engine should analyze when it is the opponent's
 turn.
-
 
 Usually not on the configuration window.
 
