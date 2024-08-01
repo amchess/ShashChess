@@ -1,4 +1,6 @@
-# Introduction
+# ShashChess 
+
+![Discord](https://img.shields.io/discord/1268503283505303634?style=social&logo=discord&label=Discord)
 
 ShashChess is a free UCI chess engine derived from Stockfish family chess engines.
 The goal is to apply Alexander Shashin theory exposed on the following book :
@@ -35,20 +37,20 @@ changes to the source code, these changes must also be made available under the 
 
 For full details, read the copy of the GPL found in the file named _Copying.txt_.
 
-## Files
+# Files
 
 This distribution of ShashChessPro consists of the following files:
 
-- Readme.md, the file you are currently reading.
+- README.md, the file you are currently reading.
 - Copying.txt, a text file containing the GNU General Public License.
-- src, a subdirectory containing the full source code, including a Makefile and the compilation
-    scripts makeAll.bat (Windows) and makeAll.sh (Linux).
+- src, a subdirectory containing the full source code, including `Makefile` and the compilation
+    scripts `makeAll.bat` (Windows) and `makeAll.sh` (Linux).
 
-## Uci options
+# UCI options
 
-### Hash Memory
+## Hash Memory
 
-#### Hash
+### Hash
 
 _Integer, Default: 16, Min: 1, Max: 131072 MB (64-bit) : 2048 MB (32-bit)_
 
@@ -68,18 +70,18 @@ _N = logical threads number
 F = clock single processor frequency (MB)
 T = the average move time (in seconds)_
 
-#### Clear Hash
+### Clear Hash
 
 Button to clear the Hash Memory.
 If the Never Clear Hash option is enabled, this button doesn't do anything.
 
-### Threads
+## Threads
 
 _Integer, Default: 1, Min: 1, Max: 512_
 The number of threads to use during the search. This number should be set to the number of cores
 (physical+logical) in your CPU.
 
-### Ponder (checkbox)
+## Ponder (checkbox)
 
 _Boolean, Default: True_
 Also called "Permanent Brain" : whether or not the engine should analyze when it is the opponent's
@@ -88,33 +90,33 @@ turn.
 
 Usually not on the configuration window.
 
-### MultiPV
+## MultiPV
 
 _Integer, Default: 1, Min: 1, Max: 500_
 The number of alternate lines of analysis to display. Specify 1 to just get the best line. Asking for
 more lines slows down the search.
 Usually not on the configuration window.
 
-### UCI_Chess960 (checkbox)
+## UCI_Chess960 (checkbox)
 
 Whether or not ShashChess should play using Chess 960 mode. Usually not on the configuration
 window.
 
-### Move overhead 
+## Move overhead 
 
 _Default 30, min 0, max 5000_
 In ms, the default value seems to be the best on Linux systems, but must be increased for slow GUI like Fritz. In general, on Windows system it seems a good value to be 100.
 
-### Slow mover
+## Slow mover
 
 _Default 84, min 10, max 1000_
  "Time usage percent": how much the engine thinks on a move. Many engines seem to move faster and the engine is behind in time clock. With lower values it plays faster, with higher values slower - of course always within the time control.
 
-### Sygyzy End Game table bases
+## Sygyzy End Game table bases
 
 Download at [http://olympuschess.com/egtb/sbases](http://olympuschess.com/egtb/sbases) (by Ronald De Man)
 
-#### SyzygyPath
+### SyzygyPath
 
 The path to the Syzygy endgame tablebases.this defines an absolute path on your computer to the
 tablebase files, also on multiple paths separated with a semicolon (;) character (Windows), the colon
@@ -122,7 +124,7 @@ tablebase files, also on multiple paths separated with a semicolon (;) character
 The folder(s) containing the Syzygy EGTB files. If multiple folders are used, separate them by the ;
 (semicolon) character.
 
-#### SygyzyProbeDepth
+### SygyzyProbeDepth
 
 _Integer, Default: 1, Min: 1, Max: 100_
 The probing tablebases depth (always the root position).
@@ -133,54 +135,54 @@ Choice a test position with a few pieces on the board (from 7 to 12). For exampl
 - Fen: _8/5r2/R7/8/1p5k/p3P3/4K3/8 w -- 0 1_ Solution : Ra4 (=)
 - Fen: _1R6/7k/1P5p/5p2/3K2p1/1r3P1P/8 b - - 1 1_ Solution: 1...h5 !! (=)
 
-#### Syzygy50MoveRule
+### Syzygy50MoveRule
     
 Disable to let fifty-move rule draws detected by Syzygy tablebase probes count
 as wins or losses. This is useful for ICCF correspondence games.
 	
-#### SygyzyProbeLimit
+### SygyzyProbeLimit
 
 _Integer, Default: 6, Min: 0, Max: 6_
 How many pieces need to be on the board before ShashChess begins probing (even at the root).
 Current default, obviously, is for 6-man.
 
-### Advanced Chess Analyzer
+## Advanced Chess Analyzer
 
 Advanced analysis options, highly recommended for CC play
 
-#### Full depth threads
+## Full depth threads
 
 _Integer, Default: 0, Min: 0, Max: 512_
 The number of settled threads to use for a full depth brute force search. 
 If the number is greater than threads number, all threads are for full depth brute force search.
 
-### MonteCarlo Tree Search section (experimental: thanks to original Stephan Nicolet work)
+## MonteCarlo Tree Search section (experimental: thanks to original Stephan Nicolet work)
 
 _Boolean, Default: False_ If activated, thanks to Shashin theory, the engine will use the MonteCarlo Tree Search for Capablanca quiescent type positions and also for caos ones, in the manner specified by the following parameters. The idea is to exploit Lc0 best results in those positions types, because Lc0 uses mcts in the search.
 
-#### MCTSThreads
+### MCTSThreads
 
 _Integer, Default: 0, Min: 0, Max: 512_
 The number of settled threads to use for MCTS search except the first (main) one always for alpha-beta search. 
 In particular, if the number is greater than threads number, they will all do a montecarlo tree search, always except the first (main) for alpha-beta search.
 
-#### MCTS Multi Strategy 
+### MCTS Multi Strategy 
 
 _Integer, Default: 20, Min: 0, Max: 100_ 
 Only in multi mcts mode, for tree policy.
 
-#### MCTS Multi MinVisits
+### MCTS Multi MinVisits
 
 _Integer, Default: 5, Min: 0, Max: 1000_
 Only in multi mcts mode, for Upper Confidence Bound.
 
-### Live Book section (thanks to Eman's author Khalid Omar for windows builds)
+## Live Book section (thanks to Eman's author Khalid Omar for windows builds)
 
-#### Live Book (checkbox)
+### Live Book (checkbox)
 
 Default is Off: no livebook. The other values are "NoEgtbs" (no livebook for an endgame with at max 7 mens), "Egtbs" (livebook only for an endgame with at max 7 mens) and "Both" (the livebook whenever is possible).
 
-#### Live Book URL
+### Live Book URL
 The default is the online chessdb [https://www.chessdb.cn/queryc_en/](https://www.chessdb.cn/queryc_en/), a wonderful project by noobpwnftw (thanks to him!)
  
 [https://github.com/noobpwnftw/chessdb](https://github.com/noobpwnftw/chessdb)
@@ -188,44 +190,44 @@ The default is the online chessdb [https://www.chessdb.cn/queryc_en/](https://ww
 
 The private application can also learn from this live db.
 
-#### Live Book Timeout
+### Live Book Timeout
 
 _Default 5000, min 0, max 10000_ Only for bullet games, use a lower value, for example, 1500.
 
-#### Live Book Retry
+### Live Book Retry
 
 _Default 3, min 1, max 100_ Max times the engine tries to contribute (if the corresponding option is activated: see below) to the live book. If 0, the engine doesn't use the livebook.
 
-#### Live Book Diversity
+### Live Book Diversity
 
 _Boolean, Default: False_ If activated, the engine varies its play, reducing conversely its strength because already the live chessdb is very large.
 
-#### Live Book Contribute
+### Live Book Contribute
 
 _Boolean, Default: False_ If activated, the engine sends a move, not in live chessdb, in its queue to be analysed. In this manner, we have a kind of learning cloud.
 
-#### Live Book Depth
+### Live Book Depth
 
 _Default 255, min 1, max 255_ Depth of live book moves.
 
-### Full depth threads
+## Full depth threads
 
 _Default 0, min 0, max 512_ The number of threads doing a full depth analysis (brute force). Useful in analysis of particular hard positions to limit the strong pruning's drawbacks. 
 
-### Opening variety
+## Opening variety
 
 _Integer, Default: 0, Min: 0, Max: 40_
 To play different opening lines from default (0), if not from book (see below).
 Higher variety -> more probable loss of ELO
 
-### Concurrent Experience
+## Concurrent Experience
 
 _Boolean, Default: False_ 
 Set this option to true when running under CuteChess and you experiences problems with concurrency > 1
 When this option is true, the saved experience file name will be modified to something like experience-64a4c665c57504a4.bin
 (64a4c665c57504a4 is random). Each concurrent instance of BrainLearn will have its own experience file name, however, all the concurrent instances will read "experience.bin" at start up.
 
-### Persisted learning
+## Persisted learning
 
 Default is Off: no learning algorithm. The other values are "Standard" and "Self", this last to activate the [Q-learning](https://youtu.be/qhRNvCVVJaA?list=PLZbbT5o_s2xoWNVdDudn51XM8lOuZ_Njv), optimized for self play. Some GUIs don't write the experience file in some game's modes because the uci protocol is differently implemented
 
@@ -259,7 +261,7 @@ Because of disk access, to be effective, the learning must be made at no bullet 
 _Boolean, Default: False_ 
 If activated, the learning file is only read.
 
-### Shashin section
+## Shashin section
 
 _Default: no option settled_
 The engine will determine dynamically the position's type starting from a "Capablanca/default
@@ -289,19 +291,19 @@ N.B.
 The winProbability also take into account the depth at which a move has been calculated.
 So, it's more effective than the cp. 
 
-#### Tal
+### Tal
 
 Attack position/algorithm
 
-#### Capablanca
+### Capablanca
 
 Strategical algorithm (for quiescent positions)
 
-#### Petrosian
+### Petrosian
 
 Defense position/algorithm (the "reversed colors" Tal)
 
-## Acknowledgments
+# Acknowledgments
 
 - Kozlov Sergey Aleksandrovitsch for his very interesting patch and code on Sugar engine
 - Omar Khalid for his great experience in microsoft c/cpp programming environment
@@ -312,7 +314,7 @@ Defense position/algorithm (the "reversed colors" Tal)
 
 Stockfish community
 
-## ShashChess team
+# ShashChess team
 - engine owner and main developer: ICCF IM Andrea Manzo (https://www.iccf.com/player?id=241224)
 - IM Yohan Benitah for his professional chess understanding and help in testing against neural networks 
 - official tester: ICCF CCE and CCM Maurizio Platino (https://www.iccf.com/player?id=241094)
