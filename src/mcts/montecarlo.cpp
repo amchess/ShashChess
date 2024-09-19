@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2024 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -98,10 +98,10 @@ class AutoSpinLock {
     AutoSpinLock(const MonteCarlo* mcts, Spinlock& sl) :
         _mcts(mcts),
         _sl(sl) {
-        _sl.acquire(_mcts->thisThread->thread_idx);
+        _sl.acquire(_mcts->thisThread->threadIdx);
     }
 
-    ~AutoSpinLock() { _sl.release(_mcts->thisThread->thread_idx); }
+    ~AutoSpinLock() { _sl.release(_mcts->thisThread->threadIdx); }
 };
 
 #define LOCK__(m, n, l) AutoSpinLock asl##l(m, n)
@@ -196,8 +196,7 @@ void MonteCarlo::add_prior_to_node(mctsNodeInfo* node, Move m, Reward prior) con
 void MonteCarlo::search(ShashChess::ThreadPool&        threads,
                         ShashChess::Search::LimitsType limits,
                         bool                           isMainThread,
-                        Search::Worker*                worker,
-                        TranspositionTable&            tt) {
+                        Search::Worker*                worker) {
 
     mctsNodeInfo* node = nullptr;
     AB_Rollout         = false;
@@ -238,20 +237,23 @@ void MonteCarlo::search(ShashChess::ThreadPool&        threads,
             node->ttValue = backup(reward, AB_Rollout);
 
         if (should_emit_pv(isMainThread))
-            emit_pv(worker, threads, tt);
+            emit_pv(worker, threads);
     }
 
     if (ply >= 1)
         backup(reward, AB_Rollout);
 
     if (should_emit_pv(isMainThread))
-        emit_pv(worker, threads, tt);
+        emit_pv(worker, threads);
 }
 
 /// MonteCarlo::MonteCarlo() is the constructor for the MonteCarlo class
-MonteCarlo::MonteCarlo(Position& p, Search::Worker* worker) :
+MonteCarlo::MonteCarlo(Position&           p,
+                       Search::Worker*     worker,
+                       TranspositionTable& transpositionTable) :
     pos(p),
-    thisThread(worker) {
+    thisThread(worker),
+    tt(transpositionTable) {
     default_parameters();
     create_root(worker);
 }
@@ -504,16 +506,13 @@ bool MonteCarlo::should_emit_pv(bool isMainThread) const {
 
 /// MonteCarlo::emit_pv() emits the principal variation (PV) of the game tree on the
 /// standard output stream, as requested by the UCI protocol.
-void MonteCarlo::emit_pv(Search::Worker*         worker,
-                         ShashChess::ThreadPool& threads,
-                         TranspositionTable&     tt) {
+void MonteCarlo::emit_pv(Search::Worker* worker, ShashChess::ThreadPool& threads) {
 
     assert(ply == 1);
 
     LOCK(this, root);
 
-    string pv;
-    int    n = root->number_of_sons;
+    int n = root->number_of_sons;
 
     // Make a local copy of the children of the root, and sort
     EdgeArray list(root->children);
@@ -568,16 +567,15 @@ void MonteCarlo::emit_pv(Search::Worker*         worker,
         assert(int(rootMoves.size()) == root->number_of_sons);
         assert(ply == 1);
 
-        pv = threads.main_manager()->pv(*worker, threads, tt, worker->completedDepth);
+        threads.main_manager()->pv(*worker, threads, tt, worker->completedDepth);
     }
     else
     {
         // Mate or stalemate: we put a empty move in the global list of moves at root
         rootMoves.emplace_back(Move::none());
-        pv = "info depth 0 score " + UCI::value(pos.checkers() ? -VALUE_MATE : VALUE_DRAW);
+        threads.main_manager()->updates.onUpdateNoMoves(
+          {0, {pos.checkers() ? -VALUE_MATE : VALUE_DRAW, pos}});
     }
-
-    sync_cout << pv << sync_endl;
 
     lastOutputTime = now();
 }
@@ -665,12 +663,8 @@ void MonteCarlo::generate_moves(mctsNodeInfo* node) {
     if (node->node_visits != 0)
         return;
 
-    const Square prevSq =
-      stack[ply - 1].currentMove == Move::none() ? SQUARE_ZERO : stack[ply - 1].currentMove.to_sq();
-    Move countermove =
-      prevSq != SQ_NONE ? thisThread->counterMoves[pos.piece_on(prevSq)][prevSq] : Move::none();
-    Move  ttMove = Move::none();  // FIXME
-    Depth depth  = 30;
+    auto [ttHit, ttData, ttWriter] = tt.probe(pos.key());
+    Depth depth                    = 30;
 
     const PieceToHistory* contHist[] = {stack[ply - 1].continuationHistory,
                                         stack[ply - 2].continuationHistory,
@@ -678,8 +672,8 @@ void MonteCarlo::generate_moves(mctsNodeInfo* node) {
                                         stack[ply - 4].continuationHistory,
                                         nullptr,
                                         stack[ply - 6].continuationHistory};
-    MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory, &thisThread->captureHistory,
-                  contHist, &thisThread->pawnHistory, countermove, stack->killers);
+    MovePicker mp(pos, ttData.move, depth, &thisThread->mainHistory, &thisThread->captureHistory,
+                  contHist, &thisThread->pawnHistory);
     Move       move;
     int        moveCount = 0;
 
@@ -878,7 +872,7 @@ void MonteCarlo::print_children() {
     for (int k = root->number_of_sons - 1; k >= 0; k--)
     {
         std::cout << "info string move " << k + 1 << " "
-                  << UCI::move(children[k]->move, pos.is_chess960())
+                  << UCIEngine::move(children[k]->move, pos.is_chess960())
 
                   << std::setprecision(2) << " win% " << children[k]->prior * 100
 

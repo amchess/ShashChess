@@ -1,27 +1,26 @@
 # ShashChess, a UCI chess playing engine derived from Stockfish
-# Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
+# Copyright (C) 2004-2024 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers
 #
-# ShashChess is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
+# This program is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# ShashChess is distributed in the hope that it will be useful,
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ### ==========================================================================
 ### Section 1. General Configuration
 ### ==========================================================================
 
-### Establish the operating system name
+# Determine the operating system and set target variables accordingly
 KERNEL := $(shell uname -s)
-ifeq ($(KERNEL),Linux)
+ifeq ($(KERNEL), Linux)
 	OS := $(shell uname -o)
 endif
 
@@ -38,7 +37,7 @@ else ifeq ($(COMP),mingw)
 endif
 
 ### Executable name
-ifeq ($(target_windows),yes)
+ifeq ($(target_windows), yes)
 	EXE = shashchess.exe
 else
 	EXE = shashchess
@@ -57,19 +56,31 @@ SRCS = benchmark.cpp bitboard.cpp evaluate.cpp main.cpp \
 	search.cpp thread.cpp timeman.cpp tt.cpp uci.cpp ucioption.cpp tune.cpp syzygy/tbprobe.cpp \
 	learn/learn.cpp mcts/montecarlo.cpp  \
 	book/file_mapping.cpp book/book.cpp book/book_manager.cpp book/polyglot/polyglot.cpp book/ctg/ctg.cpp \
-	nnue/evaluate_nnue.cpp nnue/features/half_ka_v2_hm.cpp
+	nnue/nnue_misc.cpp nnue/features/half_ka_v2_hm.cpp nnue/network.cpp engine.cpp score.cpp memory.cpp \
+	win_probability.cpp \
+	livebook/BaseLivebook.cpp livebook/LichessOpening.cpp livebook/LichessEndgame.cpp livebook/ChessDb.cpp \
+	livebook/analysis/Cp.cpp livebook/analysis/Analysis.cpp livebook/analysis/Wdl.cpp livebook/analysis/Mate.cpp \
+	livebook/LichessLivebook.cpp livebook/LichessMaster.cpp livebook/LichessPlayer.cpp livebook/LichessUsers.cpp \
+	livebook/LichessGames.cpp livebook/Proxy.cpp livebook/ChessDBContributor.cpp
 
 HEADERS = benchmark.h bitboard.h evaluate.h misc.h movegen.h movepick.h \
-		nnue/evaluate_nnue.h nnue/features/half_ka_v2_hm.h nnue/layers/affine_transform.h \
+		nnue/nnue_misc.h nnue/features/half_ka_v2_hm.h nnue/layers/affine_transform.h \
 		nnue/layers/affine_transform_sparse_input.h nnue/layers/clipped_relu.h nnue/layers/simd.h \
 		nnue/layers/sqr_clipped_relu.h nnue/nnue_accumulator.h nnue/nnue_architecture.h \
 		nnue/nnue_common.h nnue/nnue_feature_transformer.h position.h \
 		search.h syzygy/tbprobe.h thread.h thread_win32_osx.h timeman.h \
-		tt.h tune.h types.h uci.h ucioption.h perft.h \
-		book/file_mapping.h book/book.h book/book_manager.h book/polyglot/polyglot.h book/ctg/ctg.h learn/learn.h mcts/montecarlo.h
+		tt.h tune.h types.h uci.h ucioption.h perft.h nnue/network.h engine.h score.h numa.h memory.h \
+		book/file_mapping.h book/book.h book/book_manager.h book/polyglot/polyglot.h book/ctg/ctg.h learn/learn.h mcts/montecarlo.h \
+		win_probability.h \
+		livebook/BaseLivebook.h livebook/LichessOpening.h livebook/LichessEndgame.h livebook/ChessDb.h \
+		livebook/analysis/Cp.h livebook/analysis/Analysis.h livebook/analysis/Wdl.h livebook/analysis/Mate.h \
+		livebook/LichessLivebook.h livebook/LichessMaster.h livebook/LichessPlayer.h livebook/LichessUsers.h livebook/Proxy.h \
+		livebook/LichessGames.h  livebook/ChessDBContributor.h \
+		livebook/json/json.hpp
+
 OBJS = $(notdir $(SRCS:.cpp=.o))
 
-VPATH = mcts:syzygy:nnue:nnue/features:book:book/polyglot:book/ctg:learn
+VPATH = mcts:syzygy:nnue:nnue/features:book:book/polyglot:book/ctg:learn:livebook:livebook/analysis:livebook/json
 
 ### ==========================================================================
 ### Section 2. High-level Configuration
@@ -155,8 +166,8 @@ dotprod = no
 arm_version = 0
 STRIP = strip
 
-ifneq ($(shell which clang-format-17 2> /dev/null),)
-	CLANG-FORMAT = clang-format-17
+ifneq ($(shell which clang-format-18 2> /dev/null),)
+	CLANG-FORMAT = clang-format-18
 else
 	CLANG-FORMAT = clang-format
 endif
@@ -389,18 +400,23 @@ ifeq ($(MAKELEVEL),0)
        export ENV_LDFLAGS := $(LDFLAGS)
 endif
 
-CXXFLAGS = $(ENV_CXXFLAGS) -Wall -Wcast-qual -fexceptions -std=c++17 $(EXTRACXXFLAGS)
+CXXFLAGS = $(ENV_CXXFLAGS) -Wall -Wextra -Wpedantic -Wcast-qual -fexceptions -std=c++17 $(EXTRACXXFLAGS)
 DEPENDFLAGS = $(ENV_DEPENDFLAGS) -std=c++17
 LDFLAGS = $(ENV_LDFLAGS) $(EXTRALDFLAGS)
 
 ifneq ($(OS),Android)
 	CXXFLAGS += -DUSE_LIVEBOOK
 	ifeq ($(target_windows),yes)
-		LDFLAGS += -DUSE_LIVEBOOK -lcurl -lnghttp2 -lidn2 -lssh2 -lssh2 -lpsl -lbcrypt -ladvapi32 -lcrypt32 -lbcrypt -lssl -lcrypto -lssl -lcrypto -lgdi32 -lwldap32 -lzstd -lzstd -lbrotlidec -lz -lws2_32 -lidn2 -liconv -lunistring -lbrotlidec -lbrotlicommon --static
+		ifeq ($(ARCH),x86_64)
+			LDFLAGS += -DUSE_LIVEBOOK -lcurl -lmsvcrt -lnghttp2 -lnghttp3 -lidn2 -lssh2 -lssh2 -lpsl -lbcrypt -ladvapi32 -lcrypt32 -lbcrypt -lssl -lcrypto -lssl -lcrypto -lgdi32 -lwldap32 -lzstd -lzstd -lbrotlidec -lz -lws2_32 -lidn2 -liconv -lunistring -lbrotlidec -lbrotlicommon --static
+		else
+			LDFLAGS += -DUSE_LIVEBOOK -lcurl -lmsvcrt -lnghttp2 -lidn2 -lssh2 -lssh2 -lpsl -lbcrypt -ladvapi32 -lcrypt32 -lbcrypt -lssl -lcrypto -lssl -lcrypto -lgdi32 -lwldap32 -lzstd -lzstd -lbrotlidec -lz -lws2_32 -lidn2 -liconv -lunistring -lbrotlidec -lbrotlicommon --static
+		endif
 	else
 		LDFLAGS += -DUSE_LIVEBOOK -lcurl	
 	endif
 endif
+
 
 ifeq ($(COMP),)
 	COMP=gcc
@@ -455,7 +471,7 @@ ifeq ($(COMP),mingw)
 			CXX=i686-w64-mingw32-c++-posix
 		endif
 	endif
-	CXXFLAGS += -pedantic -Wextra -Wshadow -Wmissing-declarations
+	CXXFLAGS += -pedantic -Wextra -Wno-shadow -Wmissing-declarations
 endif
 
 ifeq ($(COMP),icx)
@@ -500,8 +516,8 @@ ifeq ($(COMP),clang)
 endif
 
 ifeq ($(KERNEL),Darwin)
-	CXXFLAGS += -mmacosx-version-min=10.14
-	LDFLAGS += -mmacosx-version-min=10.14
+	CXXFLAGS += -mmacosx-version-min=10.15
+	LDFLAGS += -mmacosx-version-min=10.15
 	ifneq ($(arch),any)
 		CXXFLAGS += -arch $(arch)
 		LDFLAGS += -arch $(arch)
@@ -555,11 +571,6 @@ else
 	ifeq ($(KERNEL),Darwin)
 		EXTRAPROFILEFLAGS = -fvisibility=hidden
 	endif
-endif
-
-### Travis CI script uses COMPILER to overwrite CXX
-ifdef COMPILER
-	COMPCXX=$(COMPILER)
 endif
 
 ### Allow overwriting CXX from command line
@@ -921,12 +932,12 @@ clean: objclean profileclean
 
 # clean binaries and objects
 objclean:
-	@rm -f shashchess shashchess.exe *.o ./syzygy/*.o ./nnue/*.o ./nnue/features/*.o ./book/*.o ./book/polyglot/*.o ./book/ctg/*.o ./learn/*.o
+	@rm -f shashchess shashchess.exe *.o ./syzygy/*.o ./nnue/*.o ./nnue/features/*.o ./book/*.o ./book/polyglot/*.o ./book/ctg/*.o ./learn/*.o livebook/*.o livebook/analysis/*.o livebook/json/*.o
 
 # clean auxiliary profiling files
 profileclean:
 	@rm -rf profdir
-	@rm -f bench.txt *.gcda *.gcno ./syzygy/*.gcda ./nnue/*.gcda ./nnue/features/*.gcda ./book/*.gcda ./book/polyglot/*.gcda ./book/ctg/*.gcda ./learn/*.gcda *.s PGOBENCH.out
+	@rm -f bench.txt *.gcda *.gcno ./syzygy/*.gcda ./nnue/*.gcda ./nnue/features/*.gcda ./book/*.gcda ./book/polyglot/*.gcda ./book/ctg/*.gcda ./learn/*.gcda ./livebook/*.gcda *.s PGOBENCH.out
 	@rm -f shashchess.profdata *.profraw
 	@rm -f shashchess.*args*
 	@rm -f shashchess.*lt*
@@ -1067,14 +1078,14 @@ FORCE:
 
 clang-profile-make:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-fprofile-instr-generate ' \
-	EXTRALDFLAGS=' -fprofile-instr-generate' \
+	EXTRACXXFLAGS='-fprofile-generate ' \
+	EXTRALDFLAGS=' -fprofile-generate' \
 	all
 
 clang-profile-use:
 	$(XCRUN) llvm-profdata merge -output=shashchess.profdata *.profraw
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-fprofile-instr-use=shashchess.profdata' \
+	EXTRACXXFLAGS='-fprofile-use=shashchess.profdata' \
 	EXTRALDFLAGS='-fprofile-use ' \
 	all
 

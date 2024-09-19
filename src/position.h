@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2024 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 namespace ShashChess {
 //Kelly begin
 extern void setStartPoint();
-extern void putGameLineIntoLearningTable();
 //Kelly end
 class TranspositionTable;
 
@@ -159,7 +158,7 @@ class Position {
     int   game_ply() const;
     bool  is_chess960() const;
     bool  is_draw(int ply) const;
-    bool  has_game_cycle(int ply) const;
+    bool  upcoming_repetition(int ply) const;
     bool  has_repeated() const;
     //from Crystal begin
     bool king_danger(Color c) const;
@@ -204,7 +203,7 @@ class Position {
     Color      sideToMove;
     bool       chess960;
 };
-
+extern void   putGameLineIntoLearningTable(Position& pos);
 std::ostream& operator<<(std::ostream& os, const Position& pos);
 
 inline Color Position::side_to_move() const { return sideToMove; }
@@ -321,8 +320,8 @@ inline bool Position::capture(Move m) const {
 }
 
 // Returns true if a move is generated from the capture stage, having also
-// queen promotions covered, i.e. consistency with the capture stage move generation
-// is needed to avoid the generation of duplicate moves.
+// queen promotions covered, i.e. consistency with the capture stage move
+// generation is needed to avoid the generation of duplicate moves.
 inline bool Position::capture_stage(Move m) const {
     assert(m.is_ok());
     return capture(m) || m.promotion_type() == QUEEN;

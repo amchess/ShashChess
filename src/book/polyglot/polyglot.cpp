@@ -522,8 +522,9 @@ void PolyglotBook::show_moves(const Position& pos) const {
             {
                 ss << std::setw(2) << std::setfill(' ') << std::left << (i + 1) << ": "
                    << std::setw(5) << std::setfill(' ') << std::left
-                   << UCI::move(bookMoves[i].move, pos.is_chess960()) << ", count: " << std::setw(4)
-                   << std::setfill(' ') << std::left << bookMoves[i].entry.count << std::endl;
+                   << UCIEngine::move(bookMoves[i].move, pos.is_chess960())
+                   << ", count: " << std::setw(4) << std::setfill(' ') << std::left
+                   << bookMoves[i].entry.count << std::endl;
             }
         }
     }

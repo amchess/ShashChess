@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2024 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -113,12 +113,11 @@ enum Color {
     BLACK,
     COLOR_NB = 2
 };
-
-constexpr Color Colors[2] = {WHITE, BLACK};  //kelly
+//kelly begin
+constexpr Color Colors[2] = {WHITE, BLACK};
 
 enum CastlingRights {
-    NO_CASTLING,
-    WHITE_OO,
+    WHITE_OO  = 1,
     WHITE_OOO = WHITE_OO << 1,
     BLACK_OO  = WHITE_OO << 2,
     BLACK_OOO = WHITE_OO << 3,
@@ -131,6 +130,7 @@ enum CastlingRights {
 
     CASTLING_RIGHT_NB = 16
 };
+////kelly end
 
 enum Bound {
     BOUND_NONE,
@@ -139,9 +139,9 @@ enum Bound {
     BOUND_EXACT = BOUND_UPPER | BOUND_LOWER
 };
 
-// Value is used as an alias for int16_t, this is done to differentiate between
-// a search value and any other integer value. The values used in search are always
-// supposed to be in the range (-VALUE_NONE, VALUE_NONE] and should not exceed this range.
+// Value is used as an alias for int, this is done to differentiate between a search
+// value and any other integer value. The values used in search are always supposed
+// to be in the range (-VALUE_NONE, VALUE_NONE] and should not exceed this range.
 using Value = int;
 
 constexpr Value VALUE_ZERO      = 0;
@@ -161,12 +161,11 @@ constexpr Value VALUE_TB_LOSS_IN_MAX_PLY = -VALUE_TB_WIN_IN_MAX_PLY;
 // In the code, we make the assumption that these values
 // are such that non_pawn_material() can be used to uniquely
 // identify the material on the board.
-constexpr Value PawnValue            = 208;
-constexpr Value KnightValue          = 781;
-constexpr Value BishopValue          = 825;
-constexpr Value RookValue            = 1276;
-constexpr Value QueenValue           = 2538;
-constexpr int   NormalizeToPawnValue = 356;  //from mcts
+constexpr Value PawnValue   = 208;
+constexpr Value KnightValue = 781;
+constexpr Value BishopValue = 825;
+constexpr Value RookValue   = 1276;
+constexpr Value QueenValue  = 2538;
 //from Crystal begin
 constexpr Value PawnConversionFactor = 356;
 constexpr Value VALUE_TB_WIN         = 51 * PawnConversionFactor;
@@ -194,12 +193,21 @@ constexpr Value PieceValue[PIECE_NB] = {
 using Depth = int;
 
 enum : int {
-    DEPTH_QS_CHECKS    = 0,
-    DEPTH_QS_NO_CHECKS = -1,
-
-    DEPTH_NONE = -6,
-
-    DEPTH_OFFSET = -7  // value used only for TT entry occupancy check
+    // The following DEPTH_ constants are used for transposition table entries
+    // and quiescence search move generation stages. In regular search, the
+    // depth stored in the transposition table is literal: the search depth
+    // (effort) used to make the corresponding transposition table value. In
+    // quiescence search, however, the transposition table entries only store
+    // the current quiescence move generation stage (which should thus compare
+    // lower than any regular search depth).
+    DEPTH_QS = 0,
+    // For transposition table entries where no searching at all was done
+    // (whether regular or qsearch) we use DEPTH_UNSEARCHED, which should thus
+    // compare lower than any quiescence or regular depth. DEPTH_ENTRY_OFFSET
+    // is used only for the transposition table entry occupancy check (see tt.cpp),
+    // and should thus be lower than DEPTH_UNSEARCHED.
+    DEPTH_UNSEARCHED   = -2,
+    DEPTH_ENTRY_OFFSET = -3
 };
 
 // clang-format off
@@ -391,9 +399,10 @@ enum MoveType {
 // bit 14-15: special move flag: promotion (1), en passant (2), castling (3)
 // NOTE: en passant bit is set only when a pawn can be captured
 //
-// Special cases are Move::none() and Move::null(). We can sneak these in because in
-// any normal move destination square is always different from origin square
-// while Move::none() and Move::null() have the same origin and destination square.
+// Special cases are Move::none() and Move::null(). We can sneak these in because
+// in any normal move the destination square and origin square are always different,
+// but Move::none() and Move::null() have the same origin and destination square.
+
 class Move {
    public:
     Move() = default;

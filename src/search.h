@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2024 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,18 +19,25 @@
 #ifndef SEARCH_H_INCLUDED
 #define SEARCH_H_INCLUDED
 
+#include <algorithm>
 #include <array>
 #include <atomic>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <memory>
-#include <vector>
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include "misc.h"
 #include "movepick.h"
+#include "nnue/network.h"
+#include "nnue/nnue_accumulator.h"
+#include "numa.h"
 #include "position.h"
+#include "score.h"
 #include "syzygy/tbprobe.h"
 #include "timeman.h"
 //from ShashChess begin
@@ -40,19 +47,6 @@
 #include "types.h"
 
 namespace ShashChess {
-// livebook begin
-#ifdef USE_LIVEBOOK
-    #define CURL_STATICLIB
-extern "C" {
-    #include <curl/curl.h>
-}
-    #undef min
-    #undef max
-#endif
-// livebook end
-namespace Eval::NNUE {
-struct Networks;
-}
 
 // Different node types, used as a template parameter
 enum NodeType {
@@ -66,7 +60,6 @@ class ThreadPool;
 class OptionsMap;
 
 namespace Search {
-void initWinProbability();  //for Shashin
 // Stack struct keeps track of the information we need to remember from nodes
 // shallower and deeper in the tree during the search. Each search thread has
 // its own array of Stack objects, indexed by the current ply.
@@ -76,19 +69,17 @@ struct Stack {
     int             ply;
     Move            currentMove;
     Move            excludedMove;
-    Move            killers[2];
     Value           staticEval;
     int             statScore;
     int             moveCount;
     bool            inCheck;
     bool            ttPv;
     bool            ttHit;
+    int             cutoffCnt;
     //from Crystal begin
     bool secondaryLine;
     bool mainLine;
     //from Crystal end
-    int multipleExtensions;
-    int cutoffCnt;
 };
 
 
@@ -106,6 +97,7 @@ struct RootMove {
         return m.score != score ? m.score < score : m.previousScore < previousScore;
     }
 
+    uint64_t          effort          = 0;
     Value             score           = -VALUE_INFINITE;
     Value             previousScore   = -VALUE_INFINITE;
     Value             averageScore    = -VALUE_INFINITE;
@@ -114,15 +106,14 @@ struct RootMove {
     bool              scoreUpperbound = false;
     int               selDepth        = 0;
     int               tbRank          = 0;
-    Value             tbScore;
+    Value             tbScore         = 0;  //for windows build
     std::vector<Move> pv;
 };
 
 using RootMoves = std::vector<RootMove>;
 
 
-// LimitsType struct stores information sent by GUI about available time to
-// search the current move, maximum depth/time, or if we are in analysis mode.
+// LimitsType struct stores information sent by the caller about the analysis required.
 struct LimitsType {
 
     // Init explicitly due to broken value-initialization of non POD in MSVC
@@ -130,14 +121,17 @@ struct LimitsType {
         time[WHITE] = time[BLACK] = inc[WHITE] = inc[BLACK] = npmsec = movetime = TimePoint(0);
         movestogo = depth = mate = perft = infinite = 0;
         nodes                                       = 0;
+        ponderMode                                  = false;
     }
 
     bool use_time_management() const { return time[WHITE] || time[BLACK]; }
 
-    std::vector<Move> searchmoves;
-    TimePoint         time[COLOR_NB], inc[COLOR_NB], npmsec, movetime, startTime;
-    int               movestogo, depth, mate, perft, infinite;
-    uint64_t          nodes;
+    std::vector<std::string> searchmoves;
+    TimePoint                time[COLOR_NB], inc[COLOR_NB], npmsec, movetime, startTime;
+    int                      movestogo, depth, mate, perft, infinite;
+    uint64_t                 nodes;
+    bool                     ponderMode;
+    Square                   capSq;
 };
 
 
@@ -145,23 +139,23 @@ struct LimitsType {
 // This struct is used to easily forward data to the Search::Worker class.
 struct SharedState {
     //from Polyfish begin
-    SharedState(BookManager&           bm,
-                Eval::NNUE::EvalFiles& ef,
-                const OptionsMap&      optionsMap,
-                ThreadPool&            threadPool,
-                TranspositionTable&    transpositionTable) :
+    SharedState(BookManager&                                    bm,
+                const OptionsMap&                               optionsMap,
+                ThreadPool&                                     threadPool,
+                TranspositionTable&                             transpositionTable,
+                const LazyNumaReplicated<Eval::NNUE::Networks>& nets) :
         bookMan(bm),
-        evalFiles(ef),
         options(optionsMap),
         threads(threadPool),
-        tt(transpositionTable) {}
+        tt(transpositionTable),
+        networks(nets) {}
 
-    BookManager&           bookMan;
-    Eval::NNUE::EvalFiles& evalFiles;
+    BookManager& bookMan;
     //from Polyfish end
-    const OptionsMap&   options;
-    ThreadPool&         threads;
-    TranspositionTable& tt;
+    const OptionsMap&                               options;
+    ThreadPool&                                     threads;
+    TranspositionTable&                             tt;
+    const LazyNumaReplicated<Eval::NNUE::Networks>& networks;
 };
 
 class Worker;
@@ -174,18 +168,59 @@ class ISearchManager {
     virtual void check_time(Search::Worker&) = 0;
 };
 
+struct InfoShort {
+    int   depth;
+    Score score;
+};
+
+struct InfoFull: InfoShort {
+    int              selDepth;
+    size_t           multiPV;
+    std::string_view wdl;
+    std::string_view bound;
+    size_t           timeMs;
+    size_t           nodes;
+    size_t           nps;
+    size_t           tbHits;
+    std::string_view pv;
+    int              hashfull;
+};
+
+struct InfoIteration {
+    int              depth;
+    std::string_view currmove;
+    size_t           currmovenumber;
+};
+
 // SearchManager manages the search from the main thread. It is responsible for
 // keeping track of the time, and storing data strictly related to the main thread.
 class SearchManager: public ISearchManager {
    public:
+    using UpdateShort    = std::function<void(const InfoShort&)>;
+    using UpdateFull     = std::function<void(const InfoFull&)>;
+    using UpdateIter     = std::function<void(const InfoIteration&)>;
+    using UpdateBestmove = std::function<void(std::string_view, std::string_view)>;
+
+    struct UpdateContext {
+        UpdateShort    onUpdateNoMoves;
+        UpdateFull     onUpdateFull;
+        UpdateIter     onIter;
+        UpdateBestmove onBestmove;
+    };
+
+
+    SearchManager(const UpdateContext& updateContext) :
+        updates(updateContext) {}
+
     void check_time(Search::Worker& worker) override;
 
-    std::string pv(Search::Worker&           worker,  //from ShashChess
-                   const ThreadPool&         threads,
-                   const TranspositionTable& tt,
-                   Depth                     depth) const;
+    void pv(Search::Worker&           worker,
+            const ThreadPool&         threads,
+            const TranspositionTable& tt,
+            Depth                     depth);
 
     ShashChess::TimeManagement tm;
+    double                     originalTimeAdjust;
     int                        callsCnt;
     std::atomic_bool           ponder;
 
@@ -196,6 +231,8 @@ class SearchManager: public ISearchManager {
     bool                 stopOnPonderhit;
 
     size_t id;
+
+    const UpdateContext& updates;
 };
 
 class NullSearchManager: public ISearchManager {
@@ -203,31 +240,32 @@ class NullSearchManager: public ISearchManager {
     void check_time(Search::Worker&) override {}
 };
 
+
 // Search::Worker is the class that does the actual search.
 // It is instantiated once per thread, and it is responsible for keeping track
 // of the search history, and storing data required for the search.
 class Worker {
    public:
-    size_t thread_idx;  //mcts
-    Worker(SharedState&, std::unique_ptr<ISearchManager>, size_t);
+    size_t threadIdx;  //mcts
+    Worker(SharedState&, std::unique_ptr<ISearchManager>, size_t, NumaReplicatedAccessToken);
 
-    // Called at instantiation to initialize Reductions tables
-    // Reset histories, usually before a new game
+    // Called at instantiation to initialize reductions tables.
+    // Reset histories, usually before a new game.
     void clear();
 
     // Called when the program receives the UCI 'go' command.
     // It searches from the root position and outputs the "bestmove".
     void start_searching();
 
-    bool is_mainthread() const { return thread_idx == 0; }
+    bool is_mainthread() const { return threadIdx == 0; }
 
+    void ensure_network_replicated();
     //from Montecarlo begin
     Value minimax_value(Position& pos, Search::Stack* ss, Depth depth);
     Value minimax_value(Position& pos, Search::Stack* ss, Depth depth, Value alpha, Value beta);
     //from Montecarlo end
 
     // Public because they need to be updatable by the stats
-    CounterMoveHistory    counterMoves;
     ButterflyHistory      mainHistory;
     CapturePieceToHistory captureHistory;
     ContinuationHistory   continuationHistory[2][2];
@@ -243,24 +281,24 @@ class Worker {
    private:
     void iterative_deepening();
 
-    // Main search function for both PV and non-PV nodes
+    // This is the main search function, for both PV and non-PV nodes
     template<NodeType nodeType>
     Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, bool cutNode);
 
     // Quiescence search function, which is called by the main search
     template<NodeType nodeType>
-    Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth = 0);
+    Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta);
 
-    Depth reduction(bool i, Depth d, int mn, int delta);
+    Depth reduction(bool i, Depth d, int mn, int delta) const;
 
-    // Get a pointer to the search manager, only allowed to be called by the
-    // main thread.
+    // Pointer to the search manager, only allowed to be called by the main thread
     SearchManager* main_manager() const {
-        assert(thread_idx == 0);
+        assert(threadIdx == 0);
         return static_cast<SearchManager*>(manager.get());
     }
 
-    std::array<std::array<uint64_t, SQUARE_NB>, SQUARE_NB> effort;
+    TimePoint elapsed() const;
+    TimePoint elapsed_time() const;
 
     LimitsType limits;
 
@@ -276,7 +314,9 @@ class Worker {
     Value rootDelta;
 
     //for mcts
-    bool fullSearch;  //full threads patch
+    bool                      fullSearch;  //full threads patch
+    NumaReplicatedAccessToken numaAccessToken;
+
     // Reductions lookup table initialized at startup
     std::array<int, MAX_MOVES> reductions;  // [depth or moveNumber]
 
@@ -284,13 +324,17 @@ class Worker {
     std::unique_ptr<ISearchManager> manager;
 
     Tablebases::Config tbConfig;
+
     //From PolyFish begin
-    BookManager&           bookMan;
-    Eval::NNUE::EvalFiles& evalFiles;
+    BookManager& bookMan;
     //From PolyFish end
-    const OptionsMap&   options;
-    ThreadPool&         threads;
-    TranspositionTable& tt;
+    const OptionsMap&                               options;
+    ThreadPool&                                     threads;
+    TranspositionTable&                             tt;
+    const LazyNumaReplicated<Eval::NNUE::Networks>& networks;
+
+    // Used by NNUE
+    Eval::NNUE::AccumulatorCaches refreshTable;
 
     friend class ShashChess::ThreadPool;
     friend class SearchManager;
@@ -298,21 +342,38 @@ class Worker {
 
 //livebook begin
 #ifdef USE_LIVEBOOK
-void set_livebook(const std::string& livebook);
-void setLiveBookURL(const std::string& newURL);
-void setLiveBookTimeout(size_t newTimeoutMS);
-void set_livebook_depth(int book_depth);//livebook_depth
-void set_g_inBook(int livebook_retry);
+void set_livebook_depth(int book_depth);
+void set_proxy_url(const std::string& proxy_url);
+void set_use_lichess_games(bool lichess_games);
+void set_use_lichess_masters(bool lichess_masters);
+void set_lichess_player(const std::string& lichess_player);
+void set_lichess_player_color(const std::string& lichess_player_color);
+void set_use_chess_db(bool chess_db);
+
+void set_use_chess_db_tablebase(bool chess_db);
+void set_use_lichess_tablebase(bool lichess_tablebase);
+
+void update_livebooks();
+void update_online_tablebases();
+
+void set_chess_db_contribute(bool chess_db_contribute);
+void set_proxy_diversity(bool proxy_diversity);
+
+
 #endif
 //livebook end
 
+void set_variety(const std::string& varietyOption);  //variety
 }  // namespace Search
 //from Livebook begin
 #ifdef USE_LIVEBOOK
 size_t cURL_WriteFunc(void* contents, size_t size, size_t nmemb, std::string* s);
 #endif
 //from Livebook end
-Value static_value(Position& pos, Search::Stack* ss, int optimism);  //mcts
+Value static_value(const Eval::NNUE::Networks& networks,
+                   Position&                   pos,
+                   Search::Stack*              ss,
+                   int                         optimism);  //mcts
 }  // namespace ShashChess
 
 #endif  // #ifndef SEARCH_H_INCLUDED

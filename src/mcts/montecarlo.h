@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2024 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -183,7 +183,7 @@ class MonteCarlo {
 
    public:
     // Constructors
-    MonteCarlo(Position& p, Search::Worker* worker);
+    MonteCarlo(Position& p, Search::Worker* worker, TranspositionTable& transpositionTable);
 
     //Prevent copying of this class type
     MonteCarlo(const MonteCarlo&)            = delete;
@@ -193,8 +193,7 @@ class MonteCarlo {
     void search(ShashChess::ThreadPool&        threads,
                 ShashChess::Search::LimitsType limits,
                 bool                           isMainThread,
-                Search::Worker*                worker,
-                TranspositionTable&            tt);
+                Search::Worker*                worker);
 
     // The high-level description of the Monte-Carlo algorithm
     void          create_root(Search::Worker* worker);
@@ -232,12 +231,13 @@ class MonteCarlo {
 
     // Output of results
     [[nodiscard]] bool should_emit_pv(bool isMainThread) const;
-    void emit_pv(Search::Worker* worker, ShashChess::ThreadPool& threads, TranspositionTable& tt);
-    void print_children();
+    void               emit_pv(Search::Worker* worker, ShashChess::ThreadPool& threads);
+    void               print_children();
 
    private:
     Position&                   pos;  // The current position of the tree
     ShashChess::Search::Worker* thisThread;
+    TranspositionTable&         tt;
     mctsNodeInfo*               root{};  // A pointer to the root
 
     // Counters and statistics

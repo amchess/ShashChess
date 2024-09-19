@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2024 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include <vector>
 
 namespace ShashChess {
+
 class OptionsMap;
 
 using Range    = std::pair<int, int>;  // Option's min-max values
@@ -144,6 +145,8 @@ class Tune {
         return add(value, (next(names), std::move(names)), args...);
     }
 
+    static void make_option(OptionsMap* options, const std::string& n, int v, const SetRange& r);
+
     std::vector<std::unique_ptr<EntryBase>> list;
 
    public:
@@ -157,7 +160,7 @@ class Tune {
         for (auto& e : instance().list)
             e->init_option();
         read_options();
-    }  // Deferred, due to UCI::Options access
+    }  // Deferred, due to UCIEngine::Options access
     static void read_options() {
         for (auto& e : instance().list)
             e->read_option();

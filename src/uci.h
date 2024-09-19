@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2024 Andrea Manzo, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2024 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,67 +19,62 @@
 #ifndef UCI_H_INCLUDED
 #define UCI_H_INCLUDED
 
+#include <cstdint>
 #include <iostream>
 #include <string>
-#include <unordered_map>
+#include <string_view>
 
-#include "evaluate.h"
+#include "engine.h"
 #include "misc.h"
-#include "position.h"
-#include "thread.h"
-#include "tt.h"
+#include "search.h"
 #include "book/book_manager.h"  //book management
-#include "ucioption.h"
 
 namespace ShashChess {
 
-namespace Eval::NNUE {
-enum NetSize : int;
-}
-
+class Position;
 class Move;
+class Score;
 enum Square : int;
 using Value = int;
 
-class UCI {
+class UCIEngine {
    public:
-    UCI(int argc, char** argv);
+    UCIEngine(int argc, char** argv);
 
     void loop();
 
-    static int         to_cp(Value v);
-    static std::string value(Value v);
+    static int         to_cp(Value v, const Position& pos);
+    static int         getNormalizeToPawnValue(Position& pos);  //learning
+    static std::string format_score(const Score& s);
     static std::string square(Square s);
     static std::string move(Move m, bool chess960);
-    static std::string wdl(Value v, int ply);
-    static uint8_t     getWinProbability(int v, int ply);
-    static Move        to_move(const Position& pos, std::string& str);
+    static std::string wdl(Value v, const Position& pos);
+    static uint8_t     getWinProbability(int v, int materialClamp);
+    static std::string to_lower(std::string str);
+    static Move        to_move(const Position& pos, std::string str);
 
-    const std::string& workingDirectory() const { return cli.workingDirectory; }
+    static Search::LimitsType parse_limits(std::istream& is);
 
-    OptionsMap options;
-
-    std::unordered_map<Eval::NNUE::NetSize, Eval::EvalFile> evalFiles;
+    auto& engine_options() { return engine.get_options(); }
 
    private:
-    TranspositionTable tt;
-    ThreadPool         threads;
-    BookManager        bookMan;  //book management
-    CommandLine        cli;
+    Engine      engine;
+    CommandLine cli;
 
-    void go(Position& pos, std::istringstream& is, StateListPtr& states);
-    void bench(Position& pos, std::istream& args, StateListPtr& states);
-    void position(Position& pos, std::istringstream& is, StateListPtr& states);
-    void trace_eval(Position& pos);
-    void search_clear();
-    void setoption(std::istringstream& is);
+    static void print_info_string(const std::string& str);
+
+    void          go(std::istringstream& is);
+    void          bench(std::istream& args);
+    void          position(std::istringstream& is);
+    void          setoption(std::istringstream& is);
+    std::uint64_t perft(const Search::LimitsType&);
+
+    static void on_update_no_moves(const Engine::InfoShort& info);
+    static void on_update_full(const Engine::InfoFull& info, bool showWDL);
+    static void on_iter(const Engine::InfoIter& info);
+    static void on_bestmove(std::string_view bestmove, std::string_view ponder);
 };
 
-//begin no uci option, but constant
-enum {
-    NODES_TIME = 0,
-};
-//end no uci option, but constant
 }  // namespace ShashChess
 
 #endif  // #ifndef UCI_H_INCLUDED

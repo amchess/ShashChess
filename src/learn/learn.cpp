@@ -3,13 +3,19 @@
 #include <sstream>
 #include "../misc.h"
 #include "learn.h"
+#include <algorithm>
+#include <cstdint>
+#include "../uci.h"
 
+#include "../win_probability.h"
+
+using namespace std;
 using namespace ShashChess;
 
 LearningData LD;
 
 namespace {
-LearningMode identify_learning_mode(const std::string& lm) {
+LearningMode identify_learning_mode(const string& lm) {
     if (lm == "Off")
         return LearningMode::Off;
 
@@ -20,22 +26,22 @@ LearningMode identify_learning_mode(const std::string& lm) {
 }
 }
 
-bool LearningData::load(const std::string& filename) {
-    std::ifstream in(filename, std::ios::in | std::ios::binary);
+bool LearningData::load(const string& filename) {
+    ifstream in(filename, ios::in | ios::binary);
 
     //Quick exit if file is not present
     if (!in.is_open())
         return false;
 
     //Get experience file size
-    in.seekg(0, std::ios::end);
-    size_t fileSize = in.tellg();
+    in.seekg(0, ios::end);
+    const size_t fileSize = in.tellg();
 
     //File size should be a multiple of 'PersistedLearningMove'
     if (fileSize % sizeof(PersistedLearningMove))
     {
-        std::cerr << "info string The file <" << filename << "> with size <" << fileSize
-                  << "> is not a valid experience file" << std::endl;
+        cerr << "info string The file <" << filename << "> with size <" << fileSize
+             << "> is not a valid experience file" << endl;
         return false;
     }
 
@@ -43,20 +49,20 @@ bool LearningData::load(const std::string& filename) {
     void* fileData = malloc(fileSize);
     if (!fileData)
     {
-        std::cerr << "info string Failed to allocate <" << fileSize
-                  << "> bytes to read experience file <" << filename << ">" << std::endl;
+        cerr << "info string Failed to allocate <" << fileSize
+             << "> bytes to read experience file <" << filename << ">" << endl;
         return false;
     }
 
     //Read the entire file
-    in.seekg(0, std::ios::beg);  //Move read pointer to the beginning of the file
-    in.read((char*) fileData, fileSize);
+    in.seekg(0, ios::beg);  //Move read pointer to the beginning of the file
+    in.read(static_cast<char*>(fileData), static_cast<std::streamsize>(fileSize));
     if (!in)
     {
         free(fileData);
 
-        std::cerr << "info string Failed to read <" << fileSize << "> bytes from experience file <"
-                  << filename << ">" << std::endl;
+        cerr << "info string Failed to read <" << fileSize << "> bytes from experience file <"
+             << filename << ">" << endl;
         return false;
     }
 
@@ -67,24 +73,44 @@ bool LearningData::load(const std::string& filename) {
     mainDataBuffers.push_back(fileData);
 
     //Loop the moves from this file
-    bool                   qLearning             = (learningMode == LearningMode::Self);
-    PersistedLearningMove* persistedLearningMove = (PersistedLearningMove*) fileData;
+    const bool qLearning             = learningMode == LearningMode::Self;
+    auto*      persistedLearningMove = static_cast<PersistedLearningMove*>(fileData);
     do
     {
         insert_or_update(persistedLearningMove, qLearning);
         ++persistedLearningMove;
-    } while ((size_t) persistedLearningMove < (size_t) fileData + fileSize);
+    } while (reinterpret_cast<size_t>(persistedLearningMove)
+             < reinterpret_cast<size_t>(fileData) + fileSize);
 
     return true;
 }
 
-void LearningData::insert_or_update(PersistedLearningMove* plm, bool qLearning) {
-    // We search in the range of all the hash table entries with plm's key
-    auto range = HT.equal_range(plm->key);
+inline bool should_update(const LearningMove existing_move, const LearningMove learning_move) {
+    if (learning_move.depth > existing_move.depth)
+    {
+        return true;
+    }
 
-    //If the plm's key belongs to a position that did not exist before in the 'LHT'
+    if (learning_move.depth < existing_move.depth)
+    {
+        return false;
+    }
+
+    if (learning_move.score != existing_move.score)
+    {
+        return true;
+    }
+
+    return learning_move.performance != existing_move.performance;
+}
+
+void LearningData::insert_or_update(PersistedLearningMove* plm, bool qLearning) {
+    // We search in the range of all the hash table entries with plm key
+    const auto [first, second] = HT.equal_range(plm->key);
+
+    //If the plm key belongs to a position that did not exist before in the 'LHT'
     //then, we insert this new key and LearningMove and return
-    if (range.first == range.second)
+    if (first == second)
     {
         //Insert new key and learningMove
         HT.insert({plm->key, &plm->learningMove});
@@ -95,15 +121,15 @@ void LearningData::insert_or_update(PersistedLearningMove* plm, bool qLearning) 
         //Nothing else to do
         return;
     }
-    //The plm's key belongs to a position already existing in the 'LHT'
+
+    //The plm key belongs to a position already existing in the LHT
     //Check if this move already exists for this position
-    auto itr = std::find_if(range.first, range.second, [&plm](const auto& p) {
-        return p.second->move == plm->learningMove.move;
-    });
+    const auto itr = find_if(
+      first, second, [&plm](const auto& p) { return p.second->move == plm->learningMove.move; });
 
     //If the move does not exist then insert it
     LearningMove* bestNewMoveCandidate = nullptr;
-    if (itr == range.second)
+    if (itr == second)
     {
         HT.insert({plm->key, &plm->learningMove});
         bestNewMoveCandidate = &plm->learningMove;
@@ -114,9 +140,7 @@ void LearningData::insert_or_update(PersistedLearningMove* plm, bool qLearning) 
     else  //If the move exists, check if it better than the move we already have
     {
         LearningMove* existingMove = itr->second;
-        if (existingMove->depth < plm->learningMove.depth
-            || (existingMove->depth == plm->learningMove.depth
-                && existingMove->score < plm->learningMove.score))
+        if (should_update(*existingMove, plm->learningMove))
         {
             //Replace the existing move
             *existingMove = plm->learningMove;
@@ -130,10 +154,10 @@ void LearningData::insert_or_update(PersistedLearningMove* plm, bool qLearning) 
     }
 
     //Do we have a candidate for new best move?
-    bool newBestMove = false;
     if (bestNewMoveCandidate != nullptr)
     {
-        LearningMove* currentBestMove = range.first->second;
+        bool          newBestMove     = false;
+        LearningMove* currentBestMove = first->second;
         if (bestNewMoveCandidate != currentBestMove)
         {
             if (qLearning)
@@ -202,26 +226,26 @@ void LearningData::init(ShashChess::OptionsMap& o) {
     clear();
 
     learningMode = identify_learning_mode(options["Persisted learning"]);
-    if (learningMode == LearningMode::Off)
+    if ((learningMode == LearningMode::Off) && !((bool) options["Experience Book"]))
         return;
 
     load(Util::map_path("experience.exp"));
 
-    std::vector<std::string> slaveFiles;
+    vector<string> slaveFiles;
 
     //Just in case, check and load for "experience_new.exp" which will be present if
     //previous saving operation failed (engine crashed or terminated)
-    std::string slaveFile = Util::map_path("experience_new.exp");
+    string slaveFile = Util::map_path("experience_new.exp");
     if (load("experience_new.exp"))
         slaveFiles.push_back(slaveFile);
 
     //Load slave experience files (if any)
+
     int i = 0;
     while (true)
     {
-        slaveFile   = Util::map_path("experience" + std::to_string(i) + ".exp");
-        bool loaded = load(slaveFile);
-        if (!loaded)
+        slaveFile = Util::map_path("experience" + to_string(i) + ".exp");
+        if (const bool loaded = load(slaveFile); !loaded)
             break;
 
         slaveFiles.push_back(slaveFile);
@@ -229,18 +253,71 @@ void LearningData::init(ShashChess::OptionsMap& o) {
     }
 
     //We need to write all consolidated experience to disk
-    if (slaveFiles.size())
+    if (!slaveFiles.empty())
+    {
         persist(options);
+    }
 
     //Remove slave files
-    for (std::string fn : slaveFiles)
+    for (const string& fn : slaveFiles)
+    {
         remove(fn.c_str());
+    }
 
-    //Clear the 'needPersisting' flag
+    // Clear the 'needPersisting' flag
     needPersisting = false;
 }
 
-void LearningData::set_learning_mode(ShashChess::OptionsMap options, const std::string& lm) {
+void LearningData::quick_reset_exp() {
+    std::cout << "Loading experience file: experience.exp" << std::endl;
+
+    std::ifstream file("experience.exp", std::ifstream::binary | std::ifstream::ate);
+    if (!file)
+    {
+        std::cerr << "Failed to load experience file" << std::endl;
+        return;
+    }
+
+    const std::streamsize  file_size     = file.tellg();
+    constexpr unsigned int entry_size    = 24;
+    const unsigned int     total_entries = file_size / entry_size;
+
+    file.close();
+
+    std::cout << "Total entries in the file: " << total_entries << std::endl;
+
+    if (const auto check = load("experience.exp"); !check)
+    {
+        std::cerr << "Failed to load experience file" << std::endl;
+        return;
+    }
+
+    std::cout << "Successfully loaded experience file" << std::endl;
+
+    int entry_count = 0;
+    for (auto& [key, learning_move] : HT)
+    {
+        entry_count++;
+
+        const auto old_performance = learning_move->performance;
+        const auto new_performance =
+          WDLModel::get_win_probability(learning_move->score, learning_move->depth);
+
+        std::cout << "Updating entry " << entry_count << "/" << total_entries << " Key " << key
+                  << "Value " << learning_move->score << "Depth " << learning_move->depth
+                  << ": old performance=" << static_cast<int>(old_performance)
+                  << ", new performance=" << static_cast<int>(new_performance) << std::endl;
+
+        learning_move->performance = new_performance;
+    }
+
+    needPersisting = true;
+    std::cout << "Finished updating performances. Total processed entries: " << entry_count
+              << std::endl;
+}
+
+
+void LearningData::set_learning_mode(ShashChess::OptionsMap& options, const string& lm) {
     LearningMode newLearningMode = identify_learning_mode(lm);
     if (newLearningMode == learningMode)
         return;
@@ -269,25 +346,25 @@ void LearningData::persist(const ShashChess::OptionsMap& o) {
         2) Remove "experience.exp"
         3) Rename "experience_new.exp" to "experience.exp"
 
-        This approach is failproof so that the old file is only removed when the new file is sufccessfully saved!
+        This approach is fail proof so that the old file is only removed when the new file is successfully saved!
         If, for whatever odd reason, the engine is able to execute step (1) and (2) and fails to execute step (3)
         i.e., we end up with experience0.exp then it is not a problem since the file will be loaded anyway the next
         time the engine starts!
     */
 
-    std::string experienceFilename;
-    std::string tempExperienceFilename;
+    string experienceFilename;
+    string tempExperienceFilename;
 
-    if ((bool) options["Concurrent Experience"])
+    if (static_cast<bool>(options["Concurrent Experience"]))
     {
-        static std::string uniqueStr;
+        static string uniqueStr;
 
         if (uniqueStr.empty())
         {
             PRNG prng(now());
 
-            std::stringstream ss;
-            ss << std::hex << prng.rand<uint64_t>();
+            stringstream ss;
+            ss << hex << prng.rand<uint64_t>();
 
             uniqueStr = ss.str();
         }
@@ -301,7 +378,7 @@ void LearningData::persist(const ShashChess::OptionsMap& o) {
         tempExperienceFilename = Util::map_path("experience_new.exp");
     }
 
-    std::ofstream outputFile(tempExperienceFilename, std::ofstream::trunc | std::ofstream::binary);
+    ofstream              outputFile(tempExperienceFilename, ofstream::trunc | ofstream::binary);
     PersistedLearningMove persistedLearningMove;
     for (auto& kvp : HT)
     {
@@ -309,7 +386,8 @@ void LearningData::persist(const ShashChess::OptionsMap& o) {
         persistedLearningMove.learningMove = *kvp.second;
         if (persistedLearningMove.learningMove.depth != 0)
         {
-            outputFile.write((char*) &persistedLearningMove, sizeof(persistedLearningMove));
+            outputFile.write(reinterpret_cast<char*>(&persistedLearningMove),
+                             sizeof(persistedLearningMove));
         }
     }
     outputFile.close();
@@ -327,11 +405,11 @@ void LearningData::resume() { isPaused = false; }
 
 void LearningData::add_new_learning(Key key, const LearningMove& lm) {
     //Allocate buffer to read the entire file
-    PersistedLearningMove* newPlm = (PersistedLearningMove*) malloc(sizeof(PersistedLearningMove));
+    auto* newPlm = static_cast<PersistedLearningMove*>(malloc(sizeof(PersistedLearningMove)));
     if (!newPlm)
     {
-        std::cerr << "info string Failed to allocate <" << sizeof(PersistedLearningMove)
-                  << "> bytes for new learning entry" << std::endl;
+        cerr << "info string Failed to allocate <" << sizeof(PersistedLearningMove)
+             << "> bytes for new learning entry" << endl;
         return;
     }
 
@@ -347,9 +425,9 @@ void LearningData::add_new_learning(Key key, const LearningMove& lm) {
 }
 
 int LearningData::probeByMaxDepthAndScore(Key key, const LearningMove*& learningMove) {
-    LearningMove* maxDepthMove = nullptr;
-    int           maxDepth     = -1;
-    int           maxScore     = -1;
+    const LearningMove* maxDepthMove = nullptr;
+    int                 maxDepth     = -1;
+    int                 maxScore     = -1;
 
     // Iterate through the range of elements with the given key
     auto range = HT.equal_range(key);
@@ -358,7 +436,7 @@ int LearningData::probeByMaxDepthAndScore(Key key, const LearningMove*& learning
         learningMove = nullptr;
         return 0;
     }
-    int sibs = std::distance(range.first, range.second);
+    const auto siblings = distance(range.first, range.second);
     for (auto it = range.first; it != range.second; ++it)
     {
         LearningMove* move = it->second;
@@ -381,7 +459,8 @@ int LearningData::probeByMaxDepthAndScore(Key key, const LearningMove*& learning
 
     // Return the reference to the LearningMove with the maximum depth and score (or nullptr if not found)
     learningMove = maxDepthMove;
-    return sibs;
+
+    return static_cast<int>(siblings);
 }
 
 const LearningMove* LearningData::probe_move(Key key, Move move) {
@@ -390,11 +469,61 @@ const LearningMove* LearningData::probe_move(Key key, Move move) {
     if (range.first == range.second)
         return nullptr;
 
-    auto itr = std::find_if(range.first, range.second,
-                            [&move](const auto& p) { return p.second->move == move; });
+    auto itr =
+      find_if(range.first, range.second, [&move](const auto& p) { return p.second->move == move; });
 
     if (itr == range.second)
         return nullptr;
 
     return itr->second;
+}
+
+
+void LearningData::sortLearningMoves(std::vector<LearningMove*>& learningMoves) {
+    std::sort(learningMoves.begin(), learningMoves.end(),
+              [](const LearningMove* a, const LearningMove* b) {
+                  const int winProbA = a->performance;
+
+                  if (const int winProbB = b->performance; winProbA != winProbB)
+                  {
+                      return winProbA > winProbB;
+                  }
+                  if (a->depth != b->depth)
+                  {
+                      return a->depth > b->depth;
+                  }
+                  return a->score > b->score;
+              });
+}
+vector<LearningMove*> LearningData::probe(ShashChess::Key key) {
+    vector<LearningMove*> result;
+    auto                  range = HT.equal_range(key);
+    for (auto it = range.first; it != range.second; ++it)
+    {
+        result.push_back(it->second);
+    }
+
+    return result;
+}
+void LearningData::show_exp(const Position& pos) {
+    sync_cout << pos << endl;
+    cout << "Experience: ";
+    vector<LearningMove*> learningMoves = LD.probe(pos.key());
+    if (learningMoves.empty())
+    {
+        cout << "No experience data found for this position" << sync_endl;
+        return;
+    }
+
+    sortLearningMoves(learningMoves);
+
+    cout << endl;
+    for (const auto& move : learningMoves)
+    {
+        const int winProb = move->performance;
+        cout << "move: " << UCIEngine::move(move->move, pos.is_chess960())
+             << " depth: " << move->depth << " value: " << move->score
+             << " win probability: " << winProb << endl;
+    }
+    cout << sync_endl;
 }

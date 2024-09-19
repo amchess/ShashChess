@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include "../types.h"
 #include "../ucioption.h"
+#include "../position.h"
 
 enum class LearningMode {
     Off      = 1,
@@ -19,12 +20,11 @@ struct LearningMove {
 };
 
 struct PersistedLearningMove {
-    ShashChess::Key key;
+    ShashChess::Key key{};
     LearningMove    learningMove;
 };
 
 class LearningData {
-   private:
     bool         isPaused;
     bool         isReadOnly;
     bool         needPersisting;
@@ -33,25 +33,24 @@ class LearningData {
     std::unordered_multimap<ShashChess::Key, LearningMove*> HT;
     std::vector<void*>                                      mainDataBuffers;
     std::vector<void*>                                      newMovesDataBuffers;
-
-   private:
-    bool load(const std::string& filename);
+    bool                                                    load(const std::string& filename);
     void insert_or_update(PersistedLearningMove* plm, bool qLearning);
 
    public:
     LearningData();
     ~LearningData();
 
-    void        pause();
-    void        resume();
-    inline bool is_paused() const { return isPaused; };
+    void               pause();
+    void               resume();
+    [[nodiscard]] bool is_paused() const { return isPaused; };
 
-    void         set_learning_mode(ShashChess::OptionsMap options, const std::string& lm);
-    LearningMode learning_mode() const;
-    inline bool  is_enabled() const { return learningMode != LearningMode::Off; }
+    void quick_reset_exp();
+    void set_learning_mode(ShashChess::OptionsMap& options, const std::string& lm);
+    [[nodiscard]] LearningMode learning_mode() const;
+    [[nodiscard]] bool         is_enabled() const { return learningMode != LearningMode::Off; }
 
-    void        set_readonly(bool ro) { isReadOnly = ro; }
-    inline bool is_readonly() const { return isReadOnly; }
+    void               set_readonly(bool ro) { isReadOnly = ro; }
+    [[nodiscard]] bool is_readonly() const { return isReadOnly; }
 
     void clear();
     void init(ShashChess::OptionsMap& o);
@@ -60,7 +59,10 @@ class LearningData {
     void add_new_learning(ShashChess::Key key, const LearningMove& lm);
 
     int probeByMaxDepthAndScore(ShashChess::Key key, const LearningMove*& learningMove);
-    const LearningMove* probe_move(ShashChess::Key key, ShashChess::Move move);
+    const LearningMove*        probe_move(ShashChess::Key key, ShashChess::Move move);
+    std::vector<LearningMove*> probe(ShashChess::Key key);
+    static void                sortLearningMoves(std::vector<LearningMove*>& learningMoves);
+    static void                show_exp(const ShashChess::Position& pos);
 };
 
 extern LearningData LD;
