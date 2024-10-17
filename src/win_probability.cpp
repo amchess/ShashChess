@@ -28,16 +28,19 @@ void ShashChess::WDLModel::init() {
         }
     }
 }
+uint8_t ShashChess::WDLModel::get_win_probability_by_material(const Value value,
+                                                              const int   materialClamp) {
+    const auto valueClamp = std::clamp(static_cast<double>(value), -4000.0, 4000.0);
+
+    return win_probabilities[index(static_cast<int>(valueClamp), materialClamp)];
+}
 
 uint8_t ShashChess::WDLModel::get_win_probability(const Value value, const Position& pos) {
     const int material = pos.count<PAWN>() + 3 * pos.count<KNIGHT>() + 3 * pos.count<BISHOP>()
                        + 5 * pos.count<ROOK>() + 9 * pos.count<QUEEN>();
-
     // The fitted model only uses data for material counts in [17, 78], and is anchored at count 58.
-    const int  materialClamp = std::clamp(material, 17, 78);
-    const auto valueClamp    = std::clamp(static_cast<double>(value), -4000.0, 4000.0);
-
-    return win_probabilities[index(static_cast<int>(valueClamp), materialClamp)];
+    const int materialClamp = std::clamp(material, 17, 78);
+    return get_win_probability_by_material(value, materialClamp);
 }
 
 // Old

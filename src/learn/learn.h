@@ -24,6 +24,11 @@ struct PersistedLearningMove {
     LearningMove    learningMove;
 };
 
+struct QLearningMove {
+    PersistedLearningMove persistedLearningMove;
+    int                   materialClamp;
+};
+
 class LearningData {
     bool         isPaused;
     bool         isReadOnly;

@@ -1,4 +1,4 @@
 make profile-build ARCH=native COMP=gcc -j$(nproc)
 strip shashchess
-mv shashchess ShashChess36-native
+mv shashchess ShashChessSantiago-native
 make clean

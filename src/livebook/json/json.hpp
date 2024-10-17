@@ -133,7 +133,7 @@
 
 #ifndef NLOHMANN_JSON_NAMESPACE_END
     #define NLOHMANN_JSON_NAMESPACE_END \
-        } /* namespace (inline namespace) NOLINT(readability/namespace) */ \
+        }  /* namespace (inline namespace) NOLINT(readability/namespace) */ \
         }  // namespace nlohmann
 #endif
 
@@ -3804,8 +3804,8 @@ struct actual_object_comparator {
     using object_t            = typename BasicJsonType::object_t;
     using object_comparator_t = typename BasicJsonType::default_object_comparator_t;
     using type                = typename std::conditional<has_key_compare<object_t>::value,
-                                                          typename object_t::key_compare,
-                                                          object_comparator_t>::type;
+                                           typename object_t::key_compare,
+                                           object_comparator_t>::type;
 };
 
 template<typename BasicJsonType>
@@ -4994,9 +4994,8 @@ inline void from_json_array_impl(const BasicJsonType&             j,
 }
 
 template<typename BasicJsonType, typename T, std::size_t N>
-auto from_json_array_impl(const BasicJsonType& j,
-                          std::array<T, N>&    arr,
-                          priority_tag<2> /*unused*/) -> decltype(j.template get<T>(), void()) {
+auto from_json_array_impl(const BasicJsonType& j, std::array<T, N>& arr, priority_tag<2> /*unused*/)
+  -> decltype(j.template get<T>(), void()) {
     for (std::size_t i = 0; i < N; ++i)
     {
         arr[i] = j.at(i).template get<T>();
@@ -5208,10 +5207,10 @@ from_json_tuple_impl(BasicJsonType&& j, std::tuple<Args...>& t, priority_tag<3> 
 }
 
 template<typename BasicJsonType, typename TupleRelated>
-auto from_json(BasicJsonType&& j,
-               TupleRelated&&  t) -> decltype(from_json_tuple_impl(std::forward<BasicJsonType>(j),
-                                                                  std::forward<TupleRelated>(t),
-                                                                  priority_tag<3>{})) {
+auto from_json(BasicJsonType&& j, TupleRelated&& t)
+  -> decltype(from_json_tuple_impl(std::forward<BasicJsonType>(j),
+                                   std::forward<TupleRelated>(t),
+                                   priority_tag<3>{})) {
     if (JSON_HEDLEY_UNLIKELY(!j.is_array()))
     {
         JSON_THROW(
@@ -5376,7 +5375,7 @@ class iteration_proxy_value {
     using reference         = value_type&;
     using iterator_category = std::input_iterator_tag;
     using string_type       = typename std::remove_cv<
-            typename std::remove_reference<decltype(std::declval<IteratorType>().key())>::type>::type;
+      typename std::remove_reference<decltype(std::declval<IteratorType>().key())>::type>::type;
 
    private:
     /// the iterator
@@ -6735,11 +6734,10 @@ contiguous_bytes_input_adapter input_adapter(CharT b) {
 }
 
 template<typename T, std::size_t N>
-auto input_adapter(T (&array)[N])
-  -> decltype(input_adapter(
-    array,
-    array
-      + N))  // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
+auto input_adapter(T (&array)[N]) -> decltype(input_adapter(
+  array,
+  array
+    + N))  // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
 {
     return input_adapter(array, array + N);
 }

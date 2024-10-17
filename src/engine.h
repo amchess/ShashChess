@@ -46,7 +46,7 @@ class Engine {
     using InfoFull  = Search::InfoFull;
     using InfoIter  = Search::InfoIteration;
 
-    Engine(std::string path = "");
+    Engine(std::optional<std::string> path = std::nullopt);
 
     // Cannot be movable due to components holding backreferences to fields
     Engine(const Engine&)            = delete;
@@ -86,6 +86,7 @@ class Engine {
     void set_on_update_full(std::function<void(const InfoFull&)>&&);
     void set_on_iter(std::function<void(const InfoIter&)>&&);
     void set_on_bestmove(std::function<void(std::string_view, std::string_view)>&&);
+    void set_on_verify_networks(std::function<void(std::string_view)>&&);
 
     // network related
 
@@ -102,13 +103,16 @@ class Engine {
     const OptionsMap& get_options() const;
     OptionsMap&       get_options();
     BookManager       get_bookMan();  //book management
-    std::string       fen() const;
-    void              flip();
-    std::string       visualize() const;
-    void              show_moves_bookMan(const Position& position);  //book management
+    int               get_hashfull(int maxAge = 0) const;
+
+    std::string fen() const;
+    void        flip();
+    std::string visualize() const;
+    void        show_moves_bookMan(const Position& position);  //book management
     std::vector<std::pair<size_t, size_t>> get_bound_thread_count_by_numa_node() const;
     std::string                            get_numa_config_as_string() const;
     std::string                            numa_config_information_as_string() const;
+    std::string                            thread_allocation_information_as_string() const;
     std::string                            thread_binding_information_as_string() const;
     Position                               pos;  //from learning
    private:
@@ -125,6 +129,7 @@ class Engine {
     LazyNumaReplicated<Eval::NNUE::Networks> networks;
     BookManager                              bookMan;  //book management
     Search::SearchManager::UpdateContext     updateContext;
+    std::function<void(std::string_view)>    onVerifyNetworks;
 };
 
 }  // namespace ShashChess

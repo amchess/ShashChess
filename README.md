@@ -1,6 +1,7 @@
 # Introduction
 
 ShashChess is a free UCI chess engine derived from Stockfish family chess engines.
+For the evaluation function, we utilize the collaboration between Leela Chess Zero and Stockfish, for which we express our sincere gratitude.
 The goal is to apply Alexander Shashin theory exposed on the following book :
 https://www.amazon.com/Best-Play-Method-Discovering-Strongest/dp/1936277468
 to improve
@@ -14,6 +15,8 @@ to improve
        * Tal-Capablanca
        * Capablanca-Petrosian
        * Tal-Capablanca-Petrosian
+
+Also during the search, to enhance it, we use both standard and Q/Self reinforcement learning.
 
 ## Terms of use
 
@@ -176,47 +179,60 @@ Only in multi mcts mode, for Upper Confidence Bound.
 
 ### Live Book section (thanks to Eman's author Khalid Omar for windows builds)
 
-#### Live Book (checkbox)
+#### LiveBook Proxy Url
+_String, Default: "" (empty string)_  
+The proxy URL to use for the live book. If empty, no proxy is used. The proxy should use the ChessDB REST API format.
 
-Default is Off: no livebook. The other values are "NoEgtbs" (no livebook for an endgame with at max 7 mens), "Egtbs" (livebook only for an endgame with at max 7 mens) and "Both" (the livebook whenever is possible).
+#### LiveBook Proxy Diversity
+_Boolean, Default: False_  
+If enabled, the engine will play a random (best) move by the proxy (query and not querybest action).
 
-#### Live Book URL
-The default is the online chessdb [https://www.chessdb.cn/queryc_en/](https://www.chessdb.cn/queryc_en/), a wonderful project by noobpwnftw (thanks to him!)
- 
-[https://github.com/noobpwnftw/chessdb](https://github.com/noobpwnftw/chessdb)
-[http://talkchess.com/forum3/viewtopic.php?f=2&t=71764&hilit=chessdb](http://talkchess.com/forum3/viewtopic.php?f=2&t=71764&hilit=chessdb)
+#### LiveBook Lichess Games
+_Boolean, Default: False_  
+If enabled, the engine will use the Lichess live book by querying the Lichess API to access the game database available on the site. This option allows the engine to access a wide range of games played on Lichess to enhance its move choices.
 
-The private application can also learn from this live db.
+#### LiveBook Lichess Masters
+_Boolean, Default: False_  
+If enabled, the engine will use the Lichess live book specifically for masters' games. This allows the engine to analyze games played at a high level and utilize the best moves made by master-level players.
 
-#### Live Book Timeout
+#### LiveBook Lichess Player
+_String, Default: "" (empty string)_  
+The Lichess player name to use for the live book. If left empty, the engine will not query for the specific player's game data. This option is useful for studying or adapting the engine to a particular player's style.
 
-_Default 5000, min 0, max 10000_ Only for bullet games, use a lower value, for example, 1500.
+#### LiveBook Lichess Player Color
+_String, Default: "White"_  
+Specifies the color the engine will play as in the Lichess live book for the specified player.
+- **"White"**: The engine considers the games played by the specified player as White. When it's Black's turn, the move that performed best against the player will be chosen.
+- **"Black"**: The engine considers the games played by the specified player as Black. When it's White's turn, the move that performed best against the player will be chosen.
+- **"Both"**: The engine will always pretend to be the player, regardless of color, and choose the best-performing moves for the specified player.
 
-#### Live Book Retry
+#### LiveBook ChessDB
+_Boolean, Default: False_  
+If enabled, the engine will use the ChessDB live book by querying the ChessDB API.
 
-_Default 3, min 1, max 100_ Max times the engine tries to contribute (if the corresponding option is activated: see below) to the live book. If 0, the engine doesn't use the livebook.
+#### LiveBook Depth
+_Integer, Default: 255, Min: 1, Max: 255_  
+Specifies the depth to reach using the live book in plies. The depth determines how many half-moves the engine will consider from the current position.
 
-#### Live Book Diversity
+#### ChessDB Tablebase
+_Boolean, Default: False_  
+If enabled, allows the engine to query the ChessDB API for Tablebase data, up to 7 pieces. This provides perfect endgame knowledge for positions with up to 7 pieces.
 
-_Boolean, Default: False_ If activated, the engine varies its play, reducing conversely its strength because already the live chessdb is very large.
+#### Lichess Tablebase
+_Boolean, Default: False_  
+If enabled, allows the engine to query the Lichess API for Tablebase data, up to 7 pieces. This option also provides perfect endgame knowledge for positions with up to 7 pieces.
 
-#### Live Book Contribute
-
-_Boolean, Default: False_ If activated, the engine sends a move, not in live chessdb, in its queue to be analysed. In this manner, we have a kind of learning cloud.
-
-#### Live Book Depth
-
-_Default 255, min 1, max 255_ Depth of live book moves.
+#### ChessDB Contribute
+_Boolean, Default: False_  
+If enabled, allows the engine to store a move in the queue of ChessDb to be analyzed.
 
 ### Full depth threads
 
 _Default 0, min 0, max 512_ The number of threads doing a full depth analysis (brute force). Useful in analysis of particular hard positions to limit the strong pruning's drawbacks. 
 
-### Opening variety
+### Variety  (checkbox)
 
-_Integer, Default: 0, Min: 0, Max: 40_
-To play different opening lines from default (0), if not from book (see below).
-Higher variety -> more probable loss of ELO
+Default is Off: no variety. The other values are "Standard" (no elo loss: randomicity in Capablanca zone) and Psychological (randomicity in Caos zones max).
 
 ### Concurrent Experience
 
@@ -225,7 +241,7 @@ Set this option to true when running under CuteChess and you experiences problem
 When this option is true, the saved experience file name will be modified to something like experience-64a4c665c57504a4.bin
 (64a4c665c57504a4 is random). Each concurrent instance of BrainLearn will have its own experience file name, however, all the concurrent instances will read "experience.bin" at start up.
 
-### Persisted learning
+### Persisted learning (checkbox)
 
 Default is Off: no learning algorithm. The other values are "Standard" and "Self", this last to activate the [Q-learning](https://youtu.be/qhRNvCVVJaA?list=PLZbbT5o_s2xoWNVdDudn51XM8lOuZ_Njv), optimized for self play. Some GUIs don't write the experience file in some game's modes because the uci protocol is differently implemented
 
@@ -235,7 +251,7 @@ The persisted learning is based on a collection of one or more positions stored 
 - _board signature (hash key)_
 - _best move depth_
 - _best move score_
-- _best move performance_ , a new parameter you can calculate with any learning application supporting this specification. An example is the private one, kernel of SaaS part of [Alpha-Chess](http://www.alpha-chess.com) AI portal. The idea is to calculate it based on pattern recognition concept. In the portal, you can also exploit the reports of another NLG (virtual trainer) application and buy the products in the digishop based on all this. This open-source part has the performance default. So, it doesn't use it. Clearly, even if already strong, this private learning algorithm is a lot stronger as demostrate here: [Graphical result](https://github.com/amchess/BrainLearn/tree/master/tests/6-5.jpg)
+- _best move performance_ , a new parameter you can calculate with any learning application supporting this specification. An example is the private one, kernel of SaaS part of [Alpha-Chess](http://www.alpha-chess.com) AI portal. The idea is to update it based on pattern recognition concept. In the portal, you can also exploit the reports of another NLG (virtual trainer) application and buy the products in the digishop based on all this. This open-source part has the performance default, based on score and depth. You can align the performance by uci token quickresetexp. Clearly, even if already strong, this private learning algorithm is a lot stronger as demostrate here: [Graphical result](https://github.com/amchess/BrainLearn/tree/master/tests/6-5.jpg) The perfomance, in this case, is updated based on the latest Stockfish wdl model (score and material).
 
 This file is loaded in an hashtable at the engine load and updated each time the engine receive quit or stop uci command.
 When BrainLearn starts a new game or when we have max 8 pieces on the chessboard, the learning is activated and the hash table updated each time the engine has a best score
@@ -259,6 +275,21 @@ Because of disk access, to be effective, the learning must be made at no bullet 
 _Boolean, Default: False_ 
 If activated, the learning file is only read.
 
+### Experience Book
+
+_Boolean, Default: False_ 
+If activated, the engine will use the experience file as the book. In choosing the move to play, the engine will be based first on maximum win probability, then, on the engine's internal score, and finally, on depth. The UCI token “showexp” allows the book to display moves on a given position.
+
+### Experience Book Max Moves
+
+_Integer, Default: 100, Min: 1, Max: 100_
+The maximum number of moves the engine chooses from the experience book
+
+### Experience Book Min Depth
+
+_Integer, Default: 4, Min: 1, Max: 255_
+The min depth for the experience book
+
 ### Shashin section
 
 _Default: no option settled_
@@ -271,19 +302,19 @@ we have the following mapping:
 
 Win probability range | Shashin position’s type        | Informator symbols    | 
 | --------------------| ------------------------------ | ----------------------|
-| [0, 4]              | High Petrosian                 | -+                    | 
-| [5, 9]              | Middle-High Petrosian          | -+ \ -/+              |
-| [10,12]             | Middle Petrosian               | -/+                   |  
-| [13,19]             | Middle-Low Petrosian           | -/+ \ =/+             |
-| [20,24]             | Low Petrosian                  | =/+                   |
-| [25,49]             | Caos: Capablanca-Low Petrosian | =/+ \ =               |
+| [0, 6]              | High Petrosian                 | -+                    | 
+| [7, 11]              | Middle-High Petrosian          | -+ \ -/+              |
+| [12,14]             | Middle Petrosian               | -/+                   |  
+| [15,20]             | Middle-Low Petrosian           | -/+ \ =/+             |
+| [21,24]             | Low Petrosian                  | =/+                   |
+| [24,49]             | Caos: Capablanca-Low Petrosian | =/+ \ =               |
 | [50]                | Capablanca                     | =                     |
-| [51,75]             | Caos: Capablanca-Low Tal       | = \ +/=               | 
-| [76,80]             | Low Tal                        | +/=                   |
-| [81,87]             | Low-Middle Tal                 | +/= | +/-             |
-| [88,90]             | Middle Tal                     | +/-                   |
-| [91,95]             | Middle-High Tal                | +/- \ +-              |
-| [96,100]            | High Tal                       | +-                    | 
+| [51,76]             | Caos: Capablanca-Low Tal       | = \ +/=               | 
+| [77,79]             | Low Tal                        | +/=                   |
+| [80,85]             | Low-Middle Tal                 | +/= | +/-             |
+| [86,88]             | Middle Tal                     | +/-                   |
+| [89,93]             | Middle-High Tal                | +/- \ +-              |
+| [94,100]            | High Tal                       | +-                    | 
 
 N.B.
 The winProbability also take into account the depth at which a move has been calculated.

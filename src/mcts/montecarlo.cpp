@@ -672,8 +672,8 @@ void MonteCarlo::generate_moves(mctsNodeInfo* node) {
                                         stack[ply - 4].continuationHistory,
                                         nullptr,
                                         stack[ply - 6].continuationHistory};
-    MovePicker mp(pos, ttData.move, depth, &thisThread->mainHistory, &thisThread->captureHistory,
-                  contHist, &thisThread->pawnHistory);
+    MovePicker mp(pos, ttData.move, depth, &thisThread->mainHistory, &thisThread->lowPlyHistory,
+                  &thisThread->captureHistory, contHist, &thisThread->pawnHistory, stack->ply);
     Move       move;
     int        moveCount = 0;
 

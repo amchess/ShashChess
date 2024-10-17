@@ -111,8 +111,12 @@ VPATH = mcts:syzygy:nnue:nnue/features:book:book/polyglot:book/ctg:learn:liveboo
 # avx512 = yes/no     --- -mavx512bw         --- Use Intel Advanced Vector Extensions 512
 # vnni256 = yes/no    --- -mavx256vnni       --- Use Intel Vector Neural Network Instructions 512 with 256bit operands
 # vnni512 = yes/no    --- -mavx512vnni       --- Use Intel Vector Neural Network Instructions 512
+# altivec = yes/no    --- -maltivec          --- Use PowerPC Altivec SIMD extension
+# vsx = yes/no        --- -mvsx              --- Use POWER VSX SIMD extension
 # neon = yes/no       --- -DUSE_NEON         --- Use ARM SIMD architecture
 # dotprod = yes/no    --- -DUSE_NEON_DOTPROD --- Use ARM advanced SIMD Int8 dot product instructions
+# lsx = yes/no        --- -mlsx              --- Use Loongson SIMD eXtension
+# lasx = yes/no       --- -mlasx             --- use Loongson Advanced SIMD eXtension
 #
 # Note that Makefile is space sensitive, so when adding new architectures
 # or modifying existing flags, you have to make sure there are no extra spaces
@@ -137,8 +141,9 @@ endif
 ifeq ($(ARCH), $(filter $(ARCH), \
                  x86-64-vnni512 x86-64-vnni256 x86-64-avx512 x86-64-avxvnni x86-64-bmi2 \
                  x86-64-avx2 x86-64-sse41-popcnt x86-64-modern x86-64-ssse3 x86-64-sse3-popcnt \
-                 x86-64 x86-32-sse41-popcnt x86-32-sse2 x86-32 ppc-64 ppc-32 e2k \
-                 armv7 armv7-neon armv8 armv8-dotprod apple-silicon general-64 general-32 riscv64 loongarch64))
+                 x86-64 x86-32-sse41-popcnt x86-32-sse2 x86-32 ppc-64 ppc-64-altivec ppc-64-vsx ppc-32 e2k \
+                 armv7 armv7-neon armv8 armv8-dotprod apple-silicon general-64 general-32 riscv64 \
+                 loongarch64 loongarch64-lsx loongarch64-lasx))
    SUPPORTED_ARCH=true
 else
    SUPPORTED_ARCH=false
@@ -161,9 +166,13 @@ avxvnni = no
 avx512 = no
 vnni256 = no
 vnni512 = no
+altivec = no
+vsx = no
 neon = no
 dotprod = no
 arm_version = 0
+lsx = no
+lasx = no
 STRIP = strip
 
 ifneq ($(shell which clang-format-18 2> /dev/null),)
@@ -368,6 +377,20 @@ ifeq ($(ARCH),ppc-64)
 	prefetch = yes
 endif
 
+ifeq ($(ARCH),ppc-64-altivec)
+	arch = ppc64
+	popcnt = yes
+	prefetch = yes
+	altivec = yes
+endif
+
+ifeq ($(ARCH),ppc-64-vsx)
+	arch = ppc64
+	popcnt = yes
+	prefetch = yes
+	vsx = yes
+endif
+
 ifeq ($(findstring e2k,$(ARCH)),e2k)
 	arch = e2k
 	mmx = yes
@@ -383,8 +406,19 @@ ifeq ($(ARCH),riscv64)
 	arch = riscv64
 endif
 
-ifeq ($(ARCH),loongarch64)
+ifeq ($(findstring loongarch64,$(ARCH)),loongarch64)
 	arch = loongarch64
+	prefetch = yes
+
+ifeq ($(findstring -lasx,$(ARCH)),-lasx)
+	lsx = yes
+	lasx = yes
+endif
+
+ifeq ($(findstring -lsx,$(ARCH)),-lsx)
+	lsx = yes
+endif
+
 endif
 endif
 
@@ -435,7 +469,7 @@ ifeq ($(COMP),gcc)
 		ifeq ($(ARCH),riscv64)
 			CXXFLAGS += -latomic
 		endif
-	else ifeq ($(ARCH),loongarch64)
+	else ifeq ($(arch),loongarch64)
 		CXXFLAGS += -latomic
 	else
 		CXXFLAGS += -m$(bits)
@@ -507,7 +541,7 @@ ifeq ($(COMP),clang)
 		ifeq ($(ARCH),riscv64)
 			CXXFLAGS += -latomic
 		endif
-	else ifeq ($(ARCH),loongarch64)
+	else ifeq ($(arch),loongarch64)
 		CXXFLAGS += -latomic
 	else
 		CXXFLAGS += -m$(bits)
@@ -661,7 +695,7 @@ else
 endif
 
 ifeq ($(popcnt),yes)
-	ifeq ($(arch),$(filter $(arch),ppc64 armv7 armv8 arm64))
+	ifeq ($(arch),$(filter $(arch),ppc64 ppc64-altivec ppc64-vsx armv7 armv8 arm64))
 		CXXFLAGS += -DUSE_POPCNT
 	else
 		CXXFLAGS += -msse3 -mpopcnt -DUSE_POPCNT
@@ -731,6 +765,20 @@ ifeq ($(mmx),yes)
 	endif
 endif
 
+ifeq ($(altivec),yes)
+	CXXFLAGS += -maltivec
+	ifeq ($(COMP),gcc)
+		CXXFLAGS += -mabi=altivec
+	endif
+endif
+
+ifeq ($(vsx),yes)
+	CXXFLAGS += -mvsx
+	ifeq ($(COMP),gcc)
+		CXXFLAGS += -DNO_WARN_X86_INTRINSICS -DUSE_SSE2
+	endif
+endif
+
 ifeq ($(neon),yes)
 	CXXFLAGS += -DUSE_NEON=$(arm_version)
 	ifeq ($(KERNEL),Linux)
@@ -744,6 +792,18 @@ endif
 
 ifeq ($(dotprod),yes)
 	CXXFLAGS += -march=armv8.2-a+dotprod -DUSE_NEON_DOTPROD
+endif
+
+ifeq ($(lasx),yes)
+	ifeq ($(comp),$(filter $(comp),gcc clang mingw icx))
+		CXXFLAGS += -mlasx
+	endif
+endif
+
+ifeq ($(lsx),yes)
+	ifeq ($(comp),$(filter $(comp),gcc clang mingw icx))
+		CXXFLAGS += -mlsx
+	endif
 endif
 
 ### 3.7 pext
@@ -851,6 +911,8 @@ help:
 	@echo "x86-32-sse2             > x86 32-bit with sse2 support"
 	@echo "x86-32                  > x86 32-bit generic (with mmx compile support)"
 	@echo "ppc-64                  > PPC 64-bit"
+	@echo "ppc-64-altivec          > PPC 64-bit with altivec support"
+	@echo "ppc-64-vsx              > PPC 64-bit with vsx support"
 	@echo "ppc-32                  > PPC 32-bit"
 	@echo "armv7                   > ARMv7 32-bit"
 	@echo "armv7-neon              > ARMv7 32-bit with popcnt and neon"
@@ -862,6 +924,8 @@ help:
 	@echo "general-32              > unspecified 32-bit"
 	@echo "riscv64                 > RISC-V 64-bit"
 	@echo "loongarch64             > LoongArch 64-bit"
+	@echo "loongarch64-lsx         > LoongArch 64-bit with SIMD eXtension"
+	@echo "loongarch64-lasx        > LoongArch 64-bit with Advanced SIMD eXtension"
 	@echo ""
 	@echo "Supported compilers:"
 	@echo ""
@@ -944,59 +1008,9 @@ profileclean:
 	@rm -f shashchess.res
 	@rm -f ./-lstdc++.res
 
-define fetch_network
-	@echo "Default net: $(nnuenet)"
-	@if [ "x$(curl_or_wget)" = "x" ]; then \
-		echo "Neither curl nor wget is installed. Install one of these tools unless the net has been downloaded manually"; \
-	fi
-	@if [ "x$(shasum_command)" = "x" ]; then \
-		echo "shasum / sha256sum not found, skipping net validation"; \
-	elif test -f "$(nnuenet)"; then \
-		if [ "$(nnuenet)" != "nn-"`$(shasum_command) $(nnuenet) | cut -c1-12`".nnue" ]; then \
-			echo "Removing invalid network"; rm -f $(nnuenet); \
-		fi; \
-	fi;
-	@for nnuedownloadurl in "$(nnuedownloadurl1)" "$(nnuedownloadurl2)"; do \
-		if test -f "$(nnuenet)"; then \
-			echo "$(nnuenet) available : OK"; break; \
-		else \
-			if [ "x$(curl_or_wget)" != "x" ]; then \
-				echo "Downloading $${nnuedownloadurl}"; $(curl_or_wget) $${nnuedownloadurl} > $(nnuenet);\
-			else \
-				echo "No net found and download not possible"; exit 1;\
-			fi; \
-		fi; \
-		if [ "x$(shasum_command)" != "x" ]; then \
-			if [ "$(nnuenet)" != "nn-"`$(shasum_command) $(nnuenet) | cut -c1-12`".nnue" ]; then \
-				echo "Removing failed download"; rm -f $(nnuenet); \
-			fi; \
-		fi; \
-	done
-	@if ! test -f "$(nnuenet)"; then \
-		echo "Failed to download $(nnuenet)."; \
-	fi;
-	@if [ "x$(shasum_command)" != "x" ]; then \
-		if [ "$(nnuenet)" = "nn-"`$(shasum_command) $(nnuenet) | cut -c1-12`".nnue" ]; then \
-			echo "Network validated"; break; \
-		fi; \
-	fi;
-endef
-
-# set up shell variables for the net stuff
-define netvariables
-$(eval nnuenet := $(shell grep $(1) evaluate.h | grep define | sed 's/.*\(nn-[a-z0-9]\{12\}.nnue\).*/\1/'))
-$(eval nnuedownloadurl1 := https://tests.stockfishchess.org/api/nn/$(nnuenet))
-$(eval nnuedownloadurl2 := https://github.com/official-stockfish/networks/raw/master/$(nnuenet))
-$(eval curl_or_wget := $(shell if hash curl 2>/dev/null; then echo "curl -skL"; elif hash wget 2>/dev/null; then echo "wget -qO-"; fi))
-$(eval shasum_command := $(shell if hash shasum 2>/dev/null; then echo "shasum -a 256 "; elif hash sha256sum 2>/dev/null; then echo "sha256sum "; fi))
-endef
-
 # evaluation network (nnue)
 net:
-	$(call netvariables, EvalFileDefaultNameBig)
-	$(call fetch_network)
-	$(call netvariables, EvalFileDefaultNameSmall)
-	$(call fetch_network)
+	@$(SHELL) ../scripts/net.sh
 
 format:
 	$(CLANG-FORMAT) -i $(SRCS) $(HEADERS) -style=file
@@ -1034,9 +1048,13 @@ config-sanity: net
 	@echo "avx512: '$(avx512)'"
 	@echo "vnni256: '$(vnni256)'"
 	@echo "vnni512: '$(vnni512)'"
+	@echo "altivec: '$(altivec)'"
+	@echo "vsx: '$(vsx)'"
 	@echo "neon: '$(neon)'"
 	@echo "dotprod: '$(dotprod)'"
 	@echo "arm_version: '$(arm_version)'"
+	@echo "lsx: '$(lsx)'"
+	@echo "lasx: '$(lasx)'"
 	@echo "target_windows: '$(target_windows)'"
 	@echo ""
 	@echo "Flags:"
@@ -1065,7 +1083,11 @@ config-sanity: net
 	@test "$(avx512)" = "yes" || test "$(avx512)" = "no"
 	@test "$(vnni256)" = "yes" || test "$(vnni256)" = "no"
 	@test "$(vnni512)" = "yes" || test "$(vnni512)" = "no"
+	@test "$(altivec)" = "yes" || test "$(altivec)" = "no"
+	@test "$(vsx)" = "yes" || test "$(vsx)" = "no"
 	@test "$(neon)" = "yes" || test "$(neon)" = "no"
+	@test "$(lsx)" = "yes" || test "$(lsx)" = "no"
+	@test "$(lasx)" = "yes" || test "$(lasx)" = "no"
 	@test "$(comp)" = "gcc" || test "$(comp)" = "icx" || test "$(comp)" = "mingw" || test "$(comp)" = "clang" \
 	|| test "$(comp)" = "armv7a-linux-androideabi16-clang"  || test "$(comp)" = "aarch64-linux-android21-clang"
 

@@ -121,6 +121,7 @@ void Tune::Entry<Tune::PostUpdate>::read_option() {
 
 namespace ShashChess {
 
-void Tune::read_results() { /* ...insert your values here... */ }
+void Tune::read_results() { /* ...insert your values here... */
+}
 
 }  // namespace ShashChess

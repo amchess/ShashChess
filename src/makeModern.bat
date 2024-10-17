@@ -5,6 +5,6 @@ Title "x86-64-modern"
 make clean
 mingw32-make profile-build ARCH=x86-64-modern COMP=mingw CXX=x86_64-w64-mingw32-g++ -j %Number_Of_Processors%
 strip shashchess.exe
-ren shashchess.exe "ShashChess36-x86-64-modern.exe"
+ren shashchess.exe "ShashChessSantiago-x86-64-modern.exe"
 make clean
 pause

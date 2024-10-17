@@ -482,15 +482,16 @@ const LearningMove* LearningData::probe_move(Key key, Move move) {
 void LearningData::sortLearningMoves(std::vector<LearningMove*>& learningMoves) {
     std::sort(learningMoves.begin(), learningMoves.end(),
               [](const LearningMove* a, const LearningMove* b) {
-                  const int winProbA = a->performance;
-
-                  if (const int winProbB = b->performance; winProbA != winProbB)
-                  {
-                      return winProbA > winProbB;
-                  }
                   if (a->depth != b->depth)
                   {
                       return a->depth > b->depth;
+                  }
+                  const int winProbA = a->performance;
+                  const int winProbB = b->performance;
+
+                  if (winProbA != winProbB)
+                  {
+                      return winProbA > winProbB;
                   }
                   return a->score > b->score;
               });
