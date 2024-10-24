@@ -275,11 +275,9 @@ void MonteCarlo::create_root(Search::Worker* worker) {
     std::memset(stackBuffer, 0, sizeof stackBuffer);
 
     for (int i = -7; i <= MAX_PLY + 10; i++)
-    {
         stack[i].continuationHistory =
           &worker->continuationHistory[0][0][NO_PIECE][0];  // Use as a sentinel
-        stack[i].continuationCorrectionHistory = &worker->continuationCorrectionHistory[NO_PIECE][0];
-    }
+
     for (int i = 0; i <= MAX_PLY + 2; ++i)
         stack[i].ply = i;
 
@@ -634,8 +632,6 @@ void MonteCarlo::do_move(const Move m) {
 
     stack[ply].continuationHistory =
       &thisThread->continuationHistory[stack[ply].inCheck][capture][pos.moved_piece(m)][m.to_sq()];
-	stack[ply].continuationCorrectionHistory =
-	  &thisThread->continuationCorrectionHistory[pos.moved_piece(m)][m.to_sq()];
 
     pos.do_move(m, states[ply]);
 
@@ -677,7 +673,7 @@ void MonteCarlo::generate_moves(mctsNodeInfo* node) {
                                         nullptr,
                                         stack[ply - 6].continuationHistory};
     MovePicker mp(pos, ttData.move, depth, &thisThread->mainHistory, &thisThread->lowPlyHistory,
-                  &thisThread->captureHistory, contHist, &thisThread->pawnHistory, stack[ply].ply);
+                  &thisThread->captureHistory, contHist, &thisThread->pawnHistory, stack->ply);
     Move       move;
     int        moveCount = 0;
 
