@@ -1,0 +1,1116 @@
+﻿[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.06"]
+[Round "1.1"]
+[White "Stockfish 051122"]
+[Black "ShashChessGD 25.3"]
+[Result "1/2-1/2"]
+[ECO "E11"]
+[Annotator "1.27;0.35"]
+[PlyCount "65"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=39.2 plies; 3.177kN/s; 5.
+275 TBAs B=42.8 plies; 3.063kN/s; 8.616 TBAs} 1. c4 Nf6 2. d4 e6 3. Nf3 Bb4+ 4.
+Nbd2 O-O 5. a3 Be7 6. e4 d6 7. Be2 c5 8. d5 Nbd7 9. O-O e5 10. Kh1 {[%eval 127,
+42] [%emt 0:05:38]} g6 {[%eval 35,41] [%emt 0:01:19]} 11. g3 {[%eval 137,37] 
+[%emt 0:00:25]} Ne8 {[%eval 31,40] [%emt 0:01:13] (Ch5)} 12. Rg1 {[%eval 130,
+37] [%emt 0:00:26]} a5 {[%eval 30,37] [%emt 0:00:22] (b6)} 13. a4 {[%eval 124,
+35] [%emt 0:00:48] (Tg2)} Kh8 {[%eval 24,39] [%emt 0:01:21]} 14. Ra3 {[%eval
+120,36] [%emt 0:00:32]} f5 {[%eval 27,42] [%emt 0:01:15]} 15. exf5 {[%eval 138,
+38] [%emt 0:01:01]} gxf5 {[%eval 18,40] [%emt 0:01:03]} 16. Ne1 {[%eval 108,36]
+[%emt 0:00:46]} Rg8 {[%eval 20,42] [%emt 0:00:30] (Ta7)} 17. Ng2 {[%eval 144,
+39] [%emt 0:01:18] (f4)} b6 {[%eval 29,38] [%emt 0:00:41]} 18. f4 {[%eval 95,
+42] [%emt 0:05:58]} Ra7 {[%eval 25,41] [%emt 0:00:28]} 19. Rf1 {[%eval 98,39] 
+[%emt 0:00:19] (Tf3)} Nf8 {[%eval 13,39] [%emt 0:00:29]} 20. Bh5 {[%eval 104,
+39] [%emt 0:00:25]} Ng6 {[%eval 20,41] [%emt 0:00:36]} 21. Nf3 {[%eval 100,42]
+[%emt 0:02:15] (Te3)} Bf6 {[%eval 16,43] [%emt 0:00:44]} 22. Re3 {[%eval 112,
+36] [%emt 0:00:23]} Re7 {[%eval 19,45] [%emt 0:00:30]} 23. Bd2 {[%eval 105,42]
+[%emt 0:02:57] (fxe5)} e4 {[%eval 7,41] [%emt 0:01:17] (Tf8)} 24. Ng5 {[%eval
+99,34] [%emt 0:00:14]} Rf8 {[%eval 16,42] [%emt 0:03:29]} 25. Re2 {[%eval 97,
+41] [%emt 0:01:27] (Tf2)} Bxb2 {[%eval 19,37] [%emt 0:00:45]} 26. Bxg6 {
+[%eval 70,39] [%emt 0:00:41]} hxg6 {[%eval 11,40] [%emt 0:01:16]} 27. Nh4 {
+[%eval 64,36] [%emt 0:00:48] (Axa5)} Kg7 {[%eval 12,40] [%emt 0:00:28]} 28. Qe1
+{[%eval 54,36] [%emt 0:01:15] (g4)} Bd4 {[%eval 0,47] [%emt 0:01:12]} 29. Bc3 {
+[%eval 58,38] [%emt 0:00:16]} Rb7 {[%eval 0,45] [%emt 0:00:52] (Th8)} 30. g4 {
+[%eval 0,41] [%emt 0:00:55] (Tg1)} Rg8 {[%eval 0,48] [%emt 0:00:35]} 31. Rg1 {
+[%eval 0,43] [%emt 0:00:41] (Tg2)} Kf8 {[%eval 0,51] [%emt 0:00:29]} 32. gxf5 {
+[%eval 0,40] [%emt 0:00:05] (Teg2)} gxf5 {[%eval 0,53] [%emt 0:00:41]} 33. Reg2
+{[%eval 0,43] [%emt 0:00:07]} 1/2-1/2
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.06"]
+[Round "2.1"]
+[White "ShashChessGD 25.3"]
+[Black "Stockfish 051122"]
+[Result "1/2-1/2"]
+[ECO "E11"]
+[Annotator "0.25;1.38"]
+[PlyCount "84"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=41.2 plies; 2.198kN/s;
+335.001 TBAs B=36.1 plies; 2.324kN/s; 278.996 TBAs} 1. c4 Nf6 2. d4 e6 3. Nf3
+Bb4+ 4. Nbd2 O-O 5. a3 Be7 6. e4 d6 7. Be2 c5 8. d5 Nbd7 9. O-O e5 10. a4 {
+[%eval 25,45] [%emt 0:03:06]} g6 {[%eval 138,40] [%emt 0:01:47]} 11. Ne1 {
+[%eval 38,39] [%emt 0:00:24]} Ne8 {[%eval 134,38] [%emt 0:00:30]} 12. a5 {
+[%eval 31,37] [%emt 0:00:29] (Ta3)} Ng7 {[%eval 110,35] [%emt 0:01:16]} 13. Nd3
+{[%eval 22,40] [%emt 0:00:32] (Ta3)} Rb8 {[%eval 120,39] [%emt 0:01:38]} 14. b4
+{[%eval 33,40] [%emt 0:01:48]} cxb4 {[%eval 131,38] [%emt 0:00:45]} 15. Nb3 {
+[%eval 26,42] [%emt 0:00:53] (Cxb4)} f5 {[%eval 128,40] [%emt 0:01:00]} 16.
+Nxb4 {[%eval 22,43] [%emt 0:00:31]} Bg5 {[%eval 108,41] [%emt 0:01:34] (fxe4)}
+17. f3 {[%eval 25,40] [%emt 0:00:29]} Bxc1 {[%eval 109,36] [%emt 0:00:28]} 18.
+Qxc1 {[%eval 36,41] [%emt 0:00:40]} Nh5 {[%eval 121,39] [%emt 0:01:01]} 19.
+exf5 {[%eval 25,45] [%emt 0:01:20]} Nf4 {[%eval 95,35] [%emt 0:00:46]} 20. Rf2
+{[%eval 37,40] [%emt 0:01:01] (Ta2)} Qg5 {[%eval 86,34] [%emt 0:00:32]} 21. Kh1
+{[%eval 40,39] [%emt 0:00:34]} Qh4 {[%eval 99,34] [%emt 0:00:41]} 22. g3 {
+[%eval 15,41] [%emt 0:01:38]} Nxe2 {[%eval 86,33] [%emt 0:00:42]} 23. Rxe2 {
+[%eval 11,39] [%emt 0:00:37]} Qf6 {[%eval 83,33] [%emt 0:00:33]} 24. Rf2 {
+[%eval 25,37] [%emt 0:00:28] (g4)} Nc5 {[%eval 53,35] [%emt 0:00:31]} 25. Nxc5
+{[%eval 12,40] [%emt 0:00:46]} dxc5 {[%eval 45,37] [%emt 0:00:28]} 26. Nc2 {
+[%eval 15,45] [%emt 0:01:11]} Bxf5 {[%eval 47,40] [%emt 0:00:53]} 27. Kg1 {
+[%eval 15,42] [%emt 0:00:49]} Bg4 {[%eval 61,40] [%emt 0:01:34] (h5)} 28. Qe3 {
+[%eval 18,43] [%emt 0:00:27]} Bxf3 {[%eval 50,37] [%emt 0:00:22]} 29. Qxc5 {
+[%eval 10,45] [%emt 0:00:33]} Rbc8 {[%eval 44,37] [%emt 0:00:30]} 30. Qb4 {
+[%eval 12,43] [%emt 0:00:31]} h5 {[%eval 62,36] [%emt 0:00:27] (e4)} 31. Qc3 {
+[%eval 20,45] [%emt 0:00:27]} h4 {[%eval 34,34] [%emt 0:00:29]} 32. Ra3 {
+[%eval 4,39] [%emt 0:01:06]} e4 {[%eval 29,32] [%emt 0:00:26]} 33. Qxf6 {
+[%eval 13,36] [%emt 0:00:32]} Rxf6 {[%eval 15,31] [%emt 0:00:27]} 34. Ne3 {
+[%eval 9,40] [%emt 0:00:24]} hxg3 {[%eval 18,30] [%emt 0:00:33]} 35. hxg3 {
+[%eval 9,41] [%emt 0:00:26]} Kg7 {[%eval 15,30] [%emt 0:00:34]} 36. Rb3 {
+[%eval 2,37] [%emt 0:00:38]} Rf7 {[%eval 19,32] [%emt 0:00:43]} 37. Rfb2 {
+[%eval 8,39] [%emt 0:01:33] (Rf1)} Rcc7 {[%eval 24,32] [%emt 0:00:30]} 38. Rb5
+{[%eval 0,34] [%emt 0:00:16]} Kf6 {[%eval 0,29] [%emt 0:00:24]} 39. Rh2 {
+[%eval 0,37] [%emt 0:00:31] (d6)} Rcd7 {[%eval 0,33] [%emt 0:00:27] (Th7)} 40.
+c5 {[%eval 0,45] [%emt 0:00:22]} Rh7 {[%eval 0,37] [%emt 0:00:26]} 41. Rbb2 {
+[%eval 0,43] [%emt 0:01:28] (Th4)} Ke5 {[%eval 0,35] [%emt 0:00:28]} 42. Rhd2 {
+[%eval 0,49] [%emt 0:00:43] (c6)} Rh1+ {[%eval 0,44] [%emt 0:00:27]} 1/2-1/2
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.06"]
+[Round "3.1"]
+[White "Stockfish 051122"]
+[Black "ShashChessGD 25.3"]
+[Result "1-0"]
+[ECO "E60"]
+[Annotator "1.75;0.59"]
+[PlyCount "147"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=39.7 plies; 2.361kN/s; 1.
+073.252 TBAs B=43.5 plies; 2.768kN/s; 601.375 TBAs} 1. d4 Nf6 2. c4 g6 3. Nf3
+Bg7 4. g3 O-O 5. Bg2 d6 6. O-O e5 7. dxe5 dxe5 8. Nxe5 Qe7 9. Nd3 Ne4 10. Nd2 {
+[%eval 175,38] [%emt 0:01:42]} Ng5 {[%eval 59,45] [%emt 0:03:45] (Cc5)} 11. f4
+{[%eval 218,32] [%emt 0:00:30] (h4)} Ne6 {[%eval 75,43] [%emt 0:02:29]} 12. Ne4
+{[%eval 240,33] [%emt 0:00:35]} f5 {[%eval 67,41] [%emt 0:00:20] (Ca6)} 13.
+Nef2 {[%eval 251,36] [%emt 0:00:42]} a5 {[%eval 76,41] [%emt 0:01:23]} 14. Bd2
+{[%eval 280,40] [%emt 0:02:47]} Rd8 {[%eval 88,42] [%emt 0:01:42] (Cd7)} 15.
+Rc1 {[%eval 279,32] [%emt 0:00:24]} Nc6 {[%eval 80,39] [%emt 0:00:43] (c6)} 16.
+Qe1 {[%eval 289,32] [%emt 0:00:35]} Re8 {[%eval 88,36] [%emt 0:00:25] (Ta6)}
+17. Bd5 {[%eval 289,33] [%emt 0:00:30]} Nb4 {[%eval 79,38] [%emt 0:00:59]} 18.
+Nxb4 {[%eval 292,34] [%emt 0:00:30]} axb4 {[%eval 80,36] [%emt 0:00:20]} 19.
+Bxb4 {[%eval 298,38] [%emt 0:00:41]} Qf7 {[%eval 87,40] [%emt 0:00:28]} 20. c5
+{[%eval 308,34] [%emt 0:00:32] (Aa3)} Bxb2 {[%eval 70,36] [%emt 0:00:52]} 21.
+Rc2 {[%eval 298,36] [%emt 0:00:35]} Bg7 {[%eval 86,39] [%emt 0:01:56]} 22. Bc3
+{[%eval 302,33] [%emt 0:00:32]} Qe7 {[%eval 100,44] [%emt 0:01:15]} 23. Bxg7 {
+[%eval 321,35] [%emt 0:00:34] (e4)} Kxg7 {[%eval 86,35] [%emt 0:00:27]} 24. Qb4
+{[%eval 327,32] [%emt 0:00:33]} Nd8 {[%eval 98,38] [%emt 0:00:23]} 25. e4 {
+[%eval 305,36] [%emt 0:01:02]} Qf6 {[%eval 94,37] [%emt 0:00:25]} 26. Rd2 {
+[%eval 329,34] [%emt 0:00:34]} Nc6 {[%eval 94,37] [%emt 0:00:47]} 27. Qb3 {
+[%eval 329,35] [%emt 0:00:41]} h6 {[%eval 99,34] [%emt 0:00:39] (Ca5)} 28. Rfd1
+{[%eval 321,35] [%emt 0:01:17] (Tc1)} Ne7 {[%eval 96,37] [%emt 0:02:31] (Ta6)}
+29. a4 {[%eval 368,31] [%emt 0:01:19]} Ra7 {[%eval 103,36] [%emt 0:01:10]} 30.
+Qa3 {[%eval 389,30] [%emt 0:00:31] (Db4)} Nc6 {[%eval 115,35] [%emt 0:00:39]}
+31. Rd3 {[%eval 392,32] [%emt 0:00:47] (h4)} Ra8 {[%eval 118,31] [%emt 0:00:29]
+} 32. Re3 {[%eval 398,29] [%emt 0:00:41] (h3)} g5 {[%eval 119,35] [%emt 0:01:
+20]} 33. Rf3 {[%eval 410,33] [%emt 0:01:51]} g4 {[%eval 121,33] [%emt 0:00:13]}
+34. Rfd3 {[%eval 420,29] [%emt 0:00:23]} Kf8 {[%eval 131,33] [%emt 0:00:50] 
+(Ce7)} 35. R3d2 {[%eval 419,30] [%emt 0:00:30]} Ra6 {[%eval 122,36] [%emt 0:01:
+23] (Ta5)} 36. h3 {[%eval 457,27] [%emt 0:00:37] (h4)} gxh3 {[%eval 138,33] 
+[%emt 0:00:27]} 37. Kh2 {[%eval 460,25] [%emt 0:00:33]} Qg7 {[%eval 132,33] 
+[%emt 0:00:54] (Rg7)} 38. e5 {[%eval 483,33] [%emt 0:01:11]} Qe7 {[%eval 143,
+34] [%emt 0:00:55]} 39. Qb2 {[%eval 513,34] [%emt 0:00:55] (Cd3)} Qh7 {[%eval
+169,34] [%emt 0:01:06] (Dg7)} 40. Re1 {[%eval 530,31] [%emt 0:00:30] (Da3)} Qg7
+{[%eval 170,30] [%emt 0:00:03]} 41. Qb3 {[%eval 561,32] [%emt 0:00:31]} Na5 {
+[%eval 168,31] [%emt 0:00:06] (Td8)} 42. Qc2 {[%eval 651,32] [%emt 0:00:46] 
+(Da3)} Nc6 {[%eval 207,31] [%emt 0:00:31] (Dg6)} 43. Bc4 {[%eval 682,27] [%emt
+0:00:31]} Ra5 {[%eval 206,29] [%emt 0:00:03]} 44. e6 {[%eval 711,26] [%emt 0:
+00:32]} Qf6 {[%eval 225,27] [%emt 0:00:04] (Txc5)} 45. Rd5 {[%eval 732,27] 
+[%emt 0:00:31]} Ne7 {[%eval 238,26] [%emt 0:00:09]} 46. Rde5 {[%eval 732,20] 
+[%emt 0:00:29]} Kg7 {[%eval 230,25] [%emt 0:00:04] (h5)} 47. Nd1 {[%eval 770,
+26] [%emt 0:00:45] (Ab5)} Rf8 {[%eval 262,29] [%emt 0:00:21]} 48. Bb5 {[%eval
+769,26] [%emt 0:00:22]} Rxb5 {[%eval 260,25] [%emt 0:00:06]} 49. axb5 {[%eval
+773,25] [%emt 0:00:31]} Ng6 {[%eval 274,25] [%emt 0:00:09]} 50. R5e3 {[%eval
+814,23] [%emt 0:00:23]} Re8 {[%eval 263,26] [%emt 0:00:10] (Ce7)} 51. c6 {
+[%eval 814,25] [%emt 0:00:43]} h5 {[%eval 268,24] [%emt 0:00:10] (Ce7)} 52.
+cxb7 {[%eval 854,20] [%emt 0:00:23] (Cf2)} Bxb7 {[%eval 281,17] [%emt 0:00:05]}
+53. Qxc7+ {[%eval 894,20] [%emt 0:00:28]} Re7 {[%eval 290,19] [%emt 0:00:29]}
+54. Qc3 {[%eval 900,19] [%emt 0:00:27] (Dc5)} h4 {[%eval 279,16] [%emt 0:00:08]
+(Dxc3)} 55. gxh4 {[%eval 894,20] [%emt 0:00:22]} Qxc3 {[%eval 283,17] [%emt 0:
+00:07]} 56. Nxc3 {[%eval 929,17] [%emt 0:00:20]} Nxf4 {[%eval 293,13] [%emt 0:
+00:05]} 57. Rd1 {[%eval 951,16] [%emt 0:00:18]} Kf6 {[%eval 295,18] [%emt 0:00:
+22]} 58. Rd7 {[%eval 942,15] [%emt 0:00:11]} Ng2 {[%eval 318,15] [%emt 0:00:12]
+(Cxe6)} 59. Rxh3 {[%eval 1012,15] [%emt 0:00:16] (Txe7)} f4 {[%eval 351,13] 
+[%emt 0:00:10] (Cf4)} 60. Rxe7 {[%eval 1334,15] [%emt 0:00:20]} Kxe7 {[%eval
+450,14] [%emt 0:00:10]} 61. h5 {[%eval 1420,15] [%emt 0:00:09]} f3 {[%eval 457,
+14] [%emt 0:00:02]} 62. Kg3 {[%eval 1473,14] [%emt 0:00:15]} Nf4 {[%eval 494,
+15] [%emt 0:00:16]} 63. Rh4 {[%eval 1517,14] [%emt 0:00:11] (Th2)} Nd3 {
+[%eval 464,12] [%emt 0:00:11]} 64. Nd1 {[%eval 1503,14] [%emt 0:00:08]} Bd5 {
+[%eval 513,12] [%emt 0:00:10] (Ce5)} 65. h6 {[%eval 1875,13] [%emt 0:00:12]}
+Ba2 {[%eval 676,11] [%emt 0:00:10] (Ce5)} 66. h7 {[%eval 2642,14] [%emt 0:00:
+10]} Nb2 {[%eval 1064,9] [%emt 0:00:10] (Cc5)} 67. Nxb2 {[%eval 32748,24] 
+[%emt 0:00:07] (h8D)} f2 {[%eval 32752,29] [%emt 0:00:10]} 68. Kxf2 {[%eval
+32754,40] [%emt 0:00:08]} Bb1 {[%eval 32754,35] [%emt 0:00:02] (Rd6)} 69. h8=Q
+{[%eval 32756,61] [%emt 0:00:08]} Kd6 {[%eval 32758,53] [%emt 0:00:04] (Af5)}
+70. Qf6 {[%eval 32758,100] [%emt 0:00:07] (Td4+)} Ba2 {[%eval 32760,246] [%emt
+0:00:03]} 71. e7+ {[%eval 32760,245] [%emt 0:00:03]} Be6 {[%eval 32762,245] 
+[%emt 0:00:00] (Rd7)} 72. e8=Q {[%eval 32762,245] [%emt 0:00:00]} Kc7 {[%eval
+32764,245] [%emt 0:00:00]} 73. Qfxe6 {[%eval 32764,245] [%emt 0:00:00]} Kb7 {
+[%eval 32766,245] [%emt 0:00:00]} 74. Rh7# {[%eval 32766,245] [%emt 0:00:00]}
+1-0
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.06"]
+[Round "3.1"]
+[White "ShashChessGD 25.3"]
+[Black "Stockfish 051122"]
+[Result "1-0"]
+[ECO "E60"]
+[Annotator "0.40;1.53"]
+[PlyCount "143"]
+[EventDate "2022.11.07"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=34.3 plies; 2.807kN/s;
+854.547 TBAs B=30.8 plies; 2.920kN/s; 322.826 TBAs} 1. d4 Nf6 2. c4 g6 3. Nf3
+Bg7 4. g3 O-O 5. Bg2 d6 6. O-O e5 7. dxe5 dxe5 8. Nxe5 Qe7 9. Nd3 {Ne} Na6 {
+[%eval 153,39] [%emt 0:02:55]} 10. Nc3 {[%eval 40,43] [%emt 0:02:33]} c6 {
+[%eval 158,35] [%emt 0:00:28]} 11. Qb3 {[%eval 54,43] [%emt 0:00:34]} Rd8 {
+[%eval 157,36] [%emt 0:00:30] (Te8)} 12. h3 {[%eval 33,43] [%emt 0:01:34]} Bf5
+{[%eval 180,42] [%emt 0:02:44] (Ch5)} 13. Rd1 {[%eval 45,42] [%emt 0:00:37]}
+Bxd3 {[%eval 154,39] [%emt 0:00:26]} 14. exd3 {[%eval 48,45] [%emt 0:01:04]}
+Nc5 {[%eval 159,39] [%emt 0:00:33]} 15. Qc2 {[%eval 43,42] [%emt 0:00:36]} Ne6
+{[%eval 162,41] [%emt 0:01:11]} 16. Ne2 {[%eval 47,42] [%emt 0:00:43]} Ne8 {
+[%eval 169,38] [%emt 0:00:24]} 17. h4 {[%eval 58,41] [%emt 0:01:21]} Bd4 {
+[%eval 162,40] [%emt 0:00:35]} 18. Bd2 {[%eval 35,45] [%emt 0:01:02]} Qf6 {
+[%eval 164,40] [%emt 0:02:33] (Dc5)} 19. Rf1 {[%eval 57,36] [%emt 0:00:29]}
+Bxb2 {[%eval 208,40] [%emt 0:01:00]} 20. Rab1 {[%eval 56,39] [%emt 0:00:38]}
+Be5 {[%eval 207,37] [%emt 0:00:31]} 21. Rxb7 {[%eval 59,36] [%emt 0:00:32]} Nd6
+{[%eval 181,37] [%emt 0:00:27]} 22. Rbb1 {[%eval 53,40] [%emt 0:00:57]} Nf5 {
+[%eval 177,39] [%emt 0:00:57] (Tac8)} 23. Be3 {[%eval 63,34] [%emt 0:00:27]}
+Rdc8 {[%eval 202,36] [%emt 0:01:17] (Ad4)} 24. Be4 {[%eval 58,36] [%emt 0:01:
+12]} Rc7 {[%eval 204,37] [%emt 0:00:27]} 25. Rfe1 {[%eval 71,34] [%emt 0:00:21]
+} h5 {[%eval 195,37] [%emt 0:00:28] (Td8)} 26. Kg2 {[%eval 62,35] [%emt 0:00:
+30]} Re7 {[%eval 199,39] [%emt 0:00:25]} 27. Bd2 {[%eval 58,36] [%emt 0:00:44]}
+Nfd4 {[%eval 241,43] [%emt 0:02:07]} 28. Qc1 {[%eval 65,41] [%emt 0:01:13] 
+(Dd1)} Nxe2 {[%eval 222,34] [%emt 0:00:32]} 29. Rxe2 {[%eval 57,35] [%emt 0:00:
+22]} Rc8 {[%eval 211,40] [%emt 0:01:46] (Tae8)} 30. Qe1 {[%eval 64,44] [%emt 0:
+01:11]} Bd4 {[%eval 212,38] [%emt 0:00:21]} 31. a4 {[%eval 74,41] [%emt 0:00:
+24]} Kg7 {[%eval 227,40] [%emt 0:00:52] (Td7)} 32. a5 {[%eval 65,42] [%emt 0:
+00:36]} Rd7 {[%eval 225,41] [%emt 0:00:48]} 33. Qc1 {[%eval 68,42] [%emt 0:01:
+09]} Nc5 {[%eval 238,36] [%emt 0:00:47]} 34. Bh6+ {[%eval 80,42] [%emt 0:01:18]
+} Kg8 {[%eval 268,41] [%emt 0:03:10]} 35. Bg5 {[%eval 75,48] [%emt 0:00:23] 
+(Dd2)} Qd6 {[%eval 227,32] [%emt 0:00:10]} 36. Qd2 {[%eval 73,40] [%emt 0:00:
+28] (De1)} Ne6 {[%eval 230,37] [%emt 0:01:39] (a6)} 37. a6 {[%eval 74,38] 
+[%emt 0:00:34]} Bb6 {[%eval 234,32] [%emt 0:00:10]} 38. Qc1 {[%eval 70,42] 
+[%emt 0:02:03] (Tee1)} Bc5 {[%eval 281,31] [%emt 0:00:52] (Tf8)} 39. Qe1 {
+[%eval 83,35] [%emt 0:00:16] (Af3)} Kg7 {[%eval 269,28] [%emt 0:00:06]} 40. Bc1
+{[%eval 86,38] [%emt 0:00:23]} Bd4 {[%eval 278,28] [%emt 0:00:03]} 41. Qd2 {
+[%eval 89,38] [%emt 0:00:33]} Kg8 {[%eval 296,27] [%emt 0:00:07]} 42. Qa2 {
+[%eval 94,39] [%emt 0:00:20]} Re8 {[%eval 293,32] [%emt 0:00:23] (Cc5)} 43. Bf3
+{[%eval 106,32] [%emt 0:00:19]} Ree7 {[%eval 323,30] [%emt 0:00:16] (Tc7)} 44.
+Qa5 {[%eval 141,36] [%emt 0:00:33] (Dd2)} Bc5 {[%eval 378,27] [%emt 0:00:14]}
+45. Qa4 {[%eval 150,38] [%emt 0:00:19] (Te4)} Nd8 {[%eval 421,24] [%emt 0:00:
+11] (Cd4)} 46. Rxe7 {[%eval 187,29] [%emt 0:00:19]} Qxe7 {[%eval 480,22] [%emt
+0:00:04]} 47. Be4 {[%eval 200,31] [%emt 0:00:21]} Qd6 {[%eval 513,25] [%emt 0:
+00:15]} 48. Bb2 {[%eval 212,30] [%emt 0:00:24]} Ne6 {[%eval 558,22] [%emt 0:00:
+11] (Rf8)} 49. Bc3 {[%eval 230,30] [%emt 0:00:22]} Nd8 {[%eval 569,24] [%emt 0:
+00:07]} 50. Qa1 {[%eval 250,31] [%emt 0:00:23]} Qc7 {[%eval 614,25] [%emt 0:00:
+13] (Rh7)} 51. d4 {[%eval 301,27] [%emt 0:00:23]} Bf8 {[%eval 749,23] [%emt 0:
+00:10] (Ad6)} 52. d5 {[%eval 309,33] [%emt 0:00:33]} cxd5 {[%eval 819,24] 
+[%emt 0:00:06]} 53. Bxd5 {[%eval 315,35] [%emt 0:00:24]} Kh7 {[%eval 828,23] 
+[%emt 0:00:09]} 54. Qa5 {[%eval 312,34] [%emt 0:00:44] (Db2)} Qxa5 {[%eval 849,
+25] [%emt 0:00:14]} 55. Bxa5 {[%eval 306,33] [%emt 0:00:37]} Bd6 {[%eval 866,
+22] [%emt 0:00:09] (Ae7)} 56. Rb5 {[%eval 321,31] [%emt 0:00:29]} Be5 {[%eval
+904,23] [%emt 0:00:11] (Ae7)} 57. Bb7 {[%eval 331,27] [%emt 0:00:32] (Af3)} Bd4
+{[%eval 874,22] [%emt 0:00:11] (Ac7)} 58. Rd5 {[%eval 342,25] [%emt 0:00:09] 
+(c5)} Rxd5 {[%eval 988,22] [%emt 0:00:10]} 59. cxd5 {[%eval 346,25] [%emt 0:00:
+16]} Bf6 {[%eval 1002,21] [%emt 0:00:05]} 60. d6 {[%eval 350,25] [%emt 0:00:12]
+(Rf3)} g5 {[%eval 1030,20] [%emt 0:00:14] (Rg7)} 61. Bb6 {[%eval 365,21] [%emt
+0:00:09]} axb6 {[%eval 1033,19] [%emt 0:00:06]} 62. Bd5 {[%eval 360,21] [%emt
+0:00:13] (Ae4+)} gxh4 {[%eval 1071,23] [%emt 0:00:10] (Rg7)} 63. a7 {[%eval
+379,23] [%emt 0:00:22]} hxg3 {[%eval 1100,21] [%emt 0:00:14] (Rg7)} 64. fxg3 {
+[%eval 402,16] [%emt 0:00:05]} Kg6 {[%eval 1191,16] [%emt 0:00:05] (Rg7)} 65.
+a8=Q {[%eval 431,16] [%emt 0:00:07]} Kg7 {[%eval 1237,18] [%emt 0:00:10] (Rf5)}
+66. Bb3 {[%eval 540,16] [%emt 0:00:26]} b5 {[%eval 1353,15] [%emt 0:00:15] 
+(Rh7)} 67. Qf3 {[%eval 602,15] [%emt 0:00:04] (De4)} Bg5 {[%eval 1497,16] 
+[%emt 0:00:11] (Rg6)} 68. Qf5 {[%eval 1053,15] [%emt 0:00:05]} Bf6 {[%eval
+1538,14] [%emt 0:00:03] (Ac1)} 69. Qxh5 {[%eval 15257,25] [%emt 0:00:05] (De4)}
+b4 {[%eval 15258,29] [%emt 0:00:12]} 70. Kh1 {[%eval 15259,29] [%emt 0:00:12]}
+Ne6 {[%eval 15260,30] [%emt 0:00:07]} 71. Bxe6 {[%eval 15260,45] [%emt 0:00:23]
+} fxe6 {[%eval 15261,40] [%emt 0:00:03]} 72. Qg4+ {[%eval 32730,31] [%emt 0:00:
+10] (d7)} 1-0
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.07"]
+[Round "5.1"]
+[White "Stockfish 051122"]
+[Black "ShashChessGD 25.3"]
+[Result "1-0"]
+[ECO "B90"]
+[Annotator "1.46;0.20"]
+[PlyCount "197"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=29.6 plies; 1.775kN/s; 2.
+318.819 TBAs B=33.6 plies; 2.188kN/s; 2.640.197 TBAs} 1. e4 c5 2. Nf3 d6 3. d4
+cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Be3 h6 7. f3 Qc7 8. g4 e6 9. Qd2 {[%eval 146,41]
+[%emt 0:02:59]} b5 {[%eval 20,38] [%emt 0:01:14]} 10. h4 {[%eval 201,39] [%emt
+0:03:16]} Bb7 {[%eval 45,43] [%emt 0:02:41]} 11. O-O-O {[%eval 188,35] [%emt 0:
+00:22]} Nc6 {[%eval 60,42] [%emt 0:00:58]} 12. Be2 {[%eval 197,36] [%emt 0:00:
+35] (Tg1)} Ne5 {[%eval 35,39] [%emt 0:01:05] (Cd7)} 13. a3 {[%eval 200,38] 
+[%emt 0:00:39] (g5)} Nfd7 {[%eval 37,38] [%emt 0:00:23] (Tc8)} 14. Kb1 {
+[%eval 188,37] [%emt 0:00:32]} Rc8 {[%eval 40,37] [%emt 0:00:37]} 15. g5 {
+[%eval 194,37] [%emt 0:00:31] (Cb3)} hxg5 {[%eval 51,39] [%emt 0:00:55]} 16.
+hxg5 {[%eval 192,38] [%emt 0:00:43]} Rxh1 {[%eval 64,44] [%emt 0:00:55]} 17.
+Rxh1 {[%eval 225,34] [%emt 0:00:28]} Nc4 {[%eval 61,42] [%emt 0:01:32]} 18.
+Bxc4 {[%eval 250,35] [%emt 0:00:34]} Qxc4 {[%eval 50,42] [%emt 0:00:22]} 19.
+Qf2 {[%eval 241,34] [%emt 0:00:40]} b4 {[%eval 45,45] [%emt 0:00:40]} 20. axb4
+{[%eval 218,36] [%emt 0:01:14]} Qxb4 {[%eval 81,45] [%emt 0:05:18]} 21. Na2 {
+[%eval 241,38] [%emt 0:01:13]} Qa4 {[%eval 74,42] [%emt 0:01:44] (Dc4)} 22. g6
+{[%eval 280,31] [%emt 0:00:30]} Be7 {[%eval 87,38] [%emt 0:00:19]} 23. Qg3 {
+[%eval 290,35] [%emt 0:00:31]} Nf8 {[%eval 85,38] [%emt 0:00:31]} 24. gxf7+ {
+[%eval 301,34] [%emt 0:00:44]} Kxf7 {[%eval 86,39] [%emt 0:01:19]} 25. Rd1 {
+[%eval 297,37] [%emt 0:00:32]} Qa5 {[%eval 81,40] [%emt 0:01:10] (Dc4)} 26. Nc3
+{[%eval 309,36] [%emt 0:00:33]} Bf6 {[%eval 83,36] [%emt 0:00:25] (Db4)} 27.
+Nde2 {[%eval 332,33] [%emt 0:00:40]} Rb8 {[%eval 88,40] [%emt 0:00:41] (Ae5)}
+28. Bd4 {[%eval 352,34] [%emt 0:00:27] (Ac1)} e5 {[%eval 100,37] [%emt 0:00:30]
+} 29. Ba7 {[%eval 371,35] [%emt 0:00:37]} Rd8 {[%eval 91,44] [%emt 0:00:37]}
+30. Qg1 {[%eval 358,32] [%emt 0:00:28]} Rd7 {[%eval 80,38] [%emt 0:00:23] (Db4)
+} 31. Be3 {[%eval 375,33] [%emt 0:00:31]} Qb4 {[%eval 93,40] [%emt 0:00:23]}
+32. Ng3 {[%eval 356,36] [%emt 0:00:57]} g6 {[%eval 101,39] [%emt 0:00:34]} 33.
+Bc1 {[%eval 354,35] [%emt 0:00:34]} Qc5 {[%eval 94,38] [%emt 0:00:30]} 34. Qg2
+{[%eval 393,33] [%emt 0:00:32] (Dh2)} Bg7 {[%eval 104,37] [%emt 0:01:03]} 35.
+Nd5 {[%eval 400,32] [%emt 0:00:48]} a5 {[%eval 112,34] [%emt 0:00:13]} 36. Be3
+{[%eval 378,32] [%emt 0:00:30]} Qb5 {[%eval 113,37] [%emt 0:00:16]} 37. Nb6 {
+[%eval 419,32] [%emt 0:00:38] (Ce2)} Rd8 {[%eval 138,35] [%emt 0:00:41]} 38.
+Ne2 {[%eval 433,33] [%emt 0:00:27]} Qa6 {[%eval 130,41] [%emt 0:00:40]} 39. Nc3
+{[%eval 432,30] [%emt 0:00:34]} Bc6 {[%eval 127,41] [%emt 0:00:16]} 40. b3 {
+[%eval 456,28] [%emt 0:00:27]} a4 {[%eval 126,40] [%emt 0:00:18]} 41. Nbxa4 {
+[%eval 461,29] [%emt 0:00:30]} Bxa4 {[%eval 139,39] [%emt 0:00:29]} 42. Nxa4 {
+[%eval 456,29] [%emt 0:00:36]} Rb8 {[%eval 134,37] [%emt 0:00:18]} 43. Ka2 {
+[%eval 449,28] [%emt 0:00:37]} Qc6 {[%eval 128,38] [%emt 0:00:28] (Ce6)} 44.
+Rd5 {[%eval 474,28] [%emt 0:00:30]} Ne6 {[%eval 138,34] [%emt 0:00:31]} 45. Ra5
+{[%eval 459,29] [%emt 0:00:44]} Nd4 {[%eval 143,31] [%emt 0:00:13]} 46. Ra7+ {
+[%eval 455,28] [%emt 0:00:35]} Kf8 {[%eval 133,33] [%emt 0:00:17]} 47. Kb2 {
+[%eval 468,30] [%emt 0:00:34]} Nb5 {[%eval 139,29] [%emt 0:00:14]} 48. Ra5 {
+[%eval 485,28] [%emt 0:00:26]} Kf7 {[%eval 136,28] [%emt 0:00:12]} 49. Qh3 {
+[%eval 468,28] [%emt 0:00:21] (Dd2)} d5 {[%eval 158,31] [%emt 0:00:11]} 50. Bc5
+{[%eval 494,26] [%emt 0:00:21]} Nc7 {[%eval 158,30] [%emt 0:00:47]} 51. Qf1 {
+[%eval 500,27] [%emt 0:00:20]} Ra8 {[%eval 162,28] [%emt 0:00:09]} 52. Rxa8 {
+[%eval 509,29] [%emt 0:00:36]} Nxa8 {[%eval 141,30] [%emt 0:00:08]} 53. Qh3 {
+[%eval 521,27] [%emt 0:00:19]} Bf6 {[%eval 164,29] [%emt 0:00:09]} 54. Qh7+ {
+[%eval 511,27] [%emt 0:00:25]} Bg7 {[%eval 156,32] [%emt 0:00:08]} 55. Qh4 {
+[%eval 534,25] [%emt 0:00:21]} Bf6 {[%eval 170,32] [%emt 0:00:21]} 56. Qh7+ {
+[%eval 533,28] [%emt 0:00:57] (Dh3)} Bg7 {[%eval 175,29] [%emt 0:00:15]} 57.
+Qh4 {[%eval 519,25] [%emt 0:00:12] (Ae3)} Bf6 {[%eval 182,32] [%emt 0:00:21]}
+58. Qh3 {[%eval 554,27] [%emt 0:00:21]} Bg7 {[%eval 177,28] [%emt 0:00:06]} 59.
+Bb4 {[%eval 565,25] [%emt 0:00:12]} Kg8 {[%eval 179,29] [%emt 0:00:03]} 60. Qg4
+{[%eval 545,23] [%emt 0:00:17] (Aa5)} dxe4 {[%eval 176,27] [%emt 0:00:08]} 61.
+fxe4 {[%eval 571,23] [%emt 0:00:15]} Bf8 {[%eval 192,25] [%emt 0:00:04]} 62.
+Bc3 {[%eval 557,26] [%emt 0:00:23]} Bg7 {[%eval 185,27] [%emt 0:00:05] (Cc7)}
+63. Ba5 {[%eval 577,24] [%emt 0:00:12] (Dh3)} Bf8 {[%eval 166,29] [%emt 0:00:
+13]} 64. Kb1 {[%eval 591,23] [%emt 0:00:11] (Ac3)} Kf7 {[%eval 196,30] [%emt 0:
+00:29]} 65. Qh3 {[%eval 601,22] [%emt 0:00:08]} Kg8 {[%eval 192,25] [%emt 0:00:
+12] (Rg7)} 66. Nc3 {[%eval 593,19] [%emt 0:00:09]} Nb6 {[%eval 207,21] [%emt 0:
+00:02]} 67. Qd3 {[%eval 615,21] [%emt 0:00:08]} Nd7 {[%eval 207,21] [%emt 0:00:
+05]} 68. Nd5 {[%eval 601,19] [%emt 0:00:10]} Nf6 {[%eval 217,25] [%emt 0:00:24]
+(Rg7)} 69. Bc7 {[%eval 666,23] [%emt 0:00:08] (Ad2)} Nd7 {[%eval 236,21] [%emt
+0:00:04]} 70. b4 {[%eval 685,23] [%emt 0:00:08] (Dh3)} Kg7 {[%eval 241,26] 
+[%emt 0:00:17]} 71. Bd8 {[%eval 725,23] [%emt 0:00:12]} Qe6 {[%eval 250,25] 
+[%emt 0:00:04]} 72. Qf3 {[%eval 739,22] [%emt 0:00:08] (Rb2)} Bd6 {[%eval 256,
+21] [%emt 0:00:03] (Rg8)} 73. Bg5 {[%eval 771,21] [%emt 0:00:09] (Rb2)} Nf8 {
+[%eval 262,26] [%emt 0:00:16] (Axb4)} 74. Qh1 {[%eval 820,21] [%emt 0:00:12] 
+(De3)} Bxb4 {[%eval 288,26] [%emt 0:00:17] (Rf7)} 75. Nxb4 {[%eval 872,22] 
+[%emt 0:00:12]} Qb6 {[%eval 292,23] [%emt 0:00:02]} 76. Bh6+ {[%eval 892,21] 
+[%emt 0:00:13]} Kg8 {[%eval 293,25] [%emt 0:00:04]} 77. Bxf8 {[%eval 890,22] 
+[%emt 0:00:10]} Kxf8 {[%eval 297,23] [%emt 0:00:04]} 78. Qf3+ {[%eval 932,23] 
+[%emt 0:00:11]} Kg7 {[%eval 312,25] [%emt 0:00:29]} 79. c3 {[%eval 932,20] 
+[%emt 0:00:07]} Kh6 {[%eval 321,23] [%emt 0:00:10] (g5)} 80. Kc2 {[%eval 948,
+19] [%emt 0:00:20]} Qg1 {[%eval 321,25] [%emt 0:00:06] (g5)} 81. c4 {[%eval
+1063,17] [%emt 0:00:07] (Cd5)} g5 {[%eval 333,20] [%emt 0:00:02] (Rh7)} 82. Nd3
+{[%eval 1616,18] [%emt 0:00:12] (Cd5)} Kg7 {[%eval 771,19] [%emt 0:00:23] (Da7)
+} 83. Qf5 {[%eval 2320,18] [%emt 0:00:07]} Qg2+ {[%eval 1075,18] [%emt 0:00:10]
+(Dh2+)} 84. Kc3 {[%eval 2356,19] [%emt 0:00:10]} Qg1 {[%eval 1109,19] [%emt 0:
+00:12] (Da2)} 85. c5 {[%eval 15200,18] [%emt 0:00:10]} Kh6 {[%eval 15240,25] 
+[%emt 0:00:10] (Da1+)} 86. Qxe5 {[%eval 15248,23] [%emt 0:00:07] (De6+)} Qa1+ {
+[%eval 15254,25] [%emt 0:00:10]} 87. Kd2 {[%eval 15255,26] [%emt 0:00:09]} Qa2+
+{[%eval 15256,26] [%emt 0:00:09] (Da5+)} 88. Ke3 {[%eval 15257,26] [%emt 0:00:
+08]} Qa8 {[%eval 15259,31] [%emt 0:00:03] (Rg6)} 89. c6 {[%eval 15260,27] 
+[%emt 0:00:08]} Qa7+ {[%eval 15260,25] [%emt 0:00:17]} 90. Qd4 {[%eval 15262,
+29] [%emt 0:00:16]} Qb8 {[%eval 15262,33] [%emt 0:00:04]} 91. Qf6+ {[%eval
+32738,37] [%emt 0:00:15] (c7)} Kh5 {[%eval 15262,34] [%emt 0:00:14]} 92. c7 {
+[%eval 32742,36] [%emt 0:00:06]} Qa7+ {[%eval 32746,45] [%emt 0:00:11]} 93. Qd4
+{[%eval 32748,50] [%emt 0:00:09]} Qxc7 {[%eval 32750,47] [%emt 0:00:03]} 94.
+Qh8+ {[%eval 32750,50] [%emt 0:00:06]} Kg6 {[%eval 32752,61] [%emt 0:00:08]}
+95. Ne5+ {[%eval 32752,59] [%emt 0:00:07]} Qxe5 {[%eval 32754,71] [%emt 0:00:
+01]} 96. Qxe5 {[%eval 27999,1] [%emt 0:00:00]} g4 {[%eval 27998,1] [%emt 0:00:
+00]} 97. Qf5+ {[%eval 27999,0] [%emt 0:00:00]} Kg7 {[%eval 27999,0] [%emt 0:00:
+00]} 98. e5 {[%eval 27999,0] [%emt 0:00:00]} g3 {[%eval 27999,0] [%emt 0:00:00]
+} 99. e6 {[%eval 27999,1] [%emt 0:00:00]} 1-0
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.07"]
+[Round "6.1"]
+[White "ShashChessGD 25.3"]
+[Black "Stockfish 051122"]
+[Result "1-0"]
+[ECO "B90"]
+[Annotator "0.34;1.86"]
+[PlyCount "133"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=31.3 plies; 1.580kN/s; 1.
+852.094 TBAs B=26.6 plies; 1.738kN/s; 1.267.165 TBAs} 1. e4 c5 2. Nf3 d6 3. d4
+cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Be3 h6 7. f3 Qc7 8. g4 e6 9. Qd2 {[%eval 34,45] 
+[%emt 0:03:08]} b5 {[%eval 186,36] [%emt 0:01:43]} 10. h4 {[%eval 52,37] [%emt
+0:00:38]} Nfd7 {[%eval 192,38] [%emt 0:03:21] (b4)} 11. O-O-O {[%eval 50,34] 
+[%emt 0:00:30]} Ne5 {[%eval 204,38] [%emt 0:01:27] (Ab7)} 12. a3 {[%eval 64,38]
+[%emt 0:02:11] (Ae2)} Nbd7 {[%eval 205,35] [%emt 0:01:16]} 13. Kb1 {[%eval 62,
+39] [%emt 0:01:14]} Nb6 {[%eval 212,34] [%emt 0:01:41] (Ab7)} 14. b3 {[%eval
+56,40] [%emt 0:00:27]} Bb7 {[%eval 253,35] [%emt 0:00:58]} 15. Be2 {[%eval 59,
+36] [%emt 0:00:34]} d5 {[%eval 250,35] [%emt 0:00:57]} 16. f4 {[%eval 70,39] 
+[%emt 0:00:29]} Ned7 {[%eval 258,35] [%emt 0:00:32]} 17. e5 {[%eval 70,41] 
+[%emt 0:00:42]} Bxa3 {[%eval 260,34] [%emt 0:00:32]} 18. Na2 {[%eval 75,43] 
+[%emt 0:00:35]} b4 {[%eval 239,36] [%emt 0:01:47] (0-0-0)} 19. g5 {[%eval 68,
+36] [%emt 0:00:38]} Nc5 {[%eval 258,35] [%emt 0:00:50]} 20. gxh6 {[%eval 66,36]
+[%emt 0:00:47]} Ne4 {[%eval 284,38] [%emt 0:02:23] (gxh6)} 21. Qe1 {[%eval 69,
+42] [%emt 0:01:02]} gxh6 {[%eval 300,36] [%emt 0:00:25]} 22. f5 {[%eval 84,41]
+[%emt 0:00:35]} O-O-O {[%eval 325,37] [%emt 0:01:30]} 23. fxe6 {[%eval 100,42]
+[%emt 0:00:39]} fxe6 {[%eval 328,34] [%emt 0:00:41]} 24. Bg4 {[%eval 92,44] 
+[%emt 0:00:36]} Qxe5 {[%eval 331,35] [%emt 0:00:24]} 25. Nxb4 {[%eval 98,40] 
+[%emt 0:00:31]} Nd7 {[%eval 328,33] [%emt 0:00:31]} 26. Ka2 {[%eval 106,43] 
+[%emt 0:00:31]} Bxb4 {[%eval 322,33] [%emt 0:00:41]} 27. Qxb4 {[%eval 117,41] 
+[%emt 0:00:36]} Qg3 {[%eval 326,33] [%emt 0:00:30]} 28. Bf3 {[%eval 106,42] 
+[%emt 0:00:57]} Qd6 {[%eval 337,34] [%emt 0:01:07]} 29. Qxd6 {[%eval 116,38] 
+[%emt 0:00:29]} Nxd6 {[%eval 336,32] [%emt 0:00:32]} 30. Nxe6 {[%eval 114,43] 
+[%emt 0:00:29]} Rde8 {[%eval 331,30] [%emt 0:00:19]} 31. Bd4 {[%eval 110,39] 
+[%emt 0:00:34]} Rhg8 {[%eval 345,32] [%emt 0:00:41]} 32. Rhe1 {[%eval 114,33] 
+[%emt 0:00:25]} Nb5 {[%eval 357,32] [%emt 0:00:34]} 33. Bb2 {[%eval 118,39] 
+[%emt 0:00:33]} Rg3 {[%eval 369,29] [%emt 0:00:34]} 34. Bh5 {[%eval 121,38] 
+[%emt 0:00:29]} Re7 {[%eval 350,29] [%emt 0:00:19]} 35. Re2 {[%eval 122,36] 
+[%emt 0:00:28] (Cd4)} Bc6 {[%eval 337,30] [%emt 0:01:04]} 36. Rd3 {[%eval 129,
+35] [%emt 0:00:27]} Rg8 {[%eval 339,28] [%emt 0:00:54] (Tg1)} 37. Rf3 {[%eval
+119,34] [%emt 0:00:39]} Rg1 {[%eval 388,35] [%emt 0:02:21] (a5)} 38. Rf4 {
+[%eval 139,33] [%emt 0:00:28] (Tff2)} a5 {[%eval 423,24] [%emt 0:00:36] (Tg8)}
+39. c4 {[%eval 182,27] [%emt 0:00:55] (Cd4)} Nc7 {[%eval 429,19] [%emt 0:00:03]
+} 40. Nd4 {[%eval 186,23] [%emt 0:00:32]} Rxe2 {[%eval 452,19] [%emt 0:00:09]}
+41. Bxe2 {[%eval 194,26] [%emt 0:00:26]} Nb8 {[%eval 497,20] [%emt 0:00:22]}
+42. Bf3 {[%eval 198,26] [%emt 0:00:46]} Rg6 {[%eval 543,19] [%emt 0:00:12]} 43.
+Rf8+ {[%eval 213,24] [%emt 0:00:22]} Kb7 {[%eval 559,16] [%emt 0:00:04]} 44.
+Ka3 {[%eval 218,25] [%emt 0:00:34]} Nd7 {[%eval 612,18] [%emt 0:00:15]} 45. Rf5
+{[%eval 232,22] [%emt 0:00:27]} Rg3 {[%eval 581,17] [%emt 0:00:11]} 46. Bc3 {
+[%eval 242,24] [%emt 0:00:25]} a4 {[%eval 678,17] [%emt 0:00:10] (Cb8)} 47.
+cxd5 {[%eval 242,21] [%emt 0:00:39] (Cxc6)} Nxd5 {[%eval 615,17] [%emt 0:00:09]
+} 48. Bxd5 {[%eval 251,22] [%emt 0:00:22]} Bxd5 {[%eval 636,16] [%emt 0:00:06]}
+49. Rxd5 {[%eval 250,21] [%emt 0:00:30]} Nb6 {[%eval 667,17] [%emt 0:00:07]}
+50. Rc5 {[%eval 260,23] [%emt 0:00:48]} axb3 {[%eval 666,16] [%emt 0:00:04] 
+(Cd7)} 51. Kxb3 {[%eval 257,26] [%emt 0:01:07]} Rg6 {[%eval 712,19] [%emt 0:00:
+21] (Tg1)} 52. Rh5 {[%eval 263,21] [%emt 0:00:36] (Tb5)} Rd6 {[%eval 697,15] 
+[%emt 0:00:02]} 53. Kb4 {[%eval 280,21] [%emt 0:00:20] (Tb5)} Rd7 {[%eval 739,
+17] [%emt 0:00:20]} 54. Rxh6 {[%eval 299,17] [%emt 0:00:20]} Nd5+ {[%eval 768,
+14] [%emt 0:00:06]} 55. Kb3 {[%eval 321,17] [%emt 0:00:21]} Rf7 {[%eval 893,16]
+[%emt 0:00:15] (Ce3)} 56. Bd2 {[%eval 348,17] [%emt 0:00:31] (h5)} Nb6 {
+[%eval 974,15] [%emt 0:00:11]} 57. h5 {[%eval 459,18] [%emt 0:01:28]} Nd7 {
+[%eval 1082,16] [%emt 0:00:10]} 58. Kc4 {[%eval 460,15] [%emt 0:00:14]} Ne5+ {
+[%eval 1041,12] [%emt 0:00:06] (Te7)} 59. Kd5 {[%eval 501,14] [%emt 0:00:36]}
+Ng4 {[%eval 1137,12] [%emt 0:00:13]} 60. Ke6 {[%eval 631,14] [%emt 0:00:09]}
+Rf1 {[%eval 1183,11] [%emt 0:00:05] (Tf8)} 61. Rg6 {[%eval 687,18] [%emt 0:00:
+10]} Nf2 {[%eval 1676,14] [%emt 0:00:15]} 62. Rg7+ {[%eval 881,13] [%emt 0:00:
+03] (h6)} Kb6 {[%eval 1677,13] [%emt 0:00:05]} 63. Rf7 {[%eval 1027,12] [%emt
+0:00:05] (Ae3)} Rh1 {[%eval 15258,30] [%emt 0:00:14] (Ta1)} 64. Rxf2 {[%eval
+15260,32] [%emt 0:00:06]} Rh4 {[%eval 15260,26] [%emt 0:00:04]} 65. Ba5+ {
+[%eval 15262,35] [%emt 0:00:06] (h6)} Ka6 {[%eval 3500,18] [%emt 0:00:05]} 66.
+Rf7 {[%eval 15262,42] [%emt 0:00:10] (Ad8)} Re4+ {[%eval 15262,43] [%emt 0:00:
+08]} 67. Kd5 {[%eval 15263,40] [%emt 0:00:18]} 1-0
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.07"]
+[Round "7.1"]
+[White "Stockfish 051122"]
+[Black "ShashChessGD 25.3"]
+[Result "1/2-1/2"]
+[ECO "D02"]
+[Annotator "0.63;0.11"]
+[PlyCount "43"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=40.7 plies; 3.127kN/s; 7.
+607 TBAs B=47.2 plies; 3.017kN/s; 18.468 TBAs} 1. d4 d5 2. Bf4 c5 3. e3 Nf6 4.
+c3 Nc6 5. Nd2 e6 6. Ngf3 Bd6 7. Bg3 O-O 8. Bd3 b6 9. e4 Be7 10. e5 {[%eval 63,
+41] [%emt 0:01:20]} Nh5 {[%eval 11,46] [%emt 0:01:23]} 11. Ng5 {[%eval 50,39] 
+[%emt 0:00:41]} Bxg5 {[%eval 0,43] [%emt 0:00:32]} 12. Qxh5 {[%eval 44,38] 
+[%emt 0:00:35]} g6 {[%eval 4,45] [%emt 0:00:30]} 13. Qe2 {[%eval 49,39] [%emt
+0:00:33]} cxd4 {[%eval 6,46] [%emt 0:00:34]} 14. h4 {[%eval 36,40] [%emt 0:01:
+04]} Be7 {[%eval 9,47] [%emt 0:06:35]} 15. h5 {[%eval 54,38] [%emt 0:00:32]}
+dxc3 {[%eval 0,48] [%emt 0:00:32]} 16. bxc3 {[%eval 46,39] [%emt 0:00:38]} d4 {
+[%eval 20,47] [%emt 0:01:07]} 17. c4 {[%eval 36,38] [%emt 0:00:36]} Nb4 {
+[%eval 0,47] [%emt 0:00:27]} 18. Be4 {[%eval 49,39] [%emt 0:00:44]} d3 {
+[%eval 0,47] [%emt 0:00:37]} 19. Qg4 {[%eval 47,40] [%emt 0:00:35]} g5 {
+[%eval 0,47] [%emt 0:00:30]} 20. O-O {[%eval 40,39] [%emt 0:00:55]} Rb8 {
+[%eval 0,50] [%emt 0:03:48]} 21. h6 {[%eval 30,43] [%emt 0:01:13]} Kh8 {
+[%eval 0,50] [%emt 0:00:25]} 22. a3 {[%eval 24,46] [%emt 0:02:32]} 1/2-1/2
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.07"]
+[Round "8.1"]
+[White "ShashChessGD 25.3"]
+[Black "Stockfish 051122"]
+[Result "1/2-1/2"]
+[ECO "D02"]
+[Annotator "0.10;0.51"]
+[PlyCount "49"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=47.8 plies; 2.691kN/s;
+61.375 TBAs B=41.3 plies; 2.958kN/s; 30.515 TBAs} 1. d4 d5 2. Bf4 c5 3. e3 Nf6
+4. c3 Nc6 5. Nd2 e6 6. Ngf3 Bd6 7. Bg3 O-O 8. Bd3 b6 9. e4 Be7 10. e5 {[%eval
+10,43] [%emt 0:01:51]} Nh5 {[%eval 51,41] [%emt 0:01:36]} 11. Ng5 {[%eval 0,43]
+[%emt 0:00:41]} Bxg5 {[%eval 41,37] [%emt 0:00:34]} 12. Qxh5 {[%eval 23,47] 
+[%emt 0:00:44]} g6 {[%eval 43,34] [%emt 0:00:38]} 13. Qe2 {[%eval 13,47] [%emt
+0:00:42]} cxd4 {[%eval 38,39] [%emt 0:00:34]} 14. h4 {[%eval 0,46] [%emt 0:01:
+04]} Be7 {[%eval 48,38] [%emt 0:00:32] (Axd2+)} 15. h5 {[%eval 0,42] [%emt 0:
+00:49]} dxc3 {[%eval 21,34] [%emt 0:00:33]} 16. bxc3 {[%eval 4,47] [%emt 0:01:
+31]} d4 {[%eval 51,39] [%emt 0:01:01]} 17. hxg6 {[%eval 6,44] [%emt 0:00:49] 
+(c4)} hxg6 {[%eval 23,34] [%emt 0:00:37]} 18. Ne4 {[%eval 15,41] [%emt 0:00:48]
+(0-0-0)} Kg7 {[%eval 22,37] [%emt 0:00:35]} 19. Nd6 {[%eval 8,48] [%emt 0:01:
+04]} Rh8 {[%eval 19,41] [%emt 0:00:36]} 20. Rxh8 {[%eval 3,50] [%emt 0:01:54]}
+Qxh8 {[%eval 0,45] [%emt 0:00:46]} 21. Qf3 {[%eval 7,49] [%emt 0:00:32]} Qh1+ {
+[%eval 0,47] [%emt 0:00:39]} 22. Bf1 {[%eval 2,48] [%emt 0:00:28]} Bxd6 {
+[%eval 0,50] [%emt 0:00:50]} 23. exd6 {[%eval 0,55] [%emt 0:00:57]} Bd7 {
+[%eval 0,49] [%emt 0:00:42]} 24. cxd4 {[%eval 0,57] [%emt 0:00:41]} Rc8 {
+[%eval 0,51] [%emt 0:00:36] (Th8)} 25. Rc1 {[%eval 0,50] [%emt 0:00:34]}
+1/2-1/2
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.07"]
+[Round "9.1"]
+[White "Stockfish 051122"]
+[Black "ShashChessGD 25.3"]
+[Result "1/2-1/2"]
+[ECO "D43"]
+[Annotator "0.47;0.07"]
+[PlyCount "83"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=42.8 plies; 2.720kN/s;
+225.211 TBAs B=47.7 plies; 2.131kN/s; 374.731 TBAs} 1. d4 d5 2. c4 e6 3. Nf3
+Nf6 4. Nc3 c6 5. Bg5 h6 6. Bxf6 Qxf6 7. e3 Nd7 8. Be2 {[%eval 47,38] [%emt 0:
+02:25]} Bd6 {[%eval 7,43] [%emt 0:04:37] (Ab4)} 9. O-O {[%eval 44,36] [%emt 0:
+00:28]} Qe7 {[%eval 13,39] [%emt 0:00:33] (dxc4)} 10. e4 {[%eval 54,38] [%emt
+0:00:41] (Dc2)} dxe4 {[%eval 14,40] [%emt 0:00:30]} 11. Nxe4 {[%eval 66,38] 
+[%emt 0:00:35]} Bc7 {[%eval 0,49] [%emt 0:00:27]} 12. Re1 {[%eval 40,44] [%emt
+0:03:03]} O-O {[%eval 4,43] [%emt 0:00:58]} 13. Bd3 {[%eval 48,39] [%emt 0:00:
+20]} Qd8 {[%eval 2,42] [%emt 0:00:31] (Td8)} 14. Bc2 {[%eval 46,42] [%emt 0:02:
+37] (Cg3)} e5 {[%eval 4,46] [%emt 0:00:30]} 15. Qe2 {[%eval 35,41] [%emt 0:00:
+22]} exd4 {[%eval 6,45] [%emt 0:00:31]} 16. Nxd4 {[%eval 31,41] [%emt 0:00:26]}
+Nf6 {[%eval 6,47] [%emt 0:00:53]} 17. Rad1 {[%eval 26,42] [%emt 0:00:37]} Qe7 {
+[%eval 9,49] [%emt 0:01:59]} 18. Qf3 {[%eval 11,45] [%emt 0:02:39]} Nxe4 {
+[%eval 7,45] [%emt 0:00:32]} 19. Rxe4 {[%eval 17,42] [%emt 0:00:22]} Qf6 {
+[%eval 4,45] [%emt 0:00:58]} 20. Qxf6 {[%eval 17,40] [%emt 0:00:38]} gxf6 {
+[%eval 8,44] [%emt 0:00:30]} 21. Re7 {[%eval 11,40] [%emt 0:00:45] (h3)} Bd6 {
+[%eval 5,45] [%emt 0:00:26]} 22. Re4 {[%eval 22,41] [%emt 0:01:34] (Te2)} Bc7 {
+[%eval 4,50] [%emt 0:00:38]} 23. Re7 {[%eval 20,40] [%emt 0:00:52] (h3)} Bd6 {
+[%eval 6,49] [%emt 0:00:57]} 24. Re3 {[%eval 23,42] [%emt 0:01:07] (Te2)} Bg4 {
+[%eval 6,36] [%emt 0:00:26]} 25. f3 {[%eval 11,38] [%emt 0:00:22]} Bc8 {
+[%eval 3,39] [%emt 0:00:25]} 26. Kh1 {[%eval 12,40] [%emt 0:01:08] (g4)} Bc5 {
+[%eval 8,44] [%emt 0:00:41] (Ae5)} 27. Re2 {[%eval 17,41] [%emt 0:00:18]} a5 {
+[%eval 5,49] [%emt 0:00:51] (Rg7)} 28. h4 {[%eval 21,41] [%emt 0:00:58]} a4 {
+[%eval 5,49] [%emt 0:05:38]} 29. Nf5 {[%eval 11,36] [%emt 0:00:27]} Bxf5 {
+[%eval 3,52] [%emt 0:00:18] (Ae6)} 30. Bxf5 {[%eval 6,44] [%emt 0:00:26]} Rae8
+{[%eval 2,57] [%emt 0:01:02] (Tfe8)} 31. Red2 {[%eval 18,45] [%emt 0:00:48] 
+(Txe8)} Re5 {[%eval 0,47] [%emt 0:00:14]} 32. Bc2 {[%eval 22,44] [%emt 0:00:16]
+} f5 {[%eval 2,42] [%emt 0:00:30]} 33. f4 {[%eval 7,42] [%emt 0:00:54]} Re3 {
+[%eval 2,47] [%emt 0:00:46]} 34. Bxa4 {[%eval 6,45] [%emt 0:00:20] (Axf5)} Ra8
+{[%eval 2,52] [%emt 0:01:13]} 35. Bb3 {[%eval 3,45] [%emt 0:00:20]} Kg7 {
+[%eval 2,53] [%emt 0:02:35]} 36. Kh2 {[%eval 9,47] [%emt 0:00:21]} Kf6 {
+[%eval 2,51] [%emt 0:00:29]} 37. Rf1 {[%eval 0,54] [%emt 0:00:23]} Rae8 {
+[%eval 0,53] [%emt 0:00:14] (Ae7)} 38. Bd1 {[%eval 9,44] [%emt 0:00:16]} R3e4 {
+[%eval 0,55] [%emt 0:00:06]} 39. Rd7 {[%eval 0,45] [%emt 0:01:00]} R8e7 {
+[%eval 0,55] [%emt 0:00:12]} 40. Rxe7 {[%eval 0,50] [%emt 0:00:25]} Bxe7 {
+[%eval 0,53] [%emt 0:00:03]} 41. b3 {[%eval 0,51] [%emt 0:00:52]} Bd6 {[%eval
+0,51] [%emt 0:00:27] (Td4)} 42. Kg3 {[%eval 4,51] [%emt 0:00:26] (g3)} 1/2-1/2
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.07"]
+[Round "10.1"]
+[White "ShashChessGD 25.3"]
+[Black "Stockfish 051122"]
+[Result "1/2-1/2"]
+[ECO "D43"]
+[Annotator "0.09;0.31"]
+[PlyCount "50"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=47.7 plies; 2.901kN/s;
+260.906 TBAs B=42.6 plies; 3.037kN/s; 123.484 TBAs} 1. d4 d5 2. c4 e6 3. Nf3
+Nf6 4. Nc3 c6 5. Bg5 h6 6. Bxf6 Qxf6 7. e3 Nd7 8. Be2 {[%eval 9,40] [%emt 0:01:
+09]} Be7 {[%eval 31,41] [%emt 0:04:10] (Ad6)} 9. O-O {[%eval 9,38] [%emt 0:01:
+04] (Tc1)} O-O {[%eval 33,36] [%emt 0:00:20]} 10. Qc2 {[%eval 5,45] [%emt 0:01:
+00] (Tc1)} a6 {[%eval 40,37] [%emt 0:01:09]} 11. Rab1 {[%eval 5,40] [%emt 0:00:
+28]} Ra7 {[%eval 34,35] [%emt 0:00:53] (b5)} 12. b4 {[%eval 7,42] [%emt 0:00:
+31] (cxd5)} b5 {[%eval 21,35] [%emt 0:00:41]} 13. cxb5 {[%eval 0,48] [%emt 0:
+00:37]} axb5 {[%eval 24,39] [%emt 0:00:31]} 14. a4 {[%eval 2,48] [%emt 0:00:42]
+} bxa4 {[%eval 15,43] [%emt 0:00:44]} 15. Nxa4 {[%eval 5,47] [%emt 0:00:31]} e5
+{[%eval 6,40] [%emt 0:00:30]} 16. dxe5 {[%eval 2,47] [%emt 0:02:00]} Nxe5 {
+[%eval 6,37] [%emt 0:00:26]} 17. Nd4 {[%eval 3,41] [%emt 0:01:33]} Bd6 {
+[%eval 9,41] [%emt 0:00:36]} 18. Rfc1 {[%eval 2,49] [%emt 0:03:00] (Cc5)} Re8 {
+[%eval 0,42] [%emt 0:00:32] (Ag4)} 19. Nc5 {[%eval 0,41] [%emt 0:00:39] (b5)}
+Bg4 {[%eval 0,43] [%emt 0:00:31]} 20. Bxg4 {[%eval 3,48] [%emt 0:00:41]} Nxg4 {
+[%eval 4,44] [%emt 0:00:31]} 21. Nf3 {[%eval 0,57] [%emt 0:00:44]} Rb8 {
+[%eval 0,45] [%emt 0:00:27] (Ce5)} 22. Nd3 {[%eval 0,53] [%emt 0:00:38]} Ra6 {
+[%eval 0,44] [%emt 0:00:34]} 23. h3 {[%eval 0,53] [%emt 0:00:46] (De2)} Ne5 {
+[%eval 0,52] [%emt 0:00:29]} 24. Nfxe5 {[%eval 0,55] [%emt 0:01:21]} Bxe5 {
+[%eval 0,53] [%emt 0:01:11]} 25. b5 {[%eval 0,59] [%emt 0:00:37]} cxb5 {
+[%eval 0,54] [%emt 0:00:29]} 1/2-1/2
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.07"]
+[Round "11.1"]
+[White "Stockfish 051122"]
+[Black "ShashChessGD 25.3"]
+[Result "1/2-1/2"]
+[ECO "B22"]
+[Annotator "0.21;0.02"]
+[PlyCount "41"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=39.5 plies; 3.120kN/s;
+35.164 TBAs B=44.7 plies; 3.037kN/s; 23.642 TBAs} 1. e4 c5 2. c3 e6 3. d4 cxd4
+4. cxd4 d5 5. exd5 exd5 6. Nc3 {[%eval 21,36] [%emt 0:01:07]} Nc6 {[%eval 2,44]
+[%emt 0:02:32]} 7. h3 {[%eval 17,38] [%emt 0:01:55] (Ae3)} Bb4 {[%eval 1,44] 
+[%emt 0:02:10] (Cf6)} 8. Nf3 {[%eval 27,34] [%emt 0:00:20] (Ab5)} Nge7 {
+[%eval 0,38] [%emt 0:00:53]} 9. Be2 {[%eval 15,35] [%emt 0:00:34]} Bf5 {
+[%eval 5,42] [%emt 0:00:45]} 10. O-O {[%eval 12,37] [%emt 0:01:55]} O-O {
+[%eval 0,46] [%emt 0:00:42]} 11. Bf4 {[%eval 25,38] [%emt 0:01:10] (Te1)} Ba5 {
+[%eval 0,40] [%emt 0:00:34] (Ad6)} 12. Rc1 {[%eval 21,34] [%emt 0:00:20] (Te1)}
+h6 {[%eval 1,34] [%emt 0:00:27] (Ab6)} 13. Na4 {[%eval 27,35] [%emt 0:01:45]}
+Ng6 {[%eval 3,37] [%emt 0:00:59]} 14. Bg3 {[%eval 16,38] [%emt 0:02:55] (Ae3)}
+Bc7 {[%eval 3,35] [%emt 0:00:26]} 15. Bxc7 {[%eval 10,40] [%emt 0:01:09]} Qxc7
+{[%eval 5,39] [%emt 0:00:30]} 16. Nc5 {[%eval 7,40] [%emt 0:00:51] (Ab5)} Rfe8
+{[%eval 0,49] [%emt 0:04:19]} 17. Qd2 {[%eval 0,39] [%emt 0:00:24]} Rac8 {
+[%eval 0,51] [%emt 0:05:10] (Te7)} 18. Bb5 {[%eval 0,47] [%emt 0:00:24]} Be4 {
+[%eval 0,53] [%emt 0:00:53]} 19. Rc3 {[%eval 12,44] [%emt 0:00:45]} Qf4 {
+[%eval 0,53] [%emt 0:00:35] (Axf3)} 20. Qxf4 {[%eval 0,47] [%emt 0:00:28] 
+(Cxb7)} Nxf4 {[%eval 0,55] [%emt 0:00:24]} 21. Nxb7 {[%eval 0,44] [%emt 0:00:
+33]} 1/2-1/2
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.07"]
+[Round "12.1"]
+[White "ShashChessGD 25.3"]
+[Black "Stockfish 051122"]
+[Result "1/2-1/2"]
+[ECO "B22"]
+[Annotator "0.02;0.32"]
+[PlyCount "41"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=45.5 plies; 2.998kN/s;
+22.121 TBAs B=42.8 plies; 3.004kN/s; 75.553 TBAs} 1. e4 c5 2. c3 e6 3. d4 cxd4
+4. cxd4 d5 5. exd5 exd5 6. Nc3 {[%eval 2,45] [%emt 0:02:30]} Nc6 {[%eval 32,36]
+[%emt 0:01:16]} 7. h3 {[%eval 3,44] [%emt 0:03:23] (Cf3)} Be6 {[%eval 15,35] 
+[%emt 0:01:02] (Ab4)} 8. Bf4 {[%eval 4,42] [%emt 0:00:24]} Bd6 {[%eval 29,37] 
+[%emt 0:00:54] (Cf6)} 9. Bxd6 {[%eval 8,36] [%emt 0:00:32]} Qxd6 {[%eval 21,36]
+[%emt 0:00:19]} 10. Bb5 {[%eval 3,39] [%emt 0:00:26] (Cf3)} Nge7 {[%eval 18,38]
+[%emt 0:00:33]} 11. Qd2 {[%eval 3,43] [%emt 0:02:01] (Cf3)} O-O {[%eval 6,34] 
+[%emt 0:00:33]} 12. Nf3 {[%eval 2,42] [%emt 0:01:01] (Td1)} a6 {[%eval 10,38] 
+[%emt 0:00:30]} 13. Bxc6 {[%eval 1,43] [%emt 0:00:24]} Nxc6 {[%eval 7,40] 
+[%emt 0:01:14]} 14. O-O {[%eval 0,43] [%emt 0:00:28]} Rfe8 {[%eval 0,43] [%emt
+0:00:28]} 15. Rfe1 {[%eval 3,50] [%emt 0:02:29]} Bf5 {[%eval 3,39] [%emt 0:00:
+45]} 16. Rxe8+ {[%eval 3,48] [%emt 0:01:24] (Ch2)} Rxe8 {[%eval 0,51] [%emt 0:
+00:34]} 17. Re1 {[%eval 0,46] [%emt 0:00:26]} Rxe1+ {[%eval 0,51] [%emt 0:00:
+33]} 18. Qxe1 {[%eval 0,51] [%emt 0:00:33]} Qe6 {[%eval 0,50] [%emt 0:00:52] 
+(Ad7)} 19. Qe3 {[%eval 0,44] [%emt 0:00:28]} h6 {[%eval 0,53] [%emt 0:01:09]}
+20. Ne5 {[%eval 0,49] [%emt 0:00:37]} Ne7 {[%eval 0,52] [%emt 0:01:09]} 21. Na4
+{[%eval 0,47] [%emt 0:00:34]} 1/2-1/2
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.07"]
+[Round "13.1"]
+[White "Stockfish 051122"]
+[Black "ShashChessGD 25.3"]
+[Result "1/2-1/2"]
+[ECO "E60"]
+[Annotator "0.93;0.33"]
+[PlyCount "97"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=37.3 plies; 2.489kN/s;
+434.006 TBAs B=41.0 plies; 2.168kN/s; 468.270 TBAs} 1. d4 Nf6 2. c4 g6 3. f3 e6
+4. e4 d5 5. cxd5 exd5 6. Nc3 dxe4 7. fxe4 Bb4 8. Bg5 {[%eval 93,38] [%emt 0:01:
+21]} h6 {[%eval 33,44] [%emt 0:01:30]} 9. Bxf6 {[%eval 72,39] [%emt 0:01:19]}
+Qxf6 {[%eval 19,41] [%emt 0:00:41]} 10. Nf3 {[%eval 82,39] [%emt 0:00:29]} Bg4
+{[%eval 28,43] [%emt 0:01:00]} 11. Bb5+ {[%eval 99,40] [%emt 0:00:45]} c6 {
+[%eval 23,41] [%emt 0:00:38]} 12. Be2 {[%eval 50,42] [%emt 0:01:50]} Bxf3 {
+[%eval 17,40] [%emt 0:00:46] (Cd7)} 13. Bxf3 {[%eval 101,39] [%emt 0:00:32]}
+O-O {[%eval 15,44] [%emt 0:01:51] (Ca6)} 14. O-O {[%eval 88,41] [%emt 0:03:02]
+(e5)} Na6 {[%eval 17,37] [%emt 0:00:29] (Aa5)} 15. e5 {[%eval 144,30] [%emt 0:
+00:22]} Qe6 {[%eval 10,44] [%emt 0:06:10] (De7)} 16. Bg4 {[%eval 87,41] [%emt
+0:04:44] (De2)} Qe7 {[%eval 10,41] [%emt 0:00:26]} 17. Qf3 {[%eval 89,36] 
+[%emt 0:00:23]} Nc7 {[%eval 14,43] [%emt 0:00:34]} 18. Rad1 {[%eval 72,42] 
+[%emt 0:02:56] (Ce4)} Rad8 {[%eval 11,40] [%emt 0:00:28] (Aa5)} 19. Ne4 {
+[%eval 95,33] [%emt 0:00:15]} Nd5 {[%eval 8,42] [%emt 0:00:27]} 20. Qg3 {
+[%eval 86,35] [%emt 0:00:30] (a3)} Kh7 {[%eval 11,39] [%emt 0:01:00] (Aa5)} 21.
+Nf6+ {[%eval 94,34] [%emt 0:00:20]} Nxf6 {[%eval 16,41] [%emt 0:00:25]} 22.
+Rxf6 {[%eval 77,37] [%emt 0:00:32]} Qe8 {[%eval 16,37] [%emt 0:00:36]} 23. h4 {
+[%eval 75,38] [%emt 0:00:30]} a5 {[%eval 19,36] [%emt 0:00:27] (Ae7)} 24. h5 {
+[%eval 84,32] [%emt 0:00:48] (a4)} Be7 {[%eval 20,37] [%emt 0:00:23]} 25. Rd3 {
+[%eval 82,37] [%emt 0:00:47] (a4)} Rg8 {[%eval 20,34] [%emt 0:00:28]} 26. hxg6+
+{[%eval 67,39] [%emt 0:00:49]} fxg6 {[%eval 19,39] [%emt 0:00:26]} 27. Re6 {
+[%eval 57,38] [%emt 0:00:22]} Rg7 {[%eval 14,41] [%emt 0:00:24]} 28. Qf2 {
+[%eval 84,42] [%emt 0:01:07]} h5 {[%eval 22,44] [%emt 0:00:32]} 29. Rh3 {
+[%eval 49,42] [%emt 0:01:47]} Qd7 {[%eval 12,43] [%emt 0:00:44]} 30. Bxh5 {
+[%eval 43,35] [%emt 0:00:15]} Kg8 {[%eval 7,45] [%emt 0:00:42]} 31. Rxg6 {
+[%eval 38,35] [%emt 0:00:19]} Qxd4 {[%eval 10,43] [%emt 0:01:58]} 32. Re3 {
+[%eval 42,40] [%emt 0:00:18]} Bh4 {[%eval 9,41] [%emt 0:00:56]} 33. g3 {
+[%eval 39,40] [%emt 0:00:31]} Bg5 {[%eval 6,43] [%emt 0:00:39] (Ae7)} 34. Re2 {
+[%eval 44,29] [%emt 0:00:22]} Rxg6 {[%eval 11,45] [%emt 0:00:23]} 35. Bxg6 {
+[%eval 36,33] [%emt 0:00:18]} Kg7 {[%eval 12,43] [%emt 0:00:22]} 36. Bh5 {
+[%eval 27,35] [%emt 0:00:27]} Kh6 {[%eval 12,42] [%emt 0:00:18]} 37. Bf7 {
+[%eval 33,38] [%emt 0:00:18]} Qg4 {[%eval 3,44] [%emt 0:01:04]} 38. Bb3 {
+[%eval 16,34] [%emt 0:00:27]} a4 {[%eval 5,45] [%emt 0:00:28]} 39. Bc2 {
+[%eval 12,35] [%emt 0:00:17]} Kg7 {[%eval 10,43] [%emt 0:00:40]} 40. Re4 {
+[%eval 11,36] [%emt 0:00:23]} Qh5 {[%eval 7,45] [%emt 0:01:02] (Td1+)} 41. Rd4
+{[%eval 12,33] [%emt 0:00:20]} Rh8 {[%eval 7,47] [%emt 0:01:21] (Txd4)} 42. Be4
+{[%eval 37,31] [%emt 0:00:16]} Be7 {[%eval 4,41] [%emt 0:00:19]} 43. Bf3 {
+[%eval 39,32] [%emt 0:00:30]} Qxe5 {[%eval 5,39] [%emt 0:00:11]} 44. Rg4+ {
+[%eval 28,30] [%emt 0:00:16] (Te4)} Bg5 {[%eval 0,33] [%emt 0:00:13]} 45. Qe2 {
+[%eval 23,31] [%emt 0:00:14] (Te4)} Qc5+ {[%eval 0,37] [%emt 0:00:14] (Dxe2)}
+46. Kg2 {[%eval 0,46] [%emt 0:00:24]} Rd8 {[%eval 0,35] [%emt 0:00:12]} 47. Qe6
+{[%eval 0,36] [%emt 0:00:13] (b4)} Qc2+ {[%eval 0,31] [%emt 0:00:11]} 48. Be2 {
+[%eval 0,42] [%emt 0:00:36]} Qg6 {[%eval 0,39] [%emt 0:00:14]} 49. Qe5+ {
+[%eval 0,35] [%emt 0:00:08]} 1/2-1/2
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.07"]
+[Round "14.1"]
+[White "ShashChessGD 25.3"]
+[Black "Stockfish 051122"]
+[Result "1/2-1/2"]
+[ECO "E60"]
+[Annotator "0.23;0.81"]
+[PlyCount "49"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=44.2 plies; 2.377kN/s;
+254.772 TBAs B=39.2 plies; 2.574kN/s; 140.190 TBAs} 1. d4 Nf6 2. c4 g6 3. f3 e6
+4. e4 d5 5. cxd5 exd5 6. Nc3 dxe4 7. fxe4 Bb4 8. Bg5 {[%eval 23,48] [%emt 0:03:
+52]} h6 {[%eval 81,38] [%emt 0:01:29]} 9. Bxf6 {[%eval 2,41] [%emt 0:00:24]}
+Qxf6 {[%eval 88,41] [%emt 0:00:29]} 10. Nf3 {[%eval 3,44] [%emt 0:00:45]} Bg4 {
+[%eval 72,39] [%emt 0:00:35]} 11. Bb5+ {[%eval 8,45] [%emt 0:00:34]} c6 {
+[%eval 80,38] [%emt 0:00:45]} 12. Be2 {[%eval 6,42] [%emt 0:00:31]} Qe7 {
+[%eval 72,41] [%emt 0:03:10] (Cd7)} 13. O-O {[%eval 12,42] [%emt 0:00:29]} Nd7
+{[%eval 56,35] [%emt 0:00:22]} 14. Nd2 {[%eval 10,41] [%emt 0:02:19] (Dc2)}
+Bxe2 {[%eval 36,33] [%emt 0:00:33] (Ae6)} 15. Qxe2 {[%eval 11,37] [%emt 0:00:
+24]} O-O-O {[%eval 25,37] [%emt 0:01:05]} 16. Rad1 {[%eval 0,42] [%emt 0:00:40]
+} Rhe8 {[%eval 12,36] [%emt 0:00:29]} 17. Qf3 {[%eval 0,47] [%emt 0:00:37]} Qe6
+{[%eval 44,39] [%emt 0:00:48]} 18. Qf2 {[%eval 0,60] [%emt 0:04:54] (Dxf7)} f5
+{[%eval 15,41] [%emt 0:01:29] (f6)} 19. exf5 {[%eval 12,44] [%emt 0:00:30]}
+gxf5 {[%eval 36,37] [%emt 0:00:37]} 20. h3 {[%eval 7,41] [%emt 0:00:27] (d5)}
+Ba5 {[%eval 0,41] [%emt 0:01:14] (Tf8)} 21. Rde1 {[%eval 1,43] [%emt 0:00:38]}
+Qf6 {[%eval 0,39] [%emt 0:00:22]} 22. Rxe8 {[%eval 0,43] [%emt 0:01:20]} Rxe8 {
+[%eval 0,41] [%emt 0:00:28]} 23. Nde4 {[%eval 0,43] [%emt 0:00:29]} fxe4 {
+[%eval 0,44] [%emt 0:00:31]} 24. Qxf6 {[%eval 0,45] [%emt 0:01:43]} Nxf6 {
+[%eval 0,46] [%emt 0:00:27]} 25. Rxf6 {[%eval 0,47] [%emt 0:00:22]} 1/2-1/2
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.07"]
+[Round "15.1"]
+[White "Stockfish 051122"]
+[Black "ShashChessGD 25.3"]
+[Result "1/2-1/2"]
+[ECO "D46"]
+[Annotator "0.61;0.13"]
+[PlyCount "141"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=43.2 plies; 3.193kN/s;
+165.164 TBAs B=45.6 plies; 3.174kN/s; 167.518 TBAs} 1. d4 Nf6 2. c4 e6 3. Nf3
+d5 4. Nc3 c6 5. e3 Nbd7 6. Qc2 Bd6 7. Bd3 e5 8. cxd5 cxd5 9. Nb5 Bb8 10. dxe5
+Nxe5 11. Nxe5 Bxe5 12. Bd2 {[%eval 61,48] [%emt 0:01:30]} O-O {[%eval 13,50] 
+[%emt 0:01:28]} 13. Bc3 {[%eval 62,45] [%emt 0:01:03]} Bxc3+ {[%eval 16,46] 
+[%emt 0:00:31]} 14. Qxc3 {[%eval 56,45] [%emt 0:00:47]} Ne4 {[%eval 20,48] 
+[%emt 0:00:54]} 15. Qd4 {[%eval 54,41] [%emt 0:00:33]} Re8 {[%eval 15,49] 
+[%emt 0:00:51] (a6)} 16. Bxe4 {[%eval 43,45] [%emt 0:01:32]} Rxe4 {[%eval 12,
+47] [%emt 0:00:54]} 17. Qd2 {[%eval 62,44] [%emt 0:00:31]} b6 {[%eval 13,46] 
+[%emt 0:00:33] (Tc4)} 18. Nc3 {[%eval 54,38] [%emt 0:00:34]} Rc4 {[%eval 12,47]
+[%emt 0:00:31]} 19. O-O {[%eval 63,39] [%emt 0:00:38]} Bb7 {[%eval 10,47] 
+[%emt 0:01:46]} 20. Nb5 {[%eval 52,43] [%emt 0:01:16]} h6 {[%eval 16,44] [%emt
+0:01:17] (a5)} 21. Rfd1 {[%eval 50,45] [%emt 0:00:23]} Qf6 {[%eval 13,45] 
+[%emt 0:01:34] (Tac8)} 22. Nd4 {[%eval 51,40] [%emt 0:01:21]} Rac8 {[%eval 15,
+44] [%emt 0:00:40]} 23. Qe2 {[%eval 49,42] [%emt 0:00:30] (h3)} a5 {[%eval 16,
+44] [%emt 0:01:19]} 24. Rd2 {[%eval 51,44] [%emt 0:00:36]} Rc1+ {[%eval 9,49] 
+[%emt 0:01:12] (Aa6)} 25. Rxc1 {[%eval 46,39] [%emt 0:00:49]} Rxc1+ {[%eval 10,
+52] [%emt 0:03:43]} 26. Rd1 {[%eval 43,41] [%emt 0:00:36]} Rc5 {[%eval 10,45] 
+[%emt 0:00:27]} 27. Qd2 {[%eval 41,41] [%emt 0:00:56] (h3)} Qg6 {[%eval 9,45] 
+[%emt 0:00:33] (Ac8)} 28. h3 {[%eval 36,48] [%emt 0:01:31]} Bc8 {[%eval 9,47] 
+[%emt 0:01:03]} 29. Qd3 {[%eval 50,42] [%emt 0:00:22] (Rh2)} Qg5 {[%eval 8,57]
+[%emt 0:03:50]} 30. Kh1 {[%eval 33,43] [%emt 0:00:55]} Qh4 {[%eval 12,52] 
+[%emt 0:04:21] (Df6)} 31. Qd2 {[%eval 35,43] [%emt 0:00:27] (De2)} Qe4 {
+[%eval 14,46] [%emt 0:00:26] (Df6)} 32. Qd3 {[%eval 35,47] [%emt 0:02:05]} Be6
+{[%eval 9,52] [%emt 0:00:33] (Dh4)} 33. Kg1 {[%eval 40,39] [%emt 0:00:44]} Qe5
+{[%eval 15,51] [%emt 0:00:53]} 34. a3 {[%eval 43,41] [%emt 0:00:45]} Qg5 {
+[%eval 11,45] [%emt 0:00:15]} 35. Kh2 {[%eval 41,42] [%emt 0:00:36] (Rh1)} Qe5+
+{[%eval 14,52] [%emt 0:01:02]} 36. Kg1 {[%eval 34,43] [%emt 0:00:42]} Qg5 {
+[%eval 10,44] [%emt 0:00:05]} 37. Kh1 {[%eval 40,42] [%emt 0:00:20]} Qe5 {
+[%eval 10,39] [%emt 0:00:05] (De7)} 38. Qa6 {[%eval 34,43] [%emt 0:00:23]} Qb8
+{[%eval 12,44] [%emt 0:00:18] (Dc7)} 39. Kg1 {[%eval 38,43] [%emt 0:00:31] (b4)
+} Bd7 {[%eval 9,49] [%emt 0:00:05] (Ac8)} 40. Rf1 {[%eval 30,44] [%emt 0:01:00]
+(Te1)} Bc8 {[%eval 9,47] [%emt 0:00:09] (Ae6)} 41. Qd3 {[%eval 29,48] [%emt 0:
+00:26]} Bd7 {[%eval 9,41] [%emt 0:00:09]} 42. Rd1 {[%eval 28,46] [%emt 0:00:24]
+(Ta1)} Qc8 {[%eval 7,37] [%emt 0:00:09] (Aa4)} 43. Qd2 {[%eval 28,46] [%emt 0:
+01:01] (De2)} Ba4 {[%eval 11,44] [%emt 0:00:16] (Dc7)} 44. Re1 {[%eval 24,40] 
+[%emt 0:00:15] (Ta1)} Bd7 {[%eval 8,37] [%emt 0:00:04]} 45. Rd1 {[%eval 28,44]
+[%emt 0:00:25] (Ta1)} Qc7 {[%eval 7,44] [%emt 0:00:14]} 46. Qe1 {[%eval 24,46]
+[%emt 0:00:37] (Ta1)} Ba4 {[%eval 5,43] [%emt 0:00:10]} 47. Ra1 {[%eval 19,47]
+[%emt 0:00:21]} Bd7 {[%eval 5,45] [%emt 0:00:06] (Rf8)} 48. Qd1 {[%eval 21,47]
+[%emt 0:00:42]} Qe5 {[%eval 5,45] [%emt 0:00:30]} 49. Qd2 {[%eval 30,45] [%emt
+0:00:30] (Tc1)} Qg5 {[%eval 6,38] [%emt 0:00:04] (Dc7)} 50. Kh2 {[%eval 21,43]
+[%emt 0:01:26] (Rh1)} Qd8 {[%eval 7,39] [%emt 0:00:05]} 51. Qe1 {[%eval 28,41]
+[%emt 0:00:16] (Rg1)} Qc7+ {[%eval 11,45] [%emt 0:00:23]} 52. Kh1 {[%eval 29,
+44] [%emt 0:00:31] (Rg1)} Ba4 {[%eval 11,37] [%emt 0:00:03] (Rh7)} 53. Kg1 {
+[%eval 25,43] [%emt 0:00:28]} Bd7 {[%eval 10,41] [%emt 0:00:04] (Rh7)} 54. Qd2
+{[%eval 25,50] [%emt 0:00:29] (Tb1)} Rc4 {[%eval 8,45] [%emt 0:00:16] (Aa4)}
+55. Rb1 {[%eval 25,45] [%emt 0:01:01]} Qc5 {[%eval 6,41] [%emt 0:00:04]} 56.
+Rd1 {[%eval 27,42] [%emt 0:00:17] (Ce2)} a4 {[%eval 5,41] [%emt 0:00:04]} 57.
+Nf3 {[%eval 23,40] [%emt 0:00:11] (Dd3)} Be6 {[%eval 6,43] [%emt 0:00:06]} 58.
+Ne5 {[%eval 27,46] [%emt 0:00:19] (Cd4)} Rc2 {[%eval 4,46] [%emt 0:00:07]} 59.
+Qd4 {[%eval 20,41] [%emt 0:00:06]} b5 {[%eval 6,51] [%emt 0:00:30]} 60. Qxc5 {
+[%eval 16,39] [%emt 0:00:10]} Rxc5 {[%eval 6,55] [%emt 0:00:04]} 61. Nf3 {
+[%eval 10,38] [%emt 0:00:17] (Td2)} Bd7 {[%eval 6,39] [%emt 0:00:04]} 62. g4 {
+[%eval 9,40] [%emt 0:00:55] (Cd4)} Kf8 {[%eval 4,37] [%emt 0:00:08] (h5)} 63.
+Kg2 {[%eval 0,35] [%emt 0:00:03] (Cd4)} Rc2 {[%eval 0,39] [%emt 0:00:06]} 64.
+Rb1 {[%eval 0,40] [%emt 0:00:03]} Rc8 {[%eval 2,41] [%emt 0:00:09]} 65. Kg3 {
+[%eval 0,49] [%emt 0:00:07]} Ke7 {[%eval 1,43] [%emt 0:00:21]} 66. Nd4 {
+[%eval 0,40] [%emt 0:00:06]} b4 {[%eval 0,47] [%emt 0:00:07]} 67. axb4 {
+[%eval 0,44] [%emt 0:00:35]} Rc4 {[%eval 0,43] [%emt 0:00:04] (Tb8)} 68. b5 {
+[%eval 4,35] [%emt 0:00:02]} Rb4 {[%eval 0,47] [%emt 0:00:05]} 69. Ra1 {
+[%eval 0,36] [%emt 0:00:03]} Bxb5 {[%eval 0,49] [%emt 0:00:06]} 70. Nxb5 {
+[%eval 0,40] [%emt 0:00:04]} Rxb5 {[%eval 0,49] [%emt 0:00:06]} 71. Rxa4 {
+[%eval 0,43] [%emt 0:00:04]} 1/2-1/2
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.07"]
+[Round "16.1"]
+[White "ShashChessGD 25.3"]
+[Black "Stockfish 051122"]
+[Result "1/2-1/2"]
+[ECO "D46"]
+[Annotator "0.14;0.42"]
+[PlyCount "56"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=50.3 plies; 3.202kN/s;
+262.138 TBAs B=45.1 plies; 3.252kN/s; 156.561 TBAs} 1. d4 Nf6 2. c4 e6 3. Nf3
+d5 4. Nc3 c6 5. e3 Nbd7 6. Qc2 Bd6 7. Bd3 e5 8. cxd5 cxd5 9. Nb5 Bb8 10. dxe5
+Nxe5 11. Nxe5 Bxe5 12. Bd2 {[%eval 14,48] [%emt 0:01:21]} O-O {[%eval 42,46] 
+[%emt 0:01:42]} 13. Bc3 {[%eval 9,45] [%emt 0:00:48]} Bxc3+ {[%eval 51,43] 
+[%emt 0:00:49]} 14. Qxc3 {[%eval 16,45] [%emt 0:00:36]} Ne4 {[%eval 54,43] 
+[%emt 0:00:34]} 15. Qd4 {[%eval 10,48] [%emt 0:00:46]} Re8 {[%eval 56,44] 
+[%emt 0:00:52]} 16. O-O {[%eval 10,49] [%emt 0:02:52] (Axe4)} a6 {[%eval 34,39]
+[%emt 0:00:33]} 17. Nc3 {[%eval 7,44] [%emt 0:01:23] (Tad1)} Nxc3 {[%eval 32,
+36] [%emt 0:00:48]} 18. Qxc3 {[%eval 9,43] [%emt 0:00:29] (bxc3)} Qg5 {[%eval
+21,34] [%emt 0:00:33] (Db6)} 19. Be2 {[%eval 2,40] [%emt 0:00:38]} Bf5 {
+[%eval 12,37] [%emt 0:00:40]} 20. Bf3 {[%eval 4,43] [%emt 0:00:37]} Be4 {
+[%eval 18,45] [%emt 0:00:34]} 21. Bxe4 {[%eval 4,51] [%emt 0:00:45]} dxe4 {
+[%eval 14,45] [%emt 0:00:34]} 22. Rad1 {[%eval 3,47] [%emt 0:01:12]} Qe7 {
+[%eval 18,46] [%emt 0:00:31] (Tac8)} 23. Rd4 {[%eval 3,49] [%emt 0:00:58]} Rac8
+{[%eval 6,47] [%emt 0:00:40]} 24. Qd2 {[%eval 0,57] [%emt 0:01:24] (Db3)} Rcd8
+{[%eval 0,53] [%emt 0:00:31]} 25. Rd1 {[%eval 0,59] [%emt 0:00:54]} Rxd4 {
+[%eval 0,52] [%emt 0:00:31]} 26. Qxd4 {[%eval 0,63] [%emt 0:01:16]} h5 {
+[%eval 0,52] [%emt 0:00:32]} 27. a3 {[%eval 0,59] [%emt 0:00:34] (h3)} h4 {
+[%eval 0,45] [%emt 0:00:34] (g6)} 28. a4 {[%eval 0,53] [%emt 0:00:43] (h3)} Rc8
+{[%eval 0,50] [%emt 0:00:49]} 1/2-1/2
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.07"]
+[Round "17.1"]
+[White "Stockfish 051122"]
+[Black "ShashChessGD 25.3"]
+[Result "1-0"]
+[ECO "D05"]
+[Annotator "3.62;1.07"]
+[PlyCount "155"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=30.9 plies; 2.817kN/s; 1.
+215.344 TBAs B=31.8 plies; 2.881kN/s; 732.731 TBAs} 1. d4 d5 2. Nf3 Nf6 3. e3
+e6 4. Bd3 Bd6 5. O-O O-O 6. Nbd2 c6 7. Re1 Qc7 8. e4 dxe4 9. Nxe4 Be7 10. Nxf6+
+{[%eval 362,44] [%emt 0:01:33]} Bxf6 {[%eval 107,44] [%emt 0:01:51]} 11. Ng5 {
+[%eval 359,41] [%emt 0:00:36]} Bxg5 {[%eval 110,41] [%emt 0:00:33]} 12. Bxg5 {
+[%eval 369,41] [%emt 0:00:41]} f6 {[%eval 112,42] [%emt 0:00:45]} 13. Bd2 {
+[%eval 371,36] [%emt 0:00:34]} Qf7 {[%eval 112,41] [%emt 0:00:42]} 14. Qf3 {
+[%eval 421,38] [%emt 0:02:13] (Dg4)} Re8 {[%eval 113,40] [%emt 0:01:25] (Cd7)}
+15. Qh3 {[%eval 425,32] [%emt 0:00:29]} f5 {[%eval 116,37] [%emt 0:00:28]} 16.
+Be2 {[%eval 433,36] [%emt 0:00:32] (a4)} Nd7 {[%eval 125,38] [%emt 0:01:04]}
+17. Bh5 {[%eval 432,35] [%emt 0:00:31]} g6 {[%eval 131,40] [%emt 0:00:47]} 18.
+Be2 {[%eval 428,39] [%emt 0:00:36]} b6 {[%eval 139,37] [%emt 0:00:37]} 19. Rad1
+{[%eval 434,36] [%emt 0:00:43]} Bb7 {[%eval 138,36] [%emt 0:01:48]} 20. Bf4 {
+[%eval 442,37] [%emt 0:00:46]} a6 {[%eval 135,40] [%emt 0:01:14] (Cf6)} 21. Qe3
+{[%eval 451,35] [%emt 0:00:34] (Db3)} Nf6 {[%eval 145,33] [%emt 0:00:22]} 22.
+c4 {[%eval 464,35] [%emt 0:00:47]} Rac8 {[%eval 141,37] [%emt 0:00:45] (Tad8)}
+23. Qb3 {[%eval 455,35] [%emt 0:00:34]} b5 {[%eval 141,41] [%emt 0:01:43]} 24.
+h3 {[%eval 471,32] [%emt 0:00:35]} Rcd8 {[%eval 137,38] [%emt 0:00:42]} 25. a4
+{[%eval 484,34] [%emt 0:00:41]} Rc8 {[%eval 155,37] [%emt 0:01:09]} 26. Bf1 {
+[%eval 487,33] [%emt 0:00:54] (a5)} Qd7 {[%eval 150,34] [%emt 0:01:38] (Tcd8)}
+27. Qe3 {[%eval 495,38] [%emt 0:01:00] (Ae5)} bxc4 {[%eval 160,36] [%emt 0:00:
+30]} 28. Be5 {[%eval 504,35] [%emt 0:00:41]} Nd5 {[%eval 157,39] [%emt 0:00:58]
+} 29. Qh6 {[%eval 525,37] [%emt 0:00:35]} Qf7 {[%eval 157,35] [%emt 0:00:24]}
+30. Bxc4 {[%eval 510,38] [%emt 0:01:37]} Rcd8 {[%eval 157,37] [%emt 0:00:24] 
+(Df8)} 31. h4 {[%eval 521,34] [%emt 0:00:36]} Nf6 {[%eval 163,39] [%emt 0:01:
+01]} 32. Qc1 {[%eval 522,45] [%emt 0:00:42] (Df4)} Bc8 {[%eval 166,40] [%emt 0:
+01:03]} 33. b4 {[%eval 508,35] [%emt 0:00:30] (a5)} Ng4 {[%eval 159,33] [%emt
+0:00:24]} 34. Bf4 {[%eval 506,35] [%emt 0:00:37]} Qa7 {[%eval 165,40] [%emt 0:
+03:30]} 35. Qd2 {[%eval 536,34] [%emt 0:01:26]} Nf6 {[%eval 173,35] [%emt 0:00:
+18]} 36. Re5 {[%eval 518,32] [%emt 0:00:24]} Qg7 {[%eval 167,44] [%emt 0:02:05]
+(Ce4)} 37. Qc1 {[%eval 533,36] [%emt 0:00:31]} Qf8 {[%eval 170,35] [%emt 0:00:
+11]} 38. Rc5 {[%eval 555,38] [%emt 0:00:58]} Bb7 {[%eval 156,36] [%emt 0:00:28]
+} 39. Re1 {[%eval 564,37] [%emt 0:00:28] (Ag5)} Qf7 {[%eval 170,43] [%emt 0:00:
+34]} 40. Qd2 {[%eval 582,35] [%emt 0:00:36] (De3)} Ne4 {[%eval 178,35] [%emt 0:
+00:17]} 41. Qe3 {[%eval 604,36] [%emt 0:00:38]} Nxc5 {[%eval 196,35] [%emt 0:
+00:39]} 42. bxc5 {[%eval 618,33] [%emt 0:00:37]} h5 {[%eval 208,39] [%emt 0:01:
+21] (Ac8)} 43. a5 {[%eval 673,38] [%emt 0:00:40]} Kh7 {[%eval 210,36] [%emt 0:
+00:03] (Td7)} 44. Rb1 {[%eval 676,37] [%emt 0:00:27]} Rd7 {[%eval 212,38] 
+[%emt 0:00:16]} 45. Be5 {[%eval 693,35] [%emt 0:00:34]} Qe7 {[%eval 220,34] 
+[%emt 0:00:14]} 46. Qg3 {[%eval 714,34] [%emt 0:00:40]} Red8 {[%eval 231,41] 
+[%emt 0:00:22]} 47. Qf4 {[%eval 731,36] [%emt 0:00:29]} Ra8 {[%eval 207,33] 
+[%emt 0:00:05] (Tg8)} 48. Rb6 {[%eval 725,37] [%emt 0:00:58]} Qe8 {[%eval 241,
+35] [%emt 0:00:10] (Tc8)} 49. Kh2 {[%eval 772,31] [%emt 0:00:26] (Ad6)} Ra7 {
+[%eval 231,37] [%emt 0:00:09] (De7)} 50. Bd6 {[%eval 882,34] [%emt 0:01:27] 
+(Rg1)} Bc8 {[%eval 274,29] [%emt 0:00:17] (Aa8)} 51. Rxc6 {[%eval 927,30] 
+[%emt 0:00:23]} Rg7 {[%eval 271,24] [%emt 0:00:03] (Td8)} 52. Rb6 {[%eval 956,
+28] [%emt 0:00:23]} g5 {[%eval 290,27] [%emt 0:00:12] (Dd8)} 53. hxg5 {[%eval
+1008,23] [%emt 0:00:25] (Df3)} Qg8 {[%eval 290,22] [%emt 0:00:04]} 54. Qh4 {
+[%eval 1002,25] [%emt 0:00:22] (Df3)} Rxg5 {[%eval 340,25] [%emt 0:00:11]} 55.
+g3 {[%eval 1027,21] [%emt 0:00:18]} Qg6 {[%eval 338,27] [%emt 0:00:16]} 56. Rb8
+{[%eval 1094,23] [%emt 0:00:15]} Rg4 {[%eval 350,23] [%emt 0:00:07] (Td7)} 57.
+Qd8 {[%eval 1108,21] [%emt 0:00:12]} h4 {[%eval 340,23] [%emt 0:00:03] (Dg8)}
+58. Rxc8 {[%eval 1149,20] [%emt 0:00:13]} hxg3+ {[%eval 362,23] [%emt 0:00:13]}
+59. Bxg3 {[%eval 1185,21] [%emt 0:00:18]} Qh6+ {[%eval 368,25] [%emt 0:00:16]}
+60. Kg2 {[%eval 1199,20] [%emt 0:00:18]} Rag7 {[%eval 354,21] [%emt 0:00:14]}
+61. Qh8+ {[%eval 1270,19] [%emt 0:00:19]} Kg6 {[%eval 390,19] [%emt 0:00:02]}
+62. Qxh6+ {[%eval 1258,19] [%emt 0:00:16]} Kxh6 {[%eval 372,23] [%emt 0:00:06]}
+63. Bxe6 {[%eval 1330,22] [%emt 0:00:17] (Rf3)} Rxd4 {[%eval 389,21] [%emt 0:
+00:21]} 64. Bxf5 {[%eval 1354,18] [%emt 0:00:07] (Rf3)} Rf7 {[%eval 360,18] 
+[%emt 0:00:07] (Rg5)} 65. Bb1 {[%eval 1432,17] [%emt 0:00:10]} Rd1 {[%eval 422,
+17] [%emt 0:00:14] (Tb7)} 66. Be4 {[%eval 1500,16] [%emt 0:00:08]} Rd4 {
+[%eval 482,17] [%emt 0:00:10] (Te7)} 67. Rc6+ {[%eval 1815,17] [%emt 0:00:13]}
+Kg5 {[%eval 583,18] [%emt 0:00:10]} 68. Rg6+ {[%eval 1816,15] [%emt 0:00:07]}
+Kh5 {[%eval 557,14] [%emt 0:00:01]} 69. Re6 {[%eval 1726,17] [%emt 0:00:09]}
+Kg5 {[%eval 794,16] [%emt 0:00:17] (Tf8)} 70. c6 {[%eval 2319,17] [%emt 0:00:
+25]} Rf8 {[%eval 737,14] [%emt 0:00:12] (Td8)} 71. c7 {[%eval 2356,16] [%emt 0:
+00:05]} Rh8 {[%eval 1090,15] [%emt 0:00:10]} 72. Bb7 {[%eval 2358,17] [%emt 0:
+00:09]} Rc4 {[%eval 2557,19] [%emt 0:00:10] (Rh5)} 73. Rxa6 {[%eval 2981,18] 
+[%emt 0:00:10] (Tc6)} Rg8 {[%eval 1338,19] [%emt 0:00:10] (Tc1)} 74. Rc6 {
+[%eval 15236,22] [%emt 0:00:29]} Rd4 {[%eval 15259,28] [%emt 0:00:10] (Te4)}
+75. c8=Q {[%eval 15260,24] [%emt 0:00:03]} Rxc8 {[%eval 15260,33] [%emt 0:00:
+02]} 76. Bxc8 {[%eval 15262,25] [%emt 0:00:05]} Rd1 {[%eval 15261,33] [%emt 0:
+00:07] (Ta4)} 77. f4+ {[%eval 32748,38] [%emt 0:00:10] (a6)} Kh5 {[%eval 15262,
+29] [%emt 0:00:01]} 78. Kh3 {[%eval 32750,43] [%emt 0:00:04] (Aa6)} 1-0
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.07"]
+[Round "18.1"]
+[White "ShashChessGD 25.3"]
+[Black "Stockfish 051122"]
+[Result "1-0"]
+[ECO "D05"]
+[Annotator "1.15;3.49"]
+[PlyCount "141"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=35.0 plies; 2.850kN/s; 1.
+166.562 TBAs B=30.3 plies; 2.883kN/s; 823.618 TBAs} 1. d4 d5 2. Nf3 Nf6 3. e3
+e6 4. Bd3 Bd6 5. O-O O-O 6. Nbd2 c6 7. Re1 Qc7 8. e4 dxe4 9. Nxe4 Be7 10. Nxf6+
+{[%eval 115,46] [%emt 0:02:37]} Bxf6 {[%eval 349,39] [%emt 0:01:29]} 11. Ng5 {
+[%eval 123,44] [%emt 0:00:31]} Bxg5 {[%eval 398,43] [%emt 0:02:09]} 12. Bxg5 {
+[%eval 117,44] [%emt 0:00:47]} f6 {[%eval 415,38] [%emt 0:01:07]} 13. Bd2 {
+[%eval 110,49] [%emt 0:00:56]} Qf7 {[%eval 412,34] [%emt 0:00:42]} 14. Qf3 {
+[%eval 119,41] [%emt 0:01:22]} Na6 {[%eval 389,39] [%emt 0:00:50] (Te8)} 15.
+Qh3 {[%eval 128,36] [%emt 0:00:32]} g6 {[%eval 410,38] [%emt 0:00:34]} 16. Bxa6
+{[%eval 128,40] [%emt 0:00:33]} bxa6 {[%eval 397,41] [%emt 0:00:38]} 17. Bb4 {
+[%eval 123,40] [%emt 0:00:32]} Rd8 {[%eval 396,37] [%emt 0:00:35]} 18. Bc5 {
+[%eval 128,37] [%emt 0:00:29]} Rb8 {[%eval 393,32] [%emt 0:00:39]} 19. b3 {
+[%eval 124,38] [%emt 0:00:34] (Da3)} Rb7 {[%eval 425,40] [%emt 0:01:48]} 20.
+Qf3 {[%eval 134,42] [%emt 0:00:35] (Te2)} Rc7 {[%eval 395,37] [%emt 0:00:55] 
+(g5)} 21. Re2 {[%eval 128,45] [%emt 0:00:33]} h6 {[%eval 391,37] [%emt 0:00:48]
+(g5)} 22. Rae1 {[%eval 131,40] [%emt 0:03:07] (Dc3)} g5 {[%eval 393,39] [%emt
+0:00:31] (Rg7)} 23. Qc3 {[%eval 141,40] [%emt 0:00:24] (Dg3)} Kh7 {[%eval 409,
+40] [%emt 0:01:04] (Tb7)} 24. h3 {[%eval 136,43] [%emt 0:01:33]} Qg8 {[%eval
+419,39] [%emt 0:00:53] (De8)} 25. Re3 {[%eval 138,38] [%emt 0:00:19]} Rf7 {
+[%eval 413,38] [%emt 0:01:27]} 26. Qa5 {[%eval 144,38] [%emt 0:00:38]} Rg7 {
+[%eval 434,36] [%emt 0:00:57]} 27. Kf1 {[%eval 124,39] [%emt 0:00:37] (c4)} Rf7
+{[%eval 443,38] [%emt 0:01:42] (g4)} 28. c4 {[%eval 138,38] [%emt 0:00:27]} Qe8
+{[%eval 435,45] [%emt 0:00:43]} 29. Qb4 {[%eval 144,41] [%emt 0:01:13] (Dc3)}
+Kg7 {[%eval 442,39] [%emt 0:01:55]} 30. Qd2 {[%eval 133,39] [%emt 0:00:30] 
+(Da5)} e5 {[%eval 438,34] [%emt 0:00:22] (Dg8)} 31. Qc3 {[%eval 142,42] [%emt
+0:00:56] (Da5)} Be6 {[%eval 448,37] [%emt 0:00:28]} 32. Bd6 {[%eval 147,39] 
+[%emt 0:00:32]} Qg8 {[%eval 462,39] [%emt 0:02:09]} 33. dxe5 {[%eval 158,43] 
+[%emt 0:01:23]} f5 {[%eval 476,38] [%emt 0:00:30]} 34. Rd3 {[%eval 154,36] 
+[%emt 0:00:30]} Kh7 {[%eval 457,35] [%emt 0:00:52] (f4)} 35. Rd4 {[%eval 161,
+38] [%emt 0:01:29]} Rdd7 {[%eval 475,36] [%emt 0:02:00] (g4)} 36. Qf3 {[%eval
+153,38] [%emt 0:00:21]} Qc8 {[%eval 493,33] [%emt 0:01:08]} 37. Red1 {[%eval
+151,38] [%emt 0:00:49]} Kg6 {[%eval 476,36] [%emt 0:01:13] (a5)} 38. h4 {
+[%eval 157,38] [%emt 0:00:26] (Rg1)} f4 {[%eval 547,35] [%emt 0:00:55] (c5)}
+39. Kg1 {[%eval 179,35] [%emt 0:00:20]} c5 {[%eval 546,24] [%emt 0:00:04]} 40.
+h5+ {[%eval 224,37] [%emt 0:00:33]} Kg7 {[%eval 593,28] [%emt 0:00:08] (Rh7)}
+41. Qe4 {[%eval 258,35] [%emt 0:00:29] (Td5)} Bf5 {[%eval 717,31] [%emt 0:00:
+25]} 42. e6 {[%eval 275,37] [%emt 0:00:33]} cxd4 {[%eval 721,30] [%emt 0:00:03]
+} 43. exd7 {[%eval 288,39] [%emt 0:00:45]} Qxd7 {[%eval 727,27] [%emt 0:00:05]}
+44. Qxd4+ {[%eval 300,43] [%emt 0:03:31]} Kh7 {[%eval 736,28] [%emt 0:00:08]}
+45. c5 {[%eval 304,35] [%emt 0:00:22]} Qe8 {[%eval 796,30] [%emt 0:00:25] (Ag4)
+} 46. Rc1 {[%eval 311,37] [%emt 0:00:14]} Qe2 {[%eval 849,26] [%emt 0:00:09] 
+(Ad7)} 47. c6 {[%eval 306,35] [%emt 0:00:08]} Qxh5 {[%eval 855,26] [%emt 0:00:
+03]} 48. c7 {[%eval 311,37] [%emt 0:00:30]} Bc8 {[%eval 862,25] [%emt 0:00:07]}
+49. Re1 {[%eval 311,39] [%emt 0:00:05]} Qg4 {[%eval 861,25] [%emt 0:00:17]} 50.
+Re8 {[%eval 309,39] [%emt 0:00:27]} f3 {[%eval 901,27] [%emt 0:00:17] (Rg6)}
+51. Rh8+ {[%eval 311,32] [%emt 0:00:04] (Dxg4)} Kg6 {[%eval 824,18] [%emt 0:00:
+01]} 52. Rg8+ {[%eval 310,33] [%emt 0:00:18] (Dxg4)} Kh5 {[%eval 907,27] [%emt
+0:00:17]} 53. Qxg4+ {[%eval 324,29] [%emt 0:00:07]} Bxg4 {[%eval 926,23] [%emt
+0:00:04]} 54. c8=Q {[%eval 316,25] [%emt 0:00:02]} Bxc8 {[%eval 930,23] [%emt
+0:00:07]} 55. Rxc8 {[%eval 326,31] [%emt 0:00:18]} fxg2 {[%eval 953,26] [%emt
+0:00:21] (a5)} 56. Bc5 {[%eval 328,28] [%emt 0:00:14]} Kg4 {[%eval 982,23] 
+[%emt 0:00:12]} 57. Kxg2 {[%eval 334,22] [%emt 0:00:11]} Rf6 {[%eval 986,17] 
+[%emt 0:00:07]} 58. Bxa7 {[%eval 345,23] [%emt 0:00:07]} Kf5 {[%eval 975,16] 
+[%emt 0:00:02] (h5)} 59. a4 {[%eval 346,17] [%emt 0:00:03] (Tc4)} Re6 {[%eval
+1037,19] [%emt 0:00:19] (Td6)} 60. Be3 {[%eval 347,17] [%emt 0:00:05]} Ke4 {
+[%eval 1087,19] [%emt 0:00:12] (Rf6)} 61. b4 {[%eval 383,27] [%emt 0:00:12]}
+Kd3 {[%eval 1116,19] [%emt 0:00:10]} 62. b5 {[%eval 391,21] [%emt 0:00:09]} h5
+{[%eval 1270,17] [%emt 0:00:10]} 63. b6 {[%eval 429,23] [%emt 0:00:06]} Re7 {
+[%eval 1497,19] [%emt 0:00:10]} 64. Rc5 {[%eval 436,21] [%emt 0:00:07] (Tc7)}
+h4 {[%eval 1231,18] [%emt 0:00:04]} 65. Rxg5 {[%eval 473,21] [%emt 0:00:08]}
+Rh7 {[%eval 1419,17] [%emt 0:00:15] (Re4)} 66. Kh3 {[%eval 492,25] [%emt 0:00:
+07] (Te5)} Rf7 {[%eval 1601,19] [%emt 0:00:11] (Re2)} 67. Rc5 {[%eval 666,19] 
+[%emt 0:00:07] (a5)} Rf3+ {[%eval 1728,16] [%emt 0:00:05] (Re2)} 68. Kxh4 {
+[%eval 791,18] [%emt 0:00:08]} Rf8 {[%eval 1929,20] [%emt 0:00:14] (Tf7)} 69.
+a5 {[%eval 15245,27] [%emt 0:00:25]} Ke2 {[%eval 2356,16] [%emt 0:00:11] (Re4)}
+70. Kg3 {[%eval 15253,31] [%emt 0:00:04]} Rh8 {[%eval 2612,16] [%emt 0:00:10] 
+(Tf3+)} 71. b7 {[%eval 15256,39] [%emt 0:00:07] (Te5)} 1-0
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.07"]
+[Round "19.1"]
+[White "Stockfish 051122"]
+[Black "ShashChessGD 25.3"]
+[Result "1/2-1/2"]
+[ECO "A29"]
+[Annotator "0.12;0.00"]
+[PlyCount "37"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=38.1 plies; 3.122kN/s;
+804 TBAs B=41.9 plies; 3.067kN/s; 17 TBAs} 1. c4 e5 2. Nc3 Nf6 3. g3 d5 4. cxd5
+Nxd5 5. Bg2 Nb6 6. d3 Be7 7. Nf3 {[%eval 12,40] [%emt 0:01:18]} Nc6 {[%eval 0,
+44] [%emt 0:02:08]} 8. O-O {[%eval 24,40] [%emt 0:01:08]} O-O {[%eval 7,38] 
+[%emt 0:00:32]} 9. Rb1 {[%eval 12,37] [%emt 0:00:37] (a3)} Re8 {[%eval 0,40] 
+[%emt 0:00:27]} 10. a3 {[%eval 14,36] [%emt 0:00:35]} h6 {[%eval 14,40] [%emt
+0:00:32]} 11. b4 {[%eval 20,37] [%emt 0:00:29]} Bf8 {[%eval 8,41] [%emt 0:00:
+34]} 12. Nd2 {[%eval 29,37] [%emt 0:00:32]} Be6 {[%eval 3,40] [%emt 0:00:31] 
+(a5)} 13. Bb2 {[%eval 22,34] [%emt 0:00:34]} Qd7 {[%eval 6,41] [%emt 0:02:16]}
+14. Nce4 {[%eval 9,37] [%emt 0:01:04]} Bh3 {[%eval 0,44] [%emt 0:01:46]} 15.
+Bxh3 {[%eval 10,35] [%emt 0:00:44]} Qxh3 {[%eval 0,49] [%emt 0:01:38]} 16. Nf3
+{[%eval 0,42] [%emt 0:01:21] (Tc1)} Rad8 {[%eval 0,42] [%emt 0:00:40]} 17. Qc2
+{[%eval 0,38] [%emt 0:00:22]} Nd5 {[%eval 0,46] [%emt 0:00:53]} 18. Rfc1 {
+[%eval 0,43] [%emt 0:00:34] (Dc4)} a6 {[%eval 0,34] [%emt 0:00:27] (Dg4)} 19.
+Qb3 {[%eval 13,36] [%emt 0:01:04] (Dc4)} 1/2-1/2
+
+[Event "ShashChess25.3GDvsStockfish041122, Rapi"]
+[Site "?"]
+[Date "2022.11.07"]
+[Round "20.1"]
+[White "ShashChessGD 25.3"]
+[Black "Stockfish 051122"]
+[Result "1/2-1/2"]
+[ECO "A29"]
+[Annotator "0.14;0.24"]
+[PlyCount "40"]
+[EventDate "2022.11.06"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=48.6 plies; 2.915kN/s;
+44.534 TBAs B=42.0 plies; 2.669kN/s; 63.087 TBAs} 1. c4 e5 2. Nc3 Nf6 3. g3 d5
+4. cxd5 Nxd5 5. Bg2 Nb6 6. d3 Be7 7. Nf3 {[%eval 14,44] [%emt 0:01:22]} Nc6 {
+[%eval 24,39] [%emt 0:01:21]} 8. O-O {[%eval 7,41] [%emt 0:00:29]} O-O {
+[%eval 17,36] [%emt 0:01:11]} 9. a3 {[%eval 3,39] [%emt 0:00:36]} Re8 {[%eval
+23,37] [%emt 0:00:42] (Ae6)} 10. Re1 {[%eval 0,41] [%emt 0:02:15] (Tb1)} h6 {
+[%eval 8,37] [%emt 0:00:36] (Ae6)} 11. b4 {[%eval 0,42] [%emt 0:00:56] (Ad2)}
+a5 {[%eval 0,38] [%emt 0:00:29]} 12. b5 {[%eval 0,51] [%emt 0:00:37]} Nd4 {
+[%eval 0,42] [%emt 0:00:33]} 13. Nxd4 {[%eval 0,49] [%emt 0:00:31] (Ab2)} exd4
+{[%eval 2,41] [%emt 0:00:31]} 14. Na4 {[%eval 0,53] [%emt 0:05:27]} Rb8 {
+[%eval 0,44] [%emt 0:01:08]} 15. Nxb6 {[%eval 2,48] [%emt 0:00:24]} cxb6 {
+[%eval 3,39] [%emt 0:00:32]} 16. e4 {[%eval 0,53] [%emt 0:00:32]} dxe3 {
+[%eval 0,43] [%emt 0:00:35]} 17. Bxe3 {[%eval 0,51] [%emt 0:00:24]} Bd6 {
+[%eval 0,42] [%emt 0:00:35] (Ae6)} 18. Qh5 {[%eval 0,51] [%emt 0:00:34]} Re5 {
+[%eval 0,44] [%emt 0:00:38]} 19. Bxb6 {[%eval 0,53] [%emt 0:00:42]} Rxh5 {
+[%eval 0,47] [%emt 0:01:12]} 20. Bxd8 {[%eval 0,55] [%emt 0:00:37]} Be6 {
+[%eval 0,51] [%emt 0:00:39]} 1/2-1/2
+
+
+
