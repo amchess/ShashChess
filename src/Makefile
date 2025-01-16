@@ -76,7 +76,7 @@ HEADERS = benchmark.h bitboard.h evaluate.h misc.h movegen.h  movepick.h history
 		livebook/analysis/Cp.h livebook/analysis/Analysis.h livebook/analysis/Wdl.h livebook/analysis/Mate.h \
 		livebook/LichessLivebook.h livebook/LichessMaster.h livebook/LichessPlayer.h livebook/LichessUsers.h livebook/Proxy.h \
 		livebook/LichessGames.h  livebook/ChessDBContributor.h \
-		livebook/json/json.hpp shashin/shashin_manager.h
+		livebook/json/json.hpp shashin/shashin_helper.h shashin/shashin_manager.h shashin/shashin_types.h
 
 OBJS = $(notdir $(SRCS:.cpp=.o))
 
