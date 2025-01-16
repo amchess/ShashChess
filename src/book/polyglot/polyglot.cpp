@@ -372,9 +372,7 @@ void PolyglotBook::get_moves(const Position& pos, std::vector<PolyglotBookMove>&
         for (const auto& m : MoveList<LEGAL>(pos))
         {
             if (move.raw() == (m.raw() ^ m.type_of()))
-            {
-                bookMoves.push_back(PolyglotBookMove(e, m));
-            }
+            { bookMoves.push_back(PolyglotBookMove(e, m)); }
         }
     }
 }
@@ -508,9 +506,7 @@ void PolyglotBook::show_moves(const Position& pos) const {
         get_moves(pos, bookMoves);
 
         if (bookMoves.size() == 0)
-        {
-            ss << "No moves found for this position" << std::endl;
-        }
+        { ss << "No moves found for this position" << std::endl; }
         else
         {
             std::stable_sort(bookMoves.begin(), bookMoves.end(),

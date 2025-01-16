@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2024 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,8 +24,12 @@
 #include "bitboard.h"
 #include "position.h"
 
+//from crystal-shashin begin
 namespace ShashChess {
-
+namespace MoveGenConfig {
+bool useMoveGenCrystalLogic = false;
+}
+//from crystal-shashin end
 namespace {
 
 template<GenType Type, Direction D, bool Enemy>
@@ -146,26 +150,41 @@ ExtMove* generate_pawn_moves(const Position& pos, ExtMove* moveList, Bitboard ta
     return moveList;
 }
 
-
 template<Color Us, PieceType Pt>
 ExtMove* generate_moves(const Position& pos, ExtMove* moveList, Bitboard target) {
-
     static_assert(Pt != KING && Pt != PAWN, "Unsupported piece type in generate_moves()");
 
     Bitboard bb = pos.pieces(Us, Pt);
+    //from shashin-crystal begin
+    const Square   ksq               = pos.square<KING>(Us);
+    const Bitboard blockers_for_king = pos.blockers_for_king(Us);
+    const bool     useCrystalLogic   = MoveGenConfig::useMoveGenCrystalLogic;
 
     while (bb)
     {
         Square   from = pop_lsb(bb);
         Bitboard b    = attacks_bb<Pt>(from, pos.pieces()) & target;
 
-        while (b)
-            *moveList++ = Move(from, pop_lsb(b));
-    }
+        if (useCrystalLogic)
+        {
+            while (b)
+            {
+                Square to = pop_lsb(b);
 
+                // La condizione è stata ottimizzata per chiarezza e leggibilità
+                if (!(blockers_for_king & from) || aligned(from, to, ksq))
+                { *moveList++ = Move(from, to); }
+            }
+        }
+        else
+        {
+            while (b)
+            { *moveList++ = Move(from, pop_lsb(b)); }
+        }
+    }
+    //from shashin-crystal end
     return moveList;
 }
-
 
 template<Color Us, GenType Type>
 ExtMove* generate_all(const Position& pos, ExtMove* moveList) {
@@ -193,7 +212,13 @@ ExtMove* generate_all(const Position& pos, ExtMove* moveList) {
     Bitboard b = attacks_bb<KING>(ksq) & (Type == EVASIONS ? ~pos.pieces(Us) : target);
 
     while (b)
-        *moveList++ = Move(ksq, pop_lsb(b));
+    {
+        Square to = pop_lsb(b);
+
+        // Aggiunge la logica Crystal solo se useCrystalLogic è attivo
+        if (!MoveGenConfig::useMoveGenCrystalLogic || (pos.attackers_to(to) & pos.pieces(~Us)) == 0)
+            *moveList++ = Move(ksq, to);
+    }
 
     if ((Type == QUIETS || Type == NON_EVASIONS) && pos.can_castle(Us & ANY_CASTLING))
         for (CastlingRights cr : {Us & KING_SIDE, Us & QUEEN_SIDE})

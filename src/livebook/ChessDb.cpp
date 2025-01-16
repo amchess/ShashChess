@@ -52,9 +52,7 @@ ChessDb::parse_move(const Position& position, std::string& item, bool check_rank
             rank  = std::stoi(value);
 
             if (check_rank && rank < this->min_rank)
-            {
-                break;
-            }
+            { break; }
         }
 
         value = token.substr(token.find(':') + 1);
@@ -102,9 +100,7 @@ std::vector<std::pair<std::string, Analysis>> ChessDb::parse_query_all(const Pos
     this->clean_buffer_from_terminator();
 
     if (this->readBuffer == "invalid board" || this->readBuffer == "nobestmove")
-    {
-        return moves;
-    }
+    { return moves; }
 
     std::stringstream ss(this->readBuffer);
     std::string       item;
@@ -114,9 +110,7 @@ std::vector<std::pair<std::string, Analysis>> ChessDb::parse_query_all(const Pos
         auto element = parse_move(position, item, true);
 
         if (element.first.empty())
-        {
-            continue;
-        }
+        { continue; }
 
         moves.push_back(element);
     }
@@ -130,9 +124,7 @@ std::vector<std::pair<std::string, Analysis>> ChessDb::parse_query_best(const Po
     this->clean_buffer_from_terminator();
 
     if (this->readBuffer == "invalid board" || this->readBuffer == "nobestmove")
-    {
-        return moves;
-    }
+    { return moves; }
 
     std::stringstream ss(this->readBuffer);
     std::string       item;
@@ -142,9 +134,7 @@ std::vector<std::pair<std::string, Analysis>> ChessDb::parse_query_best(const Po
         auto element = parse_move(position, item, false);
 
         if (element.first.empty())
-        {
-            continue;
-        }
+        { continue; }
 
         moves.push_back(element);
     }
@@ -158,9 +148,7 @@ std::vector<std::pair<std::string, Analysis>> ChessDb::lookup(const Position& po
     auto ret = std::vector<std::pair<std::string, Analysis>>();
 
     if (const CURLcode res = do_request(full_uri); res != CURLE_OK)
-    {
-        return ret;
-    }
+    { return ret; }
 
     std::vector<std::pair<std::string, Analysis>> output;
 
@@ -182,20 +170,16 @@ std::vector<std::pair<std::string, Analysis>> ChessDb::lookup(const Position& po
     return output;
 }
 
-void ChessDb::set_action(const Action action) { this->action = action; }
+void ChessDb::set_action(const Action new_action) { this->action = new_action; }
 
-void ChessDb::set_min_rank(const int min_rank) {
-    if (min_rank < 0)
-    {
-        return;
-    }
+void ChessDb::set_min_rank(const int new_min_rank) {
+    if (new_min_rank < 0)
+    { return; }
 
-    if (min_rank > 2)
-    {
-        return;
-    }
+    if (new_min_rank > 2)
+    { return; }
 
-    this->min_rank = min_rank;
+    this->min_rank = new_min_rank;
 }
 
 std::string ChessDb::format_uri(const Position& position) const {

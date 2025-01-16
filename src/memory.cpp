@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2024 The ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2025 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -202,7 +202,7 @@ void* aligned_large_pages_alloc(size_t allocSize) {
 
     // Round up to multiples of alignment
     size_t size = ((allocSize + alignment - 1) / alignment) * alignment;
-    void*  mem  = std_aligned_alloc(alignment, size);
+    void* mem = std_aligned_alloc(alignment, size);
     #if defined(MADV_HUGEPAGE)
     madvise(mem, size, MADV_HUGEPAGE);
     #endif
@@ -218,9 +218,7 @@ bool has_large_pages() {
     constexpr size_t page_size = 2 * 1024 * 1024;  // 2MB page size assumed
     void*            mem       = aligned_large_pages_alloc_windows(page_size);
     if (mem == nullptr)
-    {
-        return false;
-    }
+    { return false; }
     else
     {
         aligned_large_pages_free(mem);

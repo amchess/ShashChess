@@ -637,9 +637,7 @@ void CtgBook::encode_position(const Position& pos, CtgPositionData& positionData
 
         if ((epFile > FILE_A && positionData.board[3 * 8 + epFile - 1] == 'P')
             || (epFile < FILE_G && positionData.board[3 * 8 + epFile + 1] == 'P'))
-        {
-            epAny = true;
-        }
+        { epAny = true; }
     }
 
     //Find the right number of bits
@@ -1085,18 +1083,14 @@ void CtgBook::show_moves(const Position& pos) const {
     {
         CtgPositionData positionData;
         if (!decode(pos, positionData))
-        {
-            ss << "Position not found in book" << std::endl;
-        }
+        { ss << "Position not found in book" << std::endl; }
         else
         {
             CtgMoveList ctgMoveList;
             get_moves(pos, positionData, ctgMoveList);
 
             if (ctgMoveList.size() == 0)
-            {
-                ss << "No moves found for this position" << std::endl;
-            }
+            { ss << "No moves found for this position" << std::endl; }
             else
             {
                 ss << "MOVE      WIN       DRAW      LOSS      WEIGHT" << std::endl;

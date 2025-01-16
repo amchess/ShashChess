@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2024 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@
 #include <string_view>
 #include <vector>
 
+#include "history.h"
 #include "misc.h"
-#include "movepick.h"
 #include "nnue/network.h"
 #include "nnue/nnue_accumulator.h"
 #include "numa.h"
@@ -40,14 +40,16 @@
 #include "score.h"
 #include "syzygy/tbprobe.h"
 #include "timeman.h"
-//from ShashChess begin
+//from Shashin begin
 #include "evaluate.h"
 #include "book/book_manager.h"
-//from ShashChess end
+#include <memory>
+//from Shashin end
 #include "types.h"
 
 namespace ShashChess {
 
+class ShashinManager;  //shashin
 // Different node types, used as a template parameter
 enum NodeType {
     NonPV,
@@ -60,29 +62,29 @@ class ThreadPool;
 class OptionsMap;
 
 namespace Search {
+
 // Stack struct keeps track of the information we need to remember from nodes
 // shallower and deeper in the tree during the search. Each search thread has
 // its own array of Stack objects, indexed by the current ply.
 struct Stack {
-    Move*                     pv;
-    PieceToHistory*           continuationHistory;
-    PieceToCorrectionHistory* continuationCorrectionHistory;
-    int                       ply;
-    Move                      currentMove;
-    Move                      excludedMove;
-    Value                     staticEval;
-    int                       statScore;
-    int                       moveCount;
-    bool                      inCheck;
-    bool                      ttPv;
-    bool                      ttHit;
-    int                       cutoffCnt;
-    //from Crystal begin
+    Move*                       pv;
+    PieceToHistory*             continuationHistory;
+    CorrectionHistory<PieceTo>* continuationCorrectionHistory;
+    int                         ply;
+    Move                        currentMove;
+    Move                        excludedMove;
+    Value                       staticEval;
+    int                         statScore;
+    int                         moveCount;
+    bool                        inCheck;
+    bool                        ttPv;
+    bool                        ttHit;
+    int                         cutoffCnt;
+    //from Crystal-shashin begin
     bool secondaryLine;
     bool mainLine;
-    //from Crystal end
+    //from Crystal-shashin end
 };
-
 
 // RootMove struct is used for moves at the root of the tree. For each root move
 // we store a score and a PV (really a refutation in the case of moves which
@@ -133,7 +135,6 @@ struct LimitsType {
     int                      movestogo, depth, mate, perft, infinite;
     uint64_t                 nodes;
     bool                     ponderMode;
-    Square                   capSq;
 };
 
 
@@ -250,7 +251,7 @@ class Worker {
    public:
     size_t threadIdx;  //mcts
     Worker(SharedState&, std::unique_ptr<ISearchManager>, size_t, NumaReplicatedAccessToken);
-
+    ~Worker();  //shashin
     // Called at instantiation to initialize reductions tables.
     // Reset histories, usually before a new game.
     void clear();
@@ -275,19 +276,16 @@ class Worker {
     ContinuationHistory   continuationHistory[2][2];
     PawnHistory           pawnHistory;
 
-    PawnCorrectionHistory         pawnCorrectionHistory;
-    MaterialCorrectionHistory     materialCorrectionHistory;
-    MajorPieceCorrectionHistory   majorPieceCorrectionHistory;
-    MinorPieceCorrectionHistory   minorPieceCorrectionHistory;
-    NonPawnCorrectionHistory      nonPawnCorrectionHistory[COLOR_NB];
-    ContinuationCorrectionHistory continuationCorrectionHistory;
-    RootMoves                     rootMoves;       //mcts
-    Depth                         completedDepth;  //mcts
-    //begin from Shashin
-    int8_t shashinWinProbabilityRange = 0;
-    int    shashinPly                 = 0;
-    //end from Shashin
-    bool nmpGuard, nmpGuardV;  //from Crystal
+    CorrectionHistory<Pawn>         pawnCorrectionHistory;
+    CorrectionHistory<Major>        majorPieceCorrectionHistory;
+    CorrectionHistory<Minor>        minorPieceCorrectionHistory;
+    CorrectionHistory<NonPawn>      nonPawnCorrectionHistory[COLOR_NB];
+    CorrectionHistory<Continuation> continuationCorrectionHistory;
+    RootMoves                       rootMoves;            //mcts
+    Depth                           completedDepth;       //mcts
+    bool                            nmpGuard, nmpGuardV;  //from Crystal-shashin
+    ShashinManager&                 getShashinManager();  //from crystal-Shashin
+
    private:
     void iterative_deepening();
 
@@ -310,11 +308,13 @@ class Worker {
     TimePoint elapsed() const;
     TimePoint elapsed_time() const;
 
+    Value evaluate(const Position&);
+
     LimitsType limits;
 
     size_t                pvIdx, pvLast;
     std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
-    int                   selDepth, nmpMinPly, nmpSide;  //crystal
+    int                   selDepth, nmpMinPly, nmpSide;  //from crystal-shashin
     Value                 optimism[COLOR_NB];
 
     Position  rootPos;
@@ -344,12 +344,15 @@ class Worker {
     const LazyNumaReplicated<Eval::NNUE::Networks>& networks;
 
     // Used by NNUE
-    Eval::NNUE::AccumulatorCaches refreshTable;
-
+    Eval::NNUE::AccumulatorCaches   refreshTable;
+    std::unique_ptr<ShashinManager> shashinManager;  //Shashin
     friend class ShashChess::ThreadPool;
     friend class SearchManager;
 };
-
+struct ConthistBonus {
+    int index;
+    int weight;
+};
 //livebook begin
 #ifdef USE_LIVEBOOK
 void set_livebook_depth(int book_depth);
@@ -380,10 +383,6 @@ void set_variety(const std::string& varietyOption);  //variety
 size_t cURL_WriteFunc(void* contents, size_t size, size_t nmemb, std::string* s);
 #endif
 //from Livebook end
-Value static_value(const Eval::NNUE::Networks& networks,
-                   Position&                   pos,
-                   Search::Stack*              ss,
-                   int                         optimism);  //mcts
 }  // namespace ShashChess
 
 #endif  // #ifndef SEARCH_H_INCLUDED

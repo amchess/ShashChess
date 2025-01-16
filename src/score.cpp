@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2024 The ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2025 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,10 +29,8 @@ namespace ShashChess {
 Score::Score(Value v, const Position& pos) {
     assert(-VALUE_INFINITE < v && v < VALUE_INFINITE);
 
-    if (std::abs(v) < VALUE_TB_WIN_IN_MAX_PLY)
-    {
-        score = InternalUnits{UCIEngine::to_cp(v, pos)};
-    }
+    if (!is_decisive(v))
+    { score = InternalUnits{UCIEngine::to_cp(v, pos)}; }
     else if (std::abs(v) <= VALUE_TB)
     {
         auto distance = VALUE_TB - std::abs(v);

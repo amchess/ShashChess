@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2024 The ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2025 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -62,7 +62,6 @@ Engine::Engine(std::optional<std::string> path) :
         NN::NetworkBig({EvalFileDefaultNameBig, "None", ""}, NN::EmbeddedNNUEType::BIG),
         NN::NetworkSmall({EvalFileDefaultNameSmall, "None", ""}, NN::EmbeddedNNUEType::SMALL))) {
     pos.set(StartFEN, false, &states->back());
-    capSq = SQ_NONE;
 
     options["Debug Log File"] << Option("", [](const Option& o) {
         start_logger(o);
@@ -134,9 +133,7 @@ Engine::Engine(std::optional<std::string> path) :
     options["Persisted learning"] << Option("Off var Off var Standard var Self", "Off",
                                             [this](const Option& o) -> std::optional<std::string> {
                                                 if (!(o == "Off"))
-                                                {
-                                                    LD.set_learning_mode(get_options(), o);
-                                                }
+                                                { LD.set_learning_mode(get_options(), o); }
 
                                                 return std::optional<std::string>{};
                                             });
@@ -152,10 +149,11 @@ Engine::Engine(std::optional<std::string> path) :
     options["Experience Book Min Depth"] << Option(4, 1, 255);
     //From Kelly end
     //From MCTS begin
-    options["MCTS"] << Option(false);
+    options["MCTS by Shashin"] << Option(false);
     options["MCTSThreads"] << Option(1, 1, 512);
     options["MCTS Multi Strategy"] << Option(20, 0, 100);
     options["MCTS Multi MinVisits"] << Option(5, 0, 1000);
+    options["MCTS Explore"] << Option(false);
     //From MCTS end
     //livebook begin
 #ifdef USE_LIVEBOOK
@@ -241,7 +239,6 @@ std::uint64_t Engine::perft(const std::string& fen, Depth depth, bool isChess960
 void Engine::go(Search::LimitsType& limits) {
     assert(limits.perft == 0);
     verify_networks();
-    limits.capSq = capSq;
 
     threads.start_thinking(options, pos, states, limits);
 }
@@ -249,13 +246,14 @@ void Engine::stop() { threads.stop = true; }
 
 void Engine::search_clear() {
     wait_for_search_finished();
+
     tt.clear(threads);
     MCTS.clear();  // mcts
     threads.clear();
 
     // @TODO wont work with multiple instances
     Tablebases::init(options["SyzygyPath"]);  // Free mapped files
-    WDLModel::init();                         //from learning
+    WDLModel::init();                         //from learning and shashin
 }
 
 void Engine::set_on_update_no_moves(std::function<void(const Engine::InfoShort&)>&& f) {
@@ -285,7 +283,6 @@ void Engine::set_position(const std::string& fen, const std::vector<std::string>
     states = StateListPtr(new std::deque<StateInfo>(1));
     pos.set(fen, options["UCI_Chess960"], &states->back());
 
-    capSq = SQ_NONE;
     for (const auto& move : moves)
     {
         auto m = UCIEngine::to_move(pos, move);
@@ -307,11 +304,6 @@ void Engine::set_position(const std::string& fen, const std::vector<std::string>
         //Kelly end
         states->emplace_back();
         pos.do_move(m, states->back());
-
-        capSq          = SQ_NONE;
-        DirtyPiece& dp = states->back().dirtyPiece;
-        if (dp.dirty_num > 1 && dp.to[1] == SQ_NONE)
-            capSq = m.to_sq();
     }
 }
 
@@ -319,22 +311,16 @@ void Engine::set_position(const std::string& fen, const std::vector<std::string>
 
 void Engine::set_numa_config_from_option(const std::string& o) {
     if (o == "auto" || o == "system")
-    {
-        numaContext.set_numa_config(NumaConfig::from_system());
-    }
+    { numaContext.set_numa_config(NumaConfig::from_system()); }
     else if (o == "hardware")
     {
         // Don't respect affinity set in the system.
         numaContext.set_numa_config(NumaConfig::from_system(false));
     }
     else if (o == "none")
-    {
-        numaContext.set_numa_config(NumaConfig{});
-    }
+    { numaContext.set_numa_config(NumaConfig{}); }
     else
-    {
-        numaContext.set_numa_config(NumaConfig::from_string(o));
-    }
+    { numaContext.set_numa_config(NumaConfig::from_string(o)); }
 
     // Force reallocation of threads in case affinities need to change.
     resize_threads();

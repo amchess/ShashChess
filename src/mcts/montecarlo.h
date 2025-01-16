@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2024 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #include <cmath>
 #include <unordered_map>
 
+#include "../movepick.h"
 #include "../position.h"
 #include "../thread.h"
 
@@ -246,10 +247,10 @@ class MonteCarlo {
     TimePoint startTime{};
     TimePoint lastOutputTime{};
 
-    double max_epsilon = 0.99;
-    double min_epsilon = 0.00;
-    double decay_rate  = 0.8;
-    bool   AB_Rollout{};
+    //double max_epsilon = 0.99;
+    //double min_epsilon = 0.00;
+    //double decay_rate  = 0.8;
+    bool AB_Rollout{};
 
     // Flags and limits to tweak the algorithm
     double BACKUP_MINIMAX{};

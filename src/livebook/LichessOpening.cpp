@@ -9,9 +9,7 @@ LichessOpening::LichessOpening(std::string endpoint) :
 
 std::string LichessOpening::parse_uci(const nlohmann::json& move) {
     if (!move.contains("uci") || !move["uci"].is_string())
-    {
-        return "";
-    }
+    { return ""; }
 
     return move["uci"].get<std::string>();
 }

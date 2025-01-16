@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2024 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -192,19 +192,12 @@ void TranspositionTable::clear(ThreadPool& threads) {
 // occupation during a search. The hash is x permill full, as per UCI protocol.
 // Only counts entries which match the current generation.
 int TranspositionTable::hashfull(int maxAge) const {
-    int cnt = 0;
+    int maxAgeInternal = maxAge << GENERATION_BITS;
+    int cnt            = 0;
     for (int i = 0; i < 1000; ++i)
         for (int j = 0; j < ClusterSize; ++j)
-        {
-            if (table[i].entry[j].is_occupied())
-            {
-                int age = (generation8 >> GENERATION_BITS)
-                        - ((table[i].entry[j].genBound8 & GENERATION_MASK) >> GENERATION_BITS);
-                if (age < 0)
-                    age += 1 << (8 - GENERATION_BITS);
-                cnt += age <= maxAge;
-            }
-        }
+            cnt += table[i].entry[j].is_occupied()
+                && table[i].entry[j].relative_age(generation8) <= maxAgeInternal;
 
     return cnt / ClusterSize;
 }

@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2024 The ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2025 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,8 +26,10 @@
 #include <type_traits>
 #include <vector>
 
-#include "../evaluate.h"
+#define INCBIN_SILENCE_BITCODE_WARNING
 #include "../incbin/incbin.h"
+
+#include "../evaluate.h"
 #include "../memory.h"
 #include "../misc.h"
 #include "../position.h"
@@ -36,7 +38,6 @@
 #include "nnue_common.h"
 #include "nnue_misc.h"
 
-namespace {
 // Macro to embed the default efficiently updatable neural network (NNUE) file
 // data in the engine binary (using incbin.h, by Dale Weiler).
 // This macro invocation will declare the following three variables
@@ -55,6 +56,8 @@ const unsigned char        gEmbeddedNNUESmallData[1] = {0x0};
 const unsigned char* const gEmbeddedNNUESmallEnd     = &gEmbeddedNNUESmallData[1];
 const unsigned int         gEmbeddedNNUESmallSize    = 1;
 #endif
+
+namespace {
 
 struct EmbeddedNNUE {
     EmbeddedNNUE(const unsigned char* embeddedData,
@@ -98,7 +101,7 @@ bool read_parameters(std::istream& stream, T& reference) {
 
 // Write evaluation function parameters
 template<typename T>
-bool write_parameters(std::ostream& stream, const T& reference) {
+bool write_parameters(std::ostream& stream, T& reference) {
 
     write_little_endian<std::uint32_t>(stream, T::get_hash_value());
     return reference.write_parameters(stream);
@@ -160,14 +163,10 @@ void Network<Arch, Transformer>::load(const std::string& rootDirectory, std::str
         if (evalFile.current != evalfilePath)
         {
             if (directory != "<internal>")
-            {
-                load_user_net(directory, evalfilePath);
-            }
+            { load_user_net(directory, evalfilePath); }
 
             if (directory == "<internal>" && evalfilePath == evalFile.defaultName)
-            {
-                load_internal();
-            }
+            { load_internal(); }
         }
     }
 }

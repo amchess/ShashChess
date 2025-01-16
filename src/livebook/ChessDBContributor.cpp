@@ -17,9 +17,7 @@ void ChessDBContributor::contribute(const Position& position, const Move move) {
                    + "&move=move:" + UCIEngine::move(move, position.is_chess960());
 
     if (const auto ret = do_request(url); ret != CURLE_OK)
-    {
-        std::cerr << "Failed to contribute to ChessDB: " << curl_easy_strerror(ret) << std::endl;
-    }
+    { std::cerr << "Failed to contribute to ChessDB: " << curl_easy_strerror(ret) << std::endl; }
 }
 
 static size_t curl_write(void* contents, const size_t size, const size_t nmemb, void* userp) {
@@ -35,25 +33,23 @@ static size_t curl_write(void* contents, const size_t size, const size_t nmemb, 
 CURLcode ChessDBContributor::do_request(const std::string& uri) {
     readBuffer.clear();
 
-    CURL* curl = curl_easy_init();
-    if (!curl)
+    CURL* local_curl = curl_easy_init();
+    if (!local_curl)
     {
         std::cerr << "Failed to initialize cURL" << std::endl;
         return CURLE_FAILED_INIT;
     }
 
-    curl_easy_setopt(curl, CURLOPT_URL, uri.c_str());
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
+    curl_easy_setopt(local_curl, CURLOPT_URL, uri.c_str());
+    curl_easy_setopt(local_curl, CURLOPT_WRITEFUNCTION, curl_write);
+    curl_easy_setopt(local_curl, CURLOPT_WRITEDATA, &readBuffer);
+    curl_easy_setopt(local_curl, CURLOPT_SSL_VERIFYHOST, 2L);
 
-    const CURLcode res = curl_easy_perform(curl);
+    const CURLcode res = curl_easy_perform(local_curl);
     if (res != CURLE_OK)
-    {
-        std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
-    }
+    { std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl; }
 
-    curl_easy_cleanup(curl);
+    curl_easy_cleanup(local_curl);
 
     return res;
 }

@@ -1,6 +1,6 @@
 #ifndef BOOK_H_INCLUDED
 #define BOOK_H_INCLUDED
-
+#include "../movegen.h"
 namespace ShashChess {
 class BookManager;
 

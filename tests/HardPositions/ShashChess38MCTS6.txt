@@ -1,0 +1,134 @@
+ShashChess 6MCTS
+
+1. Matous,D - Corbit,D,  Sideline WM 2018, HTC108/2   Gelöst in 0.11s/10; Gelöst: 1
+2. TacticalInsanityNr.9 - CorbitD,  HTC108-5 S   Gelöst in 2.47s/17; Gelöst: 2
+3. Caruana,F - Carlsen,M,  Sideline WM 2018, HTC108/2   Gelöst in 0.19s/9; Gelöst: 3
+4. ACT-Suite,N - Dorsz,O,  HTC108-8   Gelöst in 3.25s/15; Gelöst: 4
+5. van Foreest,J - L'Ami,E,  HTC108-9 Zug 24...Sideline   Gelöst in 0.36s/11; Gelöst: 5
+6. Fritz,N - Cornforth96?,C,  HTC108-11 Arasan   Gelöst in 0.39s/13; Gelöst: 6
+7. PoorFish,C - Borderline,D,  HTC108-12   > 30s.
+8. LC0,C - SF,C,  HTC108-15 S   Gelöst in 1.06s/14; Gelöst: 7
+9. AlphaZero,H - SF,  Game9 2017   > 30s.
+10. Gashimov,V - Azariov,S,  2011 HTC108-23   Gelöst in 0.39s/10; Gelöst: 8
+11. CorbitD,C,  HTC108-25   Gelöst in 0.19s/10; Gelöst: 9
+12. Gusia - Barlov,  Schweiz 1980 HTC108-28   Gelöst in 0.23s/9; Gelöst: 10
+13. Bondarenko,& - Glarean,P,  HTC108-29   Gelöst in 0.19s/9; Gelöst: 11
+14. Rudolph,W,  Studie 1912 HTC108-30 S   Gelöst in 4.17s/18; Gelöst: 12
+15. Gusev,Y - Auerbach,E,  HTC108-42   Gelöst in 0.28s/10; Gelöst: 13
+16. Van Essen,M - 2004,#,  HTC108-48 (-9ZNr41) S   Gelöst in 1.53s/13; Gelöst: 14
+17. Neghina,M - Stronghold,2,  HTC108-49 S   > 30s.
+18. Tunik - Duzhakov,  2011 HTC108-52   Gelöst in 1.08s/15; Gelöst: 15
+19. Neghina,M - Chase,D,  HTC108-54   Gelöst in 0.25s/14; Gelöst: 16
+20. SolomonKing,? - 2.g4,H,  HTC108-80 S   Gelöst in 3.19s/17; Gelöst: 17
+21. Nicolic,E - Fischer,R,  HTC108-94 S   Gelöst in 0.63s/12; Gelöst: 18
+22. Morozevich,A - Vitiugov,N,  Reggio 2011 HTC108-100   Gelöst in 25.92s/22; Gelöst: 19
+23. M. Garcia - P. Krug,S - Glarean,  The Engine Crackers   Gelöst in 1.33s/15; Gelöst: 20
+24. Zepler,E - Studie,1,   2020   > 30s.
+25. Formela,M - Studie,2,  Polski Zwiazek Szachowy 2019   Gelöst in 7.09s/20; Gelöst: 21
+26. Stoofvlees - SF,  TCEC 2019   Gelöst in 0.25s/9; Gelöst: 22
+27. Lasker,E - Lipke,P,  Nebenvariante 41.Ke4! MS 1889   Gelöst in 1.72s/15; Gelöst: 23
+28. Los,A - Kubicki,T,  corr LIPEAD40 (PER) 2016   Gelöst in 4.78s/16; Gelöst: 24
+29. PurePower - Exxon,  Chessbase online 2021   Gelöst in 0.31s/11; Gelöst: 25
+30. Bauer,R - Zhak,B,  WC30/final ICCF 2017   Gelöst in 0.17s/9; Gelöst: 26
+31. Mihai Neghina - Desperation,  White to move and draw S 12   Gelöst in 0.16s/9; Gelöst: 27
+32. Tauber,H - Sikorsky,H,  37.e5! 2018   Gelöst in 2.16s/17; Gelöst: 28
+33. Bondarenko+Gorgiev,S - BrillanterSchachzug,1,   2008   Gelöst in 1.53s/18; Gelöst: 29
+34. ACT3,? - Festung,  S   Gelöst in 6.80s/19; Gelöst: 30
+35. ACT3,? - Studie?   Gelöst in 13.69s/26; Gelöst: 31
+36. ACT3,?   > 30s.
+37. ACT3,? - Festung   Gelöst in 0.31s/14; Gelöst: 32
+38. ACT3,? - Festung,  S   > 30s.
+39. ACT3,? - Studie?   Gelöst in 2.91s/19; Gelöst: 33
+40. ACT3,? - Studie?,  S   Gelöst in 1.98s/15; Gelöst: 34
+41. Neghina,M - GoldenerKäfig,2,  S Sibiu 2009   Gelöst in 1.03s/16; Gelöst: 35
+42. Neghina,M - WhiteTo,M,  2018? S   > 30s.
+43. Popov,S - Glarean 2006,1,  HTC108-58 2008   Gelöst in 0.19s/10; Gelöst: 36
+44. Sikorsky,H - Novak,J,  Sideline ICCF 2017   > 30s.
+45. Krug,P - CCC,P,  S 2022   > 30s.
+46. TCEC,S - Nr.8,j,  CCC 2022   Gelöst in 5.55s/20; Gelöst: 37
+47. TCEC,S - Nr.22,r,  CCC 2022   > 30s.
+48. Sikorsky,H - Vinchev,S,  corr GER, Hiarcs 2016   Gelöst in 2.39s/17; Gelöst: 38
+49. Zemljanski,Y - 1move,c,  Tsjechover-90 S 1999   Gelöst in 0.39s/13; Gelöst: 39
+50. Study,?,  IQ 100 2012   Gelöst in 0.25s/11; Gelöst: 40
+51. Study?,?,  ACT3   Gelöst in 0.47s/13; Gelöst: 41
+52. Study?,?,  TTT2 31   Gelöst in 11.44s/29; Gelöst: 42
+53. Semenikov+,D - Sikorsky,H,  corr. USA 2021   > 30s.
+54. Petrov,M - Sikorsky,H,  CL/2021 ICCF   Gelöst in 3.83s/18; Gelöst: 43
+55. Study,? - CCC,  ACT5 11   > 30s.
+56. Study,?,  ACT5 29   Gelöst in 2.92s/18; Gelöst: 44
+57. ERET 015 - Endspiel D&B vs T&L&B,  Becker 2015   Gelöst in 0.61s/13; Gelöst: 45
+58. ERET 032 - Zugzwang,  Fahrni 1922   Gelöst in 3.39s/19; Gelöst: 46
+59. ERET 037 - Zugzwang,  Garcia 2000   > 30s.
+60. ERET 046 - Endspiel T&S vs T&S,  Grandelius-Raznikov, Albena 2011   Gelöst in 23.55s/31; Gelöst: 47
+61. ERET 050 - Koenigsangriff,  Hansen-Barua, Biel 1993   Gelöst in 3.91s/18; Gelöst: 48
+62. ERET 090 - Endspiel L vs L,  Salai 2011   > 30s.
+63. ERET 093 - Endspiel T&S&B vs T&T&L,  Simkhovich 1923   > 30s.
+64. ERET 094 - Damenopfer,  Sirobaba-Chaika, CorrGame 2011   Gelöst in 1.88s/15; Gelöst: 49
+65. Fortress,S,  ACT3-51 S   > 30s.
+66. ACT4,N,  ACT4-1   Gelöst in 2.47s/16; Gelöst: 50
+67. Cyclic,Z,  ACT5-25 2   Gelöst in 1.20s/58; Gelöst: 51
+68. Blass,U - CCC,  ACT5-27 2   Gelöst in 0.39s/15; Gelöst: 52
+69. Campioli,M - #14,?,  ACT5-28 2   Gelöst in 0.63s/14; Gelöst: 53
+70. Krug,P,  ACT5-30 2   Gelöst in 0.33s/11; Gelöst: 54
+71. KrugP,G - HHdbVI.0044383.001,a,  ACT5-31 1   Gelöst in 3.56s/20; Gelöst: 55
+72. Kos,V - ?,  ACT5-34 2   Gelöst in 0.36s/10; Gelöst: 56
+73. Sokka,H - HHdbVI.1076075.001,a,  ACT5-36 1   Gelöst in 1.33s/21; Gelöst: 57
+74. Sehwers,J - HHdbVI.1643584.002a.,8,  ACT5-ana   Gelöst in 0.23s/13; Gelöst: 58
+75. Zinar,M - HHdbVI.0210037.002a.,0,  ACT5-44 2   > 30s.
+76. Nestorescu,V - HHdbVI.0708805.002a.,3,  ACT5-46 1   Gelöst in 20.97s/31; Gelöst: 59
+77. Timman,J - HHdbVI.0033988.002a.,0,  ACT5-48 2   Gelöst in 1.22s/22; Gelöst: 60
+78. Unknown,A,  ACT5-51 2   Gelöst in 0.24s/9; Gelöst: 61
+79. Ivanov,V,  ACT5-53 2   Gelöst in 0.17s/15; Gelöst: 62
+80. Bernhardt,G,  ACT5-58 2   Gelöst in 1.11s/26; Gelöst: 63
+81. Unknown,A,  ACT5-61 2   Gelöst in 0.25s/34; Gelöst: 64
+82. Naef,W,  ACT5-63 2   Gelöst in 1.38s/12; Gelöst: 65
+83. #7,?,  ACT5-67 2   Gelöst in 12.03s/25; Gelöst: 66
+84. #9,?,  ACT5-68 2   Gelöst in 2.14s/26; Gelöst: 67
+85. SilhanJ,Z,  ACT5-59 3   Gelöst in 8.67s/34; Gelöst: 68
+86. Hiarcs,?,  TTT2 2   Gelöst in 0.36s/10; Gelöst: 69
+87. Hiarcs,?,  TTT2 6 2   Gelöst in 0.36s/11; Gelöst: 70
+88. Derived,f - StavrietskyA,2,  TTT2 14   Gelöst in 0.61s/12; Gelöst: 71
+89. Midgame,? - ?,  TTT2 23   Gelöst in 0.78s/14; Gelöst: 72
+90. TTT2.053,  TTT2   Gelöst in 1.33s/14; Gelöst: 73
+91. TTT2.073,  TTT2   > 30s.
+92. RoxlauM,G - HHdbVI,  ACT4 4 1   Gelöst in 3.31s/20; Gelöst: 74
+93. Smyslov,V,  ACT4-26 1   > 30s.
+94. Smyslov,V,  ACT4-41 1   > 30s.
+95. JostenG,   2008   Gelöst in 0.24s/9; Gelöst: 75
+96. Study,?,  ACT4-59   > 30s.
+97. Wotawa,A,  ACT4-66 1   > 30s.
+98. Study,?,  ACT4-90 1   Gelöst in 1.27s/16; Gelöst: 76
+99. Bethge,F,  ACT4-91   Gelöst in 4.49s/18; Gelöst: 77
+100. Blathy,O,  ACT4-94 1   > 30s.
+101. Cortlever,N - HHdbVI,  ACT3-29 1   > 30s.
+102. Korolkov,V,  ACT3-38   > 30s.
+103. Fortress,?,  ACT3-41 1   Gelöst in 0.61s/14; Gelöst: 78
+104. Unknown,A,  ACT3-48   > 30s.
+105. Kraemer,A,  ACT3-49   > 30s.
+106. Sivkov,N - #10,?,  ACT3-88   Gelöst in 6.03s/33; Gelöst: 79
+107. Timman=J - Glarean,N,   2012   Gelöst in 0.38s/10; Gelöst: 80
+108. Boudy Bueno,J - Szabo,L,  Varna 1979  Txb2!? Eret 17   Gelöst in 9.08s/19; Gelöst: 81
+109. Lc0-dev - Stockfish,  ECO MegaMatch II! (1|1) 2020   Gelöst in 0.56s/14; Gelöst: 82
+110. Carlsen,M - L'Ami,E,  Corus B VLH16 35 2006   Gelöst in 1.34s/14; Gelöst: 83
+111. Bazlo,Y - 10moves,l,  2019 HHdbVI 1   > 30s.
+112. Opening,H - !,?   Gelöst in 12.88s/22; Gelöst: 84
+113. TCEC,r,  CCC   > 30s.
+114. TCEC,r,  CCC Nr.5   > 30s.
+115. Gleichmann,M - Praznik,N,  corr CT21/final 2019   Gelöst in 7.64s/19; Gelöst: 85
+116. Yarmonov,I - Glarean,  2020   Gelöst in 12.53s/21; Gelöst: 86
+117. Eman - SugaR,  Glarean   Gelöst in 11.33s/19; Gelöst: 87
+118. Hobacle's,V - Walter Eigenmann's,S   > 30s.
+119. Krug,P - Glarean,E,  2018   > 30s.
+120. Gniazdowski,M - Rau,J,  corr CL/2019/C8 Glarean   > 30s.
+121. Illescas,M - Glarean,E   > 30s.
+122. Heinz,J - Glarean,  Study 1981   > 30s.
+123. Josten,G - Glarean,E,  Studie 2001   > 30s.
+124. Timman,J - HHdbVI   Gelöst in 19.03s/21; Gelöst: 88
+125. Gelly,M - HHdbVI,  Glarean   Gelöst in 22.56s/19; Gelöst: 89
+126. Krug,P - HHdbVI,G,   2013   > 30s.
+127. Ganguly,S - Rusz,A,c,  HHdbVI 2017   Gelöst in 28.89s/39; Gelöst: 90
+128. Matous,D - Colours,E,  POW.38   Gelöst in 0.33s/16; Gelöst: 91
+
+Result: 91 out of 128 = 71.0%. Average time = 3.92s / 17.10
+
+

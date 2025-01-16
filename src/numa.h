@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2024 The ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2025 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -154,9 +154,7 @@ inline std::pair<BOOL, std::vector<USHORT>> get_process_group_affinity() {
           GetProcessGroupAffinity(GetCurrentProcess(), &GroupCount, GroupArrayAligned);
 
         if (status == 0 && GetLastError() != ERROR_INSUFFICIENT_BUFFER)
-        {
-            break;
-        }
+        { break; }
 
         if (status != 0)
         {
@@ -181,7 +179,7 @@ inline std::pair<BOOL, std::vector<USHORT>> get_process_group_affinity() {
 inline WindowsAffinity get_process_affinity() {
     HMODULE k32                            = GetModuleHandle(TEXT("Kernel32.dll"));
     auto    GetThreadSelectedCpuSetMasks_f = GetThreadSelectedCpuSetMasks_t(
-      (void (*)()) GetProcAddress(k32, "GetThreadSelectedCpuSetMasks"));
+         (void (*)()) GetProcAddress(k32, "GetThreadSelectedCpuSetMasks"));
 
     BOOL status = 0;
 
@@ -195,9 +193,7 @@ inline WindowsAffinity get_process_affinity() {
         // We expect ERROR_INSUFFICIENT_BUFFER from GetThreadSelectedCpuSetMasks,
         // but other failure is an actual error.
         if (status == 0 && GetLastError() != ERROR_INSUFFICIENT_BUFFER)
-        {
-            affinity.isNewDeterminate = false;
-        }
+        { affinity.isNewDeterminate = false; }
         else if (RequiredMaskCount > 0)
         {
             // If RequiredMaskCount then these affinities were never set, but it's
@@ -208,9 +204,7 @@ inline WindowsAffinity get_process_affinity() {
                                                     RequiredMaskCount, &RequiredMaskCount);
 
             if (status == 0)
-            {
-                affinity.isNewDeterminate = false;
-            }
+            { affinity.isNewDeterminate = false; }
             else
             {
                 std::set<CpuIndex> cpus;
@@ -359,9 +353,7 @@ inline WindowsAffinity get_process_affinity() {
                 // or is set to all processors so that we correctly produce as
                 // std::nullopt result.
                 if (!isAffinityFull)
-                {
-                    affinity.oldApi = std::move(cpus);
-                }
+                { affinity.oldApi = std::move(cpus); }
             });
 
             th.join();
@@ -501,9 +493,7 @@ class NumaConfig {
         // /sys/devices/system/node/online contains information about active NUMA nodes
         auto nodeIdsStr = read_file_to_string("/sys/devices/system/node/online");
         if (!nodeIdsStr.has_value() || nodeIdsStr->empty())
-        {
-            fallback();
-        }
+        { fallback(); }
         else
         {
             remove_whitespace(*nodeIdsStr);
@@ -571,9 +561,7 @@ class NumaConfig {
                                  + static_cast<CpuIndex>(number);
                 if (status != 0 && nodeNumber != std::numeric_limits<USHORT>::max()
                     && is_cpu_allowed(c))
-                {
-                    cfg.add_cpu_to_node(nodeNumber, c);
-                }
+                { cfg.add_cpu_to_node(nodeNumber, c); }
             }
         }
 
@@ -847,7 +835,7 @@ class NumaConfig {
         // processor groups before that.
         HMODULE k32                            = GetModuleHandle(TEXT("Kernel32.dll"));
         auto    SetThreadSelectedCpuSetMasks_f = SetThreadSelectedCpuSetMasks_t(
-          (void (*)()) GetProcAddress(k32, "SetThreadSelectedCpuSetMasks"));
+             (void (*)()) GetProcAddress(k32, "SetThreadSelectedCpuSetMasks"));
 
         // We ALWAYS set affinity with the new API if available, because
         // there's no downsides, and we forcibly keep it consistent with
@@ -1032,9 +1020,7 @@ class NumaConfig {
                 const CpuIndex cfirst = CpuIndex{str_to_size_t(std::string(parts[0]))};
                 const CpuIndex clast  = CpuIndex{str_to_size_t(std::string(parts[1]))};
                 for (size_t c = cfirst; c <= clast; ++c)
-                {
-                    indices.emplace_back(c);
-                }
+                { indices.emplace_back(c); }
             }
         }
 

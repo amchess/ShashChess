@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2024 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 #include "misc.h"
 #include "search.h"
 #include "book/book_manager.h"  //book management
-
+#include "win_probability.h"
 namespace ShashChess {
 
 class Position;
@@ -48,8 +48,7 @@ class UCIEngine {
     static std::string format_score(const Score& s);
     static std::string square(Square s);
     static std::string move(Move m, bool chess960);
-    static std::string wdl(Value v, const Position& pos);
-    static uint8_t     getWinProbability(int v, int materialClamp);
+    //from shashin and learning
     static std::string to_lower(std::string str);
     static Move        to_move(const Position& pos, std::string str);
 

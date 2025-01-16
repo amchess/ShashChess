@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2024 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -201,7 +201,7 @@ void MonteCarlo::search(ShashChess::ThreadPool&        threads,
     mctsNodeInfo* node = nullptr;
     AB_Rollout         = false;
     Reward reward      = value_to_reward(
-      VALUE_DRAW);  //TODO: Perhaps we should use static_value() here instead of 'VALUE_DRAW'
+           VALUE_DRAW);  //TODO: Perhaps we should use static_value() here instead of 'VALUE_DRAW'
 
     while (computational_budget(threads, limits) && (node = tree_policy(threads, limits)))
     {
@@ -229,9 +229,7 @@ void MonteCarlo::search(ShashChess::ThreadPool&        threads,
                 maximumPly = ply;
         }
         else
-        {
-            reward = playout_policy(node);
-        }
+        { reward = playout_policy(node); }
 
         if (ply >= 1)
             node->ttValue = backup(reward, AB_Rollout);
@@ -278,7 +276,8 @@ void MonteCarlo::create_root(Search::Worker* worker) {
     {
         stack[i].continuationHistory =
           &worker->continuationHistory[0][0][NO_PIECE][0];  // Use as a sentinel
-        stack[i].continuationCorrectionHistory = &worker->continuationCorrectionHistory[NO_PIECE][0];
+        stack[i].continuationCorrectionHistory =
+          &worker->continuationCorrectionHistory[NO_PIECE][0];
     }
     for (int i = 0; i <= MAX_PLY + 2; ++i)
         stack[i].ply = i;
@@ -315,9 +314,7 @@ mctsNodeInfo* MonteCarlo::tree_policy(ShashChess::ThreadPool&        threads,
     assert(ply == 1);
 
     if (root->number_of_sons == 0)
-    {
-        return root;
-    }
+    { return root; }
 
     mctsNodeInfo* node = nullptr;
     while ((node = nodes[ply]))
@@ -357,9 +354,7 @@ mctsNodeInfo* MonteCarlo::tree_policy(ShashChess::ThreadPool&        threads,
         const size_t greedy = TRand<size_t>(0, 100);
         if (!is_root(node) && node->ttValue < VALUE_KNOWN_WIN && node->ttValue > -VALUE_KNOWN_WIN
             && (node->number_of_sons > 5 && greedy >= mctsMultiStrategy))
-        {
-            AB_Rollout = true;
-        }
+        { AB_Rollout = true; }
     }
 
     return node;
@@ -634,8 +629,8 @@ void MonteCarlo::do_move(const Move m) {
 
     stack[ply].continuationHistory =
       &thisThread->continuationHistory[stack[ply].inCheck][capture][pos.moved_piece(m)][m.to_sq()];
-	stack[ply].continuationCorrectionHistory =
-	  &thisThread->continuationCorrectionHistory[pos.moved_piece(m)][m.to_sq()];
+    stack[ply].continuationCorrectionHistory =
+      &thisThread->continuationCorrectionHistory[pos.moved_piece(m)][m.to_sq()];
 
     pos.do_move(m, states[ply]);
 
@@ -828,13 +823,9 @@ double MonteCarlo::ucb(const Edge* edge, long fatherVisits, bool priorMode) cons
     double result = 0.0;
     if (((mctsThreads > 1) && (edge->visits > mctsMultiMinVisits))
         || ((mctsThreads == 1) && edge->visits))
-    {
-        result += edge->meanActionValue;
-    }
+    { result += edge->meanActionValue; }
     else
-    {
-        result += UCB_UNEXPANDED_NODE;
-    }
+    { result += UCB_UNEXPANDED_NODE; }
 
     const double C =
       UCB_USE_FATHER_VISITS ? exploration_constant() * sqrt(fatherVisits) : exploration_constant();
