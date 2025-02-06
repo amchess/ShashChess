@@ -1,13 +1,13 @@
 /*
-  ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Alexander, a UCI chess playing engine derived from Stockfish
+ Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and Alexander developers (see AUTHORS file)
 
-  ShashChess is free software: you can redistribute it and/or modify
+  Alexander is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  ShashChess is distributed in the hope that it will be useful,
+  Alexander is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -25,7 +25,7 @@
 #include "position.h"
 
 //from crystal-shashin begin
-namespace ShashChess {
+namespace Alexander {
 namespace MoveGenConfig {
 bool useMoveGenCrystalLogic = false;
 }
@@ -171,15 +171,19 @@ ExtMove* generate_moves(const Position& pos, ExtMove* moveList, Bitboard target)
             {
                 Square to = pop_lsb(b);
 
-                // La condizione è stata ottimizzata per chiarezza e leggibilità
+                // La condizione e' stata ottimizzata per chiarezza e leggibilit�
                 if (!(blockers_for_king & from) || aligned(from, to, ksq))
-                { *moveList++ = Move(from, to); }
+                {
+                    *moveList++ = Move(from, to);
+                }
             }
         }
         else
         {
             while (b)
-            { *moveList++ = Move(from, pop_lsb(b)); }
+            {
+                *moveList++ = Move(from, pop_lsb(b));
+            }
         }
     }
     //from shashin-crystal end
@@ -215,7 +219,7 @@ ExtMove* generate_all(const Position& pos, ExtMove* moveList) {
     {
         Square to = pop_lsb(b);
 
-        // Aggiunge la logica Crystal solo se useCrystalLogic è attivo
+        // Aggiunge la logica Crystal solo se useCrystalLogic e' attivo
         if (!MoveGenConfig::useMoveGenCrystalLogic || (pos.attackers_to(to) & pos.pieces(~Us)) == 0)
             *moveList++ = Move(ksq, to);
     }
@@ -278,4 +282,4 @@ ExtMove* generate<LEGAL>(const Position& pos, ExtMove* moveList) {
     return moveList;
 }
 
-}  // namespace ShashChess
+}  // namespace Alexander

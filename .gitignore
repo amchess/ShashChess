@@ -4,7 +4,7 @@
 src/.depend
 
 # Built binary
-src/shashchess*
+src/alexander*
 src/-lstdc++.res
 
 # Neural network for the NNUE evaluation

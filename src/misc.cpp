@@ -1,13 +1,13 @@
 /*
-  ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Alexander, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and Alexander developers (see AUTHORS file)
 
-  ShashChess is free software: you can redistribute it and/or modify
+  Alexander is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  ShashChess is distributed in the hope that it will be useful,
+  Alexander is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -33,19 +33,19 @@
 #include <sstream>
 #include <string_view>
 #include <system_error>
-//from ShashChess begin
+//from Alexander begin
 #include <algorithm>
 #include <stdarg.h>
-//from ShashChess end
+//from Alexander end
 
 #include "types.h"
 
-namespace ShashChess {
+namespace Alexander {
 
 namespace {
 
 // Version number or dev.
-constexpr std::string_view version = "38";
+constexpr std::string_view version = "4.1";
 
 // Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 // cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
@@ -118,20 +118,20 @@ class Logger {
 }  // namespace
 
 
-// Returns the full name of the current Stockfish version.
+// Returns the full name of the current Alexander version.
 //
 // For local dev compiles we try to append the commit SHA and
 // commit date from git. If that fails only the local compilation
 // date is set and "nogit" is specified:
-//      Stockfish dev-YYYYMMDD-SHA
+//      Alexander dev-YYYYMMDD-SHA
 //      or
-//      Stockfish dev-YYYYMMDD-nogit
+//      Alexander dev-YYYYMMDD-nogit
 //
 // For releases (non-dev builds) we only include the version number:
-//      ShashChess version
+//      Alexander version
 std::string engine_version_info() {
     std::stringstream ss;
-    ss << "ShashChess " << version << std::setfill('0');
+    ss << "Alexander " << version << std::setfill('0');
 
     if constexpr (version == "dev")
     {
@@ -369,7 +369,9 @@ void dbg_print() {
 
     for (int i = 0; i < MaxDebugSlots; ++i)
         if ((n = mean[i][0]))
-        { std::cerr << "Mean #" << i << ": Total " << n << " Mean " << E(mean[i][1]) << std::endl; }
+        {
+            std::cerr << "Mean #" << i << ": Total " << n << " Mean " << E(mean[i][1]) << std::endl;
+        }
 
     for (int i = 0; i < MaxDebugSlots; ++i)
         if ((n = stdev[i][0]))
@@ -501,7 +503,9 @@ std::string CommandLine::get_binary_directory(std::string argv0, std::string wor
     // Pattern replacement: "./" at the start of path is replaced by the working directory
     //from Khalid begin
     if (binaryDirectory.find("." + pathSeparator) == 0)
-    { binaryDirectory.replace(0, 1, workingDirectory); }
+    {
+        binaryDirectory.replace(0, 1, workingDirectory);
+    }
     binaryDirectory = Util::fix_path(binaryDirectory);
     //from Khalid end
     return binaryDirectory;
@@ -513,7 +517,9 @@ std::string CommandLine::get_working_directory() {
     char*       cwd = GETCWD(buff, 40000);
     //from Khalid begin
     if (cwd)
-    { workingDirectory = cwd; }
+    {
+        workingDirectory = cwd;
+    }
     workingDirectory = Util::fix_path(workingDirectory);  //khalid
     //from Khalid end
     return workingDirectory;
@@ -523,15 +529,17 @@ std::string CommandLine::get_working_directory() {
 CommandLine* Util::cli = nullptr;
 void         Util::init(CommandLine* _cli) { cli = _cli; }
 std::string  Util::unquote(const std::string& s) {
-     std::string s1 = s;
+    std::string s1 = s;
 
-     if (s1.size() > 2)
-     {
-         if ((s1.front() == '\"' && s1.back() == '\"') || (s1.front() == '\'' && s1.back() == '\''))
-         { s1 = s1.substr(1, s1.size() - 2); }
+    if (s1.size() > 2)
+    {
+        if ((s1.front() == '\"' && s1.back() == '\"') || (s1.front() == '\'' && s1.back() == '\''))
+        {
+            s1 = s1.substr(1, s1.size() - 2);
+        }
     }
 
-     return s1;
+    return s1;
 }
 
 bool Util::is_empty_filename(const std::string& fn) {
@@ -643,4 +651,4 @@ std::string Util::format_string(const char* const fmt, ...) {
 //Book management and learning end
 
 
-}  // namespace ShashChess
+}  // namespace Alexander

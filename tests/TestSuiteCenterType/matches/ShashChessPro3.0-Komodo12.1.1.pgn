@@ -1,8 +1,8 @@
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.21"]
 [Round "1"]
-[White "ShashChess Pro 3.0-x86-64-bmi2"]
+[White "Alexander Pro 3.0-x86-64-bmi2"]
 [Black "Komodo-12.1.1-64bit-bmi2"]
 [Result "*"]
 [ECO "E11"]
@@ -17,11 +17,11 @@
 1. c4 Nf6 2. d4 e6 3. Nf3 Bb4+ 4. Nbd2 O-O 5. a3 Be7 6. e4 d6 7. Be2 c5 8.
 d5 Nbd7 9. O-O e5 *
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.21"]
 [Round "1"]
-[White "ShashChess Pro 3.0-x86-64-bmi2"]
+[White "Alexander Pro 3.0-x86-64-bmi2"]
 [Black "Komodo-12.1.1-64bit-bmi2"]
 [Result "*"]
 [BlackElo "3000"]
@@ -56,11 +56,11 @@ Qb6-d8 Bc1-d2 Ng6-f4 Be2-f1 Nf6-h7 Kg1-h2 Nf4-g6 Nc3-b5 Bc8-d7 Ra1-d1
 Qd8-c8 Bf1-e2 Qc8-d8 Kh2-g1 Ra8-a6 Kg1-h1 Re8-f8 Nf3-h2 f7-f5 e4xf5 Ng6-h4
 Be2-d3 Nh7-g5 Nh2-g4 Nh4xf5 Kh1-g1 Ra6-a8) +1.15/34 111} *
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.21"]
 [Round "1"]
-[White "ShashChess Pro 3.0-x86-64-bmi2"]
+[White "Alexander Pro 3.0-x86-64-bmi2"]
 [Black "Komodo-12.1.1-64bit-bmi2"]
 [Result "*"]
 [BlackElo "3000"]
@@ -305,11 +305,11 @@ g4-g5 Qe7-e5 Rg1-f1 Ng6xf4 Rf1xf4 Kg7-g8 Rf4xh4 Rh7xh4 Rh1xh4 Qe5-g3 Qc1-f4
 Qg3xf4 Rh4xf4 Kg8-f8 Kd1-d2 Kf8-g7 Rf4-f2 f7-f6 Rf2-f5 f6xg5 Rf5xg5+
 Kg7-f7) +2.09/28 21} Ng6 {(Ne7-g6 Qc1-g5) -0.06/30 11} *
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.21"]
 [Round "1"]
-[White "ShashChess Pro 3.0-x86-64-bmi2"]
+[White "Alexander Pro 3.0-x86-64-bmi2"]
 [Black "Komodo-12.1.1-64bit-bmi2"]
 [Result "*"]
 [BlackElo "3000"]
@@ -348,11 +348,11 @@ Bc1-d2 Bc8-d7 Re1-b1 Be7-d8 Bd2-c1 h7-h6 Nf3-h2 Ra8-a6 Nb5-c3 Ra6-a7 Nh2-f1
 Qb8-c8 Nc3-b5 Ra7-a6 Nf1-g3 Bd8-a5 Be2-f1 Ng6-h4 Nb5-c3 Re8-e7 Bc1-d2
 Ba5xc3 Qc2xc3 Bd7-a4 Rb3-b2 Ba4-e8 Qc3-e3 Ra6-a8 Qe3-d3) +1.22/32 30} *
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.21"]
 [Round "1"]
-[White "ShashChess Pro 3.0-x86-64-bmi2"]
+[White "Alexander Pro 3.0-x86-64-bmi2"]
 [Black "Komodo-12.1.1-64bit-bmi2"]
 [Result "1-0"]
 [BlackElo "3000"]
@@ -864,12 +864,12 @@ Qg3-h4+ Kh6-g6 Qh4-h7+ Kg6-g5 Qh7xf5+ Kg5xf5 Ra7-f7+ Kf5-g6 Rf7xf8 b6-b5
 c4xb5) +10.36/34 10} Qf5 {(Qe4-f5 Ra1-a7+ Kd7-e8) -13.03/27 9  Arena
 Adjudication} 1-0
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.21"]
 [Round "2"]
 [White "Komodo-12.1.1-64bit-bmi2"]
-[Black "ShashChess Pro 3.0-x86-64-bmi2"]
+[Black "Alexander Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
 [ECO "E11"]
@@ -1755,11 +1755,11 @@ Bd5-c4+ Kf1-e1 Kf4-e4 Bd4-g1 Ke4-d3 Bg1-h2 Bc4-a2 Bh2-c7 Kd3-c2 Bc7-g3
 Kc2-b3 Bg3-h2 Ba2-b1 Bh2-g1) 0.00/13 2} 142. Kxf1 {(Kg1xf1 Bd5-e4 Bd4-a7
 Be4-c2 Ba7-b8+ Kf4-f3) 0.00/5 0 Insufficient material} 1/2-1/2
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.21"]
 [Round "3"]
-[White "ShashChess Pro 3.0-x86-64-bmi2"]
+[White "Alexander Pro 3.0-x86-64-bmi2"]
 [Black "Komodo-12.1.1-64bit-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
@@ -1982,12 +1982,12 @@ Kf4-f5) 0.00/62 20} 57. Ke4 {(Kf5-e4 Rf3-f6 Rd6xf6 Kg7xf6) 0.00/69 21} Ra3
 {(Rf3-a3 Ke4-f5 Ra3-f3+) 0.00/61 25} 58. Kf5 {(Ke4-f5) 0.00/64 15} Rf3+
 {(Ra3-f3+) 0.00/73 21 3-fold repetition} 1/2-1/2
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.21"]
 [Round "4"]
 [White "Komodo-12.1.1-64bit-bmi2"]
-[Black "ShashChess Pro 3.0-x86-64-bmi2"]
+[Black "Alexander Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
 [ECO "E60"]
@@ -2221,11 +2221,11 @@ Kb5-c4 Ke6-e5 Kc4-d3 Ke5-f6 Bf2-e1 Kf6-e6 Kd3-d4 Bc7-e5+ Kd4-d3 Be5-c7)
 Kd3-c4) 0.00/60 11} Ke6 {(Ke5-e6) 0.00/61 113} 56. Kc4 {(Kd3-c4) 0.00/64 22
 3-fold repetition} 1/2-1/2
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.21"]
 [Round "5"]
-[White "ShashChess Pro 3.0-x86-64-bmi2"]
+[White "Alexander Pro 3.0-x86-64-bmi2"]
 [Black "Komodo-12.1.1-64bit-bmi2"]
 [Result "1-0"]
 [BlackElo "3000"]
@@ -2881,12 +2881,12 @@ Kh6-g7 Rf8-c8 Re7xe6 Ba8-b7 Re6-e7 Rc8-d8 Bh7-b1 Bb7-a8 Re7-e8 Rd8-d7 e5-e6
 Rd7-a7 Kg7-f6 Ka6-b5 Bb1-d3+ Kb5-b4 f7-f8Q Kb4-c3 Re8xa8 Ra7xa8 Qf8xa8
 Kc3xd3) -14.79/25 10  Arena Adjudication} 1-0
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.21"]
 [Round "6"]
 [White "Komodo-12.1.1-64bit-bmi2"]
-[Black "ShashChess Pro 3.0-x86-64-bmi2"]
+[Black "Alexander Pro 3.0-x86-64-bmi2"]
 [Result "0-1"]
 [BlackElo "3000"]
 [ECO "D43"]
@@ -3397,11 +3397,11 @@ g3-g2 Re5-e1 a3-a2 Re1-e6+ Kb6-a5 Re6-e1 Rb7-b3+ Kd3-c2 g2-g1Q Re1-e8
 Qg1-b1+ Kc2-d2) +25.67/22 7} 99. Rg5 {(Rg6-g5 Kc7-b6 Rg5-g6+) -15.66/22 9 
 Arena Adjudication} 0-1
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.22"]
 [Round "7"]
-[White "ShashChess Pro 3.0-x86-64-bmi2"]
+[White "Alexander Pro 3.0-x86-64-bmi2"]
 [Black "Komodo-12.1.1-64bit-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
@@ -3788,12 +3788,12 @@ Rg1-g2+) 0.00/28 5} Rg1+ {(Rg2-g1+ Kb1-c2 Rg1-g2+) 0.00/41 8} 69. Kc2
 0.00/43 8} 70. Kb1 {(Kc2-b1 Rg2-g1+) 0.00/36 5} Rg1+ {(Rg2-g1+ Kb1-c2)
 0.00/44 9} 71. Kc2 {(Kb1-c2) 0.00/52 5 3-fold repetition} 1/2-1/2
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.22"]
 [Round "8"]
 [White "Komodo-12.1.1-64bit-bmi2"]
-[Black "ShashChess Pro 3.0-x86-64-bmi2"]
+[Black "Alexander Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
 [ECO "B22"]
@@ -4319,11 +4319,11 @@ Kg8-h7 Kb6-b7 Kh7-g6 Kb7-c6 Kg6-f7 Kc6-d5 Kf7-g6 Kd5-e6 Kg6-h7 Ke6-f7
 Kh7-h6 Be5-f4+ Kh6-h7 Bf4-d2 Kh7-h8 Kf7-f6 Kh8-g8) 0.00/50 10 Insufficient
 material} 1/2-1/2
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.22"]
 [Round "9"]
-[White "ShashChess Pro 3.0-x86-64-bmi2"]
+[White "Alexander Pro 3.0-x86-64-bmi2"]
 [Black "Komodo-12.1.1-64bit-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
@@ -4500,12 +4500,12 @@ Kf2-g3 Kg6-f5) 0.00/83 12} Kg6 {(Kf5-g6 Kf2-g3 Kg6-f5) 0.00/62 30} 47. Kg3
 Kg6-f5) 0.00/65 20} 49. Kg3 {(Kf2-g3) 0.00/92 42} Kf5 {(Kg6-f5) 0.00/74 18
 3-fold repetition} 1/2-1/2
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.22"]
 [Round "10"]
 [White "Komodo-12.1.1-64bit-bmi2"]
-[Black "ShashChess Pro 3.0-x86-64-bmi2"]
+[Black "Alexander Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
 [ECO "E60"]
@@ -4957,11 +4957,11 @@ Kb6-c7 Rh4-h5 Rc6-d6 Rh5-h4 Kc7-d7 Rh4-b4 Kd7-c7 Rb4-h4) 0.00/45 11} Rh5+
 {(Rh4-h5+) 0.00/69 8} 95. Ke4 {(Kf5-e4) 0.00/71 12 3-fold repetition}
 1/2-1/2
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.22"]
 [Round "11"]
-[White "ShashChess Pro 3.0-x86-64-bmi2"]
+[White "Alexander Pro 3.0-x86-64-bmi2"]
 [Black "Komodo-12.1.1-64bit-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
@@ -5250,12 +5250,12 @@ Ke5-d4) 0.00/78 63} 66. Kxf3 {(Ke3xf3 Kc5-b6 Kf3-e4 Kb6-c5) 0.00/89 12}
 Kxc4 {(Kc5xc4 Kf3-e4 Kc4-c5 Ke4-e5 Kc5-c6 Ke5-e6 Kc6-c5 Ke6-f7 Kc5-d5
 Kf7-f6 Kd5-c6 Kf6-e6) 0.00/99 3 Insufficient material} 1/2-1/2
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.22"]
 [Round "12"]
 [White "Komodo-12.1.1-64bit-bmi2"]
-[Black "ShashChess Pro 3.0-x86-64-bmi2"]
+[Black "Alexander Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
 [ECO "B90"]
@@ -6715,11 +6715,11 @@ Bb5-f1 Bg3-f4 Bf1-b5 Bf4-g3) 0.00/49 9} Kxb7 {(Kb8xb7 Kd7-e6 Kb7-a7 Ke6xe5
 Ka7-b8 Be2-g4 Kb8-c7 Ke5-f6 Kc7-b6 Kf6-g5 Kb6-a7 Bg4-e6 Ka7-b6 Kg5-h6
 Kb6-a5) 0.00/15 8 Insufficient material} 1/2-1/2
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.22"]
 [Round "13"]
-[White "ShashChess Pro 3.0-x86-64-bmi2"]
+[White "Alexander Pro 3.0-x86-64-bmi2"]
 [Black "Komodo-12.1.1-64bit-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
@@ -6962,12 +6962,12 @@ Kg1-g2 Kf5-e6 Kg2-h3 Ke6-d7 Kh3xh4 Kd7-e7 Kh4-g4 Ke7-f6 Kg4-f4 Kf6-f7
 Kf4-f5 Kf7-g7 Kf5-g4 Kg7-g8 Kg4-g3 Kg8-g7 Kg3-f4 Kg7-f8 Kf4-e3 Kf8-f7
 Ke3-f3 Kf7-e7 Kf3-g4) 0.00/87 81  Arena Adjudication (Tablebases)} 1/2-1/2
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.22"]
 [Round "14"]
 [White "Komodo-12.1.1-64bit-bmi2"]
-[Black "ShashChess Pro 3.0-x86-64-bmi2"]
+[Black "Alexander Pro 3.0-x86-64-bmi2"]
 [Result "1-0"]
 [BlackElo "3000"]
 [ECO "D00"]
@@ -7312,11 +7312,11 @@ Kb6-c6 Kg4-g5 Kc6-d5 Kg5-f6 Kd5-d6 Nh3-f4 Nf5-e7 Kf6-g5 Ne7-f5 Kg5xg6
 Nf5-d4 Kg6-g5 Nd4xe6+ Kg5xh4 Ne6xf4 Kh4-g4 Nf4-d3 Kg4-f5) +0.05/31 25} ...
 {Black forfeits on time} 1-0
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.22"]
 [Round "15"]
-[White "ShashChess Pro 3.0-x86-64-bmi2"]
+[White "Alexander Pro 3.0-x86-64-bmi2"]
 [Black "Komodo-12.1.1-64bit-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
@@ -7644,12 +7644,12 @@ Qg1-f1+ Kh3-g3) 0.00/58 24} Qf1+ {(Qg1-f1+ Kh3-h4 Qf1-h1+ Kh4-g3) 0.00/49
 Qf2-f1+) 0.00/47 11} 78. Kh3 {(Kh2-h3) 0.00/67 14} Qf1+ {(Qf2-f1+) 0.00/55
 9 3-fold repetition} 1/2-1/2
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.22"]
 [Round "16"]
 [White "Komodo-12.1.1-64bit-bmi2"]
-[Black "ShashChess Pro 3.0-x86-64-bmi2"]
+[Black "Alexander Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
 [ECO "D46"]
@@ -7900,11 +7900,11 @@ Qg3-b8+ Be6-g8 Qb8-g3) 0.00/45 33} Be6 {(Bg8-e6 Qg3-b8+ Be6-g8) 0.00/51 13}
 55. Qb8+ {(Qg3-b8+ Be6-g8 Qb8-g3) 0.00/58 45} Bg8 {(Be6-g8) 0.00/63 12} 56.
 Qg3 {(Qb8-g3) 0.00/75 15 3-fold repetition} 1/2-1/2
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.22"]
 [Round "17"]
-[White "ShashChess Pro 3.0-x86-64-bmi2"]
+[White "Alexander Pro 3.0-x86-64-bmi2"]
 [Black "Komodo-12.1.1-64bit-bmi2"]
 [Result "1-0"]
 [BlackElo "3000"]
@@ -8077,12 +8077,12 @@ Kh7-h6 Be6-d5 Kh6-g5 Qf7-f4+ Kg5-g6 Kf3-g4 Kg6-g7 Qf4-f7+ Kg7-h8 Kg4-f3
 d4-d3 e7-e8Q+ Ra8xe8 Qf7xe8+ Kh8-g7 Qe8-f7+ Kg7-h6 Bd5xc6) +15.31/26 16}
 Qe5 {(Qg7-e5 Rg5-h5) -12.59/28 179  Arena Adjudication} 1-0
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.22"]
 [Round "18"]
 [White "Komodo-12.1.1-64bit-bmi2"]
-[Black "ShashChess Pro 3.0-x86-64-bmi2"]
+[Black "Alexander Pro 3.0-x86-64-bmi2"]
 [Result "1-0"]
 [BlackElo "3000"]
 [ECO "D05"]
@@ -8371,11 +8371,11 @@ Kf2-e2 Kf5-e6 Ke2-d3 Ke6-f5 a5-a6 Kf5-g5 Kd3-d4 Kg5-h4 Bd6-c5 Kh4-g5 Bc5-f8
 Kg5-h4 Bf8-d6) +M30/23 3} Ba6 {(Bc8-a6) -32.13/27 14  Arena Adjudication}
 1-0
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.22"]
 [Round "19"]
-[White "ShashChess Pro 3.0-x86-64-bmi2"]
+[White "Alexander Pro 3.0-x86-64-bmi2"]
 [Black "Komodo-12.1.1-64bit-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
@@ -8872,12 +8872,12 @@ Ke5-d5 Kb6-a6 Kd5-e5 Ka6-b5 Ke5-e4 Kb5-c5 Ke4-f4 Kc5-c4 Kf4-f3) 0.00/76 14}
 111. Kxf2 {(Kf1xf2 Kc3-c4 Kf2-f3 Kc4-b5 Kf3-f4 Kb5-a4 Kf4-f3) 0.00/127 3
 Insufficient material} 1/2-1/2
 
-[Event "ShashChessPro3.0-Komodo12.1.1"]
+[Event "AlexanderPro3.0-Komodo12.1.1"]
 [Site "?"]
 [Date "2018.08.22"]
 [Round "20"]
 [White "Komodo-12.1.1-64bit-bmi2"]
-[Black "ShashChess Pro 3.0-x86-64-bmi2"]
+[Black "Alexander Pro 3.0-x86-64-bmi2"]
 [Result "1-0"]
 [BlackElo "3000"]
 [ECO "A22"]

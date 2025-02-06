@@ -4,13 +4,13 @@
 
     #include "ChessDb.h"
 
-namespace ShashChess::Livebook {
+namespace Alexander::Livebook {
 class Proxy final: public ChessDb {
    public:
     explicit Proxy(const std::string& endpoint);
     ~Proxy() override = default;
 };
-}  // namespace ShashChess::Livebook;
+}  // namespace Alexander::Livebook;
 
 
 #endif

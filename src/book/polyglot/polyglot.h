@@ -3,7 +3,7 @@
 
 #include "../book.h"
 
-namespace ShashChess {
+namespace Alexander {
 namespace {
 struct PolyglotEntry;
 struct PolyglotBookMove;

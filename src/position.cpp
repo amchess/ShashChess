@@ -1,13 +1,13 @@
 /*
-  ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Alexander, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and Alexander developers (see AUTHORS file)
 
-  ShashChess is free software: you can redistribute it and/or modify
+  Alexander is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  ShashChess is distributed in the hope that it will be useful,
+  Alexander is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -34,14 +34,14 @@
 #include "bitboard.h"
 #include "misc.h"
 #include "movegen.h"
-#include "nnue/nnue_common.h"
+//classical
 #include "syzygy/tbprobe.h"
 #include "tt.h"
 #include "uci.h"
 
 using std::string;
 
-namespace ShashChess {
+namespace Alexander {
 
 namespace Zobrist {
 
@@ -83,10 +83,10 @@ std::ostream& operator<<(std::ostream& os, const Position& pos) {
     if (int(Tablebases::MaxCardinality) >= popcount(pos.pieces()) && !pos.can_castle(ANY_CASTLING))
     {
         StateInfo st;
-        ASSERT_ALIGNED(&st, Eval::NNUE::CacheLineSize);
+        //for classical
 
         Position p;
-        p.set(pos.fen(), pos.is_chess960(), &st);
+        p.set(pos.fen(), pos.is_chess960(), &st, pos.this_thread());  //for classical
         Tablebases::ProbeState s1, s2;
         Tablebases::WDLScore   wdl = Tablebases::probe_wdl(p, &s1);
         int                    dtz = Tablebases::probe_dtz(p, &s2);
@@ -939,7 +939,8 @@ void Position::init() {
 // Initializes the position object with the given FEN string.
 // This function is not very robust - make sure that input FENs are correct,
 // this is assumed to be the responsibility of the GUI.
-Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si) {
+Position&
+Position::set(const string& fenStr, bool isChess960, StateInfo* si, Thread* th) {  //for classical
     /*
    A FEN string defines a particular position using only the ASCII character set.
 
@@ -1066,6 +1067,12 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si) {
     gamePly = std::max(2 * (gamePly - 1), 0) + (sideToMove == BLACK);
 
     chess960 = isChess960;
+    //for classical begin
+    if (th != nullptr)
+    {
+        thisThread = th;
+    }
+    //for classical end
     set_state();
 
     assert(pos_is_ok());
@@ -1116,7 +1123,7 @@ void Position::set_check_info() const {
 void Position::set_state() const {
 
     st->key = st->materialKey = 0;
-    st->majorPieceKey = st->minorPieceKey = 0;
+    st->minorPieceKey         = 0;
     st->nonPawnKey[WHITE] = st->nonPawnKey[BLACK] = 0;
     st->pawnKey                                   = Zobrist::noPawns;
     st->nonPawnMaterial[WHITE] = st->nonPawnMaterial[BLACK] = VALUE_ZERO;
@@ -1141,17 +1148,8 @@ void Position::set_state() const {
             {
                 st->nonPawnMaterial[color_of(pc)] += PieceValue[pc];
 
-                if (type_of(pc) >= ROOK)
-                    st->majorPieceKey ^= Zobrist::psq[pc][s];
-
-                else
+                if (type_of(pc) <= BISHOP)
                     st->minorPieceKey ^= Zobrist::psq[pc][s];
-            }
-
-            else
-            {
-                st->majorPieceKey ^= Zobrist::psq[pc][s];
-                st->minorPieceKey ^= Zobrist::psq[pc][s];
             }
         }
     }
@@ -1187,7 +1185,7 @@ Position& Position::set(const string& code, Color c, StateInfo* si) {
     string fenStr = "8/" + sides[0] + char(8 - sides[0].length() + '0') + "/8/8/8/8/" + sides[1]
                   + char(8 - sides[1].length() + '0') + "/8 w - - 0 10";
 
-    return set(fenStr, false, si);
+    return set(fenStr, false, si, nullptr);  //for classical
 }
 
 
@@ -1238,7 +1236,40 @@ string Position::fen() const {
 
     return ss.str();
 }
+//for classical begin
+/// Position::slider_blockers() returns a bitboard of all the pieces (both colors)
+/// that are blocking attacks on the square 's' from 'sliders'. A piece blocks a
+/// slider if removing that piece from the board would result in a position where
+/// square 's' is attacked. For example, a king-attack blocking piece can be either
+/// a pinned or a discovered check piece, according if its color is the opposite
+/// or the same of the color of the slider.
 
+Bitboard Position::slider_blockers(Bitboard sliders, Square s, Bitboard& pinners) const {
+
+    Bitboard blockers = 0;
+    pinners           = 0;
+
+    // Snipers are sliders that attack 's' when a piece and other snipers are removed
+    Bitboard snipers = ((attacks_bb<ROOK>(s) & pieces(QUEEN, ROOK))
+                        | (attacks_bb<BISHOP>(s) & pieces(QUEEN, BISHOP)))
+                     & sliders;
+    Bitboard occupancy = pieces() ^ snipers;
+
+    while (snipers)
+    {
+        Square   sniperSq = pop_lsb(snipers);
+        Bitboard b        = between_bb(s, sniperSq) & occupancy;
+
+        if (b && !more_than_one(b))
+        {
+            blockers |= b;
+            if (b & pieces(color_of(piece_on(s))))
+                pinners |= sniperSq;
+        }
+    }
+    return blockers;
+}
+//for classical end
 // Calculates st->blockersForKing[c] and st->pinners[~c],
 // which store respectively the pieces preventing king of color c from being in check
 // and the slider pieces of color ~c pinning pieces of color c to the king.
@@ -1470,11 +1501,17 @@ bool Position::gives_check(Move m) const {
 // Makes a move, and saves all information necessary
 // to a StateInfo object. The move is assumed to be legal. Pseudo-legal
 // moves should be filtered out before this function is called.
-void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
+// If a pointer to the TT table is passed, the entry for the new position
+// will be prefetched
+void Position::do_move(Move                      m,
+                       StateInfo&                newSt,
+                       bool                      givesCheck,
+                       const TranspositionTable* tt = nullptr) {
 
     assert(m.is_ok());
     assert(&newSt != st);
 
+    thisThread->nodes.fetch_add(1, std::memory_order_relaxed);  //for classical
     Key k = st->key ^ Zobrist::side;
 
     // Copy some fields of the old state to our new StateInfo object except the
@@ -1491,13 +1528,7 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
     ++st->rule50;
     ++st->pliesFromNull;
 
-    // Used by NNUE
-    st->accumulatorBig.computed[WHITE]     = st->accumulatorBig.computed[BLACK] =
-      st->accumulatorSmall.computed[WHITE] = st->accumulatorSmall.computed[BLACK] = false;
-
-    auto& dp     = st->dirtyPiece;
-    dp.dirty_num = 1;
-
+    //classical
     Color  us       = sideToMove;
     Color  them     = ~us;
     Square from     = m.from_sq();
@@ -1518,7 +1549,6 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
         do_castling<true>(us, from, to, rfrom, rto);
 
         k ^= Zobrist::psq[captured][rfrom] ^ Zobrist::psq[captured][rto];
-        st->majorPieceKey ^= Zobrist::psq[captured][rfrom] ^ Zobrist::psq[captured][rto];
         st->nonPawnKey[us] ^= Zobrist::psq[captured][rfrom] ^ Zobrist::psq[captured][rto];
         captured = NO_PIECE;
     }
@@ -1549,21 +1579,15 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
             st->nonPawnMaterial[them] -= PieceValue[captured];
             st->nonPawnKey[them] ^= Zobrist::psq[captured][capsq];
 
-            if (type_of(captured) >= ROOK)
-                st->majorPieceKey ^= Zobrist::psq[captured][capsq];
-
-            else
+            if (type_of(captured) <= BISHOP)
                 st->minorPieceKey ^= Zobrist::psq[captured][capsq];
         }
 
-        dp.dirty_num = 2;  // 1 piece moved, 1 piece captured
-        dp.piece[1]  = captured;
-        dp.from[1]   = capsq;
-        dp.to[1]     = SQ_NONE;
-
+        //for classical
         // Update board and piece lists
         remove_piece(capsq);
 
+        prefetch(thisThread->materialTable[st->materialKey]);  //for classical
         k ^= Zobrist::psq[captured][capsq];
         st->materialKey ^= Zobrist::psq[captured][pieceCount[captured]];
 
@@ -1592,10 +1616,7 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
     // Move the piece. The tricky Chess960 castling is handled earlier
     if (m.type_of() != CASTLING)
     {
-        dp.piece[0] = pc;
-        dp.from[0]  = from;
-        dp.to[0]    = to;
-
+        //for classical
         move_piece(from, to);
     }
 
@@ -1621,23 +1642,14 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
             remove_piece(to);
             put_piece(promotion, to);
 
-            // Promoting pawn to SQ_NONE, promoted piece from SQ_NONE
-            dp.to[0]               = SQ_NONE;
-            dp.piece[dp.dirty_num] = promotion;
-            dp.from[dp.dirty_num]  = SQ_NONE;
-            dp.to[dp.dirty_num]    = to;
-            dp.dirty_num++;
-
+            //for classical
             // Update hash keys
             k ^= Zobrist::psq[pc][to] ^ Zobrist::psq[promotion][to];
             st->pawnKey ^= Zobrist::psq[pc][to];
             st->materialKey ^=
               Zobrist::psq[promotion][pieceCount[promotion] - 1] ^ Zobrist::psq[pc][pieceCount[pc]];
 
-            if (promotionType >= ROOK)
-                st->majorPieceKey ^= Zobrist::psq[promotion][to];
-
-            else
+            if (promotionType <= BISHOP)
                 st->minorPieceKey ^= Zobrist::psq[promotion][to];
 
             // Update material
@@ -1655,24 +1667,17 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
     {
         st->nonPawnKey[us] ^= Zobrist::psq[pc][from] ^ Zobrist::psq[pc][to];
 
-        if (type_of(pc) == KING)
-        {
-            st->majorPieceKey ^= Zobrist::psq[pc][from] ^ Zobrist::psq[pc][to];
-            st->minorPieceKey ^= Zobrist::psq[pc][from] ^ Zobrist::psq[pc][to];
-        }
-
-        else if (type_of(pc) >= ROOK)
-            st->majorPieceKey ^= Zobrist::psq[pc][from] ^ Zobrist::psq[pc][to];
-
-        else
+        if (type_of(pc) <= BISHOP)
             st->minorPieceKey ^= Zobrist::psq[pc][from] ^ Zobrist::psq[pc][to];
     }
 
-    // Set capture piece
-    st->capturedPiece = captured;
-
     // Update the key with the final value
     st->key = k;
+    if (tt)
+        prefetch(tt->first_entry(key()));
+
+    // Set capture piece
+    st->capturedPiece = captured;
 
     // Calculate checkers bitboard (if move gives check)
     st->checkersBB = givesCheck ? attackers_to(square<KING>(them)) & pieces(us) : 0;
@@ -1777,19 +1782,7 @@ void Position::do_castling(Color us, Square from, Square& to, Square& rfrom, Squ
     rfrom         = to;  // Castling is encoded as "king captures friendly rook"
     rto           = relative_square(us, kingSide ? SQ_F1 : SQ_D1);
     to            = relative_square(us, kingSide ? SQ_G1 : SQ_C1);
-
-    if (Do)
-    {
-        auto& dp     = st->dirtyPiece;
-        dp.piece[0]  = make_piece(us, KING);
-        dp.from[0]   = from;
-        dp.to[0]     = to;
-        dp.piece[1]  = make_piece(us, ROOK);
-        dp.from[1]   = rfrom;
-        dp.to[1]     = rto;
-        dp.dirty_num = 2;
-    }
-
+    //for classical
     // Remove both pieces first since squares could overlap in Chess960
     remove_piece(Do ? from : to);
     remove_piece(Do ? rfrom : rto);
@@ -1807,16 +1800,13 @@ void Position::do_null_move(StateInfo& newSt, const TranspositionTable& tt) {
     assert(!checkers());
     assert(&newSt != st);
 
-    std::memcpy(&newSt, st, offsetof(StateInfo, accumulatorBig));
+    std::memcpy(&newSt, st, sizeof(StateInfo));  //for classical
 
     newSt.previous = st;
     st->next       = &newSt;
     st             = &newSt;
 
-    st->dirtyPiece.dirty_num               = 0;
-    st->dirtyPiece.piece[0]                = NO_PIECE;  // Avoid checks in UpdateAccumulator()
-    st->accumulatorBig.computed[WHITE]     = st->accumulatorBig.computed[BLACK] =
-      st->accumulatorSmall.computed[WHITE] = st->accumulatorSmall.computed[BLACK] = false;
+    //for classical
 
     if (st->epSquare != SQ_NONE)
     {
@@ -1825,9 +1815,9 @@ void Position::do_null_move(StateInfo& newSt, const TranspositionTable& tt) {
     }
 
     st->key ^= Zobrist::side;
-    ++st->rule50;
     prefetch(tt.first_entry(key()));
 
+    //from classical
     st->pliesFromNull = 0;
 
     sideToMove = ~sideToMove;
@@ -1847,23 +1837,6 @@ void Position::undo_null_move() {
 
     st         = st->previous;
     sideToMove = ~sideToMove;
-}
-
-
-// Computes the new hash key after the given move. Needed
-// for speculative prefetch. It doesn't recognize special moves like castling,
-// en passant and promotions.
-Key Position::key_after(Move m) const {
-
-    Square from     = m.from_sq();
-    Square to       = m.to_sq();
-    Piece  pc       = piece_on(from);
-    Piece  captured = piece_on(to);
-    Key    k        = st->key ^ Zobrist::side;
-
-    k ^= Zobrist::psq[captured][to] ^ Zobrist::psq[pc][to] ^ Zobrist::psq[pc][from];
-
-    return (captured || type_of(pc) == PAWN) ? k : adjust_key50<true>(k);
 }
 
 
@@ -1954,8 +1927,9 @@ bool Position::see_ge(Move m, int threshold) const {
 
         else if ((bb = stmAttackers & pieces(QUEEN)))
         {
-            if ((swap = QueenValue - swap) < res)
-                break;
+            swap = QueenValue - swap;
+            //  implies that the previous recapture was done by a higher rated piece than a Queen (King is excluded)
+            assert(swap >= res);
             occupied ^= least_significant_square_bb(bb);
 
             attackers |= (attacks_bb<BISHOP>(to, occupied) & pieces(BISHOP, QUEEN))
@@ -1978,11 +1952,12 @@ bool Position::is_draw(int ply) const {
     if (st->rule50 > 99 && (!checkers() || MoveList<LEGAL>(*this).size()))
         return true;
 
-    // Return a draw score if a position repeats once earlier but strictly
-    // after the root, or repeats twice before or at the root.
-    return st->repetition && st->repetition < ply;
+    return is_repetition(ply);
 }
 
+// Return a draw score if a position repeats once earlier but strictly
+// after the root, or repeats twice before or at the root.
+bool Position::is_repetition(int ply) const { return st->repetition && st->repetition < ply; }
 
 // Tests whether there has been at least one repetition
 // of positions since the last capture or pawn move.
@@ -2115,7 +2090,7 @@ void Position::flip() {
     std::getline(ss, token);  // Half and full moves
     f += token;
 
-    set(f, is_chess960(), st);
+    set(f, is_chess960(), st, this_thread());  //for classical
 
     assert(pos_is_ok());
 }
@@ -2173,4 +2148,4 @@ bool Position::pos_is_ok() const {
     return true;
 }
 
-}  // namespace ShashChess
+}  // namespace Alexander

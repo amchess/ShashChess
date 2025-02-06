@@ -1,13 +1,13 @@
 /*
-  ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Alexander, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and Alexander developers (see AUTHORS file)
 
-  ShashChess is free software: you can redistribute it and/or modify
+  Alexander is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  ShashChess is distributed in the hope that it will be useful,
+  Alexander is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -26,7 +26,7 @@
 #include "../position.h"
 #include "../thread.h"
 
-namespace ShashChess {
+namespace Alexander {
 // The data structures for the Monte Carlo algorithm
 typedef double Reward;
 
@@ -191,17 +191,15 @@ class MonteCarlo {
     MonteCarlo& operator=(const MonteCarlo&) = delete;
 
     // The main function of the class
-    void search(ShashChess::ThreadPool&        threads,
-                ShashChess::Search::LimitsType limits,
-                bool                           isMainThread,
-                Search::Worker*                worker);
+    void search(Alexander::ThreadPool&        threads,
+                Alexander::Search::LimitsType limits,
+                bool                          isMainThread,
+                Search::Worker*               worker);
 
     // The high-level description of the Monte-Carlo algorithm
-    void          create_root(Search::Worker* worker);
-    bool          computational_budget(ShashChess::ThreadPool&        threads,
-                                       ShashChess::Search::LimitsType limits);
-    mctsNodeInfo* tree_policy(ShashChess::ThreadPool&        threads,
-                              ShashChess::Search::LimitsType limits);
+    void create_root(Search::Worker* worker);
+    bool computational_budget(Alexander::ThreadPool& threads, Alexander::Search::LimitsType limits);
+    mctsNodeInfo* tree_policy(Alexander::ThreadPool& threads, Alexander::Search::LimitsType limits);
     Reward        playout_policy(mctsNodeInfo* node);
     Value         backup(Reward r, bool AB_Mode);
     Edge*         best_child(mctsNodeInfo* node, EdgeStatistic statistic) const;
@@ -232,14 +230,14 @@ class MonteCarlo {
 
     // Output of results
     [[nodiscard]] bool should_emit_pv(bool isMainThread) const;
-    void               emit_pv(Search::Worker* worker, ShashChess::ThreadPool& threads);
+    void               emit_pv(Search::Worker* worker, Alexander::ThreadPool& threads);
     void               print_children();
 
    private:
-    Position&                   pos;  // The current position of the tree
-    ShashChess::Search::Worker* thisThread;
-    TranspositionTable&         tt;
-    mctsNodeInfo*               root{};  // A pointer to the root
+    Position&                  pos;  // The current position of the tree
+    Alexander::Search::Worker* thisThread;
+    TranspositionTable&        tt;
+    mctsNodeInfo*              root{};  // A pointer to the root
 
     // Counters and statistics
     int       ply{};
@@ -266,7 +264,7 @@ class MonteCarlo {
     // implementation, we want to be able to reference from stack[-4] to stack[MAX_PLY+2].
     mctsNodeInfo *nodesBuffer[MAX_PLY + 10]{}, **nodes  = nodesBuffer + 7;
     Edge *        edgesBuffer[MAX_PLY + 10]{}, **edges  = edgesBuffer + 7;
-    Search::Stack stackBuffer[MAX_PLY + 10]{}, *stack   = stackBuffer + 7;
+    Search::Stack stackBuffer[MAX_PLY + 17]{}, *stack   = stackBuffer + 7;
     StateInfo     statesBuffer[MAX_PLY + 10]{}, *states = statesBuffer + 7;
 };
 }

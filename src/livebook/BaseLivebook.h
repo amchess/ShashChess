@@ -15,7 +15,7 @@ extern "C" {
     #undef min
     #undef max
 
-namespace ShashChess::Livebook {
+namespace Alexander::Livebook {
 class BaseLivebook {
    public:
     // Virtual destructor for proper cleanup of derived classes

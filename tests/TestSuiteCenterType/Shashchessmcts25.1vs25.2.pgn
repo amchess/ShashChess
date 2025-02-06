@@ -1,9 +1,9 @@
-﻿[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+﻿[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.22"]
 [Round "1.1"]
-[White "ShashChess 25.1MCTS"]
-[Black "ShashChess 25.2MCTS"]
+[White "Alexander 25.1MCTS"]
+[Black "Alexander 25.2MCTS"]
 [Result "1/2-1/2"]
 [ECO "E11"]
 [Annotator "0.37;0.32"]
@@ -70,12 +70,12 @@ Nbd2 O-O 5. a3 Be7 6. e4 d6 7. Be2 c5 8. d5 Nbd7 9. O-O e5 10. Kh1 {[%eval 37,
 (Cf6)} 60. f6 {[%eval 0,24] [%emt 0:00:17] (Re1)} Qxf6 {[%eval 0,29] [%emt 0:
 00:07] (Cxf6)} 1/2-1/2
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.22"]
 [Round "2.1"]
-[White "ShashChess 25.2MCTS"]
-[Black "ShashChess 25.1MCTS"]
+[White "Alexander 25.2MCTS"]
+[Black "Alexander 25.1MCTS"]
 [Result "1/2-1/2"]
 [ECO "E11"]
 [Annotator "0.29;0.29"]
@@ -134,12 +134,12 @@ Qd2 {[%eval 0,39] [%emt 0:00:16] (Tc1)} Nf3 {[%eval 0,48] [%emt 0:00:20]} 54.
 Qe3 {[%eval 0,47] [%emt 0:00:23]} Nhg5 {[%eval 0,49] [%emt 0:00:24] (Cd4)}
 1/2-1/2
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.22"]
 [Round "3.1"]
-[White "ShashChess 25.1MCTS"]
-[Black "ShashChess 25.2MCTS"]
+[White "Alexander 25.1MCTS"]
+[Black "Alexander 25.2MCTS"]
 [Result "1/2-1/2"]
 [ECO "E60"]
 [Annotator "0.56;0.49"]
@@ -312,12 +312,12 @@ Kd5 {[%eval 4,30] [%emt 0:00:04] (Tf3+)} Kf6 {[%eval 1,29] [%emt 0:00:02] (Re7)
 [%emt 0:00:28] (Rg7)} 163. Re3 {[%eval 3,39] [%emt 0:00:27] (Rd5)} Kg7 {
 [%eval 0,33] [%emt 0:00:02]} 164. Kd5 {[%eval 3,37] [%emt 0:00:03]} 1/2-1/2
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.22"]
 [Round "4.1"]
-[White "ShashChess 25.2MCTS"]
-[Black "ShashChess 25.1MCTS"]
+[White "Alexander 25.2MCTS"]
+[Black "Alexander 25.1MCTS"]
 [Result "1-0"]
 [ECO "E60"]
 [Annotator "0.61;0.47"]
@@ -431,12 +431,12 @@ Bd6+ {[%eval 240,23] [%emt 0:00:07]} Kd7 {[%eval 258,20] [%emt 0:00:11]} 91. a7
 0:00:16]} 107. a8=Q+ {[%eval 27997,0] [%emt 0:00:02]} Kf5 {[%eval 27997,1] 
 [%emt 0:00:00]} 108. Qd5+ {[%eval 27998,0] [%emt 0:00:00]} 1-0
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.23"]
 [Round "5.1"]
-[White "ShashChess 25.1MCTS"]
-[Black "ShashChess 25.2MCTS"]
+[White "Alexander 25.1MCTS"]
+[Black "Alexander 25.2MCTS"]
 [Result "1/2-1/2"]
 [ECO "B90"]
 [Annotator "0.39;0.35"]
@@ -474,12 +474,12 @@ Nxf4 {[%eval 2,38] [%emt 0:00:40]} 32. Qf5 {[%eval 0,41] [%emt 0:00:14]} Qxf5 {
 [%eval 0,42] [%emt 0:00:36]} 33. Bxf5 {[%eval 0,45] [%emt 0:00:11]} Ne2 {
 [%eval 0,42] [%emt 0:00:27]} 1/2-1/2
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.23"]
 [Round "6.1"]
-[White "ShashChess 25.2MCTS"]
-[Black "ShashChess 25.1MCTS"]
+[White "Alexander 25.2MCTS"]
+[Black "Alexander 25.1MCTS"]
 [Result "1-0"]
 [ECO "B90"]
 [Annotator "0.54;0.30"]
@@ -580,12 +580,12 @@ Bf5 {[%eval 91,31] [%emt 0:00:23]} 68. b4 {[%eval 129,28] [%emt 0:00:07]} Bf6 {
 [%eval 27999,1] [%emt 0:00:00]} Ke5 {[%eval 27999,0] [%emt 0:00:00]} 95. b8=Q {
 [%eval 27999,0] [%emt 0:00:00]} 1-0
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.23"]
 [Round "7.1"]
-[White "ShashChess 25.1MCTS"]
-[Black "ShashChess 25.2MCTS"]
+[White "Alexander 25.1MCTS"]
+[Black "Alexander 25.2MCTS"]
 [Result "1/2-1/2"]
 [ECO "D02"]
 [Annotator "0.16;0.12"]
@@ -620,12 +620,12 @@ Nf6 4. c3 Nc6 5. Nd2 e6 6. Ngf3 Bd6 7. Bg3 O-O 8. Bd3 b6 9. e4 Be7 10. e5 {
 {[%eval 0,44] [%emt 0:00:26]} Qxf1 {[%eval 0,51] [%emt 0:00:44]} 31. Qxa7+ {
 [%eval 0,47] [%emt 0:01:41]} 1/2-1/2
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.23"]
 [Round "8.1"]
-[White "ShashChess 25.2MCTS"]
-[Black "ShashChess 25.1MCTS"]
+[White "Alexander 25.2MCTS"]
+[Black "Alexander 25.1MCTS"]
 [Result "1/2-1/2"]
 [ECO "D02"]
 [Annotator "0.16;0.08"]
@@ -658,12 +658,12 @@ h5 {[%eval 12,39] [%emt 0:01:13]} dxc3 {[%eval 7,39] [%emt 0:01:18]} 16. bxc3 {
 [%eval 0,52] [%emt 0:01:02]} Kg8 {[%eval 0,37] [%emt 0:00:31]} 29. Ng5 {
 [%eval 0,34] [%emt 0:00:35]} 1/2-1/2
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.23"]
 [Round "9.1"]
-[White "ShashChess 25.1MCTS"]
-[Black "ShashChess 25.2MCTS"]
+[White "Alexander 25.1MCTS"]
+[Black "Alexander 25.2MCTS"]
 [Result "1/2-1/2"]
 [ECO "D43"]
 [Annotator "0.10;0.08"]
@@ -691,12 +691,12 @@ Be7 {[%eval 8,37] [%emt 0:01:57]} 9. O-O {[%eval 8,34] [%emt 0:00:18]} O-O {
 [%eval 0,53] [%emt 0:00:43]} 22. Bd3 {[%eval 0,45] [%emt 0:02:35]} Ne7 {
 [%eval 0,55] [%emt 0:00:38]} 23. R6c2 {[%eval 0,49] [%emt 0:00:21]} 1/2-1/2
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.23"]
 [Round "10.1"]
-[White "ShashChess 25.2MCTS"]
-[Black "ShashChess 25.1MCTS"]
+[White "Alexander 25.2MCTS"]
+[Black "Alexander 25.1MCTS"]
 [Result "1/2-1/2"]
 [ECO "D43"]
 [Annotator "0.09;0.10"]
@@ -731,12 +731,12 @@ Be7 {[%eval 10,39] [%emt 0:02:46]} 9. O-O {[%eval 11,36] [%emt 0:01:08]} O-O {
 29. Nd2 {[%eval 0,42] [%emt 0:00:27]} axb4 {[%eval 0,43] [%emt 0:00:28]} 30. c6
 {[%eval 0,31] [%emt 0:00:24]} 1/2-1/2
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.23"]
 [Round "11.1"]
-[White "ShashChess 25.1MCTS"]
-[Black "ShashChess 25.2MCTS"]
+[White "Alexander 25.1MCTS"]
+[Black "Alexander 25.2MCTS"]
 [Result "1/2-1/2"]
 [ECO "B22"]
 [Annotator "0.00;0.02"]
@@ -765,12 +765,12 @@ Qd2 {[%eval 1,45] [%emt 0:01:03]} Na5 {[%eval 0,42] [%emt 0:00:39] (a6)} 19. b3
 [%eval 0,42] [%emt 0:00:55]} Bxf4 {[%eval 0,45] [%emt 0:00:40]} 22. Qxf4 {
 [%eval 0,39] [%emt 0:00:20]} 1/2-1/2
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.23"]
 [Round "12.1"]
-[White "ShashChess 25.2MCTS"]
-[Black "ShashChess 25.1MCTS"]
+[White "Alexander 25.2MCTS"]
+[Black "Alexander 25.1MCTS"]
 [Result "1/2-1/2"]
 [ECO "B14"]
 [Annotator "0.09;0.00"]
@@ -792,12 +792,12 @@ TBAs B=41.9 plies; 3.010kN/s; 6 TBAs} 1. e4 c5 2. c3 e6 3. d4 cxd4 4. cxd4 d5
 [%eval 0,41] [%emt 0:00:29] (a3)} Re8 {[%eval 0,41] [%emt 0:00:43]} 15. Na4 {
 [%eval 0,45] [%emt 0:01:02] (Tc1)} Ne4 {[%eval 0,44] [%emt 0:00:33]} 1/2-1/2
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.23"]
 [Round "13.1"]
-[White "ShashChess 25.1MCTS"]
-[Black "ShashChess 25.2MCTS"]
+[White "Alexander 25.1MCTS"]
+[Black "Alexander 25.2MCTS"]
 [Result "1/2-1/2"]
 [ECO "E60"]
 [Annotator "0.13;0.12"]
@@ -834,12 +834,12 @@ Bxe4 {[%eval 1,39] [%emt 0:00:37]} 22. Bxe4 {[%eval 5,41] [%emt 0:00:18]} Bxa5
 0,42] [%emt 0:00:34]} 31. Qc1 {[%eval 0,39] [%emt 0:00:29]} Rxd1 {[%eval 0,39]
 [%emt 0:00:40]} 32. Rxd1 {[%eval 0,44] [%emt 0:01:07]} 1/2-1/2
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.23"]
 [Round "14.1"]
-[White "ShashChess 25.2MCTS"]
-[Black "ShashChess 25.1MCTS"]
+[White "Alexander 25.2MCTS"]
+[Black "Alexander 25.1MCTS"]
 [Result "1/2-1/2"]
 [ECO "E60"]
 [Annotator "0.18;0.12"]
@@ -876,12 +876,12 @@ Nxa4 {[%eval 5,36] [%emt 0:00:31]} 24. Nxa4 {[%eval 8,38] [%emt 0:00:17]} Rxa4
 0,38] [%emt 0:01:08]} 31. Qc1 {[%eval 1,34] [%emt 0:00:33]} Bf4 {[%eval 0,39] 
 [%emt 0:02:01] (Dxc1)} 32. Qc6 {[%eval 0,37] [%emt 0:00:45]} 1/2-1/2
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.23"]
 [Round "15.1"]
-[White "ShashChess 25.1MCTS"]
-[Black "ShashChess 25.2MCTS"]
+[White "Alexander 25.1MCTS"]
+[Black "Alexander 25.2MCTS"]
 [Result "1/2-1/2"]
 [ECO "D46"]
 [Annotator "0.13;0.12"]
@@ -923,12 +923,12 @@ Qd1 {[%eval 8,47] [%emt 0:00:48] (Db1)} h4 {[%eval 2,51] [%emt 0:01:37] (Ac6)}
 [%eval 5,48] [%emt 0:00:47] (Cd4)} Kf7 {[%eval 0,49] [%emt 0:00:29] (Da5)} 40.
 Nd4 {[%eval 5,46] [%emt 0:00:22] (Rg1)} 1/2-1/2
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.23"]
 [Round "16.1"]
-[White "ShashChess 25.2MCTS"]
-[Black "ShashChess 25.1MCTS"]
+[White "Alexander 25.2MCTS"]
+[Black "Alexander 25.1MCTS"]
 [Result "1/2-1/2"]
 [ECO "D46"]
 [Annotator "0.12;0.14"]
@@ -982,12 +982,12 @@ a4 {[%eval 0,48] [%emt 0:00:18]} 49. Re5 {[%eval 0,54] [%emt 0:00:18]} Kg6 {
 [%eval 1,45] [%emt 0:00:18] (Rf7)} 51. Re5+ {[%eval 0,49] [%emt 0:00:25]} Kg6 {
 [%eval 0,50] [%emt 0:00:19]} 1/2-1/2
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.23"]
 [Round "17.1"]
-[White "ShashChess 25.1MCTS"]
-[Black "ShashChess 25.2MCTS"]
+[White "Alexander 25.1MCTS"]
+[Black "Alexander 25.2MCTS"]
 [Result "1-0"]
 [ECO "D05"]
 [Annotator "1.14;1.12"]
@@ -1057,12 +1057,12 @@ Rf8 {[%eval 461,20] [%emt 0:00:21]} Rxf8 {[%eval 442,21] [%emt 0:00:05] (Tg8)}
 [%emt 0:00:17]} Nf2 {[%eval 32750,63] [%emt 0:00:04] (Ch6)} 64. Kxf5 {[%eval
 32752,61] [%emt 0:00:10] (c6)} 1-0
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.23"]
 [Round "18.1"]
-[White "ShashChess 25.2MCTS"]
-[Black "ShashChess 25.1MCTS"]
+[White "Alexander 25.2MCTS"]
+[Black "Alexander 25.1MCTS"]
 [Result "1-0"]
 [ECO "D05"]
 [Annotator "1.14;1.26"]
@@ -1140,12 +1140,12 @@ g4 {[%eval 379,26] [%emt 0:00:11] (Ab3)} 56. fxg4 {[%eval 449,24] [%emt 0:00:
 {[%eval 32758,157] [%emt 0:00:05] (Re8)} 72. Rxa7 {[%eval 27999,1] [%emt 0:00:
 00]} 1-0
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.23"]
 [Round "19.1"]
-[White "ShashChess 25.1MCTS"]
-[Black "ShashChess 25.2MCTS"]
+[White "Alexander 25.1MCTS"]
+[Black "Alexander 25.2MCTS"]
 [Result "1/2-1/2"]
 [ECO "A29"]
 [Annotator "0.12;0.06"]
@@ -1168,12 +1168,12 @@ TBAs B=40.1 plies; 3.337kN/s; 4 TBAs} 1. c4 e5 2. Nc3 Nf6 3. g3 d5 4. cxd5 Nxd5
 16. Nf3 {[%eval 0,41] [%emt 0:00:20]} Ng5 {[%eval -7,41] [%emt 0:01:09]}
 1/2-1/2
 
-[Event "ShashChessMCTS25.1vs25.2, Rapido 25min+10sec"]
+[Event "AlexanderMCTS25.1vs25.2, Rapido 25min+10sec"]
 [Site "?"]
 [Date "2022.10.23"]
 [Round "20.1"]
-[White "ShashChess 25.2MCTS"]
-[Black "ShashChess 25.1MCTS"]
+[White "Alexander 25.2MCTS"]
+[Black "Alexander 25.1MCTS"]
 [Result "1/2-1/2"]
 [ECO "A29"]
 [Annotator "0.08;0.00"]

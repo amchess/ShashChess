@@ -1,13 +1,13 @@
 /*
-  ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Alexander, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and Stockfish developers (see AUTHORS file)
 
-  ShashChess is free software: you can redistribute it and/or modify
+  Alexander is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  ShashChess is distributed in the hope that it will be useful,
+  Alexander is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -26,7 +26,7 @@
 #include "memory.h"
 #include "types.h"
 
-namespace ShashChess {
+namespace Alexander {
 
 class ThreadPool;
 struct TTEntry;
@@ -51,6 +51,18 @@ struct TTData {
     Depth depth;
     Bound bound;
     bool  is_pv;
+
+    TTData() = delete;
+
+    // clang-format off
+    TTData(Move m, Value v, Value ev, Depth d, Bound b, bool pv) :
+        move(m),
+        value(v),
+        eval(ev),
+        depth(d),
+        bound(b),
+        is_pv(pv) {};
+    // clang-format on
 };
 
 
@@ -93,6 +105,6 @@ class TranspositionTable {
     uint8_t generation8 = 0;  // Size must be not bigger than TTEntry::genBound8
 };
 
-}  // namespace ShashChess
+}  // namespace Alexander
 
 #endif  // #ifndef TT_H_INCLUDED

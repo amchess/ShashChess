@@ -1,13 +1,13 @@
 /*
-  ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 The ShashChess developers (see AUTHORS file)
+  Alexander, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2025 The Alexander developers (see AUTHORS file)
 
-  ShashChess is free software: you can redistribute it and/or modify
+  Alexander is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  ShashChess is distributed in the hope that it will be useful,
+  Alexander is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -22,21 +22,32 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <cstring>
 #include <cstdint>
 #include <cstdlib>
 #include <string>
 
 #include "types.h"
 
-namespace ShashChess {
+namespace Alexander {
+//for classical begin
+namespace Bitbases {
 
+void init();
+bool probe(Square wksq, Square wpsq, Square bksq, Color us);
+
+}  // namespace Alexander::Bitbases
+//for classical end
 namespace Bitboards {
 
 void        init();
 std::string pretty(Bitboard b);
 
-}  // namespace ShashChess::Bitboards
-
+}  // namespace Alexander::Bitboards
+//for classical begin
+constexpr Bitboard AllSquares  = ~Bitboard(0);
+constexpr Bitboard DarkSquares = 0xAA55AA55AA55AA55ULL;
+//for classical end
 constexpr Bitboard FileABB = 0x0101010101010101ULL;
 constexpr Bitboard FileBBB = FileABB << 1;
 constexpr Bitboard FileCBB = FileABB << 2;
@@ -54,7 +65,16 @@ constexpr Bitboard Rank5BB = Rank1BB << (8 * 4);
 constexpr Bitboard Rank6BB = Rank1BB << (8 * 5);
 constexpr Bitboard Rank7BB = Rank1BB << (8 * 6);
 constexpr Bitboard Rank8BB = Rank1BB << (8 * 7);
+//for classical begin
+constexpr Bitboard QueenSide   = FileABB | FileBBB | FileCBB | FileDBB;
+constexpr Bitboard CenterFiles = FileCBB | FileDBB | FileEBB | FileFBB;
+constexpr Bitboard KingSide    = FileEBB | FileFBB | FileGBB | FileHBB;
+constexpr Bitboard Center      = (FileDBB | FileEBB) & (Rank4BB | Rank5BB);
 
+constexpr Bitboard KingFlank[FILE_NB] = {
+  QueenSide ^ FileDBB, QueenSide, QueenSide, CenterFiles,
+  CenterFiles,         KingSide,  KingSide,  KingSide ^ FileEBB};
+//for classical end
 extern uint8_t PopCnt16[1 << 16];
 extern uint8_t SquareDistance[SQUARE_NB][SQUARE_NB];
 
@@ -115,8 +135,11 @@ inline Bitboard operator^(Square s, Bitboard b) { return b ^ s; }
 inline Bitboard operator|(Square s1, Square s2) { return square_bb(s1) | s2; }
 
 constexpr bool more_than_one(Bitboard b) { return b & (b - 1); }
-
-
+//for classical begin
+constexpr bool opposite_colors(Square s1, Square s2) {
+    return (s1 + rank_of(s1) + s2 + rank_of(s2)) & 1;
+}
+//for classical end
 // rank_bb() and file_bb() return a bitboard representing all the squares on
 // the given file or rank.
 
@@ -159,7 +182,24 @@ inline Bitboard pawn_attacks_bb(Color c, Square s) {
     assert(is_ok(s));
     return PawnAttacks[c][s];
 }
+//for classical begin
+/// pawn_double_attacks_bb() returns the squares doubly attacked by pawns of the
+/// given color from the squares in the given bitboard.
 
+template<Color C>
+constexpr Bitboard pawn_double_attacks_bb(Bitboard b) {
+    return C == WHITE ? shift<NORTH_WEST>(b) & shift<NORTH_EAST>(b)
+                      : shift<SOUTH_WEST>(b) & shift<SOUTH_EAST>(b);
+}
+
+
+/// adjacent_files_bb() returns a bitboard representing all the squares on the
+/// adjacent files of a given square.
+
+constexpr Bitboard adjacent_files_bb(Square s) {
+    return shift<EAST>(file_bb(s)) | shift<WEST>(file_bb(s));
+}
+//for classical end
 // Returns a bitboard representing an entire line (from board edge
 // to board edge) that intersects the two given squares. If the given squares
 // are not on a same file/rank/diagonal, the function returns 0. For instance,
@@ -183,7 +223,39 @@ inline Bitboard between_bb(Square s1, Square s2) {
     assert(is_ok(s1) && is_ok(s2));
     return BetweenBB[s1][s2];
 }
+//for classical begin
+/// forward_ranks_bb() returns a bitboard representing the squares on the ranks in
+/// front of the given one, from the point of view of the given color. For instance,
+/// forward_ranks_bb(BLACK, SQ_D3) will return the 16 squares on ranks 1 and 2.
 
+constexpr Bitboard forward_ranks_bb(Color c, Square s) {
+    return c == WHITE ? ~Rank1BB << 8 * relative_rank(WHITE, s)
+                      : ~Rank8BB >> 8 * relative_rank(BLACK, s);
+}
+/// forward_file_bb() returns a bitboard representing all the squares along the
+/// line in front of the given one, from the point of view of the given color.
+
+constexpr Bitboard forward_file_bb(Color c, Square s) {
+    return forward_ranks_bb(c, s) & file_bb(s);
+}
+
+
+/// pawn_attack_span() returns a bitboard representing all the squares that can
+/// be attacked by a pawn of the given color when it moves along its file, starting
+/// from the given square.
+
+constexpr Bitboard pawn_attack_span(Color c, Square s) {
+    return forward_ranks_bb(c, s) & adjacent_files_bb(s);
+}
+
+
+/// passed_pawn_span() returns a bitboard which can be used to test if a pawn of
+/// the given color and on the given square is a passed pawn.
+
+constexpr Bitboard passed_pawn_span(Color c, Square s) {
+    return pawn_attack_span(c, s) | forward_file_bb(c, s);
+}
+//for classical end
 // Returns true if the squares s1, s2 and s3 are aligned either on a
 // straight or on a diagonal line.
 inline bool aligned(Square s1, Square s2, Square s3) { return line_bb(s1, s2) & s3; }
@@ -211,6 +283,8 @@ inline int distance<Square>(Square x, Square y) {
 }
 
 inline int edge_distance(File f) { return std::min(f, File(FILE_H - f)); }
+inline int edge_distance(Rank r) { return std::min(r, Rank(RANK_8 - r)); }  //for classical
+
 
 // Returns the pseudo attacks of the given piece type
 // assuming an empty board.
@@ -268,11 +342,10 @@ inline int popcount(Bitboard b) {
 
 #ifndef USE_POPCNT
 
-    union {
-        Bitboard bb;
-        uint16_t u[4];
-    } v = {b};
-    return PopCnt16[v.u[0]] + PopCnt16[v.u[1]] + PopCnt16[v.u[2]] + PopCnt16[v.u[3]];
+    std::uint16_t indices[4];
+    std::memcpy(indices, &b, sizeof(b));
+    return PopCnt16[indices[0]] + PopCnt16[indices[1]] + PopCnt16[indices[2]]
+         + PopCnt16[indices[3]];
 
 #elif defined(_MSC_VER)
 
@@ -368,7 +441,14 @@ inline Square pop_lsb(Bitboard& b) {
     b &= b - 1;
     return s;
 }
-
-}  // namespace ShashChess
+//for classical begin
+/// frontmost_sq() returns the most advanced square for the given color,
+/// requires a non-zero bitboard.
+inline Square frontmost_sq(Color c, Bitboard b) {
+    assert(b);
+    return c == WHITE ? msb(b) : lsb(b);
+}
+//for classical end
+}  // namespace Alexander
 
 #endif  // #ifndef BITBOARD_H_INCLUDED

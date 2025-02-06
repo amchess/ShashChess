@@ -1,7 +1,7 @@
 #ifdef USE_LIVEBOOK
     #include "Proxy.h"
 
-using namespace ShashChess::Livebook;
+using namespace Alexander::Livebook;
 
     #define DEFAULT_ACTION Action::QUERY
 

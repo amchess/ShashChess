@@ -12,11 +12,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          path: ShashChess
+          path: Alexander
           persist-credentials: false
 
       - name: build SF
-        working-directory: ShashChess/src
+        working-directory: Alexander/src
         run: make -j profile-build
 
       - name: Checkout matetrack repo
@@ -34,5 +34,5 @@ jobs:
       - name: Run matetrack
         working-directory: matetrack
         run: |
-          python matecheck.py --engine /home/runner/work/ShashChess/ShashChess/ShashChess/src/shashchess --epdFile mates2000.epd --nodes 100000 | tee matecheckout.out
+          python matecheck.py --engine /home/runner/work/Alexander/Alexander/Alexander/src/alexander --epdFile mates2000.epd --nodes 100000 | tee matecheckout.out
           ! grep "issues were detected" matecheckout.out > /dev/null

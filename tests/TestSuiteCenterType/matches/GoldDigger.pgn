@@ -1,8 +1,8 @@
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.05"]
 [Round "1"]
-[White "ShashChess 21GD"]
+[White "Alexander 21GD"]
 [Black "Stockfish 060322"]
 [Result "1/2-1/2"]
 [ECO "A15"]
@@ -99,12 +99,12 @@ Kxg4 {0.00/28 9.8s} 126. Rb5 {0.00/28 7.4s} Ra8 {0.00/31 7.9s}
 Bd8 {0.00/29 22s} 129. Re5 {0.00/45 8.1s} Rxa5 {0.00/65 8.3s}
 130. Rxe6 {0.00/74 7.2s, Draw by adjudication: SyzygyTB} 1/2-1/2
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.05"]
 [Round "1"]
 [White "Stockfish 060322"]
-[Black "ShashChess 21GD"]
+[Black "Alexander 21GD"]
 [Result "1/2-1/2"]
 [ECO "E60"]
 [GameDuration "02:04:56"]
@@ -271,11 +271,11 @@ Qd5+ {0.00/55 26s} 234. Ke3 {0.00/50 5.5s} Qc5+ {0.00/47 9.6s}
 Qc5+ {0.00/60 9.2s} 237. Kd3 {0.00/55 8.9s}
 Qd5+ {0.00/54 7.4s, Draw by 3-fold repetition} 1/2-1/2
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.05"]
 [Round "1"]
-[White "ShashChess 21GD"]
+[White "Alexander 21GD"]
 [Black "Stockfish 060322"]
 [Result "1-0"]
 [ECO "E60"]
@@ -320,12 +320,12 @@ f5 {-6.54/22 4.1s} 48. Kd3 {+3.24/27 30s} Rb7 {-6.64/26 15s}
 Rb3+ {-7.69/20 10s} 51. Ke2 {+3.62/23 23s} f4 {-8.31/22 15s}
 52. gxf4 {+3.79/23 48s} Rb4 {-8.62/23 5.7s, White wins by adjudication} 1-0
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.05"]
 [Round "1"]
 [White "Stockfish 060322"]
-[Black "ShashChess 21GD"]
+[Black "Alexander 21GD"]
 [Result "1-0"]
 [ECO "B90"]
 [GameDuration "01:10:23"]
@@ -383,11 +383,11 @@ Kh7 {-2.96/12 13s} 67. Rh1 {+12.88/16 27s} Rd2 {-4.46/12 12s}
 Kg6 {-8.23/11 10s} 70. Rh1 {+17.86/13 4.7s} Rb2 {-11.64/12 6.1s}
 71. c5 {+59.63/17 5.4s} Rb8 {-19.75/13 13s, White wins by adjudication} 1-0
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.05"]
 [Round "1"]
-[White "ShashChess 21GD"]
+[White "Alexander 21GD"]
 [Black "Stockfish 060322"]
 [Result "1/2-1/2"]
 [ECO "B90"]
@@ -431,12 +431,12 @@ Be4+ {0.00/57 21s} 45. Kf2 {0.00/37 16s} gxh6 {0.00/43 23s}
 Rc4 {0.00/64 19s} 50. Bxc6 {0.00/58 12s}
 Rxc6 {0.00/101 32s, Draw by adjudication: SyzygyTB} 1/2-1/2
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.05"]
 [Round "1"]
 [White "Stockfish 060322"]
-[Black "ShashChess 21GD"]
+[Black "Alexander 21GD"]
 [Result "1/2-1/2"]
 [ECO "D00"]
 [GameDuration "01:17:36"]
@@ -511,11 +511,11 @@ Kc6 {0.00/42 5.5s} 96. Be7 {0.00/46 6.8s} e5 {0.00/52 6.1s}
 97. Bxf6 {0.00/61 7.2s} exd4 {0.00/59 6.6s}
 98. Bxd4 {0.00/245 6.5s, Draw by adjudication: SyzygyTB} 1/2-1/2
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.05"]
 [Round "1"]
-[White "ShashChess 21GD"]
+[White "Alexander 21GD"]
 [Black "Stockfish 060322"]
 [Result "1/2-1/2"]
 [ECO "D00"]
@@ -555,12 +555,12 @@ Rxd7 {0.00/69 22s} 45. h4 {0.00/67 8.7s} Kg6 {0.00/245 31s}
 46. h5+ {0.00/72 12s} Kxh5 {0.00/109 27s, Draw by adjudication: SyzygyTB}
 1/2-1/2
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.05"]
 [Round "1"]
 [White "Stockfish 060322"]
-[Black "ShashChess 21GD"]
+[Black "Alexander 21GD"]
 [Result "1/2-1/2"]
 [ECO "D30"]
 [GameDuration "01:14:36"]
@@ -627,12 +627,12 @@ Kg7 {0.00/61 20s} 84. f6+ {0.00/67 7.8s} Kh7 {0.00/63 8.2s}
 Be5 {0.00/81 7.2s} 87. Bxg6+ {0.00/102 7.6s}
 Kxg6 {0.00/119 11s, Draw by adjudication: SyzygyTB} 1/2-1/2
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.05"]
 [Round "1"]
 [White "Stockfish 060322"]
-[Black "ShashChess 21GD"]
+[Black "Alexander 21GD"]
 [Result "1/2-1/2"]
 [ECO "B22"]
 [GameDuration "01:18:02"]
@@ -702,11 +702,11 @@ Be2 {0.00/63 8.4s} 91. Kf2 {0.00/63 8.9s} Bb5 {0.00/59 9.3s}
 92. Ke1 {0.00/65 7.1s} Kf7 {0.00/68 9.2s} 93. Bd4 {0.00/245 43s}
 Bc4 {0.00/80 10s} 94. Be3 {0.00/105 33s, Draw by fifty moves rule} 1/2-1/2
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.05"]
 [Round "1"]
-[White "ShashChess 21GD"]
+[White "Alexander 21GD"]
 [Black "Stockfish 060322"]
 [Result "1/2-1/2"]
 [ECO "B22"]
@@ -731,12 +731,12 @@ Bh7 {0.00/48 29s} 20. Red1 {0.00/51 33s} Bc2 {0.00/53 45s} 21. Re1 {0.00/50 29s}
 Bh7 {0.00/53 43s} 22. Red1 {0.00/53 31s} Bc2 {0.00/56 93s}
 23. Re1 {0.00/61 60s, Draw by 3-fold repetition} 1/2-1/2
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.05"]
 [Round "1"]
 [White "Stockfish 060322"]
-[Black "ShashChess 21GD"]
+[Black "Alexander 21GD"]
 [Result "1/2-1/2"]
 [ECO "E60"]
 [GameDuration "01:00:41"]
@@ -777,11 +777,11 @@ f4 {0.00/56 48s} 44. Bxe7 {0.00/53 24s} Qxe7 {0.00/52 24s}
 Kd6 {0.00/58 15s} 47. Qxf4+ {0.00/77 13s} Qe5 {0.00/96 9.1s}
 48. g3 {0.00/80 16s} Qxf4 {0.00/102 18s, Draw by adjudication: SyzygyTB} 1/2-1/2
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.05"]
 [Round "1"]
-[White "ShashChess 21GD"]
+[White "Alexander 21GD"]
 [Black "Stockfish 060322"]
 [Result "1/2-1/2"]
 [ECO "E60"]
@@ -824,12 +824,12 @@ R1f2+ {0.00/97 25s} 45. Kh1 {0.00/86 21s} Rf1+ {0.00/95 36s}
 Rg1+ {0.00/99 25s} 48. Kxf2 {0.00/122 32s}
 Rxg6 {0.00/245 10s, Draw by adjudication: SyzygyTB} 1/2-1/2
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.06"]
 [Round "1"]
 [White "Stockfish 060322"]
-[Black "ShashChess 21GD"]
+[Black "Alexander 21GD"]
 [Result "1/2-1/2"]
 [ECO "E10"]
 [GameDuration "01:34:45"]
@@ -934,11 +934,11 @@ Rb3+ {0.00/68 16s} 145. Kf2 {0.00/89 6.3s} Rb2+ {0.00/73 7.8s}
 Rb5 {0.00/79 33s} 148. Kh1 {0.00/89 19s} Rb1+ {0.00/72 2.8s}
 149. Kh2 {0.00/245 10s, Draw by 3-fold repetition} 1/2-1/2
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.06"]
 [Round "1"]
-[White "ShashChess 21GD"]
+[White "Alexander 21GD"]
 [Black "Stockfish 060322"]
 [Result "1/2-1/2"]
 [ECO "E10"]
@@ -985,12 +985,12 @@ Re2 {0.00/148 21s} 57. Rh3+ {0.00/73 4.9s} Kg8 {0.00/88 0.52s}
 58. Rg3 {0.00/74 4.3s} R2xe6 {0.00/125 30s, Draw by adjudication: SyzygyTB}
 1/2-1/2
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.06"]
 [Round "1"]
 [White "Stockfish 060322"]
-[Black "ShashChess 21GD"]
+[Black "Alexander 21GD"]
 [Result "1-0"]
 [ECO "D05"]
 [GameDuration "01:08:40"]
@@ -1044,11 +1044,11 @@ Ke4 {-5.11/15 7.4s} 63. h6 {+14.06/12 4.5s} Rxd4 {-6.30/14 18s}
 Rh8 {-10.46/15 15s} 66. Rf7 {+152.52/18 14s}
 Rc8 {-24.85/12 11s, White wins by adjudication} 1-0
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.06"]
 [Round "1"]
-[White "ShashChess 21GD"]
+[White "Alexander 21GD"]
 [Black "Stockfish 060322"]
 [Result "1-0"]
 [ECO "D05"]
@@ -1081,12 +1081,12 @@ cxb5 {-6.33/31 47s} 30. Rd1 {+2.84/30 36s} Rc8 {-6.36/30 60s}
 Re6 {-6.69/27 9.9s} 33. Rd8+ {+2.95/29 31s}
 Kh7 {-6.83/25 59s, White wins by adjudication} 1-0
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.06"]
 [Round "1"]
 [White "Stockfish 060322"]
-[Black "ShashChess 21GD"]
+[Black "Alexander 21GD"]
 [Result "1/2-1/2"]
 [ECO "A22"]
 [GameDuration "01:22:50"]
@@ -1169,11 +1169,11 @@ Kf8 {0.00/102 9.4s} 111. Rb8+ {0.00/137 9.4s} Kg7 {0.00/122 9.2s}
 Rg1+ {0.00/245 0.037s} 114. Kf3 {0.00/245 0.029s, Draw by fifty moves rule}
 1/2-1/2
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.06"]
 [Round "1"]
-[White "ShashChess 21GD"]
+[White "Alexander 21GD"]
 [Black "Stockfish 060322"]
 [Result "1/2-1/2"]
 [ECO "A22"]
@@ -1217,11 +1217,11 @@ hxg3 {0.00/71 18s} 46. Kxg3 {0.00/72 26s} Kh7 {0.00/77 19s}
 53. hxg5+ {0.00/99 24s} fxg5 {0.00/218 19s, Draw by adjudication: SyzygyTB}
 1/2-1/2
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.06"]
 [Round "1"]
-[White "ShashChess 21GD"]
+[White "Alexander 21GD"]
 [Black "Stockfish 060322"]
 [Result "1/2-1/2"]
 [ECO "D30"]
@@ -1331,12 +1331,12 @@ Be6 {0.00/56 6.0s} 150. Bf3 {0.00/52 4.2s} Bxb3 {0.00/56 7.3s}
 151. Bxh5 {0.00/71 4.9s} Bxa4 {0.00/163 7.8s, Draw by adjudication: SyzygyTB}
 1/2-1/2
 
-[Event "ShashChess21GDVSStockfish060322"]
+[Event "Alexander21GDVSStockfish060322"]
 [Site "?"]
 [Date "2022.03.06"]
 [Round "1"]
 [White "Stockfish 060322"]
-[Black "ShashChess 21GD"]
+[Black "Alexander 21GD"]
 [Result "1/2-1/2"]
 [ECO "A15"]
 [GameDuration "01:07:00"]

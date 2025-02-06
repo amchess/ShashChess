@@ -4,7 +4,7 @@
 
     #include "BaseLivebook.h"
 
-namespace ShashChess::Livebook {
+namespace Alexander::Livebook {
 
 enum class Action {
     QUERY_ALL,

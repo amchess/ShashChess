@@ -1,7 +1,7 @@
 #ifdef USE_LIVEBOOK
     #include "BaseLivebook.h"
-
-using namespace ShashChess::Livebook;
+    #include <iostream>
+using namespace Alexander::Livebook;
 
 static size_t curl_write(void* contents, const size_t size, const size_t nmemb, void* userp) {
     const size_t new_size = size * nmemb;
@@ -14,11 +14,15 @@ static size_t curl_write(void* contents, const size_t size, const size_t nmemb, 
 
 void BaseLivebook::clean_buffer_from_terminator() {
     if (readBuffer.empty())
-    { return; }
+    {
+        return;
+    }
 
     if (const auto last_char = readBuffer.back();
         last_char == '\n' || last_char == '\r' || last_char == '\0')
-    { readBuffer.pop_back(); }
+    {
+        readBuffer.pop_back();
+    }
 }
 
 // Perform an HTTP request to the given URI and store the response in readBuffer
@@ -39,7 +43,9 @@ CURLcode BaseLivebook::do_request(const std::string& uri) {
 
     const CURLcode res = curl_easy_perform(curl);
     if (res != CURLE_OK)
-    { std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl; }
+    {
+        std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
+    }
 
     curl_easy_cleanup(curl);
 

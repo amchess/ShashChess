@@ -1,7 +1,7 @@
 #ifdef USE_LIVEBOOK
     #include "LichessPlayer.h"
 
-using namespace ShashChess::Livebook;
+using namespace Alexander::Livebook;
 
 LichessPlayer::LichessPlayer(const std::string& player, std::string color) :
     LichessOpening("https://explorer.lichess.ovh/player?player=" + player + "&"),

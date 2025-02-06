@@ -83,7 +83,7 @@ jobs:
           make -j4 profile-build ARCH=$BINARY COMP=$COMP WINE_PATH=$EMU
           make strip ARCH=$BINARY COMP=$COMP
           WINE_PATH=$EMU ../tests/signature.sh $benchref
-          mv ./shashchess$EXT ../shashchess-android-$BINARY$EXT
+          mv ./alexander$EXT ../alexander-android-$BINARY$EXT
 
       - name: Remove non src files
         run: git clean -fx

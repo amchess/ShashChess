@@ -3,7 +3,7 @@
 #include "ctg/ctg.h"
 #include "book_manager.h"
 
-namespace ShashChess {
+namespace Alexander {
 BookManager::BookManager() {
     for (int i = 0; i < NumberOfBooks; ++i)
         books[i] = nullptr;
@@ -78,7 +78,9 @@ void BookManager::show_moves(const Position& pos, const OptionsMap& options) con
     for (size_t i = 0; i < NumberOfBooks; ++i)
     {
         if (books[i] == nullptr)
-        { std::cout << "Book " << i + 1 << ": No book loaded" << std::endl; }
+        {
+            std::cout << "Book " << i + 1 << ": No book loaded" << std::endl;
+        }
         else
         {
             std::cout << "Book " << i + 1 << " (" << books[i]->type() << "): "

@@ -1,13 +1,13 @@
 /*
-  ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Alexander, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and Stockfish developers (see AUTHORS file)
 
-  ShashChess is free software: you can redistribute it and/or modify
+  Alexander is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  ShashChess is distributed in the hope that it will be useful,
+  Alexander is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -38,6 +38,7 @@
 
     #include <cassert>
     #include <cstdint>
+    #include <cstddef>  //Mac build
 
     #if defined(_MSC_VER)
         // Disable some silly and noisy warnings from MSVC compiler
@@ -82,7 +83,7 @@
         #define pext(b, m) 0
     #endif
 
-namespace ShashChess {
+namespace Alexander {
 
     #ifdef USE_POPCNT
 constexpr bool HasPopCnt = true;
@@ -93,13 +94,13 @@ constexpr bool HasPopCnt = false;
     #ifdef USE_PEXT
 constexpr bool HasPext = true;
     #else
-constexpr bool HasPext   = false;
+constexpr bool HasPext = false;
     #endif
 
     #ifdef IS_64BIT
 constexpr bool Is64Bit = true;
     #else
-constexpr bool Is64Bit   = false;
+constexpr bool Is64Bit = false;
     #endif
 
 using Key      = uint64_t;
@@ -132,7 +133,22 @@ enum CastlingRights {
     CASTLING_RIGHT_NB = 16
 };
 ////kelly end
+//for classical begin
+enum Phase {
+    PHASE_ENDGAME,
+    PHASE_MIDGAME = 128,
+    MG            = 0,
+    EG            = 1,
+    PHASE_NB      = 2
+};
 
+enum ScaleFactor {
+    SCALE_FACTOR_DRAW   = 0,
+    SCALE_FACTOR_NORMAL = 64,
+    SCALE_FACTOR_MAX    = 128,
+    SCALE_FACTOR_NONE   = 255
+};
+//for classical end
 enum Bound {
     BOUND_NONE,
     BOUND_UPPER,
@@ -182,6 +198,21 @@ constexpr Value KnightValue = 781;
 constexpr Value BishopValue = 825;
 constexpr Value RookValue   = 1276;
 constexpr Value QueenValue  = 2538;
+//from classical eval begin
+constexpr Value PawnValueMg   = 126;
+constexpr Value PawnValueEg   = 208;
+constexpr Value KnightValueMg = 781;
+constexpr Value KnightValueEg = 854;
+constexpr Value BishopValueMg = 825;
+constexpr Value BishopValueEg = 915;
+constexpr Value RookValueMg   = 1276;
+constexpr Value RookValueEg   = 1380;
+constexpr Value QueenValueMg  = 2538;
+constexpr Value QueenValueEg  = 2682;
+constexpr Value MidgameLimit  = 15258;
+constexpr Value EndgameLimit  = 3915;
+//from classical eval end
+constexpr Value RandomValue = 1200;  //handicap mode Michael Byrne
 //from Crystal begin
 constexpr Value PawnConversionFactor = 356;
 constexpr Value VALUE_TB_WIN         = 51 * PawnConversionFactor;
@@ -201,7 +232,15 @@ enum Piece {
     PIECE_NB = 16
 };
 // clang-format on
-
+//for classical begin
+constexpr Value PieceValueForPSQT[PHASE_NB][PIECE_NB] = {
+  {VALUE_ZERO, PawnValueMg, KnightValueMg, BishopValueMg, RookValueMg, QueenValueMg, VALUE_ZERO,
+   VALUE_ZERO, VALUE_ZERO, PawnValueMg, KnightValueMg, BishopValueMg, RookValueMg, QueenValueMg,
+   VALUE_ZERO, VALUE_ZERO},
+  {VALUE_ZERO, PawnValueEg, KnightValueEg, BishopValueEg, RookValueEg, QueenValueEg, VALUE_ZERO,
+   VALUE_ZERO, VALUE_ZERO, PawnValueEg, KnightValueEg, BishopValueEg, RookValueEg, QueenValueEg,
+   VALUE_ZERO, VALUE_ZERO}};
+//for classical end
 constexpr Value PieceValue[PIECE_NB] = {
   VALUE_ZERO, PawnValue, KnightValue, BishopValue, RookValue, QueenValue, VALUE_ZERO, VALUE_ZERO,
   VALUE_ZERO, PawnValue, KnightValue, BishopValue, RookValue, QueenValue, VALUE_ZERO, VALUE_ZERO};
@@ -279,41 +318,105 @@ enum Rank : int {
     RANK_NB
 };
 
-// Keep track of what a move changes on the board (used by NNUE)
-struct DirtyPiece {
-
-    // Number of changed pieces
-    int dirty_num;
-
-    // Max 3 pieces can change in one move. A promotion with capture moves
-    // both the pawn and the captured piece to SQ_NONE and the piece promoted
-    // to from SQ_NONE to the capture square.
-    Piece piece[3];
-
-    // From and to squares, which may be SQ_NONE
-    Square from[3];
-    Square to[3];
+//for classical begin
+/// ScoreForClassical enum stores a middlegame and an endgame value in a single integer (enum).
+/// The least significant 16 bits are used to store the middlegame value and the
+/// upper 16 bits are used to store the endgame value. We have to take care to
+/// avoid left-shifting a signed int to avoid undefined behavior.
+enum ScoreForClassical : int {
+    SCORE_ZERO
 };
 
+constexpr ScoreForClassical make_score(int mg, int eg) {
+    return ScoreForClassical((int) ((unsigned int) eg << 16) + mg);
+}
+
+/// Extracting the signed lower and upper 16 bits is not so trivial because
+/// according to the standard a simple cast to short is implementation defined
+/// and so is a right shift of a signed integer.
+inline Value eg_value(ScoreForClassical s) {
+    union {
+        uint16_t u;
+        int16_t  s;
+    } eg = {uint16_t(unsigned(s + 0x8000) >> 16)};
+    return Value(eg.s);
+}
+
+inline Value mg_value(ScoreForClassical s) {
+    union {
+        uint16_t u;
+        int16_t  s;
+    } mg = {uint16_t(unsigned(s))};
+    return Value(mg.s);
+}
+
+    #define ENABLE_BASE_OPERATORS_ON(T) \
+        constexpr T operator+(T d1, int d2) { return T(int(d1) + d2); } \
+        constexpr T operator-(T d1, int d2) { return T(int(d1) - d2); } \
+        constexpr T operator-(T d) { return T(-int(d)); } \
+        inline T&   operator+=(T& d1, int d2) { return d1 = d1 + d2; } \
+        inline T&   operator-=(T& d1, int d2) { return d1 = d1 - d2; }
+//for classical end
     #define ENABLE_INCR_OPERATORS_ON(T) \
         inline T& operator++(T& d) { return d = T(int(d) + 1); } \
         inline T& operator--(T& d) { return d = T(int(d) - 1); }
+//for classical begin
+    #define ENABLE_FULL_OPERATORS_ON(T) \
+        ENABLE_BASE_OPERATORS_ON(T) \
+        constexpr T   operator*(int i, T d) { return T(i * int(d)); } \
+        constexpr T   operator*(T d, int i) { return T(int(d) * i); } \
+        constexpr T   operator/(T d, int i) { return T(int(d) / i); } \
+        constexpr int operator/(T d1, T d2) { return int(d1) / int(d2); } \
+        inline T&     operator*=(T& d, int i) { return d = T(int(d) * i); } \
+        inline T&     operator/=(T& d, int i) { return d = T(int(d) / i); }
+ENABLE_FULL_OPERATORS_ON(Direction)
 
+ENABLE_INCR_OPERATORS_ON(Piece)
+//for classical end
 ENABLE_INCR_OPERATORS_ON(PieceType)
 ENABLE_INCR_OPERATORS_ON(Square)
 ENABLE_INCR_OPERATORS_ON(File)
 ENABLE_INCR_OPERATORS_ON(Rank)
+//for classical begin
+ENABLE_BASE_OPERATORS_ON(ScoreForClassical)
 
+    #undef ENABLE_FULL_OPERATORS_ON
+//for classical end
     #undef ENABLE_INCR_OPERATORS_ON
+    #undef ENABLE_BASE_OPERATORS_ON  //for classical
 
-constexpr Direction operator+(Direction d1, Direction d2) { return Direction(int(d1) + int(d2)); }
-constexpr Direction operator*(int i, Direction d) { return Direction(i * int(d)); }
+//omitted for classical eval
 
 // Additional operators to add a Direction to a Square
 constexpr Square operator+(Square s, Direction d) { return Square(int(s) + int(d)); }
 constexpr Square operator-(Square s, Direction d) { return Square(int(s) - int(d)); }
 inline Square&   operator+=(Square& s, Direction d) { return s = s + d; }
 inline Square&   operator-=(Square& s, Direction d) { return s = s - d; }
+//for classical begin
+/// Only declared but not defined. We don't want to multiply two scores due to
+/// a very high risk of overflow. So user should explicitly convert to integer.
+ScoreForClassical operator*(ScoreForClassical, ScoreForClassical) = delete;
+
+/// Division of a Score must be handled separately for each term
+inline ScoreForClassical operator/(ScoreForClassical s, int i) {
+    return make_score(mg_value(s) / i, eg_value(s) / i);
+}
+
+/// Multiplication of a Score by an integer. We check for overflow in debug mode.
+inline ScoreForClassical operator*(ScoreForClassical s, int i) {
+
+    ScoreForClassical result = ScoreForClassical(int(s) * i);
+
+    assert(eg_value(result) == (i * eg_value(s)));
+    assert(mg_value(result) == (i * mg_value(s)));
+    assert((i == 0) || (result / i) == s);
+
+    return result;
+}
+
+/// Multiplication of a Score by a boolean
+inline ScoreForClassical operator*(ScoreForClassical s, bool b) { return b ? s : SCORE_ZERO; }
+//for classical end
 
 // Toggle color
 constexpr Color operator~(Color c) { return Color(c ^ BLACK); }
@@ -436,7 +539,7 @@ class Move {
     std::uint16_t data;
 };
 
-}  // namespace ShashChess
+}  // namespace Alexander
 
 #endif  // #ifndef TYPES_H_INCLUDED
 

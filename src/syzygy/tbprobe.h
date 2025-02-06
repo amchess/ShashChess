@@ -1,13 +1,13 @@
 /*
-  ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 The ShashChess developers (see AUTHORS file)
+  Alexander, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2025 The Alexander developers (see AUTHORS file)
 
-  ShashChess is free software: you can redistribute it and/or modify
+  Alexander is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  ShashChess is distributed in the hope that it will be useful,
+  Alexander is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -23,7 +23,7 @@
 #include <vector>
 
 
-namespace ShashChess {
+namespace Alexander {
 class Position;
 class OptionsMap;
 
@@ -35,7 +35,7 @@ using RootMoves = std::vector<RootMove>;
 }
 }
 
-namespace ShashChess::Tablebases {
+namespace Alexander::Tablebases {
 
 struct Config {
     int   cardinality = 0;
@@ -73,6 +73,6 @@ Config   rank_root_moves(const OptionsMap&  options,
                          Search::RootMoves& rootMoves,
                          bool               rankDTZ = false);
 
-}  // namespace ShashChess::Tablebases
+}  // namespace Alexander::Tablebases
 
 #endif

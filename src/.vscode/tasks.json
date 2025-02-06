@@ -1,20 +1,15 @@
 {
-    "version": "2.0.0",
     "tasks": [
         {
-            "label": "Custom Build",
-            "type": "process",
-            "command": "${env:COMSPEC}",
-            "args": ["/c", "C:/git/ShashChess/src/build.bat"],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
+            "type": "shell",
+            "label": "run the makefile",
+            "command": "bash",
+            "args": ["-lc", "/c/tools/msys64/mingw64/bin/mingw32-make.exe build"],
             "problemMatcher": [],
-            "presentation": {
-                "reveal": "always",
-                "panel": "shared"
+            "options": {
+                "cwd": "${workspaceFolder}"
             }
         }
-    ]
+    ],
+    "version": "2.0.0"
 }

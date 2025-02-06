@@ -3,7 +3,7 @@
 #ifdef USE_LIVEBOOK
     #include "LichessOpening.h"
 
-namespace ShashChess::Livebook {
+namespace Alexander::Livebook {
 class LichessUsers final: public LichessOpening {
    public:
     LichessUsers();

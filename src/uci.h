@@ -1,13 +1,13 @@
 /*
-  ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Alexander, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and Stockfish developers (see AUTHORS file)
 
-  ShashChess is free software: you can redistribute it and/or modify
+  Alexander is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  ShashChess is distributed in the hope that it will be useful,
+  Alexander is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -28,8 +28,8 @@
 #include "misc.h"
 #include "search.h"
 #include "book/book_manager.h"  //book management
-#include "win_probability.h"
-namespace ShashChess {
+#include "wdl/win_probability.h"
+namespace Alexander {
 
 class Position;
 class Move;
@@ -67,7 +67,7 @@ class UCIEngine {
     void          benchmark(std::istream& args);
     void          position(std::istringstream& is);
     void          setoption(std::istringstream& is);
-    std::uint64_t perft(const Search::LimitsType&);
+    std::uint64_t perft(const Search::LimitsType& limits, Thread* th);  //for classical
 
     static void on_update_no_moves(const Engine::InfoShort& info);
     static void on_update_full(const Engine::InfoFull& info, bool showWDL);
@@ -77,6 +77,6 @@ class UCIEngine {
     void init_search_update_listeners();
 };
 
-}  // namespace ShashChess
+}  // namespace Alexander
 
 #endif  // #ifndef UCI_H_INCLUDED

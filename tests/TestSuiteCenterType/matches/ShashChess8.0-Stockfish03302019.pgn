@@ -1,9 +1,9 @@
-﻿[Event "shashchess8.0-stockfish03302019, Rapid "]
+﻿[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.30"]
 [Round "1.1"]
 [White "Stockfish 300319 64 BMI2"]
-[Black "ShashChess 8.0 64 BMI2"]
+[Black "Alexander 8.0 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "E11"]
 [Annotator "1.24;0.65"]
@@ -59,11 +59,11 @@ Rd5 {[%eval 33,48] [%emt 0:00:17] (gxh5)} hxg4 {[%eval 0,42] [%emt 0:00:13]}
 Kf3 {[%eval 0,59] [%emt 0:00:16]} Ra5 {[%eval 0,50] [%emt 0:00:21] (Re6)} 52.
 Rd6 {[%eval 0,73] [%emt 0:00:13]} 1/2-1/2
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.30"]
 [Round "2.1"]
-[White "ShashChess 8.0 64 BMI2"]
+[White "Alexander 8.0 64 BMI2"]
 [Black "Stockfish 300319 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "E11"]
@@ -135,12 +135,12 @@ Re4 {[%eval -5,27] [%emt 0:00:12]} Rd2+ {[%eval 0,28] [%emt 0:00:10]} 61. Kg1 {
 {[%eval 0,31] [%emt 0:00:22] (Kf2)} Rxg5+ {[%eval 0,35] [%emt 0:00:08]} 66. Kh2
 {[%eval 0,30] [%emt 0:00:04] (Kf2)} Kg6 {[%eval 0,29] [%emt 0:00:06]} 1/2-1/2
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.30"]
 [Round "3.1"]
 [White "Stockfish 300319 64 BMI2"]
-[Black "ShashChess 8.0 64 BMI2"]
+[Black "Alexander 8.0 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "E60"]
 [Annotator "1.10;0.64"]
@@ -239,11 +239,11 @@ Be3 {[%eval 110,33] [%emt 0:02:29]} Re8 {[%eval 64,29] [%emt 0:00:54]} 11. Nc3
 [%emt 0:00:18] (Kh2)} Kh7 {[%eval 0,35] [%emt 0:00:09]} 91. Re1 {[%eval 0,43] 
 [%emt 0:00:10] (Rb5)} Kh8 {[%eval 0,55] [%emt 0:00:51]} 1/2-1/2
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.30"]
 [Round "4.1"]
-[White "ShashChess 8.0 64 BMI2"]
+[White "Alexander 8.0 64 BMI2"]
 [Black "Stockfish 300319 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "E60"]
@@ -328,12 +328,12 @@ Nc3 {[%eval 0,55] [%emt 0:00:25] (Nf2)} Be5 {[%eval 0,82] [%emt 0:00:09]} 78.
 Ne4 {[%eval 0,54] [%emt 0:00:14] (Nd1)} Bc7 {[%eval 0,81] [%emt 0:00:09] (Kd5)}
 1/2-1/2
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.30"]
 [Round "5.1"]
 [White "Stockfish 300319 64 BMI2"]
-[Black "ShashChess 8.0 64 BMI2"]
+[Black "Alexander 8.0 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "D43"]
 [Annotator "0.34;0.00"]
@@ -372,11 +372,11 @@ Qe7 {[%eval 0,31] [%emt 0:00:13]} 16. Bc6 {[%eval 17,31] [%emt 0:00:33]} Rb8 {
 [%emt 0:00:29]} 33. Qe4 {[%eval 0,41] [%emt 0:00:16]} b5 {[%eval 0,38] [%emt 0:
 00:40] (Nh7)} 1/2-1/2
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.30"]
 [Round "6.1"]
-[White "ShashChess 8.0 64 BMI2"]
+[White "Alexander 8.0 64 BMI2"]
 [Black "Stockfish 300319 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "D43"]
@@ -410,12 +410,12 @@ a5 {[%eval 0,32] [%emt 0:00:38]} 14. Ne4 {[%eval 12,34] [%emt 0:00:40] (a3)} b6
 [%eval 0,37] [%emt 0:00:26]} 27. b3 {[%eval 0,41] [%emt 0:00:19]} Qd6 {[%eval
 0,43] [%emt 0:00:42] (Rd5)} 1/2-1/2
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.30"]
 [Round "7.1"]
 [White "Stockfish 300319 64 BMI2"]
-[Black "ShashChess 8.0 64 BMI2"]
+[Black "Alexander 8.0 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "B22"]
 [Annotator "0.20;0.13"]
@@ -471,11 +471,11 @@ Ng6 {[%eval 10,31] [%emt 0:00:36]} 32. Kf2 {[%eval 53,32] [%emt 0:00:26]} Rb4 {
 0:00:17]} Rxb3 {[%eval 0,35] [%emt 0:00:18]} 48. Re5 {[%eval 0,35] [%emt 0:00:
 56]} Rxb2+ {[%eval 0,35] [%emt 0:00:19]} 1/2-1/2
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.30"]
 [Round "8.1"]
-[White "ShashChess 8.0 64 BMI2"]
+[White "Alexander 8.0 64 BMI2"]
 [Black "Stockfish 300319 64 BMI2"]
 [Result "1-0"]
 [ECO "B22"]
@@ -549,12 +549,12 @@ Bc6 {[%eval 206,29] [%emt 0:00:22] (Bg8)} Bf7 {[%eval 195,33] [%emt 0:00:11]
 30] [%emt 0:00:17]} 65. Kc5 {[%eval 1247,32] [%emt 0:00:36]} Nf5 {[%eval 1754,
 29] [%emt 0:00:10]} 66. Kb5 {[%eval 1328,28] [%emt 0:00:04]} 1-0
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.30"]
 [Round "9.1"]
 [White "Stockfish 300319 64 BMI2"]
-[Black "ShashChess 8.0 64 BMI2"]
+[Black "Alexander 8.0 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "E60"]
 [Annotator "0.84;0.31"]
@@ -656,11 +656,11 @@ Bd3 {[%eval 90,33] [%emt 0:00:10]} Rgd7 {[%eval 46,31] [%emt 0:00:10] (Kh6)}
 [%eval 0,34] [%emt 0:00:10]} 93. Ra2 {[%eval 0,39] [%emt 0:00:05] (Bb1)}
 1/2-1/2
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.31"]
 [Round "10.1"]
-[White "ShashChess 8.0 64 BMI2"]
+[White "Alexander 8.0 64 BMI2"]
 [Black "Stockfish 300319 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "E60"]
@@ -698,12 +698,12 @@ Bxc3 {[%eval 13,34] [%emt 0:01:50]} 18. bxc3 {[%eval 33,30] [%emt 0:00:20]} Ke7
 [%eval 0,34] [%emt 0:00:20]} 31. h4 {[%eval 0,34] [%emt 0:00:38]} Raa2 {
 [%eval 0,38] [%emt 0:00:25]} 32. b5 {[%eval 0,37] [%emt 0:00:29] (Ke4)} 1/2-1/2
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.31"]
 [Round "11.1"]
 [White "Stockfish 300319 64 BMI2"]
-[Black "ShashChess 8.0 64 BMI2"]
+[Black "Alexander 8.0 64 BMI2"]
 [Result "1-0"]
 [ECO "B90"]
 [Annotator "1.12;0.56"]
@@ -768,11 +768,11 @@ Kxf3 {[%eval 662,25] [%emt 0:00:21]} Kb7 {[%eval 361,24] [%emt 0:00:04] (Nc7)}
 10] (Rh6)} 58. Kf5 {[%eval 1461,25] [%emt 0:00:15] (Kf4)} Re2 {[%eval 849,22] 
 [%emt 0:00:09]} 59. Nd5 {[%eval 2353,29] [%emt 0:00:25]} 1-0
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.31"]
 [Round "12.1"]
-[White "ShashChess 8.0 64 BMI2"]
+[White "Alexander 8.0 64 BMI2"]
 [Black "Stockfish 300319 64 BMI2"]
 [Result "1-0"]
 [ECO "B90"]
@@ -819,12 +819,12 @@ Bf4 {[%eval 146,29] [%emt 0:00:39] (Rh1)} Re8 {[%eval 231,29] [%emt 0:00:51]}
 32] [%emt 0:01:27]} 40. Bd3 {[%eval 377,31] [%emt 0:00:18] (Kf4)} Ke7 {[%eval
 738,29] [%emt 0:00:09]} 41. Ke4 {[%eval 399,24] [%emt 0:00:13]} 1-0
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.31"]
 [Round "13.1"]
 [White "Stockfish 300319 64 BMI2"]
-[Black "ShashChess 8.0 64 BMI2"]
+[Black "Alexander 8.0 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "D02"]
 [Annotator "0.19;-0.08"]
@@ -861,11 +861,11 @@ a5 {[%eval 4,32] [%emt 0:00:30] (Bb7)} 22. Qe3 {[%eval 30,31] [%emt 0:01:31]
 32]} Rd4 {[%eval 0,33] [%emt 0:00:20]} 33. f5 {[%eval 0,40] [%emt 0:01:05] 
 (Rf1)} Qg5 {[%eval 0,35] [%emt 0:00:26]} 1/2-1/2
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.31"]
 [Round "14.1"]
-[White "ShashChess 8.0 64 BMI2"]
+[White "Alexander 8.0 64 BMI2"]
 [Black "Stockfish 300319 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "D02"]
@@ -902,12 +902,12 @@ h3 {[%eval -8,30] [%emt 0:00:59]} a4 {[%eval -12,36] [%emt 0:01:16]} 18. Rab1 {
 [%eval 0,40] [%emt 0:00:30]} Rb8 {[%eval 0,43] [%emt 0:00:32]} 32. Rxa3 {
 [%eval 0,40] [%emt 0:00:33]} Kf8 {[%eval 0,46] [%emt 0:00:40] (Rb1+)} 1/2-1/2
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.31"]
 [Round "15.1"]
 [White "Stockfish 300319 64 BMI2"]
-[Black "ShashChess 8.0 64 BMI2"]
+[Black "Alexander 8.0 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "D46"]
 [Annotator "0.46;0.12"]
@@ -950,11 +950,11 @@ dxe5 Nxe5 11. Nxe5 Bxe5 12. Bd2 {[%eval 46,32] [%emt 0:00:49]} O-O {[%eval 12,
 b3 {[%eval 0,39] [%emt 0:00:34]} 40. Bd4 {[%eval 0,51] [%emt 0:00:18]} Rc2 {
 [%eval 0,40] [%emt 0:00:50]} 1/2-1/2
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.31"]
 [Round "16.1"]
-[White "ShashChess 8.0 64 BMI2"]
+[White "Alexander 8.0 64 BMI2"]
 [Black "Stockfish 300319 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "D46"]
@@ -980,12 +980,12 @@ b3 {[%eval 0,39] [%emt 0:00:34]} 40. Bd4 {[%eval 0,51] [%emt 0:00:18]} Rc2 {
 22. a3 {[%eval 0,33] [%emt 0:00:37]} Qh1+ {[%eval 0,38] [%emt 0:00:31]} 23. Kf2
 {[%eval 0,1] [%emt 0:00:00]} 1/2-1/2
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.31"]
 [Round "17.1"]
 [White "Stockfish 300319 64 BMI2"]
-[Black "ShashChess 8.0 64 BMI2"]
+[Black "Alexander 8.0 64 BMI2"]
 [Result "1-0"]
 [ECO "D05"]
 [Annotator "1.90;1.31"]
@@ -1060,11 +1060,11 @@ Rd8 {[%eval 166,31] [%emt 0:00:19]} 44. Rc5 {[%eval 283,42] [%emt 0:00:19]
 [%emt 0:00:12]} Ke6 {[%eval 1060,26] [%emt 0:00:11]} 68. Rd8 {[%eval 2208,33] 
 [%emt 0:00:11]} 1-0
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.31"]
 [Round "18.1"]
-[White "ShashChess 8.0 64 BMI2"]
+[White "Alexander 8.0 64 BMI2"]
 [Black "Stockfish 300319 64 BMI2"]
 [Result "1-0"]
 [ECO "D05"]
@@ -1139,12 +1139,12 @@ Kh7 {[%eval 554,29] [%emt 0:00:17] (Kh8)} 62. h5 {[%eval 385,27] [%emt 0:00:10]
 (Ke2)} Ba8 {[%eval 884,33] [%emt 0:00:05]} 68. Kc3 {[%eval 670,27] [%emt 0:00:
 08] (Kd3)} 1-0
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.31"]
 [Round "19.1"]
 [White "Stockfish 300319 64 BMI2"]
-[Black "ShashChess 8.0 64 BMI2"]
+[Black "Alexander 8.0 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "A29"]
 [Annotator "0.33;0.19"]
@@ -1203,11 +1203,11 @@ Rh8 {[%eval -6,36] [%emt 0:00:23]} 41. Bg2 {[%eval 0,35] [%emt 0:00:30]} h5 {
 [%eval 0,35] [%emt 0:00:29] (Rd8)} 52. Rh1 {[%eval 0,35] [%emt 0:00:11]}
 1/2-1/2
 
-[Event "shashchess8.0-stockfish03302019, Rapid "]
+[Event "alexander8.0-stockfish03302019, Rapid "]
 [Site "?"]
 [Date "2019.03.31"]
 [Round "20.1"]
-[White "ShashChess 8.0 64 BMI2"]
+[White "Alexander 8.0 64 BMI2"]
 [Black "Stockfish 300319 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "A22"]

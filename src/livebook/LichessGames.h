@@ -4,7 +4,7 @@
     #include "LichessOpening.h"
 
 
-namespace ShashChess::Livebook {
+namespace Alexander::Livebook {
 class LichessGames final: public LichessOpening {
    public:
     LichessGames();

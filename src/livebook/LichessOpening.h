@@ -4,7 +4,7 @@
 
     #include "LichessLivebook.h"
 
-namespace ShashChess::Livebook {
+namespace Alexander::Livebook {
 class LichessOpening: public LichessLivebook {
    public:
     explicit LichessOpening(std::string endpoint);

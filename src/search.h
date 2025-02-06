@@ -1,13 +1,13 @@
 /*
-  ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Alexander, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and Stockfish developers (see AUTHORS file)
 
-  ShashChess is free software: you can redistribute it and/or modify
+  Alexander is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  ShashChess is distributed in the hope that it will be useful,
+  Alexander is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -33,21 +33,20 @@
 
 #include "history.h"
 #include "misc.h"
-#include "nnue/network.h"
-#include "nnue/nnue_accumulator.h"
+//from classical
 #include "numa.h"
 #include "position.h"
 #include "score.h"
 #include "syzygy/tbprobe.h"
 #include "timeman.h"
-//from Shashin begin
+//from Alexander begin
 #include "evaluate.h"
 #include "book/book_manager.h"
 #include <memory>
-//from Shashin end
+//from Alexander end
 #include "types.h"
 
-namespace ShashChess {
+namespace Alexander {
 
 class ShashinManager;  //shashin
 // Different node types, used as a template parameter
@@ -80,11 +79,14 @@ struct Stack {
     bool                        ttPv;
     bool                        ttHit;
     int                         cutoffCnt;
+    int                         reduction;
+    bool                        isTTMove;
     //from Crystal-shashin begin
     bool secondaryLine;
     bool mainLine;
     //from Crystal-shashin end
 };
+
 
 // RootMove struct is used for moves at the root of the tree. For each root move
 // we store a score and a PV (really a refutation in the case of moves which
@@ -142,23 +144,20 @@ struct LimitsType {
 // This struct is used to easily forward data to the Search::Worker class.
 struct SharedState {
     //from Polyfish begin
-    SharedState(BookManager&                                    bm,
-                const OptionsMap&                               optionsMap,
-                ThreadPool&                                     threadPool,
-                TranspositionTable&                             transpositionTable,
-                const LazyNumaReplicated<Eval::NNUE::Networks>& nets) :
+    SharedState(BookManager&        bm,
+                const OptionsMap&   optionsMap,
+                ThreadPool&         threadPool,
+                TranspositionTable& transpositionTable) :
         bookMan(bm),
         options(optionsMap),
         threads(threadPool),
-        tt(transpositionTable),
-        networks(nets) {}
+        tt(transpositionTable) {}
 
     BookManager& bookMan;
     //from Polyfish end
-    const OptionsMap&                               options;
-    ThreadPool&                                     threads;
-    TranspositionTable&                             tt;
-    const LazyNumaReplicated<Eval::NNUE::Networks>& networks;
+    const OptionsMap&   options;
+    ThreadPool&         threads;
+    TranspositionTable& tt;
 };
 
 class Worker;
@@ -222,10 +221,10 @@ class SearchManager: public ISearchManager {
             const TranspositionTable& tt,
             Depth                     depth);
 
-    ShashChess::TimeManagement tm;
-    double                     originalTimeAdjust;
-    int                        callsCnt;
-    std::atomic_bool           ponder;
+    Alexander::TimeManagement tm;
+    double                    originalTimeAdjust;
+    int                       callsCnt;
+    std::atomic_bool          ponder;
 
     std::array<Value, 4> iterValue;
     double               previousTimeReduction;
@@ -262,7 +261,6 @@ class Worker {
 
     bool is_mainthread() const { return threadIdx == 0; }
 
-    void ensure_network_replicated();
     //from Montecarlo begin
     Value minimax_value(Position& pos, Search::Stack* ss, Depth depth);
     Value minimax_value(Position& pos, Search::Stack* ss, Depth depth, Value alpha, Value beta);
@@ -277,7 +275,6 @@ class Worker {
     PawnHistory           pawnHistory;
 
     CorrectionHistory<Pawn>         pawnCorrectionHistory;
-    CorrectionHistory<Major>        majorPieceCorrectionHistory;
     CorrectionHistory<Minor>        minorPieceCorrectionHistory;
     CorrectionHistory<NonPawn>      nonPawnCorrectionHistory[COLOR_NB];
     CorrectionHistory<Continuation> continuationCorrectionHistory;
@@ -338,17 +335,15 @@ class Worker {
     //From PolyFish begin
     BookManager& bookMan;
     //From PolyFish end
-    const OptionsMap&                               options;
-    ThreadPool&                                     threads;
-    TranspositionTable&                             tt;
-    const LazyNumaReplicated<Eval::NNUE::Networks>& networks;
-
-    // Used by NNUE
-    Eval::NNUE::AccumulatorCaches   refreshTable;
+    const OptionsMap&               options;
+    ThreadPool&                     threads;
+    TranspositionTable&             tt;
     std::unique_ptr<ShashinManager> shashinManager;  //Shashin
-    friend class ShashChess::ThreadPool;
+    //no classical
+    friend class Alexander::ThreadPool;
     friend class SearchManager;
 };
+
 struct ConthistBonus {
     int index;
     int weight;
@@ -383,6 +378,6 @@ void set_variety(const std::string& varietyOption);  //variety
 size_t cURL_WriteFunc(void* contents, size_t size, size_t nmemb, std::string* s);
 #endif
 //from Livebook end
-}  // namespace ShashChess
+}  // namespace Alexander
 
 #endif  // #ifndef SEARCH_H_INCLUDED

@@ -14,7 +14,7 @@
     #include <windows.h>
 #endif
 
-using namespace ShashChess;
+using namespace Alexander;
 
 FileMapping::FileMapping() :
     mapping(0),

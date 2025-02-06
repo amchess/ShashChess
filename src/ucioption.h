@@ -1,13 +1,13 @@
 /*
-  ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 The ShashChess developers (see AUTHORS file)
+  Alexander, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2025 The Alexander developers (see AUTHORS file)
 
-  ShashChess is free software: you can redistribute it and/or modify
+  Alexander is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  ShashChess is distributed in the hope that it will be useful,
+  Alexander is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -26,7 +26,7 @@
 #include <optional>
 #include <string>
 
-namespace ShashChess {
+namespace Alexander {
 // Define a custom comparator, because the UCI options should be case-insensitive
 struct CaseInsensitiveLess {
     bool operator()(const std::string&, const std::string&) const;
@@ -47,19 +47,20 @@ class Option {
     Option(const char* v, const char* cur, OnChange = nullptr);
 
     Option& operator=(const std::string&);
-            operator int() const;
-            operator std::string() const;
-    bool    operator==(const char*) const;
-    bool    operator!=(const char*) const;
+    operator int() const;
+    operator std::string() const;
+    bool operator==(const char*) const;
+    bool operator!=(const char*) const;
 
     friend std::ostream& operator<<(std::ostream&, const OptionsMap&);
+
+    int operator<<(const Option&) = delete;
 
    private:
     friend class OptionsMap;
     friend class Engine;
     friend class Tune;
 
-    void operator<<(const Option&);
 
     std::string       defaultValue, currentValue, type;
     int               min, max;
@@ -82,8 +83,9 @@ class OptionsMap {
 
     void setoption(std::istringstream&);
 
-    Option  operator[](const std::string&) const;
-    Option& operator[](const std::string&);
+    const Option& operator[](const std::string&) const;
+
+    void add(const std::string&, const Option& option);
 
     std::size_t count(const std::string&) const;
 

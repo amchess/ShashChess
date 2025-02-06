@@ -88,47 +88,73 @@ Analysis* Analysis::flip() const {
     auto ret = new Analysis();
 
     if (centi_pawns != nullptr)
-    { ret->set_centi_pawns(centi_pawns->flip()); }
+    {
+        ret->set_centi_pawns(centi_pawns->flip());
+    }
 
     if (wdl != nullptr)
-    { ret->set_wdl(wdl->flip()); }
+    {
+        ret->set_wdl(wdl->flip());
+    }
 
     if (mate != nullptr)
-    { ret->set_mate(mate->flip()); }
+    {
+        ret->set_mate(mate->flip());
+    }
 
     return ret;
 }
 
 bool Analysis::operator==(const Analysis& other) const {
     if (depth != other.depth)
-    { return false; }
+    {
+        return false;
+    }
 
     if (centi_pawns == nullptr && other.centi_pawns != nullptr)
-    { return false; }
+    {
+        return false;
+    }
 
     if (centi_pawns != nullptr && other.centi_pawns == nullptr)
-    { return false; }
+    {
+        return false;
+    }
 
     if (centi_pawns != nullptr && *centi_pawns != *other.centi_pawns)
-    { return false; }
+    {
+        return false;
+    }
 
     if (wdl == nullptr && other.wdl != nullptr)
-    { return false; }
+    {
+        return false;
+    }
 
     if (wdl != nullptr && other.wdl == nullptr)
-    { return false; }
+    {
+        return false;
+    }
 
     if (wdl != nullptr && *wdl != *other.wdl)
-    { return false; }
+    {
+        return false;
+    }
 
     if (mate == nullptr && other.mate != nullptr)
-    { return false; }
+    {
+        return false;
+    }
 
     if (mate != nullptr && other.mate == nullptr)
-    { return false; }
+    {
+        return false;
+    }
 
     if (mate != nullptr && *mate != *other.mate)
-    { return false; }
+    {
+        return false;
+    }
 
     return true;
 }
@@ -137,43 +163,69 @@ bool Analysis::operator!=(const Analysis& other) const { return !(*this == other
 
 bool Analysis::operator>(const Analysis& other) const {
     if (depth > other.depth)
-    { return true; }
+    {
+        return true;
+    }
 
     if (depth < other.depth)
-    { return false; }
+    {
+        return false;
+    }
 
     if (centi_pawns == nullptr && other.centi_pawns != nullptr)
-    { return false; }
+    {
+        return false;
+    }
 
     if (centi_pawns != nullptr && other.centi_pawns == nullptr)
-    { return true; }
+    {
+        return true;
+    }
 
     if (centi_pawns != nullptr && *centi_pawns > *other.centi_pawns)
-    { return true; }
+    {
+        return true;
+    }
 
     if (centi_pawns != nullptr && *centi_pawns < *other.centi_pawns)
-    { return false; }
+    {
+        return false;
+    }
 
     if (wdl == nullptr && other.wdl != nullptr)
-    { return false; }
+    {
+        return false;
+    }
 
     if (wdl != nullptr && other.wdl == nullptr)
-    { return true; }
+    {
+        return true;
+    }
 
     if (wdl != nullptr && *wdl > *other.wdl)
-    { return true; }
+    {
+        return true;
+    }
 
     if (wdl != nullptr && *wdl < *other.wdl)
-    { return false; }
+    {
+        return false;
+    }
 
     if (mate == nullptr && other.mate != nullptr)
-    { return false; }
+    {
+        return false;
+    }
 
     if (mate != nullptr && other.mate == nullptr)
-    { return true; }
+    {
+        return true;
+    }
 
     if (mate != nullptr && *mate > *other.mate)
-    { return true; }
+    {
+        return true;
+    }
 
     return false;
 }
