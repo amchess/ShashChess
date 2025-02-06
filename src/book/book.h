@@ -1,7 +1,7 @@
 #ifndef BOOK_H_INCLUDED
 #define BOOK_H_INCLUDED
 #include "../movegen.h"
-namespace Alexander {
+namespace ShashChess {
 class BookManager;
 
 namespace Book {
@@ -53,7 +53,7 @@ class BookUtil {
 };
 
 class Book {
-    friend class Alexander::BookManager;
+    friend class ShashChess::BookManager;
 
    private:
     static Book* create_book(const std::string& filename);

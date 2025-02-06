@@ -4,7 +4,7 @@
 #include "../file_mapping.h"
 #include "../book.h"
 
-namespace Alexander {
+namespace ShashChess {
 namespace {
 struct CtgPositionData;
 struct CtgMoveList;

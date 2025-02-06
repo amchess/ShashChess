@@ -11,7 +11,7 @@ extern "C" {
     #undef min
     #undef max
 
-namespace Alexander::Livebook {
+namespace ShashChess::Livebook {
 class ChessDBContributor {
    public:
     ChessDBContributor();

@@ -1,4 +1,4 @@
-name: Alexander
+name: ShashChess
 on:
   push:
     tags:
@@ -13,7 +13,7 @@ on:
       - tools
 jobs:
   Prerelease:
-    if: github.repository == 'official-alexander/Alexander' && (github.ref == 'refs/heads/master' || (startsWith(github.ref_name, 'sf_') && github.ref_type == 'tag'))
+    if: github.repository == 'official-shashchess/ShashChess' && (github.ref == 'refs/heads/master' || (startsWith(github.ref_name, 'sf_') && github.ref_type == 'tag'))
     runs-on: ubuntu-latest
     permissions:
       contents: write # For deleting/creating a prerelease
@@ -29,7 +29,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y curl jq
 
-          echo "COMMIT_SHA_TAG=$(jq -r 'map(select(.prerelease)) | first | .tag_name' <<< $(curl -s https://api.github.com/repos/${{ github.repository_owner }}/Alexander/releases))" >> $GITHUB_ENV
+          echo "COMMIT_SHA_TAG=$(jq -r 'map(select(.prerelease)) | first | .tag_name' <<< $(curl -s https://api.github.com/repos/${{ github.repository_owner }}/ShashChess/releases))" >> $GITHUB_ENV
 
       # delete old previous pre-release and tag
       - run: gh release delete ${{ env.COMMIT_SHA_TAG }} --cleanup-tag
@@ -59,8 +59,8 @@ jobs:
         if: github.ref_name == 'master' && env.CHANGES == '0'
         uses: softprops/action-gh-release@4634c16e79c963813287e889244c50009e7f0981
         with:
-          name: Alexander dev-${{ env.COMMIT_DATE }}-${{ env.COMMIT_SHA }}
-          tag_name: alexander-dev-${{ env.COMMIT_DATE }}-${{ env.COMMIT_SHA }}
+          name: ShashChess dev-${{ env.COMMIT_DATE }}-${{ env.COMMIT_SHA }}
+          tag_name: shashchess-dev-${{ env.COMMIT_DATE }}-${{ env.COMMIT_SHA }}
           prerelease: true
 
   Matrix:
@@ -101,7 +101,7 @@ jobs:
   Games:
     uses: ./.github/workflows/games.yml
   Binaries:
-    if: github.repository == 'official-alexander/Alexander'
+    if: github.repository == 'official-shashchess/ShashChess'
     needs: [Matrix, Prerelease, Compilation]
     uses: ./.github/workflows/upload_binaries.yml
     with:
@@ -111,7 +111,7 @@ jobs:
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
   ARM_Binaries:
-    if: github.repository == 'official-alexander/Alexander'
+    if: github.repository == 'official-shashchess/ShashChess'
     needs: [Matrix, Prerelease, ARMCompilation]
     uses: ./.github/workflows/upload_binaries.yml
     with:

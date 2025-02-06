@@ -1,0 +1,469 @@
+﻿[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "1.1"]
+[White "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Black "ShashChess 18.2"]
+[Result "1-0"]
+[ECO "E11"]
+[PlyCount "185"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. c4 Nf6 2. d4 e6 3. Nf3 Bb4+ 4. Nbd2 O-O 5. a3 Be7 6. e4 d6 7. Be2 c5 8. d5
+Nbd7 9. O-O e5 10. Kh1 g6 11. g3 Ne8 12. Rg1 Kh8 13. g4 h6 14. h3 Kg7 15. Nf1
+Rh8 16. Ng3 Kg8 17. Be3 Nf8 18. b4 b6 19. Rg2 Ng7 20. Kh2 a5 21. bxc5 bxc5 22.
+Rb1 a4 23. Rb2 g5 24. Qb1 Ng6 25. Nf5 Bf6 26. Rb6 Nxf5 27. gxf5 Nf4 28. Bxf4
+exf4 29. h4 Qe7 30. Bd3 Kf8 31. Kg1 Ba6 32. Nh2 Bd4 33. Qd1 Qd8 34. Rb1 Qe8 35.
+Nf3 Bf6 36. Kh1 Bc8 37. Rg1 Qd8 38. Qe2 Bc3 39. e5 dxe5 40. Be4 Bd7 41. Qf1 Ra7
+42. Qh3 Ke7 43. Rgc1 Bd4 44. Rd1 f6 45. Nxd4 exd4 46. Rd2 Kf7 47. Qf3 Kg7 48.
+Rdb2 Qe7 49. Bd3 Be8 50. Rb6 Bf7 51. Kg2 Qe5 52. Kf1 Re8 53. Re6 Qc7 54. Rb5
+Rc8 55. d6 Qd8 56. Rb7 Rxb7 57. Qxb7 Rb8 58. Qd5 f3 59. Qxc5 Rb6 60. Qxd4 Bxe6
+61. c5 Rxd6 62. cxd6 Bd7 63. Qa7 Kf8 64. Bc4 Qe8 65. Qd4 Kg7 66. Qd5 gxh4 67.
+Qb7 h3 68. Qxf3 h2 69. Qg4+ Kh8 70. Kg2 h1=R 71. Kxh1 Qe1+ 72. Kg2 Bc6+ 73. f3
+Bd5 74. Bxd5 Qd2+ 75. Kh3 Qxd5 76. Qe4 Qxd6 77. Qxa4 Qe5 78. Qe4 Qb5 79. Kg4
+Qd7 80. a4 Kg7 81. a5 Qc7 82. a6 h5+ 83. Kxh5 Qf7+ 84. Kh4 Qa7 85. Qg4+ Kf8 86.
+Qb4+ Kg7 87. Qc4 Kf8 88. Qc6 Kg7 89. Kh3 Qe3 90. Qe4 Qc5 91. Kg2 Kf8 92. Qe6
+Qd4 93. Kh3 1-0
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "2.1"]
+[White "ShashChess 18.2"]
+[Black "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Result "1-0"]
+[ECO "E11"]
+[PlyCount "113"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. c4 Nf6 2. d4 e6 3. Nf3 Bb4+ 4. Nbd2 O-O 5. a3 Be7 6. e4 d6 7. Be2 c5 8. d5
+Nbd7 9. O-O e5 10. Ne1 g6 11. a4 Ne8 12. g4 b6 13. Ra3 Bg5 14. Ng2 a5 15. h4
+Bxh4 16. Nxh4 Qxh4 17. Kg2 Qd8 18. Rh3 f6 19. Rfh1 Rf7 20. Nf1 Nf8 21. Ng3 Raa7
+22. Qb3 Rab7 23. Kf1 g5 24. Nf5 Rfc7 25. Rh6 Ng6 26. Bd1 Qd7 27. R6h5 Qd8 28.
+Qc3 Ra7 29. Qb3 Rab7 30. Bd2 Bxf5 31. gxf5 Nf4 32. Rh6 Qe7 33. Bg4 Qf8 34. Qb5
+Rd7 35. R6h2 Re7 36. Be3 Rbc7 37. Bxf4 exf4 38. f3 Rcd7 39. Bh5 Nc7 40. Qxb6
+Qa8 41. Qb3 Ne8 42. Qc3 Qb8 43. Kg1 Qb6 44. b3 Rb7 45. Bg6 Qd8 46. Rh5 Rf7 47.
+Bxf7+ Rxf7 48. Kg2 Qa8 49. Kh3 Rd7 50. Rh6 Rf7 51. Kg4 Qd8 52. Qc2 Rg7 53. b4
+cxb4 54. c5 Qc8 55. Qh2 Qd7 56. c6 Qf7 57. Qh5 {(Dh3)} 1-0
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "3.1"]
+[White "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Black "ShashChess 18.2"]
+[Result "1/2-1/2"]
+[ECO "E60"]
+[PlyCount "124"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. d4 Nf6 2. c4 g6 3. Nf3 Bg7 4. g3 O-O 5. Bg2 d6 6. O-O e5 7. dxe5 dxe5 8.
+Nxe5 Qe7 9. Nd3 Ne4 10. Nd2 Nc5 11. Nb3 Nxd3 12. exd3 Nc6 13. Re1 Qd8 14. h4
+Bf5 15. d4 Nxd4 16. Bg5 f6 17. Nxd4 fxg5 18. Nxf5 Rxf5 19. Bxb7 Rb8 20. Qxd8+
+Rxd8 21. Be4 Re5 22. Bd5+ Kf8 23. Rxe5 Bxe5 24. hxg5 Bxb2 25. Rb1 Bd4 26. Kg2
+Re8 27. f4 Re2+ 28. Kh3 Rxa2 29. Rb7 Re2 30. Rxc7 Re7 31. Rc8+ Re8 32. Rc6 Re7
+33. Rd6 a5 34. Bc6 Rc7 35. Bb5 Be3 36. Rd8+ Kg7 37. Kg2 h6 38. gxh6+ Kxh6 39.
+Kf3 Bc5 40. Ra8 Ra7 41. Rh8+ Kg7 42. Rc8 Bb6 43. c5 Rc7 44. Rxc7+ Bxc7 45. g4
+Bb8 46. Ke4 Ba7 47. c6 Bb8 48. Ba4 Kf8 49. g5 Bc7 50. Bc2 Bb8 51. Bb3 Bd6 52.
+Kf3 Bc7 53. Ke3 Bb8 54. Ke4 Bd6 55. Bd1 Bb8 56. Ba4 Kf7 57. Bb3+ Kf8 58. f5
+gxf5+ 59. Kxf5 Kg7 60. Ba4 Bc7 61. Kg4 Kg6 62. Bc2+ Kf7 {(Rg7)} 1/2-1/2
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "4.1"]
+[White "ShashChess 18.2"]
+[Black "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Result "1-0"]
+[ECO "E60"]
+[PlyCount "153"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. d4 Nf6 2. c4 g6 3. Nf3 Bg7 4. g3 O-O 5. Bg2 d6 6. O-O e5 7. dxe5 dxe5 8.
+Nxe5 Qe7 9. Nd3 Ne4 10. Nd2 Nc5 11. Nb3 Nxd3 12. exd3 Nc6 13. Re1 Qd8 14. h4
+Bf5 15. d4 Nxd4 16. Bg5 f6 17. Nxd4 fxg5 18. Nxf5 Rxf5 19. Bxb7 Rb8 20. Be4 Re5
+21. Qxd8+ Rxd8 22. Bd5+ Kf8 23. Rxe5 Bxe5 24. hxg5 Bxb2 25. Rb1 Bd4 26. Kg2 Re8
+27. Rb3 Kg7 28. Rb7 Re7 29. f3 h6 30. gxh6+ Kh7 31. Kh3 Kxh6 32. Rb8 Bf2 33.
+Rh8+ Kg7 34. Rc8 Kh6 35. Be4 Bc5 36. Rg8 Kh7 37. Rd8 Bd6 38. Bd5 Bc5 39. Kg4
+Bf2 40. f4 Re3 41. Bf3 Re7 42. Rd2 Be1 43. Rd5 Bf2 44. Kh3 Kg7 45. Kg2 Bb6 46.
+Bd1 Kf7 47. Bb3 Kg7 48. Kh3 Bf2 49. Kg2 Bb6 50. Bd1 Kf7 51. c5 c6 52. Rd6 Bxc5
+53. Rxc6 Bd4 54. Bb3+ Kg7 55. Bc2 Re2+ 56. Kf3 Re3+ 57. Kg4 Bf6 58. Ra6 Re7 59.
+Kf3 Rc7 60. Bd3 Re7 61. Be4 Rd7 62. g4 g5 63. fxg5 Bd4 64. Rg6+ Kf8 65. Rc6 Be5
+66. Rc5 Rf7+ 67. Bf5 Re7 68. g6 Kg7 69. Rd5 Bf6 70. Be4 Bc3 71. Kf4 a5 72. a4
+Bb4 73. Kf5 Bc3 74. g5 Bb4 75. Rd8 Bc3 76. Rc8 Bd4 77. Bd3 1-0
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "5.1"]
+[White "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Black "ShashChess 18.2"]
+[Result "1/2-1/2"]
+[ECO "D43"]
+[PlyCount "65"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. d4 d5 2. c4 e6 3. Nf3 Nf6 4. Nc3 c6 5. Bg5 h6 6. Bxf6 Qxf6 7. e3 Nd7 8. Bd3
+dxc4 9. Bxc4 g6 10. Qc2 Bg7 11. Ne4 Qe7 12. Bb3 O-O 13. O-O a5 14. Rac1 Nf6 15.
+Ne5 Nxe4 16. Qxe4 a4 17. Bd1 Rd8 18. a3 Bd7 19. Rc4 Be8 20. Bf3 Qd6 21. Rd1 f6
+22. Nd3 f5 23. Qh4 Rac8 24. g4 g5 25. Qg3 b6 26. Qxd6 Rxd6 27. Rxa4 c5 28. Ra7
+fxg4 29. Bxg4 cxd4 30. e4 h5 31. e5 Bxe5 32. Re1 Bxh2+ 33. Kxh2 1/2-1/2
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "6.1"]
+[White "ShashChess 18.2"]
+[Black "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Result "1/2-1/2"]
+[ECO "D43"]
+[PlyCount "156"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. d4 d5 2. c4 e6 3. Nf3 Nf6 4. Nc3 c6 5. Bg5 h6 6. Bxf6 Qxf6 7. e3 Nd7 8. Be2
+Be7 9. O-O O-O 10. Qc2 a6 11. Rab1 b5 12. cxd5 cxd5 13. b4 Bd6 14. a4 bxa4 15.
+Nxa4 e5 16. Rfc1 Rb8 17. Nc5 e4 18. Nd2 h5 19. Qa2 Qg5 20. Qa5 Qe7 21. Qa2 Qg5
+22. Qa5 Qe7 23. Nf1 h4 24. Nxa6 Bxa6 25. Bxa6 Qe6 26. h3 g5 27. Qa4 g4 28. hxg4
+Qxg4 29. Qd1 Qxd1 30. Rxd1 Bxb4 31. g3 hxg3 32. Nxg3 Kg7 33. Rdc1 Ba3 34. Rf1
+Bb4 35. Rfc1 Ba3 36. Rf1 Bb4 37. Be2 Rg8 38. f4 exf3 39. Bxf3 Nf6 40. Kf2 Rh8
+41. Kg2 Rhg8 42. Kf2 Rh8 43. Kg1 Rhg8 44. Bg2 Bd2 45. Nf5+ Kh7 46. Kf2 Rxb1 47.
+Rxb1 Rg5 48. Rh1+ Kg6 49. Nh4+ Kg7 50. Ke2 Bb4 51. Kd3 Rh5 52. Bf3 Rh7 53. Rg1+
+Kf8 54. Nf5 Rh2 55. Rg2 Rxg2 56. Bxg2 Ke8 57. Ke2 Kd7 58. Kf3 Ba5 59. Nh6 Ke6
+60. Bh3+ Ke7 61. Nf5+ Ke6 62. Ng3+ Ke7 63. Bf5 Bc7 64. Ne2 Ba5 65. Nf4 Bc7 66.
+Nh3 Ba5 67. Bb1 Bc7 68. Bd3 Ke6 69. Bb5 Ke7 70. Bd3 Bh2 71. Nf2 Bc7 72. Ba6 Bh2
+73. Bc8 Bd6 74. Bf5 Ne8 75. Kg4 Nf6+ 76. Kf3 Ne8 77. Nd3 Bc7 78. Bg4 Nf6
+1/2-1/2
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "7.1"]
+[White "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Black "ShashChess 18.2"]
+[Result "1/2-1/2"]
+[ECO "B22"]
+[PlyCount "52"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. e4 c5 2. c3 e6 3. d4 cxd4 4. cxd4 d5 5. exd5 exd5 6. Nc3 Nc6 7. Nf3 Bb4 8.
+h3 Bf5 9. Bb5 Nge7 10. O-O O-O 11. Re1 Rc8 12. a3 Bd6 13. Bg5 f6 14. Be3 Qe8
+15. Nh4 Bd7 16. Qf3 Qf7 17. Bd3 Bb8 18. Rad1 Rfe8 19. Nf5 Bxf5 20. Bxf5 Nxf5
+21. Qxf5 Rcd8 22. Qf3 a6 23. Kf1 Ba7 24. Re2 h6 25. h4 Rd7 26. b4 Rc8 1/2-1/2
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "8.1"]
+[White "ShashChess 18.2"]
+[Black "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Result "1/2-1/2"]
+[ECO "B14"]
+[PlyCount "51"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. e4 c5 2. c3 e6 3. d4 cxd4 4. cxd4 d5 5. exd5 exd5 6. Nc3 Nc6 7. Bb5 Nf6 8.
+Nf3 Bd6 9. Bg5 O-O 10. O-O Bg4 11. Be2 Re8 12. h3 Bxf3 13. Bxf3 h6 14. Bh4 g5
+15. Bg3 Bxg3 16. fxg3 Kg7 17. Qd2 Qd6 18. Qf2 Rad8 19. Nb5 Qf8 20. Nc3 Qd6 21.
+Rad1 Rd7 22. Be2 Qe7 23. Bf3 Qe3 24. g4 Qxf2+ 25. Kxf2 Re6 26. Rfe1 1/2-1/2
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "9.1"]
+[White "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Black "ShashChess 18.2"]
+[Result "1/2-1/2"]
+[ECO "E60"]
+[PlyCount "266"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. d4 Nf6 2. c4 g6 3. f3 e6 4. e4 d5 5. cxd5 exd5 6. Nc3 dxe4 7. fxe4 Bb4 8.
+Bg5 h6 9. Bxf6 Qxf6 10. Nf3 Bg4 11. Bb5+ c6 12. Be2 Qe7 13. O-O Nd7 14. Qc2 Ba5
+15. Kh1 Bc7 16. b4 Rd8 17. e5 Nb6 18. Rad1 O-O 19. Ne4 Nd5 20. Bc4 Bf5 21. Rde1
+Kg7 22. Qf2 a5 23. Bxd5 Rxd5 24. Nf6 Rb5 25. Qh4 Bd8 26. Qg3 Rxb4 27. d5 cxd5
+28. Nxd5 Qc5 29. Nxb4 Qxb4 30. Rd1 Be6 31. Nd4 Bxa2 32. e6 Kh7 33. Qb8 Bg5 34.
+Qe5 Qe7 35. Qxa5 Bxe6 36. Rde1 Bf6 37. Nxe6 fxe6 38. Qb6 e5 39. Rb1 h5 40. Qxb7
+Kh6 41. Qe4 Qe6 42. Rb5 Rf7 43. Qd3 Kg7 44. Qe3 Qa6 45. Rfb1 Qc6 46. R5b4 Qd5
+47. h3 Rd7 48. Rf1 Bd8 49. Rbb1 Kh7 50. Qe2 Qe6 51. Qb2 Bg5 52. Qb8 Bf4 53.
+Rfd1 Rf7 54. Rd8 Qf6 55. Rb6 Qg7 56. Re6 Bg3 57. Qb1 Rb7 58. Qd1 Ra7 59. Red6
+Kh6 60. Rb6 e4 61. Re8 e3 62. Qb1 Kh7 63. Rb5 Kh6 64. Rxe3 Ra1 65. Rxg3 Rxb1+
+66. Rxb1 Qe5 67. Rf3 Qd4 68. Rbf1 Qe4 69. Rf4 Qe5 70. h4 Qe3 71. Ra4 Qe7 72.
+Rff4 Qe1+ 73. Kh2 Qe5 74. Rae4 Qd6 75. Kg1 Qb6+ 76. Kf1 Qd6 77. Kf2 Qc7 78. Kf3
+Qc3+ 79. Re3 Qc7 80. Kg3 Qb8 81. Ree4 Qb3+ 82. Kh2 Qb8 83. Kh3 Qb3+ 84. Rf3 Qd5
+85. Rfe3 Qd7+ 86. Kh2 Qc7+ 87. g3 Qc2+ 88. Re2 Qd3 89. Re7 Qf5 90. Rb2 Qf6 91.
+Reb7 Qd4 92. Rb8 Qe5 93. R8b6 Qc3 94. Ra2 Qc4 95. Rf2 Qc5 96. Rbf6 Qe5 97. Kh3
+Qe4 98. Kh2 Qe7 99. Rb6 Qe3 100. Rbb2 Qa7 101. Rf8 Qd4 102. Rc2 Qg7 103. Rcf2
+Qd7 104. R2f7 Qd4 105. Rf4 Qb6 106. R4f6 Qd4 107. R6f7 Qb2+ 108. Rf2 Qe5 109.
+Ra2 Qd4 110. Rg8 Qe5 111. Rf2 Kh7 112. Rgf8 Kh6 113. R8f3 Qe7 114. Rf1 Qg7 115.
+Rf6 Qe7 116. R6f4 Qe5 117. R1f3 Qe6 118. Rf7 Qe2+ 119. Rf2 Qe4 120. R7f4 Qd5
+121. Re2 Qb5 122. Rfe4 Qd5 123. Ra4 Qd7 124. Rb4 Qa7 125. Rbe4 Qd7 126. Rf2 Qg7
+127. Re3 Qb7 128. Re8 Qg7 129. Re1 Qb7 130. Rd1 Qe4 131. Rd6 Qe5 132. Rc6 Qe4
+133. Rfc2 Qe7 {(Dd3)} 1/2-1/2
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "10.1"]
+[White "ShashChess 18.2"]
+[Black "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Result "1/2-1/2"]
+[ECO "E60"]
+[PlyCount "58"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. d4 Nf6 2. c4 g6 3. f3 e6 4. e4 d5 5. cxd5 exd5 6. Nc3 dxe4 7. fxe4 Bb4 8.
+Bg5 h6 9. Bxf6 Qxf6 10. Nf3 Bg4 11. Bb5+ c6 12. Be2 Qe7 13. O-O Nd7 14. Qc2 Ba5
+15. Rad1 Bc7 16. b4 Nb6 17. a4 a5 18. bxa5 Rxa5 19. h3 Bc8 20. Bd3 O-O 21. Qd2
+Kg7 22. Nb5 Rxa4 23. Nxc7 Qxc7 24. Qb2 f6 25. Qc2 Be6 26. d5 Bf7 27. Rb1 Ra3
+28. Qc5 Rxd3 29. Rxb6 Qf4 {(Te8)} 1/2-1/2
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "11.1"]
+[White "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Black "ShashChess 18.2"]
+[Result "1/2-1/2"]
+[ECO "B90"]
+[PlyCount "104"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Be3 h6 7. f3 Qc7 8. g4
+e6 9. Qd2 b5 10. h4 b4 11. Na4 d5 12. O-O-O Bd7 13. Nxe6 fxe6 14. Nb6 Bc6 15.
+Bh3 dxe4 16. Nxa8 Bxa8 17. g5 hxg5 18. hxg5 Nd5 19. fxe4 Nxe3 20. Qxe3 Bc5 21.
+Qf3 Rf8 22. Qb3 Qe5 23. Bxe6 Bc6 24. Kb1 Bd6 25. Bf5 Kd8 26. Qxb4 Kc7 27. Qb3
+a5 28. Rh7 Nd7 29. Bxd7 Bxd7 30. Qc4+ Bc6 31. a4 Rf4 32. Rd4 Qxg5 33. Rxd6 Kxd6
+34. Qd4+ Ke6 35. Rxg7 Qf6 36. Qc4+ Kd6 37. Qd3+ Ke5 38. Ra7 Rxe4 39. b3 Rd4 40.
+Qg3+ Rf4 41. Ka2 Kd6 42. Qd3+ Rd4 43. Qe3 Rd1 44. Qg3+ Kc5 45. Rxa5+ Kb6 46.
+Re5 Rd2 47. Qe3+ Kb7 48. Rb5+ Bxb5 49. Qxd2 Bc6 50. Qb4+ Ka6 51. Qc5 Bd7 52.
+Qc4+ Kb7 1/2-1/2
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "12.1"]
+[White "ShashChess 18.2"]
+[Black "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Result "1-0"]
+[ECO "B90"]
+[PlyCount "161"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Be3 h6 7. f3 Qc7 8. g4
+e6 9. Qd2 b5 10. O-O-O b4 11. Na4 Qa5 12. Nb6 Qxb6 13. Nxe6 Qc6 14. Nxf8 Kxf8
+15. e5 Ne8 16. exd6 Nd7 17. Bg2 Bb7 18. Qxb4 Nef6 19. Rhe1 Rc8 20. Rd2 Qb5 21.
+Qa3 Re8 22. Rd3 Ba8 23. Rdd1 Bd5 24. Bd4 Rxe1 25. Rxe1 Kg8 26. Qc3 Qb8 27. Qc7
+Kh7 28. Bf1 Qa8 29. Qa5 Re8 30. Re7 Kg8 31. Qxa6 Qd8 32. Qe2 Be6 33. f4 Qb8 34.
+f5 Bxa2 35. Rxe8+ Nxe8 36. b3 Nxd6 37. Kb2 Bxb3 38. cxb3 Ne8 39. h3 Nef6 40.
+Qe3 Qh2+ 41. Ka3 Qd6+ 42. Kb2 Qh2+ 43. Kc1 Qh1 44. Qf2 Qb7 45. Kc2 Ne5 46. Bg2
+Qb5 47. Qf1 Qa5 48. Qd1 Ned7 49. Bc3 Qa2+ 50. Bb2 Qa5 51. Qd4 Qc7+ 52. Bc3 Qh2
+53. Qd2 Nb6 54. b4 Qc7 55. Bf3 Na4 56. Kb3 Nxc3 57. Qxc3 Qd6 58. Ka3 Nd7 59.
+Be4 Kf8 60. Bc2 Ke7 61. Qe3+ Kd8 62. Qd3 Qxd3+ 63. Bxd3 Kc7 64. Kb3 Kb6 65. Kc4
+Ne5+ 66. Kd4 Nc6+ 67. Kc3 Ne5 68. Kd4 Nc6+ 69. Kc3 Ne5 70. Bf1 Kc6 71. Kd4 Nd7
+72. Bg2+ Kd6 73. Bd5 f6 74. Bh1 Nb6 75. Be4 Na4 76. Kc4 Nb6+ 77. Kb5 Nd7 78.
+Bd3 Ne5 79. Bc2 Nd7 80. Bb3 Kc7 81. Bc4 1-0
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "13.1"]
+[White "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Black "ShashChess 18.2"]
+[Result "1/2-1/2"]
+[ECO "D02"]
+[PlyCount "78"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. d4 d5 2. Bf4 c5 3. e3 Nf6 4. c3 Nc6 5. Nd2 e6 6. Ngf3 Bd6 7. Bg3 O-O 8. Bd3
+b6 9. e4 Be7 10. e5 Nh5 11. Ng5 Bxg5 12. Qxh5 g6 13. Qe2 cxd4 14. h4 Bxd2+ 15.
+Qxd2 dxc3 16. bxc3 d4 17. c4 Qe7 18. Be4 Bb7 19. h5 g5 20. O-O Rad8 21. Rad1 d3
+22. h6 Ba8 23. Bxd3 Nd4 24. f4 Qc5 25. Bf2 Qc6 26. Bxd4 Rxd4 27. Qe2 Rfd8 28.
+Bc2 Rxd1 29. Bxd1 Qc5+ 30. Kh2 Kf8 31. fxg5 Rd4 32. g3 Be4 33. Qf2 Bf5 34. Bc2
+Qxe5 35. Bxf5 exf5 36. Qxf5 Rh4+ 37. Kg2 Qxf5 38. Rxf5 Rxc4 39. Kf3 Rc3+
+1/2-1/2
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "14.1"]
+[White "ShashChess 18.2"]
+[Black "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Result "1/2-1/2"]
+[ECO "D02"]
+[PlyCount "82"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. d4 d5 2. Bf4 c5 3. e3 Nf6 4. c3 Nc6 5. Nd2 e6 6. Ngf3 Bd6 7. Bg3 O-O 8. Bd3
+b6 9. e4 Be7 10. e5 Nh5 11. Ng5 Bxg5 12. Qxh5 g6 13. Qe2 cxd4 14. h4 Bxd2+ 15.
+Qxd2 dxc3 16. bxc3 d4 17. c4 Qe7 18. Be4 Bb7 19. h5 g5 20. h6 Kh8 21. O-O Rad8
+22. f4 d3 23. Rf3 Rd4 24. Re1 Rfd8 25. fxg5 Rxe4 26. Rxe4 Nd4 27. Rxd3 Bxe4 28.
+Rxd4 Qc5 29. Bf2 Rxd4 30. Bxd4 Qxc4 31. Bxb6 Bd5 32. Bxa7 Qxa2 33. Qxa2 Bxa2
+34. Kf2 Bd5 35. Bb6 Be4 36. Kg1 Kg8 37. Bc5 Kh8 38. Kf1 Kg8 39. Kf2 Kh8 40. Bf8
+Kg8 41. Bg7 Bd5 1/2-1/2
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "15.1"]
+[White "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Black "ShashChess 18.2"]
+[Result "1/2-1/2"]
+[ECO "D46"]
+[PlyCount "81"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 d5 4. Nc3 c6 5. e3 Nbd7 6. Qc2 Bd6 7. Bd3 e5 8. cxd5
+cxd5 9. Nb5 Bb8 10. dxe5 Nxe5 11. Nxe5 Bxe5 12. Bd2 O-O 13. Bc3 Bxc3+ 14. Qxc3
+Ne4 15. Qd4 a6 16. Bxe4 dxe4 17. Nd6 Qe7 18. O-O Rd8 19. Rfd1 Bg4 20. Rd2 Rd7
+21. Qxe4 Qxe4 22. Nxe4 Rxd2 23. Nxd2 Rc8 24. b4 Be6 25. a3 Bd5 26. Rd1 g6 27.
+h4 Kg7 28. Nf3 Bxf3 29. gxf3 Rc3 30. Rd6 Rxa3 31. Rb6 a5 32. Rxb7 Rb3 33. b5
+Rb4 34. h5 a4 35. Kg2 a3 36. b6 g5 37. Kg3 h6 38. Kg2 a2 39. Ra7 Rxb6 40. Rxa2
+Rb4 41. e4 {(Ta7)} 1/2-1/2
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "16.1"]
+[White "ShashChess 18.2"]
+[Black "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Result "1/2-1/2"]
+[ECO "D46"]
+[PlyCount "237"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 d5 4. Nc3 c6 5. e3 Nbd7 6. Qc2 Bd6 7. Bd3 e5 8. cxd5
+cxd5 9. Nb5 Bb8 10. dxe5 Nxe5 11. Nxe5 Bxe5 12. Bd2 O-O 13. Bc3 Bxc3+ 14. Qxc3
+Bd7 15. Nd4 Ne4 16. Bxe4 dxe4 17. O-O Qg5 18. Kh1 Rfc8 19. Qd2 Qd5 20. b3 Rc5
+21. Rfc1 Rac8 22. Rxc5 Rxc5 23. a3 Qd6 24. Rc1 Rxc1+ 25. Qxc1 h5 26. h4 a5 27.
+Qc3 Qxa3 28. Qc7 Bc6 29. Qc8+ Qf8 30. Nxc6 bxc6 31. Qxc6 Qb8 32. Qxe4 Qxb3 33.
+Qa8+ Kh7 34. Qxa5 Qd1+ 35. Kh2 Qd6+ 36. g3 g6 37. Qg5 Qd2 38. Kg2 Qe2 39. Qd5
+Kg7 40. Qd4+ Kg8 41. Qb4 Kg7 42. Qc3+ Kg8 43. Qd4 Kh7 44. Qf4 Kg7 45. Kg1 Kg8
+46. Qb8+ Kh7 47. Qb3 Kg8 48. Qb1 Kg7 49. Qc1 Kh7 50. Qa1 Kg8 51. Qa8+ Kg7 52.
+Qe4 Qe1+ 53. Kg2 Qe2 54. Qd4+ Kg8 55. e4 Kh7 56. Qd5 Kg8 57. Qa8+ Kh7 58. Qc6
+Kg7 59. Qe8 Qc2 60. Qe5+ Kg8 61. Qb8+ Kg7 62. Qb7 Qd2 63. Qb3 Qe2 64. Qc3+ Kg8
+65. Qe5 Qc2 66. Qd4 Qe2 67. Qd8+ Kg7 68. Qe7 Qe1 69. Qe5+ Kh7 70. Qe8 Kg7 71.
+Qe5+ Kh7 72. Qe7 Kg7 73. Qe8 Qd1 74. Qe5+ Kg8 75. Qd5 Qe2 76. Qa8+ Kg7 77. Kg1
+Qd1+ 78. Kg2 Qe1 79. Qc6 Qb4 80. Qa8 Qb2 81. Qc6 Qe2 82. Qa8 Kh7 83. Qb7 Qc4
+84. Qd5 Qc7 85. e5 Kg8 86. Kh3 Qb6 87. Kg2 Kg7 88. Qc4 Qb7+ 89. Kh2 f6 90.
+exf6+ Kxf6 91. Qd4+ Kf7 92. Qe5 Kg8 93. Qe1 Qd7 94. Qc1 Qd6 95. Qh1 Kh7 96. Qf3
+Qd7 97. Qf6 Qa7 98. Kg2 Qd7 99. Qf8 Qc6+ 100. Qf3 Qc7 101. Kg1 Qc1+ 102. Kh2
+Qc4 103. Qb7+ Kh6 104. Qb8 Kh7 105. Qf4 Qd5 106. Qc7+ Kh8 107. Qf4 Kh7 108.
+Qc7+ Kh8 109. Qe7 Qf5 110. Kg1 Kg8 111. Qd8+ Kg7 112. Qd4+ Kg8 113. Qf4 Qd7
+114. g4 hxg4 115. Kh2 Kh7 116. Kg3 Qd1 117. Qf7+ Kh6 118. Qf8+ Kh7 119. Qf7+ {
+(De7+)} 1/2-1/2
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "17.1"]
+[White "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Black "ShashChess 18.2"]
+[Result "1-0"]
+[ECO "D05"]
+[PlyCount "121"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. d4 d5 2. Nf3 Nf6 3. e3 e6 4. Bd3 Bd6 5. O-O O-O 6. Nbd2 c6 7. Re1 Qc7 8. e4
+dxe4 9. Nxe4 Be7 10. Nxf6+ Bxf6 11. Ng5 Bxg5 12. Bxg5 f6 13. Bd2 Qf7 14. Qg4 f5
+15. Qf4 Nd7 16. a4 Nf6 17. a5 Rd8 18. h3 h6 19. Qe5 Qf8 20. Ra4 Qf7 21. Ra3 Rd5
+22. Qf4 Rd8 23. c4 Qf8 24. Qe3 Kh7 25. Rb3 Qd6 26. Bc3 Qc7 27. Bc2 Qf7 28. Qe5
+Qd7 29. g4 Qf7 30. Bd2 b5 31. axb6 axb6 32. Rxb6 Kg8 33. Rxc6 fxg4 34. hxg4 Qd7
+35. Rc7 Qxd4 36. Bf4 Ne8 37. Rc5 Qxe5 38. Bxe5 Nf6 39. Bxf6 gxf6 40. b4 Rb8 41.
+b5 Kf8 42. Be4 Ke7 43. f3 Rd2 44. Rc7+ Kd6 45. Rc6+ Ke7 46. c5 Bd7 47. Rb6 Rxb6
+48. cxb6 Rd6 49. b7 Rb6 50. Bc6 e5 51. Ra1 Rxb7 52. Bxb7 Bxb5 53. Be4 Bc4 54.
+Kf2 Kf8 55. Ra8+ Ke7 56. Rh8 Bb3 57. Rh7+ Ke6 58. Rxh6 Ke7 59. f4 Bc4 60. fxe5
+f5 61. gxf5 {(Axf5)} 1-0
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "18.1"]
+[White "ShashChess 18.2"]
+[Black "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Result "1-0"]
+[ECO "D05"]
+[PlyCount "125"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. d4 d5 2. Nf3 Nf6 3. e3 e6 4. Bd3 Bd6 5. O-O O-O 6. Nbd2 c6 7. Re1 Qc7 8. e4
+dxe4 9. Nxe4 Be7 10. Nxf6+ Bxf6 11. Ng5 Bxg5 12. Bxg5 f6 13. Bd2 Qf7 14. Qf3
+Nd7 15. Qe4 f5 16. Qxe6 Qxe6 17. Rxe6 Nc5 18. Re7 Nxd3 19. cxd3 a5 20. Rae1 Rf7
+21. Re8+ Rf8 22. R1e7 Rxe8 23. Rxe8+ Kf7 24. Rd8 b6 25. Bf4 Ke7 26. Rh8 Bb7 27.
+Rxh7 Rg8 28. Be5 Kf7 29. f4 Ba6 30. Rh3 Bc8 31. d5 cxd5 32. Kf2 Be6 33. a3 a4
+34. Bd4 Bd7 35. Rh5 Kg6 36. Rg5+ Kf7 37. Ke3 g6 38. Rg3 Rc8 39. Kd2 b5 40. Rh3
+Rb8 41. Rh7+ Ke6 42. Be5 Rd8 43. Ke3 d4+ 44. Bxd4 Kd5 45. Rg7 Be8 46. Rg8 Ke6
+47. Bc3 Kf7 48. Rh8 Rd6 49. Bb4 Rd8 50. Rh7+ Kg8 51. Rc7 Bf7 52. Be7 Rd5 53.
+Rc8+ Kg7 54. Bf8+ Kf6 55. Rc7 Be8 56. Rb7 Bd7 57. Bb4 Ke6 58. h3 Kf6 59. g3 Be8
+60. g4 Rd7 61. g5+ Kf7 62. Rb8 Rc7 63. h4 1-0
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "19.1"]
+[White "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Black "ShashChess 18.2"]
+[Result "1/2-1/2"]
+[ECO "A29"]
+[PlyCount "27"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. c4 e5 2. Nc3 Nf6 3. g3 d5 4. cxd5 Nxd5 5. Bg2 Nb6 6. d3 Be7 7. Nf3 Nc6 8.
+O-O O-O 9. b3 Re8 10. Bb2 Bf8 11. Rc1 a5 12. a3 Nd4 13. Nd2 Ne6 14. Nf3 1/2-1/2
+
+[Event "ShashChess18.2vsDragonByKomodo2.5, Rapi"]
+[Site "?"]
+[Date "2021.09.25"]
+[Round "20.1"]
+[White "ShashChess 18.2"]
+[Black "Dragon 2.5 by Komodo Chess, 64-bit"]
+[Result "1/2-1/2"]
+[ECO "A29"]
+[PlyCount "65"]
+[EventDate "2021.09.25"]
+[EventType "tourn"]
+[SourceTitle "Fritz Engine Tournament"]
+
+1. c4 e5 2. Nc3 Nf6 3. g3 d5 4. cxd5 Nxd5 5. Bg2 Nb6 6. d3 Be7 7. Nf3 Nc6 8.
+O-O O-O 9. a3 Re8 10. Re1 Be6 11. Be3 Nd5 12. Nxd5 Bxd5 13. Rc1 h6 14. Qc2 Bd6
+15. Qa4 a6 16. Nd2 Bxg2 17. Kxg2 Qd7 18. Qb3 Rab8 19. Nf3 Kh7 20. Rc2 f5 21.
+Rec1 Qd8 22. Bc5 Qf6 23. h3 e4 24. dxe4 fxe4 25. Nd2 Qg6 26. Be3 Be5 27. a4 Bd4
+28. Nf1 Be5 29. Rd2 Na5 30. Qc2 Nc6 31. Qb3 Na5 32. Qc2 Nc6 33. Qb3 1/2-1/2
+

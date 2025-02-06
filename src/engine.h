@@ -1,13 +1,13 @@
 /*
-  Alexander, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 The Alexander developers (see AUTHORS file)
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2025 The ShashChess developers (see AUTHORS file)
 
-  Alexander is free software: you can redistribute it and/or modify
+  ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Alexander is distributed in the hope that it will be useful,
+  ShashChess is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -28,15 +28,16 @@
 #include <utility>
 #include <vector>
 
-//for classical
+#include "nnue/network.h"
+#include "numa.h"
 #include "position.h"
 #include "search.h"
-#include "syzygy/tbprobe.h"  // for Alexander::Depth
+#include "syzygy/tbprobe.h"  // for ShashChess::Depth
 #include "thread.h"
 #include "tt.h"
 #include "ucioption.h"
 
-namespace Alexander {
+namespace ShashChess {
 
 class Engine {
    public:
@@ -54,8 +55,7 @@ class Engine {
 
     ~Engine() { wait_for_search_finished(); }
 
-    std::uint64_t
-    perft(const std::string& fen, Depth depth, bool isChess960, Thread* th);  //for classical
+    std::uint64_t perft(const std::string& fen, Depth depth, bool isChess960);
 
     // non blocking call to start searching
     void go(Search::LimitsType&);
@@ -85,8 +85,16 @@ class Engine {
     void set_on_update_full(std::function<void(const InfoFull&)>&&);
     void set_on_iter(std::function<void(const InfoIter&)>&&);
     void set_on_bestmove(std::function<void(std::string_view, std::string_view)>&&);
+    void set_on_verify_networks(std::function<void(std::string_view)>&&);
 
-    //for classical
+    // network related
+
+    void verify_networks() const;
+    void load_networks();
+    void load_big_network(const std::string& file);
+    void load_small_network(const std::string& file);
+    void save_network(const std::pair<std::optional<std::string>, std::string> files[2]);
+
     // utility functions
 
     void trace_eval() const;
@@ -113,15 +121,16 @@ class Engine {
     //from learning
     StateListPtr states;
 
-    OptionsMap         options;
-    ThreadPool         threads;
-    TranspositionTable tt;
-    //for classical
-    BookManager                          bookMan;  //book management
-    Search::SearchManager::UpdateContext updateContext;
+    OptionsMap                               options;
+    ThreadPool                               threads;
+    TranspositionTable                       tt;
+    LazyNumaReplicated<Eval::NNUE::Networks> networks;
+    BookManager                              bookMan;  //book management
+    Search::SearchManager::UpdateContext     updateContext;
+    std::function<void(std::string_view)>    onVerifyNetworks;
 };
 
-}  // namespace Alexander
+}  // namespace ShashChess
 
 
 #endif  // #ifndef ENGINE_H_INCLUDED

@@ -1,13 +1,13 @@
 /*
-  Alexander, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and Stockfish developers (see AUTHORS file)
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
-  Alexander is free software: you can redistribute it and/or modify
+  ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Alexander is distributed in the hope that it will be useful,
+  ShashChess is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -29,15 +29,11 @@
 #include <vector>
 
 #include "numa.h"
-//for classical begin
-#include "material.h"
-#include "pawns.h"
-//for classical end
 #include "position.h"
 #include "search.h"
 #include "thread_win32_osx.h"
 
-namespace Alexander {
+namespace ShashChess {
 
 
 class OptionsMap;
@@ -87,6 +83,8 @@ class Thread {
     void clear_worker();
     void run_custom_job(std::function<void()> f);
 
+    void ensure_network_replicated();
+
     // Thread has been slightly altered to allow running custom jobs, so
     // this name is no longer correct. However, this class (and ThreadPool)
     // require further work to make them properly generic while maintaining
@@ -96,13 +94,7 @@ class Thread {
     size_t id() const { return idx; }
 
     std::unique_ptr<Search::Worker> worker;
-    //for classical begin
-    Pawns::Table          pawnsTable;
-    Material::Table       materialTable;
-    Value                 bestValue;
-    std::atomic<uint64_t> nodes;
-    //for classical end
-    std::function<void()> jobFunc;
+    std::function<void()>           jobFunc;
 
    private:
     std::mutex                mutex;
@@ -157,7 +149,8 @@ class ThreadPool {
 
     std::vector<size_t> get_bound_thread_count_by_numa_node() const;
 
-    //omitted for classical
+    void ensure_network_replicated();
+
     std::atomic_bool stop, abortedSearch, increaseDepth;
 
     auto cbegin() const noexcept { return threads.cbegin(); }
@@ -181,6 +174,6 @@ class ThreadPool {
     }
 };
 
-}  // namespace Alexander
+}  // namespace ShashChess
 
 #endif  // #ifndef THREAD_H_INCLUDED

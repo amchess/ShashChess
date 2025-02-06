@@ -1,8 +1,8 @@
-﻿[Event "Alexander-komodo, Rapid 25m+10s"]
+﻿[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.05"]
 [Round "1.1"]
-[White "Alexander 6.1.2 64 BMI2"]
+[White "ShashChess 6.1.2 64 BMI2"]
 [Black "Komodo 12.3 64-bit"]
 [Result "1-0"]
 [ECO "E11"]
@@ -58,12 +58,12 @@ Bc1 {[%eval 628,29] [%emt 0:01:34] (Bxh6)} Nf5 {[%eval 134,28] [%emt 0:00:21]}
 [%emt 0:00:25] (Rb1+)} 48. Rxd7 {[%eval 835,27] [%emt 0:00:22]} Nb6 {[%eval
 680,26] [%emt 0:00:23] (Rb1+)} 49. Rxb7 {[%eval 851,25] [%emt 0:00:12]} 1-0
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.05"]
 [Round "2.1"]
 [White "Komodo 12.3 64-bit"]
-[Black "Alexander 6.1.2 64 BMI2"]
+[Black "ShashChess 6.1.2 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "E11"]
 [Annotator "0.74;0.70"]
@@ -138,11 +138,11 @@ Ke6 {[%eval 35,59] [%emt 0:00:12]} Bg3 {[%eval 1,51] [%emt 0:00:21]} 70. Kf5 {
 [%eval 35,64] [%emt 0:00:11] (Bg2)} Bh4 {[%eval 1,52] [%emt 0:00:13]} 71. Kg6 {
 [%eval 34,67] [%emt 0:00:12] (Ke6)} Bg5 {[%eval 1,52] [%emt 0:00:19]} 1/2-1/2
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.05"]
 [Round "3.1"]
-[White "Alexander 6.1.2 64 BMI2"]
+[White "ShashChess 6.1.2 64 BMI2"]
 [Black "Komodo 12.3 64-bit"]
 [Result "1-0"]
 [ECO "E60"]
@@ -202,12 +202,12 @@ Nxd5 {[%eval 476,26] [%emt 0:00:18] (Rxh3)} h2 {[%eval 487,27] [%emt 0:00:19]}
 [%emt 0:00:37] (Bg2)} 53. Bxg2 {[%eval 1143,22] [%emt 0:00:16]} Bxg2 {[%eval
 1206,23] [%emt 0:00:15]} 54. Ne7 {[%eval 1249,23] [%emt 0:00:20]} 1-0
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.05"]
 [Round "4.1"]
 [White "Komodo 12.3 64-bit"]
-[Black "Alexander 6.1.2 64 BMI2"]
+[Black "ShashChess 6.1.2 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "E60"]
 [Annotator "1.03;0.60"]
@@ -265,11 +265,11 @@ Ke3 {[%eval 45,34] [%emt 0:00:27]} Ke6 {[%eval 25,36] [%emt 0:00:23]} 43. a4 {
 [%eval 0,44] [%emt 0:00:13] (Rb1)} Kb6 {[%eval 0,40] [%emt 0:00:11] (Rf1)}
 1/2-1/2
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.05"]
 [Round "5.1"]
-[White "Alexander 6.1.2 64 BMI2"]
+[White "ShashChess 6.1.2 64 BMI2"]
 [Black "Komodo 12.3 64-bit"]
 [Result "1-0"]
 [ECO "D43"]
@@ -328,12 +328,12 @@ Bd7 {[%eval 84,48] [%emt 0:00:24] (Kg2)} Bc7 {[%eval 276,46] [%emt 0:00:17]
 01:06] (Bf6)} 51. Ba6 {[%eval 459,32] [%emt 0:00:13] (Bd5)} Ke6 {[%eval 1343,
 31] [%emt 0:00:12] (Ke8)} 52. Bxb5 {[%eval 538,29] [%emt 0:00:14] (f3)} 1-0
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.05"]
 [Round "6.1"]
 [White "Komodo 12.3 64-bit"]
-[Black "Alexander 6.1.2 64 BMI2"]
+[Black "ShashChess 6.1.2 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "D43"]
 [Annotator "0.58;-0.17"]
@@ -395,11 +395,11 @@ Ke3 {[%eval 0,45] [%emt 0:00:18] (Ke2)} Bh8 {[%eval 0,36] [%emt 0:00:17] (Nf5+)
 00:12] (Bxe5)} 55. Ke3 {[%eval 0,41] [%emt 0:00:17]} Nf5+ {[%eval 0,35] [%emt
 0:00:14] (Bxe5)} 56. Kf3 {[%eval 0,39] [%emt 0:00:14]} 1/2-1/2
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.05"]
 [Round "7.1"]
-[White "Alexander 6.1.2 64 BMI2"]
+[White "ShashChess 6.1.2 64 BMI2"]
 [Black "Komodo 12.3 64-bit"]
 [Result "1/2-1/2"]
 [ECO "B22"]
@@ -482,12 +482,12 @@ Re6 {[%eval -12,31] [%emt 0:00:50] (Qf6)} 42. Rb1 {[%eval 0,30] [%emt 0:00:17]
 } R7c3 {[%eval 0,33] [%emt 0:00:10] (Qxe6)} 72. Qxc3 {[%eval 0,30] [%emt 0:00:
 15]} 1/2-1/2
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.05"]
 [Round "8.1"]
 [White "Komodo 12.3 64-bit"]
-[Black "Alexander 6.1.2 64 BMI2"]
+[Black "ShashChess 6.1.2 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "B22"]
 [Annotator "0.38;0.11"]
@@ -527,11 +527,11 @@ Qxc1+ {[%eval 0,38] [%emt 0:00:20] (Qd3)} 30. Bxc1 {[%eval 0,37] [%emt 0:00:29]
 h4 {[%eval 0,35] [%emt 0:00:19] (Nf5)} 32. Bg5 {[%eval 0,40] [%emt 0:00:48] 
 (Bf4)} 1/2-1/2
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.05"]
 [Round "9.1"]
-[White "Alexander 6.1.2 64 BMI2"]
+[White "ShashChess 6.1.2 64 BMI2"]
 [Black "Komodo 12.3 64-bit"]
 [Result "1-0"]
 [ECO "E60"]
@@ -606,12 +606,12 @@ g3 {[%eval 643,21] [%emt 0:00:31]} Bc1 {[%eval 867,25] [%emt 0:00:10]} 67. Ra6
 {[%eval 696,24] [%emt 0:00:07]} g4 {[%eval 935,25] [%emt 0:00:11]} 68. Rc6 {
 [%eval 728,23] [%emt 0:00:13]} 1-0
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.05"]
 [Round "10.1"]
 [White "Komodo 12.3 64-bit"]
-[Black "Alexander 6.1.2 64 BMI2"]
+[Black "ShashChess 6.1.2 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "E60"]
 [Annotator "0.43;0.17"]
@@ -658,11 +658,11 @@ Ba5 {[%eval 11,31] [%emt 0:00:35]} 17. Kh1 {[%eval 42,30] [%emt 0:00:43]} Rae8
 } Rxf1+ {[%eval 0,28] [%emt 0:00:39]} 41. Rxf1 {[%eval 0,36] [%emt 0:00:18] 
 (Nxf1)} Qxd4 {[%eval 0,25] [%emt 0:00:19]} 1/2-1/2
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.05"]
 [Round "11.1"]
-[White "Alexander 6.1.2 64 BMI2"]
+[White "ShashChess 6.1.2 64 BMI2"]
 [Black "Komodo 12.3 64-bit"]
 [Result "1/2-1/2"]
 [ECO "B90"]
@@ -707,12 +707,12 @@ d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Be3 h6 7. f3 Qc7 8. g4 e6 9. a3 {[%eval 30,30]
 0:00:21]} Kg7 {[%eval 0,45] [%emt 0:00:25]} 39. Bb3 {[%eval 0,36] [%emt 0:01:
 08] (Rb7)} Qxf3 {[%eval 0,39] [%emt 0:00:35] (Qb6)} 1/2-1/2
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.05"]
 [Round "12.1"]
 [White "Komodo 12.3 64-bit"]
-[Black "Alexander 6.1.2 64 BMI2"]
+[Black "ShashChess 6.1.2 64 BMI2"]
 [Result "0-1"]
 [ECO "B90"]
 [Annotator "0.79;0.42"]
@@ -785,11 +785,11 @@ bxc2 {[%eval -842,27] [%emt 0:00:15] (Kh8)} 58. Bxc2 {[%eval -441,25] [%emt 0:
 (Rh2)} 64. Qd1 {[%eval -870,25] [%emt 0:00:10] (Qf2)} Bxb2 {[%eval -1788,28] 
 [%emt 0:00:07]} 0-1
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.05"]
 [Round "13.1"]
-[White "Alexander 6.1.2 64 BMI2"]
+[White "ShashChess 6.1.2 64 BMI2"]
 [Black "Komodo 12.3 64-bit"]
 [Result "1/2-1/2"]
 [ECO "D02"]
@@ -817,12 +817,12 @@ Nf3 {[%eval 0,31] [%emt 0:00:26] (b4)} Rd7 {[%eval 0,33] [%emt 0:00:50] (a5)}
 22. g3 {[%eval 0,28] [%emt 0:00:23] (Ng5)} a5 {[%eval 0,29] [%emt 0:00:44]}
 1/2-1/2
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.05"]
 [Round "14.1"]
 [White "Komodo 12.3 64-bit"]
-[Black "Alexander 6.1.2 64 BMI2"]
+[Black "ShashChess 6.1.2 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "D02"]
 [Annotator "0.22;0.00"]
@@ -877,11 +877,11 @@ Bd3 {[%eval 0,38] [%emt 0:00:42]} Nd6 {[%eval -17,36] [%emt 0:01:29]} 38. b4 {
 [%eval 0,50] [%emt 0:01:37]} Qa8 {[%eval 0,34] [%emt 0:00:22] (Qa1)} 50. Kh3 {
 [%eval 0,47] [%emt 0:00:19] (c5)} 1/2-1/2
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.05"]
 [Round "15.1"]
-[White "Alexander 6.1.2 64 BMI2"]
+[White "ShashChess 6.1.2 64 BMI2"]
 [Black "Komodo 12.3 64-bit"]
 [Result "1/2-1/2"]
 [ECO "D46"]
@@ -922,12 +922,12 @@ Qxc7 {[%eval 19,35] [%emt 0:00:24]} 26. Qd1 {[%eval 25,33] [%emt 0:00:18]} Qe5
 21]} Ba4 {[%eval 0,50] [%emt 0:00:35]} 37. g5 {[%eval 0,41] [%emt 0:00:27] 
 (Ne2)} 1/2-1/2
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.05"]
 [Round "16.1"]
 [White "Komodo 12.3 64-bit"]
-[Black "Alexander 6.1.2 64 BMI2"]
+[Black "ShashChess 6.1.2 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "D46"]
 [Annotator "0.40;0.21"]
@@ -1014,11 +1014,11 @@ R2c5 {[%eval 9,34] [%emt 0:00:16] (R2c7)} 71. Kf2 {[%eval 31,31] [%emt 0:00:14]
 [%emt 0:00:06]} Nc5 {[%eval 0,33] [%emt 0:00:10]} 83. Rd6+ {[%eval 0,31] [%emt
 0:00:13] (Rad2)} Re6 {[%eval 0,30] [%emt 0:00:10]} 1/2-1/2
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.05"]
 [Round "17.1"]
-[White "Alexander 6.1.2 64 BMI2"]
+[White "ShashChess 6.1.2 64 BMI2"]
 [Black "Komodo 12.3 64-bit"]
 [Result "1-0"]
 [ECO "D05"]
@@ -1107,12 +1107,12 @@ Rg7 {[%eval 440,31] [%emt 0:00:21] (Rhe7)} 73. Kd4 {[%eval 387,30] [%emt 0:00:
 Rf6 {[%eval 601,24] [%emt 0:01:06]} Bd5 {[%eval 832,27] [%emt 0:00:09] (Kg5)}
 81. e6 {[%eval 697,25] [%emt 0:00:10] (Bd3+)} 1-0
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.06"]
 [Round "18.1"]
 [White "Komodo 12.3 64-bit"]
-[Black "Alexander 6.1.2 64 BMI2"]
+[Black "ShashChess 6.1.2 64 BMI2"]
 [Result "1-0"]
 [ECO "D05"]
 [Annotator "2.06;1.58"]
@@ -1209,11 +1209,11 @@ Rxf5 {[%eval 1360,28] [%emt 0:00:07]} Kg6 {[%eval 710,27] [%emt 0:00:10]} 89.
 Rf6+ {[%eval 1549,29] [%emt 0:00:18]} Kg7 {[%eval 759,28] [%emt 0:00:10]} 90.
 Rxc6+ {[%eval 1676,30] [%emt 0:00:11]} 1-0
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.06"]
 [Round "19.1"]
-[White "Alexander 6.1.2 64 BMI2"]
+[White "ShashChess 6.1.2 64 BMI2"]
 [Black "Komodo 12.3 64-bit"]
 [Result "1/2-1/2"]
 [ECO "A29"]
@@ -1264,12 +1264,12 @@ Bxa6 {[%eval 0,34] [%emt 0:00:19] (Rb1)} Rb8 {[%eval -23,36] [%emt 0:00:41]}
 } 43. a6 {[%eval 0,36] [%emt 0:00:37]} Ke5 {[%eval 0,49] [%emt 0:00:22]} 44.
 Bc4 {[%eval 0,34] [%emt 0:00:22] (Kg1)} 1/2-1/2
 
-[Event "Alexander-komodo, Rapid 25m+10s"]
+[Event "ShashChess-komodo, Rapid 25m+10s"]
 [Site "?"]
 [Date "2019.02.06"]
 [Round "20.1"]
 [White "Komodo 12.3 64-bit"]
-[Black "Alexander 6.1.2 64 BMI2"]
+[Black "ShashChess 6.1.2 64 BMI2"]
 [Result "1/2-1/2"]
 [ECO "A29"]
 [Annotator "0.31;0.14"]

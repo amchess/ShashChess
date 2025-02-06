@@ -1,13 +1,13 @@
 /*
-  Alexander, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and Alexander developers (see AUTHORS file)
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
-  Alexander is free software: you can redistribute it and/or modify
+  ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Alexander is distributed in the hope that it will be useful,
+  ShashChess is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -31,7 +31,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
-//Alexander specific begin
+//ShashChess specific begin
 #include "types.h"
 #include <iostream>
 #ifndef _WIN32
@@ -46,12 +46,12 @@
     #endif
     #include <windows.h>
 #endif
-//Alexander specific end
+//ShashChess specific end
 
 #define stringify2(x) #x
 #define stringify(x) stringify2(x)
 
-namespace Alexander {
+namespace ShashChess {
 
 std::string engine_version_info();
 std::string engine_info(bool to_uci = false);
@@ -71,9 +71,7 @@ size_t str_to_size_t(const std::string& s);
 struct PipeDeleter {
     void operator()(FILE* file) const {
         if (file != nullptr)
-        {
-            pclose(file);
-        }
+        { pclose(file); }
     }
 };
 
@@ -97,15 +95,7 @@ inline TimePoint now() {
              std::chrono::steady_clock::now().time_since_epoch())
       .count();
 }
-//for classical begin
-template<class Entry, int Size>
-struct HashTable {
-    Entry* operator[](Key key) { return &table[(uint32_t) key & (Size - 1)]; }
 
-   private:
-    std::vector<Entry> table = std::vector<Entry>(Size);  // Allocate on the heap
-};
-//for classical end
 inline std::vector<std::string_view> split(std::string_view s, std::string_view delimiter) {
     std::vector<std::string_view> res;
 
@@ -144,8 +134,11 @@ void sync_cout_start();
 void sync_cout_end();
 
 // True if and only if the binary is compiled on a little-endian machine
-static inline const std::uint16_t Le             = 1;
-static inline const bool          IsLittleEndian = *reinterpret_cast<const char*>(&Le) == 1;
+static inline const union {
+    uint32_t i;
+    char     c[4];
+} Le                                    = {0x01020304};
+static inline const bool IsLittleEndian = (Le.c[0] == 4);
 
 
 template<typename T, std::size_t MaxSize>
@@ -330,9 +323,7 @@ void move_to_front(std::vector<T>& vec, Predicate pred) {
     auto it = std::find_if(vec.begin(), vec.end(), pred);
 
     if (it != vec.end())
-    {
-        std::rotate(vec.begin(), it, it + 1);
-    }
+    { std::rotate(vec.begin(), it, it + 1); }
 }
 }
 //begin from khalid
@@ -366,6 +357,6 @@ class Util {
 };
 //end from khalid
 
-}  // namespace Alexander
+}  // namespace ShashChess
 
 #endif  // #ifndef MISC_H_INCLUDED

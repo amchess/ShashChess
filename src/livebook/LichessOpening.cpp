@@ -2,16 +2,14 @@
     #include "LichessOpening.h"
     #include "json/json.hpp"
 
-using namespace Alexander::Livebook;
+using namespace ShashChess::Livebook;
 
 LichessOpening::LichessOpening(std::string endpoint) :
     endpoint(std::move(endpoint)) {}
 
 std::string LichessOpening::parse_uci(const nlohmann::json& move) {
     if (!move.contains("uci") || !move["uci"].is_string())
-    {
-        return "";
-    }
+    { return ""; }
 
     return move["uci"].get<std::string>();
 }

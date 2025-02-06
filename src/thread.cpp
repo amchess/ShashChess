@@ -1,13 +1,13 @@
 /*
-  Alexander, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and Stockfish developers (see AUTHORS file)
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
-  Alexander is free software: you can redistribute it and/or modify
+  ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Alexander is distributed in the hope that it will be useful,
+  ShashChess is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -34,7 +34,7 @@
 #include "uci.h"
 #include "ucioption.h"
 
-namespace Alexander {
+namespace ShashChess {
 
 // Constructor launches the thread and waits until it goes to sleep
 // in idle_loop(). Note that 'searching' and 'exit' should be already set.
@@ -101,6 +101,8 @@ void Thread::run_custom_job(std::function<void()> f) {
     }
     cv.notify_one();
 }
+
+void Thread::ensure_network_replicated() { worker->ensure_network_replicated(); }
 
 // Thread gets parked here, blocked on the condition variable
 // when the thread has no work to do.
@@ -178,7 +180,7 @@ void ThreadPool::set(const NumaConfig&                           numaConfig,
             const size_t    threadId = threads.size();
             const NumaIndex numaId   = doBindThreads ? boundThreadToNumaNode[threadId] : 0;
             auto            manager  = threadId == 0 ? std::unique_ptr<Search::ISearchManager>(
-                                             std::make_unique<Search::SearchManager>(updateContext))
+                             std::make_unique<Search::SearchManager>(updateContext))
                                                      : std::make_unique<Search::NullSearchManager>();
 
             // When not binding threads we want to force all access to happen
@@ -298,12 +300,10 @@ void ThreadPool::start_thinking(const OptionsMap&  options,
                      (th->worker->nmpGuard =
                         (th->worker->nmpMinPly = th->worker->bestMoveChanges = 0)))));
             //from Crystal end
-            th->nodes.store(th->worker->nodes.load());  //from classical eval
             th->worker->rootDepth = th->worker->completedDepth = 0;
             th->worker->nmpSide                                = 0;  //from crystal
             th->worker->rootMoves                              = rootMoves;
-            th->worker->rootPos.set(pos.fen(), pos.is_chess960(), &th->worker->rootState,
-                                    th.get());  //for classical
+            th->worker->rootPos.set(pos.fen(), pos.is_chess960(), &th->worker->rootState);
             th->worker->rootState = setupStates->back();
             th->worker->tbConfig  = tbConfig;
         });
@@ -419,4 +419,8 @@ std::vector<size_t> ThreadPool::get_bound_thread_count_by_numa_node() const {
     return counts;
 }
 
-}  // namespace Alexander
+void ThreadPool::ensure_network_replicated() {
+    for (auto&& th : threads)
+        th->ensure_network_replicated();
+}
+}  // namespace ShashChess

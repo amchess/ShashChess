@@ -49,10 +49,10 @@ class TSAN:
         with open(f"tsan.supp", "w") as f:
             f.write(
                 """
-race:Alexander::TTEntry::read
-race:Alexander::TTEntry::save
-race:Alexander::TranspositionTable::probe
-race:Alexander::TranspositionTable::hashfull
+race:ShashChess::TTEntry::read
+race:ShashChess::TTEntry::save
+race:ShashChess::TranspositionTable::probe
+race:ShashChess::TranspositionTable::hashfull
 """
             )
 
@@ -97,17 +97,14 @@ class Syzygy:
                 tarball_path = os.path.join(tmpdirname, f"{file}.tar.gz")
 
                 response = requests.get(url, stream=True)
-                with open(tarball_path, "wb") as f:
+                with open(tarball_path, 'wb') as f:
                     for chunk in response.iter_content(chunk_size=8192):
                         f.write(chunk)
 
                 with tarfile.open(tarball_path, "r:gz") as tar:
                     tar.extractall(tmpdirname)
 
-                shutil.move(
-                    os.path.join(tmpdirname, file), os.path.join(PATH, "syzygy")
-                )
-
+                shutil.move(os.path.join(tmpdirname, file), os.path.join(PATH, "syzygy"))
 
 class OrderedClassMembers(type):
     @classmethod
@@ -280,7 +277,7 @@ class MiniTestFramework:
         print(f"    {GREEN_COLOR}✓{RESET_COLOR}{add}", flush=True)
 
 
-class Alexander:
+class ShashChess:
     def __init__(
         self,
         prefix: List[str],
@@ -300,7 +297,7 @@ class Alexander:
     def _check_process_alive(self):
         if not self.process or self.process.poll() is not None:
             print("\n".join(self.output))
-            raise RuntimeError("Alexander process has terminated")
+            raise RuntimeError("ShashChess process has terminated")
 
     def start(self):
         if self.cli:
@@ -310,10 +307,7 @@ class Alexander:
                 text=True,
             )
 
-            if self.process.returncode != 0:
-                print(self.process.stdout)
-                print(self.process.stderr)
-                print(f"Process failed with return code {self.process.returncode}")
+            self.process.stdout
 
             return
 
@@ -331,7 +325,7 @@ class Alexander:
 
     def send_command(self, command: str):
         if not self.process:
-            raise RuntimeError("Alexander process is not started")
+            raise RuntimeError("ShashChess process is not started")
 
         self._check_process_alive()
 
@@ -373,7 +367,7 @@ class Alexander:
 
     def readline(self):
         if not self.process:
-            raise RuntimeError("Alexander process is not started")
+            raise RuntimeError("ShashChess process is not started")
 
         while True:
             self._check_process_alive()

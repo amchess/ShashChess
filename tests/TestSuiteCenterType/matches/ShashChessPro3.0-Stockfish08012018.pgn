@@ -1,8 +1,8 @@
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.16"]
 [Round "1"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "Stockfish_18080112_x64_bmi2"]
 [Result "1-0"]
 [BlackElo "3000"]
@@ -625,12 +625,12 @@ Qf3-c3+ Ke5-e6 Qc3-b3 Qg6-e8+ Kc8-b7 Qe8-c6+ Kb7-b8 Ke6-d7 Qb3-b1 d5-d6
 Kb8-a7 Kd7-e7 Qb1-b2 Qc6-c5+ Ka7-a6 e4-e5) +10.71/32 21  Arena
 Adjudication} 1-0
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.16"]
 [Round "2"]
 [White "Stockfish_18080112_x64_bmi2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
 [ECO "E11"]
@@ -939,11 +939,11 @@ Ke5-f4 Kc3-b4 Kf4-e5) 0.00/51 36} a2 {(a3-a2 Bc4xa2 Ke5-d4 Ba2-f7 Bd7-c6
 Kb4-a3 Kd4-c5 Ka3-b2 Kc5-d4) 0.00/38 0} 70. Bxa2 {(Bc4xa2 Bd7-c6 Ba2-c4
 Ke5-d4 Bc4-a2) 0.00/33 28 Insufficient material} 1/2-1/2
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.16"]
 [Round "3"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "Stockfish_18080112_x64_bmi2"]
 [Result "1-0"]
 [BlackElo "3000"]
@@ -1358,12 +1358,12 @@ Kg6-f6 Re5-b5 Kf6-g6) 0.00/26 10} ... {1-0 Black forfeits on time} Kf7
 Kf7-g6 Kd1-c2 h6-h5 g4xh5+ Kg6xh5 Bc1-b2 Nc5-e6 Kc2-d3 g5-g4 f3xg4+ Kh5xg4
 Bb2xd4 Ne6xd4) 0.00/29 27} ... {Black forfeits on time} 1-0
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.16"]
 [Round "4"]
 [White "Stockfish_18080112_x64_bmi2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
 [ECO "E60"]
@@ -1682,11 +1682,11 @@ Kg7-g6 Rd7-d6+) 0.00/31 6} 58. Rd7+ {(Rd6-d7+ Kg7-g6 Rd7-d6+ Kg6-g7)
 Rd7+ {(Rd6-d7+) 0.00/41 1} Kg6 {(Kg7-g6) 0.00/36 54 3-fold repetition}
 1/2-1/2
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.16"]
 [Round "5"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "Stockfish_18080112_x64_bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
@@ -1967,12 +1967,12 @@ Ke7-f8 Ra7-a8) 0.00/39 0} 53. Ra7+ {(Ra8-a7+ Ke7-f8 Ra7-a8 Kf8-e7) 0.00/40
 Ra8-a7+) 0.00/41 23} Ke7 {(Kf8-e7 Ra8-a7+) 0.00/46 1} 55. Ra7+ {(Ra8-a7+)
 0.00/45 16} Kf8 {(Ke7-f8) 0.00/54 40 3-fold repetition} 1/2-1/2
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.16"]
 [Round "6"]
 [White "Stockfish_18080112_x64_bmi2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
 [ECO "D43"]
@@ -2348,11 +2348,11 @@ Kf3-g4 Rf5-g5+ Kg4xh4 Rg5-h5+ Kh4-g3 Rh5-g5+) 0.00/63 10} 93. Ra2 {(Ra4-a2)
 94. Ra4+ {(Ra2-a4+) 0.00/76 14} Ke3 {(Kd4-e3) 0.00/85 63 3-fold repetition}
 1/2-1/2
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.16"]
 [Round "7"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "Stockfish_18080112_x64_bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
@@ -3330,12 +3330,12 @@ Kf5-e4 Rd5-a5 Rb8-b2+ Kd2-c3 Rb2-f2 Ra5-a4+ Ke4-e3 Ra4-a8 Rf2xf4 Ra8-e8+
 Rf4-e4 Re8-b8 Re4-f4) 0.00/37 5} Rb2+ {(Rb3-b2+) 0.00/35 7} 155. Ke3
 {(Kd2-e3) 0.00/59 7 3-fold repetition} 1/2-1/2
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.16"]
 [Round "8"]
 [White "Stockfish_18080112_x64_bmi2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
 [ECO "B22"]
@@ -3753,11 +3753,11 @@ Bd4-a1 Be2-f3) 0.00/50 15} 135. Bb1 {(Bd3-b1) 0.00/51 5} Bf6 {(Bd4-f6)
 0.00/51 9} 136. Ba2 {(Bb1-a2 Bf6-c3 Ba2-b1) 0.00/47 14} Ba1 {(Bf6-a1)
 0.00/52 10} 137. Bb1 {(Ba2-b1) 0.00/75 4 3-fold repetition} 1/2-1/2
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.16"]
 [Round "9"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "Stockfish_18080112_x64_bmi2"]
 [Result "1-0"]
 [BlackElo "3000"]
@@ -4108,12 +4108,12 @@ Kc6-d6) -8.82/24 22} 62. Kd5 {(Kc6-d5) +10.40/23 17} Rd8+ {(Rc8-d8+ Kd5-c4)
 {(c5-c6) +14.11/24 33} Kg2 {(Kf2-g2 Kc4-d5) -11.65/22 0  Arena
 Adjudication} 1-0
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.16"]
 [Round "10"]
 [White "Stockfish_18080112_x64_bmi2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "0-1"]
 [BlackElo "3000"]
 [ECO "E60"]
@@ -4522,11 +4522,11 @@ Kg5-f4 Rd6-f6+ Kf4-g3 Rd5-d3+ Kg3-h4 Rf6xh6+ Kh4-g5 Rd3-d6 Qa2-a7 Rh6-g6+
 Kg5-h4 Nd2-e4 Qa7-a2+ Rd6-d2 Qa2-c4+ Ke2-e3 Qc4-b3+ Rd2-d3 Qb3-f7 Rg6-h6+
 Qf7-h5 Rh6xh5+ Kh4xh5) -132.63/40 13  Arena Adjudication} 0-1
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.16"]
 [Round "11"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "Stockfish_18080112_x64_bmi2"]
 [Result "1-0"]
 [BlackElo "3000"]
@@ -4805,12 +4805,12 @@ Rxf7 {(Rg7xf7 Bd2xf4 g5-g4 Rd3-e3+ Ke6-f6 a5-a6 Rf7-h7 b6-b7 Rh7-h1 b7-b8Q
 Rh1-b1+ Kb5-c6 Rb1-c1+ Kc6-d5 Rc1-d1+ Kd5-e4 Rd1-d2 Qb8-f8+ Kf6-e6 Qf8-g8+
 Ke6-d7 Qg8xg4+ Kd7-c6 Qg4-e6+ Kc6-c5) -62.40/17 14  Arena Adjudication} 1-0
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.16"]
 [Round "12"]
 [White "Stockfish_18080112_x64_bmi2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
 [ECO "B90"]
@@ -5250,11 +5250,11 @@ Kb3-b4) 0.00/81 5} Kd8 {(Kc7-d8 Kb3-c4 Kd8-d7 Kc4-d4 Kd7-c6 Kd4-c4) 0.00/83
 0.00/90 0} Kd8 {(Kc7-d8) 0.00/87 13} 96. Kb2 {(Ka3-b2) 0.00/127 5 3-fold
 repetition} 1/2-1/2
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.16"]
 [Round "13"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "Stockfish_18080112_x64_bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
@@ -5467,12 +5467,12 @@ Bc3-e5 Be2-f1 Be5-c3) 0.00/51 14} Kg4 {(Kg3-g4 Bc3-e5 Be2-f1 Be5-c3)
 Be5-c3) 0.00/56 2} 52. Bc3 {(Be5-c3) 0.00/55 10} Be2 {(Bf1-e2) 0.00/69 35
 3-fold repetition} 1/2-1/2
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.16"]
 [Round "14"]
 [White "Stockfish_18080112_x64_bmi2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
 [ECO "D00"]
@@ -5758,11 +5758,11 @@ Kf2-e3 Kh6-g5 Ke3-e2 Kg5-h6) 0.00/78 8} Kg7 {(Kf7-g7 Kf4-f5 Kg7-h8 Kf5-g6)
 {(Kg7xh8 Kf4-f5 Kh8-h7 Kf5-g5 Kh7-h8) 0.00/127 1 Insufficient material}
 1/2-1/2
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.16"]
 [Round "15"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "Stockfish_18080112_x64_bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
@@ -6011,12 +6011,12 @@ Kf4-f3 Rb4-g4 Rg8-e8 Kd6-d5 Re8-d8+ Kd5-c5 Rd8-e8) 0.00/75 0} Ra4+
 Rf3-g3+) 0.00/94 146} 63. Ke3 {(Kf4-e3 Ra4-a3+) 0.00/73 16} Ra3+ {(Ra4-a3+)
 0.00/69 13} 64. Kf4 {(Ke3-f4) 0.00/89 5 3-fold repetition} 1/2-1/2
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.17"]
 [Round "16"]
 [White "Stockfish_18080112_x64_bmi2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
 [ECO "D46"]
@@ -6838,11 +6838,11 @@ Kg1 {(Kf1-g1 Kf4-g3 Kg1-h1 Kg3-f3 Kh1-g1) 0.00/102 0} h2+ {(h3-h2+ Kg1xh2
 Kf4-e5 Kh2-h3 Ke5-d6 Kh3-h4 Kd6-c5 Kh4-h3) 0.00/100 14} 123. Kxh2 {(Kg1xh2
 Kf4-g5 Kh2-h3 Kg5-g6 Kh3-h2) 0.00/127 2 Insufficient material} 1/2-1/2
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.17"]
 [Round "17"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "Stockfish_18080112_x64_bmi2"]
 [Result "0-1"]
 [BlackElo "3000"]
@@ -7142,12 +7142,12 @@ Kd6-e7 Bc4-b3 Be4-d3 Kh6-g5 Bc3-d2+ Kg5-h5 Bd3-e4 Bb3-e6 a5-a4 Kh5-g4
 Be4-g6 Kg4-f3 Bd2-h6 Kf3-e2 Ke7xe6 Ke2-f2 a4-a3 Kf2-e2 a3-a2 Ke2-d1 a2-a1Q+
 Kd1-e2 Qa1-f1+ Ke2xf1) -132.62/32 5  Arena Adjudication} 0-1
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.17"]
 [Round "18"]
 [White "Stockfish_18080112_x64_bmi2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1-0"]
 [BlackElo "3000"]
 [ECO "D05"]
@@ -7365,11 +7365,11 @@ Kg1-h2 Qe4xb7 c7-c8Q Qb7-b1 Bg3-f2 h5-h4 Bf2xh4 Rd1-h1+ Kh2-g3 Qb1-e1+
 Rf3-f2 Rh1-g1 Qc8-c7 Qe1-e6 Qc5-f8 Qe6-e3+ Kg3-h2 Qe3-h6) -16.07/21 0 
 Arena Adjudication} 1-0
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.17"]
 [Round "19"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "Stockfish_18080112_x64_bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
@@ -7694,12 +7694,12 @@ Ka6-a7 Kc7-c8 Ka7-b6 Kc8-b8 a5-a6 Kb8-a8 Kb6-b5 Ka8-a7 Kb5-a5 Ka7-b8)
 0.00/82 8} Ke6 {(Kf7-e6) 0.00/98 1} 76. Kc6 {(Kb5-c6) 0.00/114 12 3-fold
 repetition} 1/2-1/2
 
-[Event "AlexanderTO-Stockfish08012018"]
+[Event "ShashChessTO-Stockfish08012018"]
 [Site "MAURIZIO-PC"]
 [Date "2018.08.17"]
 [Round "20"]
 [White "Stockfish_18080112_x64_bmi2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
 [ECO "A22"]

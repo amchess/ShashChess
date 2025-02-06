@@ -2,7 +2,7 @@
 [Site "Local computer"]
 [Date "2018.11.13"]
 [Round "1"]
-[White "Alexander 4.0 64 BMI2"]
+[White "ShashChess 4.0 64 BMI2"]
 [Black "Stockfish 121118 64 BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
@@ -12,7 +12,7 @@
 [WhiteElo "-"]
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 Black: Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 } {[%t Long] Draw by repetition. (1/2-1/2)} 1. c4 Nf6 2. d4 e6 3. Nf3 Bb4+ 4.
 Nbd2 O-O 5. a3 Be7 6. e4 d6 7. Be2 c5 8. d5 Nbd7 9. O-O e5 {White out of book}
@@ -406,7 +406,7 @@ Ka3 {[%clk 0:00:30][%clko 0:00:25][%emt 0:00:08]}{[%eval 0,31][%meval
 [Date "2018.11.14"]
 [Round "2"]
 [White "Stockfish 121118 64 BMI2"]
-[Black "Alexander 4.0 64 BMI2"]
+[Black "ShashChess 4.0 64 BMI2"]
 [Result "1-0"]
 [BlackElo "-"]
 [Classes "0"]
@@ -416,7 +416,7 @@ Ka3 {[%clk 0:00:30][%clko 0:00:25][%emt 0:00:08]}{[%eval 0,31][%meval
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
 Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 Black:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
 {[%t Long] Black forfeits on time. (1-0)} 1. c4 Nf6 2. d4 e6 3. Nf3 Bb4+ 4.
 Nbd2 O-O 5. a3 Be7 6. e4 d6 7. Be2 c5 8. d5 Nbd7 9. O-O e5 {White out of book}
 10. Re1 {[%clk 0:24:09][%clko 0:26:30][%emt 0:02:31]}{[%eval 113,33][%meval
@@ -735,7 +735,7 @@ Bc7 {[%clk 0:00:41][%clko 0:00:21][%emt 0:00:09]}{[%eval 0,51][%meval
 [Site "Local computer"]
 [Date "2018.11.14"]
 [Round "3"]
-[White "Alexander 4.0 64 BMI2"]
+[White "ShashChess 4.0 64 BMI2"]
 [Black "Stockfish 121118 64 BMI2"]
 [Result "1-0"]
 [BlackElo "3000"]
@@ -745,7 +745,7 @@ Bc7 {[%clk 0:00:41][%clko 0:00:21][%emt 0:00:09]}{[%eval 0,51][%meval
 [WhiteElo "-"]
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 Black: Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 } {[%t Long] Black resigns. (1-0)} 1. d4 Nf6 2. c4 g6 3. Nf3 Bg7 4. g3 O-O 5.
 Bg2 d6 6. O-O e5 7. dxe5 dxe5 8. Nxe5 Qe7 9. Nd3 Ne4 {White out of book} 10.
@@ -879,7 +879,7 @@ Nb5+ {[%clk 0:04:31][%clko 0:00:19][%emt 0:00:19]}{[%eval 684,30][%meval
 [Date "2018.11.14"]
 [Round "4"]
 [White "Stockfish 121118 64 BMI2"]
-[Black "Alexander 4.0 64 BMI2"]
+[Black "ShashChess 4.0 64 BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "-"]
 [Classes "0"]
@@ -889,7 +889,7 @@ Nb5+ {[%clk 0:04:31][%clko 0:00:19][%emt 0:00:19]}{[%eval 684,30][%meval
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
 Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 Black:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
 {[%t Long] Draw. (1/2-1/2)} 1. d4 Nf6 2. c4 g6 3. Nf3 Bg7 4. g3 O-O 5. Bg2 d6
 6. O-O e5 7. dxe5 dxe5 8. Nxe5 Qe7 9. Nd3 Ne4 {White out of book} 10. Be3
 {[%clk 0:25:19][%clko 0:26:30][%emt 0:01:21]}{[%eval 114,31][%meval 80s|TB:2]}
@@ -1139,7 +1139,7 @@ Kd7 {[%clk 0:00:13][%clko 0:00:24][%emt 0:00:15]}{[%eval 0,63][%meval
 [Site "Local computer"]
 [Date "2018.11.14"]
 [Round "5"]
-[White "Alexander 4.0 64 BMI2"]
+[White "ShashChess 4.0 64 BMI2"]
 [Black "Stockfish 121118 64 BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
@@ -1149,7 +1149,7 @@ Kd7 {[%clk 0:00:13][%clko 0:00:24][%emt 0:00:15]}{[%eval 0,63][%meval
 [WhiteElo "-"]
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 Black: Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 } {[%t Long] Draw by repetition. (1/2-1/2)} 1. d4 d5 2. c4 e6 3. Nf3 Nf6 4.
 Nc3 c6 5. Bg5 h6 6. Bxf6 Qxf6 7. e3 Nd7 {White out of book} 8. Be2 {[%clk
@@ -1528,7 +1528,7 @@ Rh1+ {[%clk 0:00:15][%clko 0:00:10][%emt 0:00:08]}{[%eval 0,53][%meval
 [Date "2018.11.14"]
 [Round "6"]
 [White "Stockfish 121118 64 BMI2"]
-[Black "Alexander 4.0 64 BMI2"]
+[Black "ShashChess 4.0 64 BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "-"]
 [Classes "0"]
@@ -1538,7 +1538,7 @@ Rh1+ {[%clk 0:00:15][%clko 0:00:10][%emt 0:00:08]}{[%eval 0,53][%meval
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
 Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 Black:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
 {[%t Long] Draw by repetition. (1/2-1/2)} 1. d4 d5 2. c4 e6 3. Nf3 Nf6 4. Nc3
 c6 5. Bg5 h6 6. Bxf6 Qxf6 7. e3 Nd7 {White out of book} 8. Bd3 {[%clk
 0:24:43][%clko 0:26:10][%emt 0:01:37]}{[%eval 72,31][%meval 96s]}{Black out of
@@ -1632,7 +1632,7 @@ Kg1 {[%clk 0:06:55][%clko 0:06:57][%emt 0:00:31]}{[%eval 0,37][%meval
 [Site "Local computer"]
 [Date "2018.11.14"]
 [Round "7"]
-[White "Alexander 4.0 64 BMI2"]
+[White "ShashChess 4.0 64 BMI2"]
 [Black "Stockfish 121118 64 BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
@@ -1642,7 +1642,7 @@ Kg1 {[%clk 0:06:55][%clko 0:06:57][%emt 0:00:31]}{[%eval 0,37][%meval
 [WhiteElo "-"]
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 Black: Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 } {[%t Long] Draw. (1/2-1/2)} 1. e4 c5 2. c3 e6 3. d4 cxd4 4. cxd4 d5 5. exd5
 exd5 {White out of book} 6. Nc3 {[%clk 0:24:24][%clko 0:25:50][%emt 0:01:36]}
@@ -1939,7 +1939,7 @@ TB:22]}{(Kg7)} 1/2-1/2
 [Date "2018.11.14"]
 [Round "8"]
 [White "Stockfish 121118 64 BMI2"]
-[Black "Alexander 4.0 64 BMI2"]
+[Black "ShashChess 4.0 64 BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "-"]
 [Classes "0"]
@@ -1949,7 +1949,7 @@ TB:22]}{(Kg7)} 1/2-1/2
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
 Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 Black:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
 {[%t Long] Draw by repetition. (1/2-1/2)} 1. e4 c5 2. c3 e6 3. d4 cxd4 4. cxd4
 d5 5. exd5 exd5 {White out of book} 6. Nc3 {[%clk 0:24:17][%clko 0:25:50][%emt
 0:01:42]}{[%eval 27,32][%meval 102s]}{Black out of book} 6... Nf6 {[%clk
@@ -2074,7 +2074,7 @@ Be2 {[%clk 0:09:17][%clko 0:03:30][%emt 0:00:18]}{[%eval 0,38][%meval
 [Site "Local computer"]
 [Date "2018.11.14"]
 [Round "9"]
-[White "Alexander 4.0 64 BMI2"]
+[White "ShashChess 4.0 64 BMI2"]
 [Black "Stockfish 121118 64 BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
@@ -2084,7 +2084,7 @@ Be2 {[%clk 0:09:17][%clko 0:03:30][%emt 0:00:18]}{[%eval 0,38][%meval
 [WhiteElo "-"]
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 Black: Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 } {[%t Long] Draw by repetition. (1/2-1/2)} 1. d4 Nf6 2. c4 g6 3. f3 e6 4. e4
 d5 5. cxd5 exd5 6. Nc3 dxe4 7. fxe4 Bb4 {White out of book} 8. Bg5 {[%clk
@@ -2291,7 +2291,7 @@ Kf2 {[%clk 0:00:11][%clko 0:00:10][%emt 0:00:21]}{[%eval 0,104][%meval
 [Date "2018.11.14"]
 [Round "10"]
 [White "Stockfish 121118 64 BMI2"]
-[Black "Alexander 4.0 64 BMI2"]
+[Black "ShashChess 4.0 64 BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "-"]
 [Classes "0"]
@@ -2301,7 +2301,7 @@ Kf2 {[%clk 0:00:11][%clko 0:00:10][%emt 0:00:21]}{[%eval 0,104][%meval
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
 Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 Black:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
 {[%t Long] Draw. (1/2-1/2)} 1. d4 Nf6 2. c4 g6 3. f3 e6 4. e4 d5 5. cxd5 exd5
 6. Nc3 dxe4 7. fxe4 Bb4 {White out of book} 8. Bg5 {[%clk 0:25:06][%clko
 0:26:10][%emt 0:01:13]}{[%eval 60,30][%meval 73s|TB:4]}{Black out of book}
@@ -2462,7 +2462,7 @@ Bxa2 {[%clk 0:00:47][%clko 0:02:16][%emt 0:00:09]}{[%eval 0,40][%meval
 [Site "Local computer"]
 [Date "2018.11.14"]
 [Round "11"]
-[White "Alexander 4.0 64 BMI2"]
+[White "ShashChess 4.0 64 BMI2"]
 [Black "Stockfish 121118 64 BMI2"]
 [Result "1-0"]
 [BlackElo "3000"]
@@ -2472,7 +2472,7 @@ Bxa2 {[%clk 0:00:47][%clko 0:02:16][%emt 0:00:09]}{[%eval 0,40][%meval
 [WhiteElo "-"]
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 Black: Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 } {[%t Long] Black resigns. (1-0)} 1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6
 5. Nc3 a6 6. Be3 h6 7. f3 Qc7 8. g4 e6 {White out of book} 9. Qd2 {[%clk
@@ -2591,7 +2591,7 @@ Nc3 {[%clk 0:09:19][%clko 0:07:54][%emt 0:00:27]}{[%eval 172,30][%meval
 [Date "2018.11.14"]
 [Round "12"]
 [White "Stockfish 121118 64 BMI2"]
-[Black "Alexander 4.0 64 BMI2"]
+[Black "ShashChess 4.0 64 BMI2"]
 [Result "0-1"]
 [BlackElo "-"]
 [Classes "0"]
@@ -2601,7 +2601,7 @@ Nc3 {[%clk 0:09:19][%clko 0:07:54][%emt 0:00:27]}{[%eval 172,30][%meval
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
 Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 Black:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
 {[%t Long] White forfeits on time. (0-1)} 1. e4 c5 2. Nf3 d6 3. d4 cxd4 4.
 Nxd4 Nf6 5. Nc3 a6 6. Be3 h6 7. f3 Qc7 8. g4 e6 {White out of book} 9. Qd2
 {[%clk 0:24:37][%clko 0:26:20][%emt 0:01:52]}{[%eval 125,31][%meval 111s|TB:1]}
@@ -2810,7 +2810,7 @@ Kc7 {[%clk 0:00:11][%clko 0:00:47][%emt 0:00:21]}{[%eval 0,58][%meval
 [Site "Local computer"]
 [Date "2018.11.14"]
 [Round "13"]
-[White "Alexander 4.0 64 BMI2"]
+[White "ShashChess 4.0 64 BMI2"]
 [Black "Stockfish 121118 64 BMI2"]
 [Result "1-0"]
 [BlackElo "3000"]
@@ -2820,7 +2820,7 @@ Kc7 {[%clk 0:00:11][%clko 0:00:47][%emt 0:00:21]}{[%eval 0,58][%meval
 [WhiteElo "-"]
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 Black: Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 } {[%t Long] Black resigns. (1-0)} 1. d4 d5 2. Bf4 c5 3. e3 Nf6 4. c3 Nc6 5.
 Nd2 e6 6. Ngf3 Bd6 7. Bg3 O-O 8. Bd3 b6 9. e4 Be7 {White out of book} 10. dxc5
@@ -2929,7 +2929,7 @@ Kg2 {[%clk 0:17:09][%clko 0:07:15][%emt 0:00:33]}{[%eval 127,37][%meval
 [Date "2018.11.14"]
 [Round "14"]
 [White "Stockfish 121118 64 BMI2"]
-[Black "Alexander 4.0 64 BMI2"]
+[Black "ShashChess 4.0 64 BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "-"]
 [Classes "0"]
@@ -2939,7 +2939,7 @@ Kg2 {[%clk 0:17:09][%clko 0:07:15][%emt 0:00:33]}{[%eval 127,37][%meval
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
 Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 Black:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
 {[%t Long] Draw by repetition. (1/2-1/2)} 1. d4 d5 2. Bf4 c5 3. e3 Nf6 4. c3
 Nc6 5. Nd2 e6 6. Ngf3 Bd6 7. Bg3 O-O 8. Bd3 b6 9. e4 Be7 {White out of book}
 10. dxc5 {[%clk 0:25:16][%clko 0:26:30][%emt 0:01:23]}{[%eval 21,32][%meval
@@ -3236,7 +3236,7 @@ Kf8 {[%clk 0:00:15][%clko 0:00:10][%emt 0:00:11]}{[%eval 0,92][%meval
 [Site "Local computer"]
 [Date "2018.11.14"]
 [Round "15"]
-[White "Alexander 4.0 64 BMI2"]
+[White "ShashChess 4.0 64 BMI2"]
 [Black "Stockfish 121118 64 BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
@@ -3246,7 +3246,7 @@ Kf8 {[%clk 0:00:15][%clko 0:00:10][%emt 0:00:11]}{[%eval 0,92][%meval
 [WhiteElo "-"]
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 Black: Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 } 1. d4 Nf6 2. c4 e6 3. Nf3 d5 4. Nc3 c6 5. e3 Nbd7 6. Qc2 Bd6 7. Bd3 e5 8.
 cxd5 cxd5 9. Nb5 Bb8 10. dxe5 Nxe5 11. Nxe5 Bxe5 {White out of book} 12. Bd2
@@ -3850,7 +3850,7 @@ Kf6 {[%clk 0:01:13][%clko 0:01:04][%emt 0:00:07]}{[%eval 0,42][%meval 7s|TB:5]}
 [Date "2018.11.14"]
 [Round "16"]
 [White "Stockfish 121118 64 BMI2"]
-[Black "Alexander 4.0 64 BMI2"]
+[Black "ShashChess 4.0 64 BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "-"]
 [Classes "0"]
@@ -3860,7 +3860,7 @@ Kf6 {[%clk 0:01:13][%clko 0:01:04][%emt 0:00:07]}{[%eval 0,42][%meval 7s|TB:5]}
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
 Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 Black:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
 {[%t Long] Draw. (1/2-1/2)} 1. d4 Nf6 2. c4 e6 3. Nf3 d5 4. Nc3 c6 5. e3 Nbd7
 6. Qc2 Bd6 7. Bd3 e5 8. cxd5 cxd5 9. Nb5 Bb8 10. dxe5 Nxe5 11. Nxe5 Bxe5
 {White out of book} 12. Bd2 {[%clk 0:25:48][%clko 0:26:50][%emt 0:01:11]}
@@ -4000,7 +4000,7 @@ Kd5 {[%clk 0:04:23][%clko 0:02:59][%emt 0:00:11]}{[%eval 0,63][%meval
 [Site "Local computer"]
 [Date "2018.11.14"]
 [Round "17"]
-[White "Alexander 4.0 64 BMI2"]
+[White "ShashChess 4.0 64 BMI2"]
 [Black "Stockfish 121118 64 BMI2"]
 [Result "0-1"]
 [BlackElo "3000"]
@@ -4010,7 +4010,7 @@ Kd5 {[%clk 0:04:23][%clko 0:02:59][%emt 0:00:11]}{[%eval 0,63][%meval
 [WhiteElo "-"]
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 Black: Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 } {[%t Long] White forfeits on time. (0-1)} 1. d4 d5 2. Nf3 Nf6 3. e3 e6 4.
 Bd3 Bd6 5. O-O O-O 6. Nbd2 c6 7. Re1 Qc7 8. e4 dxe4 9. Nxe4 Be7 {White out of
@@ -4248,7 +4248,7 @@ Ke6 {[%clk 0:00:42][%clko 0:00:11][%emt 0:00:08]}{[%eval 0,35][%meval
 [Date "2018.11.14"]
 [Round "18"]
 [White "Stockfish 121118 64 BMI2"]
-[Black "Alexander 4.0 64 BMI2"]
+[Black "ShashChess 4.0 64 BMI2"]
 [Result "1-0"]
 [BlackElo "-"]
 [Classes "0"]
@@ -4258,7 +4258,7 @@ Ke6 {[%clk 0:00:42][%clko 0:00:11][%emt 0:00:08]}{[%eval 0,35][%meval
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
 Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 Black:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
 {[%t Long] Black forfeits on time. (1-0)} 1. d4 d5 2. Nf3 Nf6 3. e3 e6 4. Bd3
 Bd6 5. O-O O-O 6. Nbd2 c6 7. Re1 Qc7 8. e4 dxe4 9. Nxe4 Be7 {White out of book}
  10. Nxf6+ {[%clk 0:26:04][%clko 0:26:30][%emt 0:00:36]}{[%eval 208,30][%meval
@@ -4381,7 +4381,7 @@ Qf5 {[%clk 0:02:38][%clko 0:09:11][%emt 0:00:18]}{[%eval 370,28][%meval
 [Site "Local computer"]
 [Date "2018.11.14"]
 [Round "19"]
-[White "Alexander 4.0 64 BMI2"]
+[White "ShashChess 4.0 64 BMI2"]
 [Black "Stockfish 121118 64 BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "3000"]
@@ -4391,7 +4391,7 @@ Qf5 {[%clk 0:02:38][%clko 0:09:11][%emt 0:00:18]}{[%eval 370,28][%meval
 [WhiteElo "-"]
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 Black: Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10
 } {[%t Long] Draw. (1/2-1/2)} 1. c4 e5 2. Nc3 Nf6 3. g3 d5 4. cxd5 Nxd5 5. Bg2
 Nb6 6. d3 Be7 {White out of book} 7. f4 {[%clk 0:24:41][%clko 0:26:00][%emt
@@ -4668,7 +4668,7 @@ Rh5+ {[%clk 0:01:14][%clko 0:00:23][%emt 0:00:07]}{[%eval 0,48][%meval
 [Date "2018.11.15"]
 [Round "20"]
 [White "Stockfish 121118 64 BMI2"]
-[Black "Alexander 4.0 64 BMI2"]
+[Black "ShashChess 4.0 64 BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "-"]
 [Classes "0"]
@@ -4678,7 +4678,7 @@ Rh5+ {[%clk 0:01:14][%clko 0:00:23][%emt 0:00:07]}{[%eval 0,48][%meval
 
 {Processor: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (@3,40GHz)^13 ^10 White:
 Stockfish 121118 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 Black:
-Alexander 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
+ShashChess 4.0 64 BMI2, hash size: 4096M, opening book: <none>^13 ^10 }
 {[%t Long] Draw. (1/2-1/2)} 1. c4 e5 2. Nc3 Nf6 3. g3 d5 4. cxd5 Nxd5 5. Bg2
 Nb6 6. d3 Be7 {White out of book} 7. Be3 {[%clk 0:23:55][%clko 0:26:00][%emt
 0:02:14]}{[%eval 35,32][%meval 134s]}{Black out of book} 7... O-O {[%clk

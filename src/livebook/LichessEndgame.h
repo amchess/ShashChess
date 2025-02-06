@@ -3,7 +3,7 @@
 #ifdef USE_LIVEBOOK
     #include "LichessLivebook.h"
 
-namespace Alexander::Livebook {
+namespace ShashChess::Livebook {
 class LichessEndgame final: public LichessLivebook {
    public:
     std::string parse_uci(const nlohmann::json& move) override;

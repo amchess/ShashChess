@@ -79,7 +79,7 @@ jobs:
           make -j4 profile-build ARCH=$BINARY COMP=$COMP WINE_PATH="$SDE"
           make strip ARCH=$BINARY COMP=$COMP
           WINE_PATH="$SDE" ../tests/signature.sh $benchref
-          mv ./alexander$EXT ../alexander-$NAME-$BINARY$EXT
+          mv ./shashchess$EXT ../shashchess-$NAME-$BINARY$EXT
 
       - name: Remove non src files
         run: git clean -fx

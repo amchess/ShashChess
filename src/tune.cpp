@@ -1,13 +1,13 @@
 /*
-  Alexander, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and Stockfish developers (see AUTHORS file)
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
-  Alexander is free software: you can redistribute it and/or modify
+  ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Alexander is distributed in the hope that it will be useful,
+  ShashChess is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -29,7 +29,7 @@
 
 using std::string;
 
-namespace Alexander {
+namespace ShashChess {
 
 bool          Tune::update_on_last;
 const Option* LastOption = nullptr;
@@ -55,7 +55,7 @@ void Tune::make_option(OptionsMap* opts, const string& n, int v, const SetRange&
     if (TuneResults.count(n))
         v = TuneResults[n];
 
-    opts->add(n, Option(v, r(v).first, r(v).second, on_tune));
+    (*opts)[n] << Option(v, r(v).first, r(v).second, on_tune);
     LastOption = &((*opts)[n]);
 
     // Print formatted parameters, ready to be copy-pasted in Fishtest
@@ -106,7 +106,7 @@ void Tune::Entry<Tune::PostUpdate>::read_option() {
     value();
 }
 
-}  // namespace Alexander
+}  // namespace ShashChess
 
 
 // Init options with tuning session results instead of default values. Useful to
@@ -119,8 +119,9 @@ void Tune::Entry<Tune::PostUpdate>::read_option() {
 // Then paste the output below, as the function body
 
 
-namespace Alexander {
+namespace ShashChess {
 
-void Tune::read_results() { /* ...insert your values here... */ }
+void Tune::read_results() { /* ...insert your values here... */
+}
 
-}  // namespace Alexander
+}  // namespace ShashChess

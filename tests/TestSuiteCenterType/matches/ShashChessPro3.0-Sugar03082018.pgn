@@ -1,8 +1,8 @@
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "1"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "S_XPrO.030818.64.BMI2"]
 [Result "1-0"]
 [BlackElo "2000"]
@@ -387,12 +387,12 @@ Rh5-h8 Ke4xe5 Ke7-f7 Bg4-e6+ Kf7-g6 h4-h5+ Kg6-h7 d5-d6 Rh8-b8 Ne3-f5
 Rb8-b5+ Ke5-f6 Rb5-a5 d6-d7 Ra5-a8 Nf5-d6 Ra8-a7 d7-d8Q) +12.72/24 5} Rh7
 {(Rb7-h7) -12.50/23 1  Arena Adjudication} 1-0
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "2"]
 [White "S_XPrO.030818.64.BMI2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "2000"]
 [ECO "E11"]
@@ -745,11 +745,11 @@ Nf4-g2+ Kh4-h5) 0.00/37 4} Kh4 {(Kh5-h4) 0.00/1 0} 63. Ng2+ {(Nf4-g2+
 Kh4-h5) 0.00/43 16} Kh5 {(Kh4-h5) 0.00/44 3} 64. Nf4+ {(Ng2-f4+) 0.00/42 17
 3-fold repetition} 1/2-1/2
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "3"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "S_XPrO.030818.64.BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "2000"]
@@ -1701,12 +1701,12 @@ Kf4xf5 Kf7-g7 Kf5-g5 Kg7-f7) 0.00/65 1} 132. Kxf5 {(Kf4xf5 Kf7-g7 h4-h5
 Kg7-g8 Kf5-g6 Kg8-f8 Kg6-f6 Kf8-g8) 0.00/55 0  Arena Adjudication
 (Tablebases)} 1/2-1/2
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "4"]
 [White "S_XPrO.030818.64.BMI2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "2000"]
 [ECO "E60"]
@@ -2708,11 +2708,11 @@ Ke4-d5 Ke7-d7 Kd5-d4 Kd7-e6) 0.00/77 9} 129. Kd3 {(Ke4-d3 Ke7-e6) 0.00/82
 6} Ke6 {(Ke7-e6) 0.00/79 5} 130. Ke4 {(Kd3-e4) 0.00/127 1 3-fold
 repetition} 1/2-1/2
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "5"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "S_XPrO.030818.64.BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "2000"]
@@ -3007,12 +3007,12 @@ Ke7-d7 Kd3-c4 Kd7-c6 Kc4-d3) 0.00/80 4} Kd5 {(Ke6-d5 Ke3-d3 Kd5-c6 Kd3-e4
 Kc6-d6 Ke4-f4 Kd6-d5 Kf4-e3 Kd5-d6) 0.00/37 55  Arena Adjudication
 (Tablebases)} 1/2-1/2
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "6"]
 [White "S_XPrO.030818.64.BMI2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "2000"]
 [ECO "D43"]
@@ -3257,11 +3257,11 @@ Qh4-e4+ Kg2-f2) 0.00/37 9} Qh4+ {(Qg4-h4+ Kf2-g2 Qh4-g4+ Kg2-f2) 0.00/37
 Kf3-f2) 0.00/38 11} Qh1+ {(Qh2-h1+ Kf3-f2) 0.00/34 2} 65. Kf2 {(Kf3-f2)
 0.00/34 3} Qh4+ {(Qh1-h4+) 0.00/35 2 3-fold repetition} 1/2-1/2
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "7"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "S_XPrO.030818.64.BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "2000"]
@@ -3414,12 +3414,12 @@ Kg8-h7 Qg5-h5+ Kh7-g8) 0.00/43 14} Kh7 {(Kg8-h7 Qg5-f5+ Kh7-g8) 0.00/50 17}
 36. Qh5+ {(Qg5-h5+ Kh7-g8) 0.00/49 14} Kg8 {(Kh7-g8) 0.00/51 47} 37. Qg5+
 {(Qh5-g5+) 0.00/49 15 3-fold repetition} 1/2-1/2
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "8"]
 [White "S_XPrO.030818.64.BMI2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "2000"]
 [ECO "B22"]
@@ -3856,11 +3856,11 @@ Kf3 {(Ke2-f3 Kd4-e5 Kf3-g4 Ke5-e6 Kg4-f3) 0.00/113 1} Ke5 {(Kd4-e5 Kf3-e2)
 0.00/110 4} 116. Ke2 {(Kf3-e2) 0.00/120 2} Kd4 {(Ke5-d4) 0.00/113 1 3-fold
 repetition} 1/2-1/2
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "9"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "S_XPrO.030818.64.BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "2000"]
@@ -4107,12 +4107,12 @@ Kb5-b6 Kd7-c8 Kb6-c6 Kc8-b8 Kc6-b6) 0.00/75 4} Kd7 {(Ke7-d7 Kb5-b6 Kd7-c8
 a3-a4 Kc8-b8 a4-a5 Kb8-c8 a5-a6 Kc8-b8 a6-a7+ Kb8-a8 Kb6-a6) 0.00/84 2 
 Arena Adjudication (Tablebases)} 1/2-1/2
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "10"]
 [White "S_XPrO.030818.64.BMI2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "2000"]
 [ECO "E60"]
@@ -4437,11 +4437,11 @@ Rb2+ {(Rb1-b2+ Kg2-g1 Rb2-b1+ Kg1-g2) 0.00/48 19} 67. Kh1 {(Kg2-h1 Rb2-b1+
 Kh1-g2) 0.00/44 34} Rb1+ {(Rb2-b1+ Kh1-g2) 0.00/50 3} 68. Kg2 {(Kh1-g2)
 0.00/48 11} Rb2+ {(Rb1-b2+) 0.00/51 3 3-fold repetition} 1/2-1/2
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "11"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "S_XPrO.030818.64.BMI2"]
 [Result "1-0"]
 [BlackElo "2000"]
@@ -4722,12 +4722,12 @@ Ke3-f3 Kd5-d4 Kf3xg3 Kd4-e3 Ra1-f1 Ke3-e2 Rf1xf2+ Ke2-e3 Rf2-f5 Ke3-e2
 Rf5xh5 Ke2-d2 b2-b3 Kd2-c1 c2-c4 Kc1-d1 c4-c5 Kd1-c1 b3-b4 Kc1-d2 c5-c6
 Kd2-c3 c6-c7 Kc3-d2) -132.70/28 4  Arena Adjudication} 1-0
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "12"]
 [White "S_XPrO.030818.64.BMI2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "2000"]
 [ECO "B90"]
@@ -5487,11 +5487,11 @@ Kf4-g5 Kg2-f2) 0.00/39 9} Kxg4 {(Kf3xg4 Kh2-g2 Kg4-f5 Kg2-g3 g5-g4 Kg3-h2
 Kf5-f6 Kh2-g3) 0.00/63 1} 104. Kg2 {(Kh2-g2 Kg4-f4 Kg2-f2 g5-g4 Kf2-g2
 Kf4-g5 Kg2-f2) 0.00/60 4  Arena Adjudication (Tablebases)} 1/2-1/2
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "13"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "S_XPrO.030818.64.BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "2000"]
@@ -5722,12 +5722,12 @@ Kd5-c5) 0.00/127 1} Kd5 {(Kc5-d5 Kc3-d3 Kd5-c5 Kd3-c3) 0.00/111 3} 63. Kd3
 0.00/113 50} 64. Kc3 {(Kd3-c3 Kc5-d5) 0.00/126 7} Kd5 {(Kc5-d5) 0.00/115
 34} 65. Kd3 {(Kc3-d3) 0.00/127 1 3-fold repetition} 1/2-1/2
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "14"]
 [White "S_XPrO.030818.64.BMI2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "2000"]
 [ECO "D00"]
@@ -6021,11 +6021,11 @@ Kh4-h5 Qf6-f7+ Kh5-h4) 0.00/50 10} Kh5 {(Kh4-h5 Qf6-f7+ Kh5-h4) 0.00/51 10}
 65. Qf7+ {(Qf6-f7+ Kh5-h4) 0.00/50 11} Kh4 {(Kh5-h4) 0.00/55 4} 66. Qf6+
 {(Qf7-f6+) 0.00/52 9 3-fold repetition} 1/2-1/2
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "15"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "S_XPrO.030818.64.BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "2000"]
@@ -6254,12 +6254,12 @@ Kh3-g3 Rh2-g2+) 0.00/43 14} Rh2+ {(Rg2-h2+ Kh3-g3 Rh2-g2+ Kg3-h3) 0.00/47
 Kh3-g3) 0.00/52 18} 50. Kg3 {(Kh3-g3) 0.00/1 0} Rhg2+ {(Rh2-g2+) 0.00/49 83
 3-fold repetition} 1/2-1/2
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "16"]
 [White "S_XPrO.030818.64.BMI2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "2000"]
 [ECO "D46"]
@@ -6774,11 +6774,11 @@ Rf3 {(Re3-f3 Rb4-b5 Kg3-g2 Rb5-g5+ Kg2-f2 Rg5-g4) 0.00/86 2} 150. Rb3
 {(Kc2xb3 Kg3-h4 Kb3-c4 Kh4-g5 Kc4-b3) 0.00/72 1 Insufficient material}
 1/2-1/2
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "17"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "S_XPrO.030818.64.BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "2000"]
@@ -6839,12 +6839,12 @@ Nf7-h6+ Kg8-h8) 0.00/51 17} Kg8 {(Kh8-g8 Nf7-h6+ Kg8-h8 Nh6-f7+) 0.00/51
 Nf7-h6+) 0.00/57 23} 24. Nh6+ {(Nf7-h6+) 0.00/61 27} Kh8 {(Kg8-h8) 0.00/1 0
 3-fold repetition} 1/2-1/2
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "18"]
 [White "S_XPrO.030818.64.BMI2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1-0"]
 [BlackElo "2000"]
 [ECO "D05"]
@@ -7080,11 +7080,11 @@ Qc4-d4 Qa8-b8 Re2-e7 Rf8-g8 Re7xg7 Rg8xg7 d7-d8R+ Qb8xd8 Qd4xd8+ Kh8-h7
 Qd8-e8 Rg7-g5 Qe8-f7+ Rg5-g7 Qf7xg7+ Kh7xg7 b6-b7) +13.40/29 29  Arena
 Adjudication} 1-0
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "19"]
-[White "Alexander Pro 3.0-x86-64-bmi2"]
+[White "ShashChess Pro 3.0-x86-64-bmi2"]
 [Black "S_XPrO.030818.64.BMI2"]
 [Result "1/2-1/2"]
 [BlackElo "2000"]
@@ -7474,12 +7474,12 @@ Bd4-b2 Rb1-d1 Bb2-d4) 0.00/31 17} Bb2 {(Bd4-b2 Rb1-d1 Bb2-d4) 0.00/30 4}
 78. Rd1 {(Rb1-d1 Bb2-d4) 0.00/33 7} Bd4 {(Bb2-d4) 0.00/30 4} 79. Rb1
 {(Rd1-b1) 0.00/43 3 3-fold repetition} 1/2-1/2
 
-[Event "Alexander30TO-Sugar03082018"]
+[Event "ShashChess30TO-Sugar03082018"]
 [Site "ECHEC69"]
 [Date "2018.08.15"]
 [Round "20"]
 [White "S_XPrO.030818.64.BMI2"]
-[Black "Alexander Pro 3.0-x86-64-bmi2"]
+[Black "ShashChess Pro 3.0-x86-64-bmi2"]
 [Result "1/2-1/2"]
 [BlackElo "2000"]
 [ECO "A22"]

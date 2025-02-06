@@ -37,10 +37,10 @@ before_build:
 
       # Build CMakeLists.txt
       $t = 'cmake_minimum_required(VERSION 3.8)',
-           'project(Alexander)',
+           'project(ShashChess)',
            'set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/src)',
            'set(source_files', $src, ')',
-           'add_executable(alexander ${source_files})'
+           'add_executable(shashchess ${source_files})'
 
       # Write CMakeLists.txt withouth BOM
       $MyPath = (Get-Item -Path "." -Verbose).FullName + '\CMakeLists.txt'
@@ -61,7 +61,7 @@ build_script:
 
 before_test:
   - cd src/%CONFIGURATION%
-  - alexander bench 2> out.txt >NUL
+  - shashchess bench 2> out.txt >NUL
   - ps: |
       # Verify bench number
       $s = (gc "./out.txt" | out-string)

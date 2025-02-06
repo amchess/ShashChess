@@ -3,7 +3,7 @@
 
     #include "../uci.h"
 
-using namespace Alexander::Livebook;
+using namespace ShashChess::Livebook;
 
 
 ChessDBContributor::ChessDBContributor() = default;
@@ -17,9 +17,7 @@ void ChessDBContributor::contribute(const Position& position, const Move move) {
                    + "&move=move:" + UCIEngine::move(move, position.is_chess960());
 
     if (const auto ret = do_request(url); ret != CURLE_OK)
-    {
-        std::cerr << "Failed to contribute to ChessDB: " << curl_easy_strerror(ret) << std::endl;
-    }
+    { std::cerr << "Failed to contribute to ChessDB: " << curl_easy_strerror(ret) << std::endl; }
 }
 
 static size_t curl_write(void* contents, const size_t size, const size_t nmemb, void* userp) {
@@ -49,9 +47,7 @@ CURLcode ChessDBContributor::do_request(const std::string& uri) {
 
     const CURLcode res = curl_easy_perform(local_curl);
     if (res != CURLE_OK)
-    {
-        std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
-    }
+    { std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl; }
 
     curl_easy_cleanup(local_curl);
 

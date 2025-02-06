@@ -1,13 +1,13 @@
 /*
-  Alexander, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and Alexander developers (see AUTHORS file)
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
-  Alexander is free software: you can redistribute it and/or modify
+  ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Alexander is distributed in the hope that it will be useful,
+  ShashChess is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -26,12 +26,11 @@
 #include <string>
 
 #include "bitboard.h"
-//classical
+#include "nnue/nnue_accumulator.h"
+#include "nnue/nnue_architecture.h"
 #include "types.h"
-#include "psqt.h"  //for classical begin
 
-
-namespace Alexander {
+namespace ShashChess {
 //Kelly begin
 extern void setStartPoint();
 //Kelly end
@@ -46,6 +45,7 @@ struct StateInfo {
     // Copied when making a move
     Key    materialKey;
     Key    pawnKey;
+    Key    majorPieceKey;
     Key    minorPieceKey;
     Key    nonPawnKey[COLOR_NB];
     Value  nonPawnMaterial[COLOR_NB];
@@ -64,7 +64,11 @@ struct StateInfo {
     Bitboard   checkSquares[PIECE_TYPE_NB];
     Piece      capturedPiece;
     int        repetition;
-    //classical
+
+    // Used by NNUE
+    Eval::NNUE::Accumulator<Eval::NNUE::TransformedFeatureDimensionsBig>   accumulatorBig;
+    Eval::NNUE::Accumulator<Eval::NNUE::TransformedFeatureDimensionsSmall> accumulatorSmall;
+    DirtyPiece                                                             dirtyPiece;
 };
 
 
@@ -79,8 +83,6 @@ using StateListPtr = std::unique_ptr<std::deque<StateInfo>>;
 // pieces, side to move, hash keys, castling info, etc. Important methods are
 // do_move() and undo_move(), used by the search to update node info when
 // traversing the search tree.
-class Thread;  //for classical begin
-
 class Position {
    public:
     static void init();
@@ -90,8 +92,7 @@ class Position {
     Position& operator=(const Position&) = delete;
 
     // FEN string input/output
-    Position&
-    set(const std::string& fenStr, bool isChess960, StateInfo* si, Thread* th);  //for classical
+    Position&   set(const std::string& fenStr, bool isChess960, StateInfo* si);
     Position&   set(const std::string& code, Color c, StateInfo* si);
     std::string fen() const;
 
@@ -111,7 +112,6 @@ class Position {
     int count() const;
     template<PieceType Pt>
     Square square(Color c) const;
-    bool   is_on_semiopen_file(Color c, Square s) const;  //for classical
 
     // Castling
     CastlingRights castling_rights(Color c) const;
@@ -130,7 +130,6 @@ class Position {
     Bitboard attackers_to(Square s, Bitboard occupied) const;
     bool     attackers_to_exist(Square s, Bitboard occupied, Color c) const;
     void     update_slider_blockers(Color c) const;
-    Bitboard slider_blockers(Bitboard sliders, Square s, Bitboard& pinners) const;  //for classical
     template<PieceType Pt>
     Bitboard attacks_by(Color c) const;
 
@@ -142,15 +141,10 @@ class Position {
     bool  gives_check(Move m) const;
     Piece moved_piece(Move m) const;
     Piece captured_piece() const;
-    //for classical begin
-    // Piece specific
-    bool pawn_passed(Color c, Square s) const;
-    bool opposite_bishops() const;
-    int  pawns_on_same_color_squares(Color c, Square s) const;
-    //for classical end
+
     // Doing and undoing moves
-    void do_move(Move m, StateInfo& newSt, const TranspositionTable* tt);
-    void do_move(Move m, StateInfo& newSt, bool givesCheck, const TranspositionTable* tt);
+    void do_move(Move m, StateInfo& newSt);
+    void do_move(Move m, StateInfo& newSt, bool givesCheck);
     void undo_move(Move m);
     void do_null_move(StateInfo& newSt, const TranspositionTable& tt);
     void undo_null_move();
@@ -160,32 +154,32 @@ class Position {
 
     // Accessing hash keys
     Key key() const;
+    Key key_after(Move m) const;
     Key material_key() const;
     Key pawn_key() const;
+    Key major_piece_key() const;
     Key minor_piece_key() const;
     Key non_pawn_key(Color c) const;
 
     // Other properties of the position
-    Color   side_to_move() const;
-    int     game_ply() const;
-    bool    is_chess960() const;
-    Thread* this_thread() const;  //for classical
-    bool    is_draw(int ply) const;
-    bool    is_repetition(int ply) const;
-    bool    upcoming_repetition(int ply) const;
-    bool    has_repeated() const;
+    Color side_to_move() const;
+    int   game_ply() const;
+    bool  is_chess960() const;
+    bool  is_draw(int ply) const;
+    bool  upcoming_repetition(int ply) const;
+    bool  has_repeated() const;
     //from Crystal begin
     bool king_danger(Color c) const;
     //from Crystal end
-    int               rule50_count() const;
-    ScoreForClassical psq_score() const;  //for classical
-    Value             non_pawn_material(Color c) const;
-    Value             non_pawn_material() const;
+    int   rule50_count() const;
+    Value non_pawn_material(Color c) const;
+    Value non_pawn_material() const;
 
     // Position consistency check, for debugging
     bool pos_is_ok() const;
     void flip();
 
+    // Used by NNUE
     StateInfo* state() const;
 
     void put_piece(Piece pc, Square s);
@@ -205,19 +199,17 @@ class Position {
     Key adjust_key50(Key k) const;
 
     // Data members
-    Piece             board[SQUARE_NB];
-    Bitboard          byTypeBB[PIECE_TYPE_NB];
-    Bitboard          byColorBB[COLOR_NB];
-    int               pieceCount[PIECE_NB];
-    int               castlingRightsMask[SQUARE_NB];
-    Square            castlingRookSquare[CASTLING_RIGHT_NB];
-    Bitboard          castlingPath[CASTLING_RIGHT_NB];
-    Thread*           thisThread;  //for classical
-    StateInfo*        st;
-    int               gamePly;
-    Color             sideToMove;
-    ScoreForClassical psq;  //for classical
-    bool              chess960;
+    Piece      board[SQUARE_NB];
+    Bitboard   byTypeBB[PIECE_TYPE_NB];
+    Bitboard   byColorBB[COLOR_NB];
+    int        pieceCount[PIECE_NB];
+    int        castlingRightsMask[SQUARE_NB];
+    Square     castlingRookSquare[CASTLING_RIGHT_NB];
+    Bitboard   castlingPath[CASTLING_RIGHT_NB];
+    StateInfo* st;
+    int        gamePly;
+    Color      sideToMove;
+    bool       chess960;
 };
 extern void   putQLearningTrajectoryIntoLearningTable();  //kelly
 std::ostream& operator<<(std::ostream& os, const Position& pos);
@@ -264,11 +256,7 @@ inline Square Position::square(Color c) const {
 }
 
 inline Square Position::ep_square() const { return st->epSquare; }
-//for classical begin
-inline bool Position::is_on_semiopen_file(Color c, Square s) const {
-    return !(pieces(c, PAWN) & file_bb(s));
-}
-//for classical end
+
 inline bool Position::can_castle(CastlingRights cr) const { return st->castlingRights & cr; }
 
 inline CastlingRights Position::castling_rights(Color c) const {
@@ -310,15 +298,7 @@ inline Bitboard Position::blockers_for_king(Color c) const { return st->blockers
 inline Bitboard Position::pinners(Color c) const { return st->pinners[c]; }
 
 inline Bitboard Position::check_squares(PieceType pt) const { return st->checkSquares[pt]; }
-//for classical begin
-inline bool Position::pawn_passed(Color c, Square s) const {
-    return !(pieces(~c, PAWN) & passed_pawn_span(c, s));
-}
 
-inline int Position::pawns_on_same_color_squares(Color c, Square s) const {
-    return popcount(pieces(c, PAWN) & ((DarkSquares & s) ? DarkSquares : ~DarkSquares));
-}
-//for classical end
 inline Key Position::key() const { return adjust_key50<false>(st->key); }
 
 template<bool AfterMove>
@@ -330,7 +310,7 @@ inline Key Position::pawn_key() const { return st->pawnKey; }
 
 inline Key Position::material_key() const { return st->materialKey; }
 
-inline ScoreForClassical Position::psq_score() const { return psq; }  //for classical
+inline Key Position::major_piece_key() const { return st->majorPieceKey; }
 
 inline Key Position::minor_piece_key() const { return st->minorPieceKey; }
 
@@ -345,12 +325,7 @@ inline Value Position::non_pawn_material() const {
 inline int Position::game_ply() const { return gamePly; }
 
 inline int Position::rule50_count() const { return st->rule50; }
-//for classical begin
-inline bool Position::opposite_bishops() const {
-    return count<BISHOP>(WHITE) == 1 && count<BISHOP>(BLACK) == 1
-        && opposite_colors(square<BISHOP>(WHITE), square<BISHOP>(BLACK));
-}
-//for classical end
+
 inline bool Position::is_chess960() const { return chess960; }
 
 inline bool Position::capture(Move m) const {
@@ -368,8 +343,6 @@ inline bool Position::capture_stage(Move m) const {
 
 inline Piece Position::captured_piece() const { return st->capturedPiece; }
 
-inline Thread* Position::this_thread() const { return thisThread; }  //for classical
-
 inline void Position::put_piece(Piece pc, Square s) {
 
     board[s] = pc;
@@ -377,7 +350,6 @@ inline void Position::put_piece(Piece pc, Square s) {
     byColorBB[color_of(pc)] |= s;
     pieceCount[pc]++;
     pieceCount[make_piece(color_of(pc), ALL_PIECES)]++;
-    psq += PSQT::psq[pc][s];  //for classical
 }
 
 inline void Position::remove_piece(Square s) {
@@ -389,7 +361,6 @@ inline void Position::remove_piece(Square s) {
     board[s] = NO_PIECE;
     pieceCount[pc]--;
     pieceCount[make_piece(color_of(pc), ALL_PIECES)]--;
-    psq -= PSQT::psq[pc][s];  //for classical
 }
 
 inline void Position::move_piece(Square from, Square to) {
@@ -401,15 +372,12 @@ inline void Position::move_piece(Square from, Square to) {
     byColorBB[color_of(pc)] ^= fromTo;
     board[from] = NO_PIECE;
     board[to]   = pc;
-    psq += PSQT::psq[pc][to] - PSQT::psq[pc][from];  //for classical
 }
 
-inline void Position::do_move(Move m, StateInfo& newSt, const TranspositionTable* tt = nullptr) {
-    do_move(m, newSt, gives_check(m), tt);
-}
+inline void Position::do_move(Move m, StateInfo& newSt) { do_move(m, newSt, gives_check(m)); }
 
 inline StateInfo* Position::state() const { return st; }
 
-}  // namespace Alexander
+}  // namespace ShashChess
 
 #endif  // #ifndef POSITION_H_INCLUDED

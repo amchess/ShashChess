@@ -1,13 +1,13 @@
 /*
-  Alexander, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 A.Manzo, F.Ferraguti, K.Kiniama and Alexander developers (see AUTHORS file)
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2025 A.Manzo, F.Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
-  Alexander is free software: you can redistribute it and/or modify
+  ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Alexander is distributed in the hope that it will be useful,
+  ShashChess is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -31,7 +31,7 @@
 #include "misc.h"
 #include "position.h"
 
-namespace Alexander {
+namespace ShashChess {
 
 constexpr int PAWN_HISTORY_SIZE        = 512;    // has to be a power of 2
 constexpr int CORRECTION_HISTORY_SIZE  = 32768;  // has to be a power of 2
@@ -52,6 +52,10 @@ enum PawnHistoryType {
 template<PawnHistoryType T = Normal>
 inline int pawn_structure_index(const Position& pos) {
     return pos.pawn_key() & ((T == Normal ? PAWN_HISTORY_SIZE : CORRECTION_HISTORY_SIZE) - 1);
+}
+
+inline int major_piece_index(const Position& pos) {
+    return pos.major_piece_key() & (CORRECTION_HISTORY_SIZE - 1);
 }
 
 inline int minor_piece_index(const Position& pos) {
@@ -132,17 +136,18 @@ using PawnHistory = Stats<std::int16_t, 8192, PAWN_HISTORY_SIZE, PIECE_NB, SQUAR
 // see https://www.chessprogramming.org/Static_Evaluation_Correction_History
 enum CorrHistType {
     Pawn,          // By color and pawn structure
-    Minor,         // By color and positions of minor pieces (Knight, Bishop)
-    NonPawn,       // By non-pawn material positions and color
+    Major,         // By color and positions of major pieces (Queen, Rook) and King
+    Minor,         // By color and positions of minor pieces (Knight, Bishop) and King
+    NonPawn,       // By color and non-pawn material positions
     PieceTo,       // By [piece][to] move
     Continuation,  // Combined history of move pairs
 };
 
 namespace Detail {
 
-template<CorrHistType>
+template<CorrHistType _>
 struct CorrHistTypedef {
-    using type = Stats<std::int16_t, CORRECTION_HISTORY_LIMIT, CORRECTION_HISTORY_SIZE, COLOR_NB>;
+    using type = Stats<std::int16_t, CORRECTION_HISTORY_LIMIT, COLOR_NB, CORRECTION_HISTORY_SIZE>;
 };
 
 template<>
@@ -160,6 +165,6 @@ struct CorrHistTypedef<Continuation> {
 template<CorrHistType T>
 using CorrectionHistory = typename Detail::CorrHistTypedef<T>::type;
 
-}  // namespace Alexander
+}  // namespace Stockfish
 
 #endif  // #ifndef HISTORY_H_INCLUDED

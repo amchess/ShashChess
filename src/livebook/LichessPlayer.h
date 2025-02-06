@@ -6,7 +6,7 @@
     #include "LichessOpening.h"
 
 
-namespace Alexander::Livebook {
+namespace ShashChess::Livebook {
 class LichessPlayer final: public LichessOpening {
    public:
     LichessPlayer(const std::string& player, std::string color);

@@ -1,7 +1,7 @@
 #ifdef USE_LIVEBOOK
     #include "LichessUsers.h"
 
-using namespace Alexander::Livebook;
+using namespace ShashChess::Livebook;
 
 LichessUsers::LichessUsers() :
     LichessOpening("https://explorer.lichess.ovh/lichess?") {}

@@ -1,19 +1,18 @@
-# Alexander, a UCI chess playing engine derived from Stockfish
-# Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and Alexander developers
+# ShashChess, a UCI chess playing engine derived from Stockfish
+# Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers
 #
-# Alexander is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
+# This program is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Alexander is distributed in the hope that it will be useful,
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ### ==========================================================================
 ### Section 1. General Configuration
@@ -38,10 +37,10 @@ else ifeq ($(COMP),mingw)
 endif
 
 ### Executable name
-ifeq ($(target_windows),yes)
-	EXE = alexander.exe
+ifeq ($(target_windows), yes)
+	EXE = shashchess.exe
 else
-	EXE = alexander
+	EXE = shashchess
 endif
 
 ### Installation dir definitions
@@ -52,24 +51,27 @@ BINDIR = $(PREFIX)/bin
 PGOBENCH = $(WINE_PATH) ./$(EXE) bench
 
 ### Source and object files
-SRCS = benchmark.cpp bitbase.cpp bitboard.cpp endgame.cpp evaluate.cpp handicap/evaluate_handicap.cpp main.cpp \
-	material.cpp misc.cpp movegen.cpp movepick.cpp pawns.cpp position.cpp psqt.cpp \
+SRCS = benchmark.cpp bitboard.cpp evaluate.cpp main.cpp \
+	misc.cpp movegen.cpp movepick.cpp position.cpp \
 	search.cpp thread.cpp timeman.cpp tt.cpp uci.cpp ucioption.cpp tune.cpp syzygy/tbprobe.cpp \
 	learn/learn.cpp mcts/montecarlo.cpp  \
 	book/file_mapping.cpp book/book.cpp book/book_manager.cpp book/polyglot/polyglot.cpp book/ctg/ctg.cpp \
-	engine.cpp score.cpp memory.cpp \
-	wdl/win_probability.cpp \
+	nnue/nnue_misc.cpp nnue/features/half_ka_v2_hm.cpp nnue/network.cpp engine.cpp score.cpp memory.cpp \
+	win_probability.cpp \
 	livebook/BaseLivebook.cpp livebook/LichessOpening.cpp livebook/LichessEndgame.cpp livebook/ChessDb.cpp \
 	livebook/analysis/Cp.cpp livebook/analysis/Analysis.cpp livebook/analysis/Wdl.cpp livebook/analysis/Mate.cpp \
 	livebook/LichessLivebook.cpp livebook/LichessMaster.cpp livebook/LichessPlayer.cpp livebook/LichessUsers.cpp \
 	livebook/LichessGames.cpp livebook/Proxy.cpp livebook/ChessDBContributor.cpp shashin/shashin_manager.cpp
 
-HEADERS = benchmark.h bitboard.h endgame.h evaluate.hhandicap/ evaluate_handicap.h material.h misc.h movegen.h movepick.h history.h pawns.h \
-		position.h \
-		psqt.h search.h syzygy/tbprobe.h thread.h thread_win32_osx.h timeman.h \
-		tt.h tune.h types.h uci.h ucioption.h perft.h engine.h score.h numa.h memory.h \
+HEADERS = benchmark.h bitboard.h evaluate.h misc.h movegen.h  movepick.h history.h \
+		nnue/nnue_misc.h nnue/features/half_ka_v2_hm.h nnue/layers/affine_transform.h \
+		nnue/layers/affine_transform_sparse_input.h nnue/layers/clipped_relu.h nnue/layers/simd.h \
+		nnue/layers/sqr_clipped_relu.h nnue/nnue_accumulator.h nnue/nnue_architecture.h \
+		nnue/nnue_common.h nnue/nnue_feature_transformer.h position.h \
+		search.h syzygy/tbprobe.h thread.h thread_win32_osx.h timeman.h \
+		tt.h tune.h types.h uci.h ucioption.h perft.h nnue/network.h engine.h score.h numa.h memory.h \
 		book/file_mapping.h book/book.h book/book_manager.h book/polyglot/polyglot.h book/ctg/ctg.h learn/learn.h mcts/montecarlo.h \
-		wdl/win_probability.h \
+		win_probability.h \
 		livebook/BaseLivebook.h livebook/LichessOpening.h livebook/LichessEndgame.h livebook/ChessDb.h \
 		livebook/analysis/Cp.h livebook/analysis/Analysis.h livebook/analysis/Wdl.h livebook/analysis/Mate.h \
 		livebook/LichessLivebook.h livebook/LichessMaster.h livebook/LichessPlayer.h livebook/LichessUsers.h livebook/Proxy.h \
@@ -78,7 +80,7 @@ HEADERS = benchmark.h bitboard.h endgame.h evaluate.hhandicap/ evaluate_handicap
 
 OBJS = $(notdir $(SRCS:.cpp=.o))
 
-VPATH = mcts:syzygy:book:book/polyglot:book/ctg:learn:shashin:livebook:livebook/analysis:livebook/json:wdl:handicap
+VPATH = mcts:syzygy:nnue:nnue/features:book:book/polyglot:book/ctg:learn:shashin:livebook:livebook/analysis:livebook/json
 
 ### ==========================================================================
 ### Section 2. High-level Configuration
@@ -457,7 +459,7 @@ endif
 ifeq ($(COMP),gcc)
 	comp=gcc
 	CXX=g++
-	CXXFLAGS += -pedantic -Wextra -Wno-shadow -Wmissing-declarations
+	CXXFLAGS += -pedantic -Wextra -Wshadow -Wmissing-declarations
 
 	ifeq ($(arch),$(filter $(arch),armv7 armv8 riscv64))
 		ifeq ($(OS),Android)
@@ -869,7 +871,7 @@ endif
 endif
 
 ### 3.10 Android 5 can only run position independent executables. Note that this
-### breaks Android 4.1 and earlier.
+### breaks Android 4.0 and earlier.
 ifeq ($(OS), Android)
 	CXXFLAGS += -fPIE
 	LDFLAGS += -fPIE -pie
@@ -881,7 +883,7 @@ endif
 
 help:
 	@echo "" && \
-	echo "To compile alexander, type: " && \
+	echo "To compile shashchess, type: " && \
 	echo "" && \
 	echo "make -j target [ARCH=arch] [COMP=compiler] [COMPCXX=cxx]" && \
 	echo "" && \
@@ -955,20 +957,20 @@ ifneq ($(SUPPORTED_ARCH), true)
 endif
 
 
-.PHONY: help analyze build profile-build strip install clean \
+.PHONY: help analyze build profile-build strip install clean net \
 	objclean profileclean config-sanity \
 	icx-profile-use icx-profile-make \
 	gcc-profile-use gcc-profile-make \
 	clang-profile-use clang-profile-make FORCE \
 	format analyze
 
-analyze: config-sanity objclean
+analyze: net config-sanity objclean
 	$(MAKE) -k ARCH=$(ARCH) COMP=$(COMP) $(OBJS)
 
-build: config-sanity
+build: net config-sanity
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) all
 
-profile-build: config-sanity objclean profileclean
+profile-build: net config-sanity objclean profileclean
 	@echo ""
 	@echo "Step 1/4. Building instrumented executable ..."
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) $(profile_make)
@@ -998,18 +1000,21 @@ clean: objclean profileclean
 
 # clean binaries and objects
 objclean:
-	@rm -f alexander alexander.exe *.o ./syzygy/*.o ./book/*.o ./book/polyglot/*.o ./book/ctg/*.o ./learn/*.o livebook/*.o livebook/analysis/*.o livebook/json/*.o ./shashin/shashin_manager.o ./wdl/*.o ./handicap/*.o 
+	@rm -f shashchess shashchess.exe *.o ./syzygy/*.o ./nnue/*.o ./nnue/features/*.o ./book/*.o ./book/polyglot/*.o ./book/ctg/*.o ./learn/*.o ./livebook/*.o ./livebook/analysis/*.o ./livebook/json/*.o ./shashin/shashin_manager.o
 
 # clean auxiliary profiling files
 profileclean:
 	@rm -rf profdir
-	@rm -f bench.txt *.gcda *.gcno ./syzygy/*.gcda ./book/*.gcda ./book/polyglot/*.gcda ./book/ctg/*.gcda ./learn/*.gcda ./livebook/*.gcda ./shashin/*.gcda ./wdl/*.gcda ./handicap/*.gcda *.s PGOBENCH.out
-	@rm -f alexander.profdata *.profraw
-	@rm -f alexander.*args*
-	@rm -f alexander.*lt*
-	@rm -f alexander.res
+	@rm -f bench.txt *.gcda *.gcno ./syzygy/*.gcda ./nnue/*.gcda ./nnue/features/*.gcda ./book/*.gcda ./book/polyglot/*.gcda ./book/ctg/*.gcda ./learn/*.gcda ./livebook/*.gcda ./shashin/*.gcda *.s PGOBENCH.out
+	@rm -f shashchess.profdata *.profraw
+	@rm -f shashchess.*args*
+	@rm -f shashchess.*lt*
+	@rm -f shashchess.res
 	@rm -f ./-lstdc++.res
 
+# evaluation network (nnue)
+net:
+	@$(SHELL) ../scripts/net.sh
 
 format:
 	$(CLANG-FORMAT) -i $(SRCS) $(HEADERS) -style=file
@@ -1024,44 +1029,7 @@ default:
 
 all: $(EXE) .depend
 
-config-sanity:
-	@echo ""
-	@echo "Config:"
-	@echo "debug: '$(debug)'"
-	@echo "sanitize: '$(sanitize)'"
-	@echo "optimize: '$(optimize)'"
-	@echo "arch: '$(arch)'"
-	@echo "bits: '$(bits)'"
-	@echo "kernel: '$(KERNEL)'"
-	@echo "os: '$(OS)'"
-	@echo "prefetch: '$(prefetch)'"
-	@echo "popcnt: '$(popcnt)'"
-	@echo "pext: '$(pext)'"
-	@echo "sse: '$(sse)'"
-	@echo "mmx: '$(mmx)'"
-	@echo "sse2: '$(sse2)'"
-	@echo "ssse3: '$(ssse3)'"
-	@echo "sse41: '$(sse41)'"
-	@echo "avx2: '$(avx2)'"
-	@echo "avxvnni: '$(avxvnni)'"
-	@echo "avx512: '$(avx512)'"
-	@echo "vnni256: '$(vnni256)'"
-	@echo "vnni512: '$(vnni512)'"
-	@echo "altivec: '$(altivec)'"
-	@echo "vsx: '$(vsx)'"
-	@echo "neon: '$(neon)'"
-	@echo "dotprod: '$(dotprod)'"
-	@echo "arm_version: '$(arm_version)'"
-	@echo "lsx: '$(lsx)'"
-	@echo "lasx: '$(lasx)'"
-	@echo "target_windows: '$(target_windows)'"
-	@echo ""
-	@echo "Flags:"
-	@echo "CXX: $(CXX)"
-	@echo "CXXFLAGS: $(CXXFLAGS)"
-	@echo "LDFLAGS: $(LDFLAGS)"
-	@echo ""
-	@echo "Testing config sanity. If this fails, try 'make help' ..."
+config-sanity: net
 	@echo ""
 	@echo "Config:" && \
 	echo "debug: '$(debug)'" && \
@@ -1143,9 +1111,9 @@ clang-profile-make:
 	all
 
 clang-profile-use:
-	$(XCRUN) llvm-profdata merge -output=alexander.profdata *.profraw
+	$(XCRUN) llvm-profdata merge -output=shashchess.profdata *.profraw
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-fprofile-use=alexander.profdata' \
+	EXTRACXXFLAGS='-fprofile-use=shashchess.profdata' \
 	EXTRALDFLAGS='-fprofile-use ' \
 	all
 
@@ -1171,15 +1139,15 @@ icx-profile-make:
 	all
 
 icx-profile-use:
-	$(XCRUN) llvm-profdata merge -output=alexander.profdata *.profraw
+	$(XCRUN) llvm-profdata merge -output=shashchess.profdata *.profraw
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-fprofile-instr-use=alexander.profdata' \
+	EXTRACXXFLAGS='-fprofile-instr-use=shashchess.profdata' \
 	EXTRALDFLAGS='-fprofile-use ' \
 	all
 
 .depend: $(SRCS)
 	-@$(CXX) $(DEPENDFLAGS) -MM $(SRCS) > $@ 2> /dev/null
 
-ifeq (, $(filter $(MAKECMDGOALS), help strip install clean objclean profileclean config-sanity))
+ifeq (, $(filter $(MAKECMDGOALS), help strip install clean net objclean profileclean config-sanity))
 -include .depend
 endif

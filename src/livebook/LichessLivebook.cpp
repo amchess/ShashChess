@@ -3,16 +3,14 @@
 
     #include "../uci.h"
 
-using namespace Alexander::Livebook;
+using namespace ShashChess::Livebook;
 
 std::vector<std::pair<std::string, Analysis>> LichessLivebook::lookup(const Position& position) {
     const std::string full_uri = format_url(position);
     auto              ret      = std::vector<std::pair<std::string, Analysis>>();
 
     if (const CURLcode res = do_request(full_uri); res != CURLE_OK)
-    {
-        return ret;
-    }
+    { return ret; }
 
     try
     {
@@ -39,21 +37,15 @@ std::vector<std::pair<std::string, Analysis>> LichessLivebook::lookup(const Posi
             auto uci_move = move["uci"].get<std::string>();
 
             if (const auto uci = UCIEngine::to_move(position, uci_move); !uci)
-            {
-                continue;
-            }
+            { continue; }
 
             auto analysis = parse_analysis(move);
 
             if (analysis == nullptr)
-            {
-                continue;
-            }
+            { continue; }
 
             if (position.side_to_move() == BLACK)
-            {
-                analysis = analysis->flip();
-            }
+            { analysis = analysis->flip(); }
 
             auto element = std::pair(uci_move, *analysis);
             ret.push_back(element);

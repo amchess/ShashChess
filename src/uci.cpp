@@ -1,13 +1,13 @@
 /*
-  Alexander, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and Stockfish developers (see AUTHORS file)
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
 
-  Alexander is free software: you can redistribute it and/or modify
+  ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Alexander is distributed in the hope that it will be useful,
+  ShashChess is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -38,13 +38,13 @@
 #include "search.h"
 #include "types.h"
 #include "ucioption.h"
-//From Alexander begin
+//From ShashChess begin
 
 #include "learn/learn.h"
 #include "book/book.h"
 #include "mcts/montecarlo.h"
-//From Alexander end
-namespace Alexander {
+//From ShashChess end
+namespace ShashChess {
 constexpr auto BenchmarkCommand = "speedtest";
 
 constexpr auto StartFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -61,9 +61,7 @@ void UCIEngine::print_info_string(std::string_view str) {
     for (auto& line : split(str, "\n"))
     {
         if (!is_whitespace(line))
-        {
-            std::cout << "info string " << line << '\n';
-        }
+        { std::cout << "info string " << line << '\n'; }
     }
     sync_cout_end();
 }
@@ -86,14 +84,14 @@ void UCIEngine::init_search_update_listeners() {
     engine.set_on_update_full(
       [this](const auto& i) { on_update_full(i, engine.get_options()["UCI_ShowWDL"]); });
     engine.set_on_bestmove([](const auto& bm, const auto& p) { on_bestmove(bm, p); });
-    //from classical
+    engine.set_on_verify_networks([](const auto& s) { print_info_string(s); });
 }
 
 void UCIEngine::loop() {
     //learning begin
     Position     pos;
     StateListPtr states(new std::deque<StateInfo>(1));
-    pos.set(StartFEN, false, &states->back(), nullptr);  //for classical
+    pos.set(StartFEN, false, &states->back());
     //learning end
     std::string token, cmd;
 
@@ -124,9 +122,7 @@ void UCIEngine::loop() {
 
                 //Perform Q-learning if enabled
                 if (LD.learning_mode() == LearningMode::Self)
-                {
-                    putQLearningTrajectoryIntoLearningTable();
-                }
+                { putQLearningTrajectoryIntoLearningTable(); }
                 if (!LD.is_readonly())
                 {
                     //Save to learning file
@@ -162,7 +158,7 @@ void UCIEngine::loop() {
         else if (token == "position")
         {  //Experience Book
             position(is);
-            pos.set(engine.fen(), engine.get_options()["UCI_Chess960"], &states->back(), nullptr);
+            pos.set(engine.fen(), engine.get_options()["UCI_Chess960"], &states->back());
         }  //Experience Book
         else if (token == "ucinewgame")
         //Kelly and Khalid begin
@@ -171,9 +167,7 @@ void UCIEngine::loop() {
             {
                 //Perform Q-learning if enabled
                 if (LD.learning_mode() == LearningMode::Self)
-                {
-                    putQLearningTrajectoryIntoLearningTable();
-                }
+                { putQLearningTrajectoryIntoLearningTable(); }
 
                 if (!LD.is_readonly())
                 {
@@ -210,11 +204,23 @@ void UCIEngine::loop() {
         //book and exp end
         else if (token == "compiler")
             sync_cout << compiler_info() << sync_endl;
+        else if (token == "export_net")
+        {
+            std::pair<std::optional<std::string>, std::string> files[2];
+
+            if (is >> std::skipws >> files[0].second)
+                files[0].first = files[0].second;
+
+            if (is >> std::skipws >> files[1].second)
+                files[1].first = files[1].second;
+
+            engine.save_network(files);
+        }
         else if (token == "--help" || token == "help" || token == "--license" || token == "license")
             sync_cout
-              << "\nAlexander is a powerful chess engine for playing and analyzing."
+              << "\nShashChess is a powerful chess engine for playing and analyzing."
                  "\nIt is released as free software licensed under the GNU GPLv3 License."
-                 "\nAlexander is normally used with a graphical user interface (GUI) and implements"
+                 "\nShashChess is normally used with a graphical user interface (GUI) and implements"
                  "\nthe Universal Chess Interface (UCI) protocol to communicate with a GUI, an API, etc."
                  "\nFor any further information, visit https://github.com/official-stockfish/Stockfish#readme"
                  "\nor read the corresponding README.md and Copying.txt files distributed along with this program.\n"
@@ -226,39 +232,12 @@ void UCIEngine::loop() {
     } while (token != "quit" && cli.argc == 1);  // The command-line arguments are one-shot
 }
 
-// handicapMode begin
-inline int getHandicapDepth(int elo) {
-    if (elo <= 1350)
-    {
-        return (int) (3 * elo / 1350 + 1);
-    }
-    if (elo <= 1999)
-    {
-        return (int) ((2 * elo - 104) / 649);
-    }
-    if (elo <= 2199)
-    {
-        return (int) ((2 * elo - 2607) / 199);
-    }
-    if (elo <= 2399)
-    {
-        return (int) ((2 * elo - 2410) / 199);
-    }
-    return (int) ((7 * elo - 10950) / 450);
-}
-// handicapMode end
-
 Search::LimitsType UCIEngine::parse_limits(std::istream& is) {
     Search::LimitsType limits;
     std::string        token;
 
     limits.startTime = now();  // The search starts as early as possible
-    //from true handicap mode begin
-    if (Eval::limitStrength && Eval::handicappedDepth)
-    {
-        limits.depth = getHandicapDepth(Eval::uciElo);
-    }
-    //from true handicap mode end
+
     while (is >> token)
         if (token == "searchmoves")  // Needs to be the last command on the line
             while (is >> token)
@@ -297,7 +276,7 @@ void UCIEngine::go(std::istringstream& is) {
     Search::LimitsType limits = parse_limits(is);
 
     if (limits.perft)
-        perft(limits, nullptr);
+        perft(limits);
     else
         engine.go(limits);
 }
@@ -334,7 +313,7 @@ void UCIEngine::bench(std::istream& args) {
                 Search::LimitsType limits = parse_limits(is);
 
                 if (limits.perft)
-                    nodesSearched = perft(limits, nullptr);
+                    nodesSearched = perft(limits);
                 else
                 {
                     engine.go(limits);
@@ -357,9 +336,7 @@ void UCIEngine::bench(std::istream& args) {
             if (LD.is_enabled())
             {
                 if (LD.learning_mode() == LearningMode::Self && !LD.is_paused())
-                {
-                    putQLearningTrajectoryIntoLearningTable();
-                }
+                { putQLearningTrajectoryIntoLearningTable(); }
                 setStartPoint();
             }
             //Kelly end
@@ -394,6 +371,7 @@ void UCIEngine::benchmark(std::istream& args) {
     engine.set_on_iter([](const auto&) {});
     engine.set_on_update_no_moves([](const auto&) {});
     engine.set_on_bestmove([](const auto&, const auto&) {});
+    engine.set_on_verify_networks([](const auto&) {});
 
     Benchmark::BenchmarkSetup setup = Benchmark::setup_benchmark(args);
 
@@ -549,8 +527,8 @@ void UCIEngine::setoption(std::istringstream& is) {
     engine.get_options().setoption(is);
 }
 
-std::uint64_t UCIEngine::perft(const Search::LimitsType& limits, Thread* th) {  //for classical
-    auto nodes = engine.perft(engine.fen(), limits.perft, engine.get_options()["UCI_Chess960"], th);
+std::uint64_t UCIEngine::perft(const Search::LimitsType& limits) {
+    auto nodes = engine.perft(engine.fen(), limits.perft, engine.get_options()["UCI_Chess960"]);
     sync_cout << "\nNodes searched: " << nodes << "\n" << sync_endl;
     return nodes;
 }
@@ -574,9 +552,7 @@ void UCIEngine::position(std::istringstream& is) {
     std::vector<std::string> moves;
 
     while (is >> token)
-    {
-        moves.push_back(token);
-    }
+    { moves.push_back(token); }
 
     engine.set_position(fen, moves);
 }
@@ -707,4 +683,4 @@ void UCIEngine::on_bestmove(std::string_view bestmove, std::string_view ponder) 
     std::cout << sync_endl;
 }
 
-}  // namespace Alexander
+}  // namespace ShashChess

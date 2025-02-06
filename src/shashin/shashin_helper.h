@@ -1,21 +1,21 @@
+//shashin begin
 #ifndef SHASHIN_HELPER_H
 #define SHASHIN_HELPER_H
 
 #include <type_traits>
-#include "shashin_types.h"
+#include "shashin_types.h" 
 
-namespace Alexander {
+namespace ShashChess {
 
 // Helper per verificare se un valore è in uno o più range
-template<typename... Args>
+template <typename... Args>
 inline bool isInRanges(ShashinPosition value, Args... ranges) {
-    static_assert((std::is_same_v<ShashinPosition, Args> && ...),
-                  "All ranges must be of type ShashinPosition");
+    static_assert((std::is_same_v<ShashinPosition, Args> && ...), "All ranges must be of type ShashinPosition");
     return ((... || ((value & ranges) != ShashinPosition(0))));
 }
 
 // Helper per convertire un enum class al tipo sottostante
-template<typename Enum>
+template <typename Enum>
 constexpr auto to_underlying(Enum e) -> std::underlying_type_t<Enum> {
     return static_cast<std::underlying_type_t<Enum>>(e);
 }
@@ -50,6 +50,7 @@ inline constexpr ShashinPosition& operator&=(ShashinPosition& lhs, ShashinPositi
     return lhs;
 }
 
-}  // namespace Alexander
+} // namespace ShashChess
 
-#endif  // SHASHIN_HELPER_H
+#endif // SHASHIN_HELPER_H
+//shashin end

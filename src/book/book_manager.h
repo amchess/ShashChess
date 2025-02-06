@@ -1,7 +1,7 @@
 #ifndef BOOKMANAGER_H_INCLUDED
 #define BOOKMANAGER_H_INCLUDED
 
-namespace Alexander {
+namespace ShashChess {
 namespace Book {
 class Book;
 }

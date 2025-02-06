@@ -7,7 +7,7 @@
 #include "../../uci.h"
 #include "ctg.h"
 
-namespace Alexander {
+namespace ShashChess {
 namespace {
 uint32_t hashCodes[] = {
   0x3100D2BF, 0x3118E3DE, 0x34AB1372, 0x2807A847, 0x1633F566, 0x2143B359, 0x26D56488, 0x3B9E6F59,
@@ -637,9 +637,7 @@ void CtgBook::encode_position(const Position& pos, CtgPositionData& positionData
 
         if ((epFile > FILE_A && positionData.board[3 * 8 + epFile - 1] == 'P')
             || (epFile < FILE_G && positionData.board[3 * 8 + epFile + 1] == 'P'))
-        {
-            epAny = true;
-        }
+        { epAny = true; }
     }
 
     //Find the right number of bits
@@ -907,7 +905,7 @@ void CtgBook::get_moves(const Position&        pos,
     //Position object to be used to play the moves
     StateInfo si[2];
     Position  p;
-    p.set(pos.fen(), pos.is_chess960(), &si[0], pos.this_thread());  //for classical
+    p.set(pos.fen(), pos.is_chess960(), &si[0]);
 
     //Read position statistics
     get_stats(positionData, ctgMoveList.positionStats, false);
@@ -1085,18 +1083,14 @@ void CtgBook::show_moves(const Position& pos) const {
     {
         CtgPositionData positionData;
         if (!decode(pos, positionData))
-        {
-            ss << "Position not found in book" << std::endl;
-        }
+        { ss << "Position not found in book" << std::endl; }
         else
         {
             CtgMoveList ctgMoveList;
             get_moves(pos, positionData, ctgMoveList);
 
             if (ctgMoveList.size() == 0)
-            {
-                ss << "No moves found for this position" << std::endl;
-            }
+            { ss << "No moves found for this position" << std::endl; }
             else
             {
                 ss << "MOVE      WIN       DRAW      LOSS      WEIGHT" << std::endl;

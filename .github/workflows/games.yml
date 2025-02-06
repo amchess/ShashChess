@@ -12,11 +12,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          path: Alexander
+          path: ShashChess
           persist-credentials: false
 
       - name: build debug enabled version of SF
-        working-directory: Alexander/src
+        working-directory: ShashChess/src
         run: make -j build debug=yes
 
       - name: Checkout fast-chess repo
@@ -35,8 +35,8 @@ jobs:
         working-directory: fast-chess
         run: |
           ./fast-chess  -rounds 4 -games 2 -repeat -concurrency 4 -openings file=app/tests/data/openings.epd format=epd order=random -srand $RANDOM\
-               -engine name=sf1 cmd=/home/runner/work/Alexander/Alexander/Alexander/src/alexander\
-               -engine name=sf2 cmd=/home/runner/work/Alexander/Alexander/Alexander/src/alexander\
+               -engine name=sf1 cmd=/home/runner/work/ShashChess/ShashChess/ShashChess/src/shashchess\
+               -engine name=sf2 cmd=/home/runner/work/ShashChess/ShashChess/ShashChess/src/shashchess\
                -ratinginterval 1 -report penta=true -each proto=uci tc=4+0.04 -log file=fast.log | tee fast.out
           cat fast.log
           ! grep "Assertion" fast.log > /dev/null

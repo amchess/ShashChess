@@ -1,0 +1,830 @@
+﻿[Event "S25 Div P"]
+[Site "+0.49"]
+[Date "2023.02.25"]
+[Round "?"]
+[White "Irregular"]
+[Black "?"]
+[Result "*"]
+[PlyCount "6"]
+[GameId "2129306313010342"]
+[EventDate "2023.??.??"]
+
+1. d4 d6 2. Nf3 Bg4 3. e4 c6 *
+
+[Event "S25 Div P"]
+[Site "+0.49"]
+[Date "2023.02.25"]
+[Round "?"]
+[White "English"]
+[Black "?"]
+[Result "*"]
+[PlyCount "6"]
+[GameId "2129306313010341"]
+[EventDate "2023.??.??"]
+
+1. c4 b6 2. d4 e6 3. d5 Qh4 *
+
+[Event "TCEC26 Premier Division"]
+[Site "?"]
+[Date "2023.09.12"]
+[Round "?"]
+[White "French Advance"]
+[Black "?"]
+[Result "*"]
+[PlyCount "6"]
+[GameId "2129306334707249"]
+[EventDate "2023.??.??"]
+
+1. e4 e6 2. d4 d5 3. e5 b6 *
+
+[Event "Paris"]
+[Site "Paris"]
+[Date "1878.??.??"]
+[Round "5"]
+[White "Mason, James"]
+[Black "Anderssen, Adolf"]
+[Result "1-0"]
+[ECO "A43"]
+[PlyCount "6"]
+[GameId "2129306434490837"]
+[EventDate "1878.??.??"]
+
+1. d4 e6 2. e4 c5 3. d5 a6 1-0
+
+[Event "S25 Div P"]
+[Site "+0.48"]
+[Date "2023.01.22"]
+[Round "?"]
+[White "Vienna"]
+[Black "?"]
+[Result "*"]
+[PlyCount "6"]
+[GameId "2129306313047308"]
+[EventDate "2023.??.??"]
+
+1. e4 e5 2. Nc3 Nc6 3. Bc4 f5 *
+
+[Event "TCEC S24 Superfinal"]
+[Site "-0.38 Leela -1.09 SF"]
+[Date "2022.12.04"]
+[Round "?"]
+[White "King's gambit"]
+[Black "?"]
+[Result "*"]
+[ECO "C33"]
+[PlyCount "5"]
+[GameId "2129306376437651"]
+[EventDate "2022.??.??"]
+
+1. e4 e5 2. f4 exf4 3. Qf3 *
+
+[Event "TCEC S24 Superfinal"]
+[Site "+0.49 Leela / +1.04 SF"]
+[Date "2022.12.04"]
+[Round "?"]
+[White "Dutch"]
+[Black "?"]
+[Result "*"]
+[ECO "A80"]
+[PlyCount "6"]
+[GameId "2129306376454074"]
+[EventDate "2022.??.??"]
+
+1. d4 f5 2. Bg5 c6 3. Nc3 g6 *
+
+[Event "S25 Div P"]
+[Site "+0.36"]
+[Date "2023.02.25"]
+[Round "?"]
+[White "Chigorin Defence"]
+[Black "?"]
+[Result "*"]
+[PlyCount "6"]
+[GameId "2129306312993917"]
+[EventDate "2023.??.??"]
+
+1. d4 d5 2. c4 Nc6 3. Nf3 Bg4 *
+
+[Event "London m"]
+[Site "London"]
+[Date "1858.??.??"]
+[Round "8"]
+[White "Morphy, Paul"]
+[Black "Loewenthal, Johann Jacob"]
+[Result "0-1"]
+[ECO "C41"]
+[PlyCount "8"]
+[GameId "2129306434499049"]
+[EventDate "1858.??.??"]
+
+1. e4 e5 2. Nf3 d6 3. d4 exd4 4. Qxd4 Bd7 0-1
+
+[Event "TCEC26 Premier Division"]
+[Site "?"]
+[Date "2023.09.12"]
+[Round "?"]
+[White "Scandinavian"]
+[Black "?"]
+[Result "*"]
+[PlyCount "8"]
+[GameId "2129306334703146"]
+[EventDate "2023.??.??"]
+
+1. e4 d5 2. exd5 Nf6 3. d4 Nxd5 4. c4 Nb6 *
+
+[Event "S25 Div P"]
+[Site "+0.46"]
+[Date "2023.01.22"]
+[Round "?"]
+[White "Accelerated Queen's Indian"]
+[Black "?"]
+[Result "*"]
+[PlyCount "8"]
+[GameId "2129306313043202"]
+[EventDate "2023.??.??"]
+
+1. d4 Nf6 2. c4 b6 3. Nc3 Bb7 4. Qc2 g6 *
+
+[Event "TCEC S24 Superfinal"]
+[Site "+0.53 Leela / +0.90 SF"]
+[Date "2022.12.04"]
+[Round "?"]
+[White "Flank game"]
+[Black "?"]
+[Result "*"]
+[ECO "A00"]
+[PlyCount "8"]
+[GameId "2129306376454076"]
+[EventDate "2022.??.??"]
+
+1. g3 g6 2. Bg2 Bg7 3. d4 c5 4. d5 f5 *
+
+[Event "S25 Div P"]
+[Site "+0.53"]
+[Date "2023.01.22"]
+[Round "?"]
+[White "Irregular"]
+[Black "?"]
+[Result "*"]
+[PlyCount "8"]
+[GameId "2129306313039097"]
+[EventDate "2023.??.??"]
+
+1. g3 g6 2. Bg2 Bg7 3. d4 c5 4. d5 f5 *
+
+[Event "TCEC S24 Superfinal"]
+[Site "+0.49 Leela / +0.82 SF"]
+[Date "2022.12.04"]
+[Round "?"]
+[White "Italian"]
+[Black "?"]
+[Result "*"]
+[ECO "C53"]
+[PlyCount "8"]
+[GameId "2129306376454080"]
+[EventDate "2022.??.??"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Qe7 *
+
+[Event "S25 Div P"]
+[Site "+0.49"]
+[Date "2023.01.22"]
+[Round "?"]
+[White "Dutch"]
+[Black "?"]
+[Result "*"]
+[PlyCount "8"]
+[GameId "2129306313030883"]
+[EventDate "2023.??.??"]
+
+1. d4 f5 2. Nf3 Nf6 3. c4 e6 4. Nc3 c6 *
+
+[Event "S25 Div P"]
+[Site "+0.51"]
+[Date "2023.02.25"]
+[Round "?"]
+[White "Dutch"]
+[Black "?"]
+[Result "*"]
+[PlyCount "8"]
+[GameId "2129306312998029"]
+[EventDate "2023.??.??"]
+
+1. d4 f5 2. c4 g6 3. Nc3 Bg7 4. g3 Nh6 *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.07.06"]
+[Round "?"]
+[White "Irregular"]
+[Black "(Tarrasch-Mieses, 1925)"]
+[Result "*"]
+[ECO "A53"]
+[PlyCount "8"]
+[GameId "2129306416877914"]
+[EventDate "2023.07.06"]
+
+1. d4 Nf6 2. c4 d6 3. Nf3 Bf5 4. Qb3 Nbd7 *
+
+[Event "S25 Div P"]
+[Site "+0.42"]
+[Date "2023.02.25"]
+[Round "?"]
+[White "French Winawer"]
+[Black "?"]
+[Result "*"]
+[PlyCount "8"]
+[GameId "2129306312993920"]
+[EventDate "2023.??.??"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 Qd7 *
+
+[Event "S25 Div P"]
+[Site "+0.42"]
+[Date "2023.02.25"]
+[Round "?"]
+[White "French Winawer"]
+[Black "?"]
+[Result "*"]
+[PlyCount "8"]
+[GameId "2129306312993921"]
+[EventDate "2023.??.??"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 b6 *
+
+[Event "S25 Div P"]
+[Site "+0.50"]
+[Date "2023.01.22"]
+[Round "?"]
+[White "Scandinavian"]
+[Black "?"]
+[Result "*"]
+[PlyCount "8"]
+[GameId "2129306313018561"]
+[EventDate "2023.??.??"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nf3 Nf6 4. d4 g6 *
+
+[Event "S25 Div P"]
+[Site "+0.45"]
+[Date "2023.01.22"]
+[Round "?"]
+[White "Accelerated Queen's Indian"]
+[Black "?"]
+[Result "*"]
+[PlyCount "8"]
+[GameId "2129306313030879"]
+[EventDate "2023.??.??"]
+
+1. d4 Nf6 2. c4 b6 3. f3 Bb7 4. e4 d6 *
+
+[Event "S25 Div P"]
+[Site "+0.43"]
+[Date "2023.01.22"]
+[Round "?"]
+[White "King's gambit"]
+[Black "?"]
+[Result "*"]
+[PlyCount "8"]
+[GameId "2129306313010345"]
+[EventDate "2023.??.??"]
+
+1. e4 e5 2. f4 Qh4+ 3. g3 Qe7 4. Nc3 exf4 *
+
+[Event "S25 Div P"]
+[Site "+0.48"]
+[Date "2023.02.25"]
+[Round "?"]
+[White "French Hecht"]
+[Black "?"]
+[Result "*"]
+[PlyCount "8"]
+[GameId "2129306313006241"]
+[EventDate "2023.??.??"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nc6 4. e5 Nge7 *
+
+[Event "TCEC S24 Superfinal"]
+[Site "+0.62 Leela / +0.92 SF"]
+[Date "2022.12.04"]
+[Round "?"]
+[White "Anti-Grünfeld"]
+[Black "?"]
+[Result "*"]
+[ECO "D70"]
+[PlyCount "10"]
+[GameId "2129306376441761"]
+[EventDate "2022.??.??"]
+
+1. d4 Nf6 2. c4 g6 3. h4 c5 4. d5 b5 5. cxb5 Bg7 *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.07.06"]
+[Round "?"]
+[White "Scandinavian"]
+[Black "(Fischer-Seidman, 1959)"]
+[Result "*"]
+[ECO "B01"]
+[PlyCount "10"]
+[GameId "2129306416882013"]
+[EventDate "2023.07.06"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. d4 Nf6 5. Nf3 Nc6 *
+
+[Event "URS-ch32"]
+[Site "Kiev"]
+[Date "1964.??.??"]
+[Round "?"]
+[White "Borisenko, Georgy K"]
+[Black "Tal, Mihail"]
+[Result "1/2-1/2"]
+[ECO "A53"]
+[PlyCount "10"]
+[GameId "2129306434486732"]
+[EventDate "1964.??.??"]
+
+1. d4 Nf6 2. c4 d6 3. Nc3 Bf5 4. g3 e5 5. Nf3 Nbd7 1/2-1/2
+
+[Event "TCEC S24 Superfinal"]
+[Site "+0.48 Leela / +1.06 SF"]
+[Date "2022.12.04"]
+[Round "?"]
+[White "Pirc-Ufimzev"]
+[Black "?"]
+[Result "*"]
+[ECO "B07"]
+[PlyCount "10"]
+[GameId "2129306376449966"]
+[EventDate "2022.??.??"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Be3 Bg7 5. Qd2 Nc6 *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.07.06"]
+[Round "?"]
+[White "French Tarrasch"]
+[Black "?"]
+[Result "*"]
+[ECO "C03"]
+[PlyCount "10"]
+[GameId "2129306416861519"]
+[EventDate "2023.07.06"]
+
+1. e4 e6 2. d4 d5 3. Nd2 a6 4. Ngf3 Nf6 5. e5 Nfd7 *
+
+[Event "TCEC S24 Superfinal"]
+[Site "+0.53 Leela / +0.91 SF"]
+[Date "2022.12.04"]
+[Round "?"]
+[White "English"]
+[Black "?"]
+[Result "*"]
+[ECO "A20"]
+[PlyCount "10"]
+[GameId "2129306376437654"]
+[EventDate "2022.??.??"]
+
+1. c4 e5 2. g3 h5 3. Nf3 e4 4. Nh4 d6 5. Nc3 Nf6 *
+
+[Event "S25 Div P"]
+[Site "+0.47"]
+[Date "2023.01.22"]
+[Round "?"]
+[White "English"]
+[Black "?"]
+[Result "*"]
+[ECO "A21"]
+[PlyCount "10"]
+[GameId "2129306313018564"]
+[EventDate "2023.??.??"]
+
+1. c4 e5 2. g3 f5 3. d4 e4 4. Nc3 Nf6 5. Nh3 c6 *
+
+[Event "S25 Div P"]
+[Site "+0.58"]
+[Date "2023.01.22"]
+[Round "?"]
+[White "Sicilian"]
+[Black "?"]
+[Result "*"]
+[ECO "B31"]
+[PlyCount "10"]
+[GameId "2129306313030885"]
+[EventDate "2023.??.??"]
+
+1. e4 c5 2. Nf3 Nc6 3. Bb5 g6 4. O-O Bg7 5. c3 Qb6 *
+
+[Event "S25 Div P"]
+[Site "+0.51"]
+[Date "2023.02.25"]
+[Round "?"]
+[White "Caro-Kann"]
+[Black "?"]
+[Result "*"]
+[ECO "B15"]
+[PlyCount "10"]
+[GameId "2129306313002136"]
+[EventDate "2023.??.??"]
+
+1. e4 c6 2. Nc3 d5 3. Nf3 g6 4. d4 Bg7 5. h3 Nh6 *
+
+[Event "S25 Div P"]
+[Site "+0.50"]
+[Date "2023.02.25"]
+[Round "?"]
+[White "Pirc-Ufimzev"]
+[Black "?"]
+[Result "*"]
+[ECO "B07"]
+[PlyCount "10"]
+[GameId "2129306312998026"]
+[EventDate "2023.??.??"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Be3 Bg7 5. Qd2 O-O *
+
+[Event "S25 Div P"]
+[Site "+0.40"]
+[Date "2023.02.25"]
+[Round "?"]
+[White "Budapest Gambit"]
+[Black "?"]
+[Result "*"]
+[ECO "A52"]
+[PlyCount "10"]
+[GameId "2129306313002135"]
+[EventDate "2023.??.??"]
+
+1. d4 Nf6 2. c4 e5 3. dxe5 Ng4 4. e3 Nxe5 5. f4 Ng6 *
+
+[Event "TCEC26 Premier Division"]
+[Site "?"]
+[Date "2023.09.12"]
+[Round "?"]
+[White "Queen's Pawn"]
+[Black "?"]
+[Result "*"]
+[ECO "A43"]
+[PlyCount "10"]
+[GameId "2129306334699035"]
+[EventDate "2023.??.??"]
+
+1. d4 Nf6 2. Nf3 c5 3. d5 b5 4. Bg5 Ne4 5. Bh4 Qa5+ *
+
+[Event "TCEC S24 DivP Playoff"]
+[Site "+0.52"]
+[Date "2022.10.23"]
+[Round "?"]
+[White "English"]
+[Black "?"]
+[Result "*"]
+[ECO "A40"]
+[PlyCount "10"]
+[GameId "2129306354368206"]
+[EventDate "2022.??.??"]
+
+1. d4 e6 2. c4 Bb4+ 3. Bd2 Bxd2+ 4. Qxd2 b6 5. Nc3 Bb7 *
+
+[Event "TCEC26 Premier Division"]
+[Site "?"]
+[Date "2023.09.12"]
+[Round "?"]
+[White "Alekhine"]
+[Black "?"]
+[Result "*"]
+[ECO "B05"]
+[PlyCount "10"]
+[GameId "2129306334682606"]
+[EventDate "2023.??.??"]
+
+1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. Nf3 Bg4 5. Be2 c6 *
+
+[Event "S25 Div P"]
+[Site "+0.54"]
+[Date "2023.01.22"]
+[Round "?"]
+[White "Sicilian"]
+[Black "?"]
+[Result "*"]
+[ECO "B29"]
+[PlyCount "10"]
+[GameId "2129306313034983"]
+[EventDate "2023.??.??"]
+
+1. e4 c5 2. Nf3 Nf6 3. e5 Nd5 4. Nc3 Nxc3 5. dxc3 Nc6 *
+
+[Event "S25 Div P"]
+[Site "+0.49"]
+[Date "2023.01.22"]
+[Round "?"]
+[White "Old Indian"]
+[Black "?"]
+[Result "*"]
+[ECO "A53"]
+[PlyCount "10"]
+[GameId "2129306313034984"]
+[EventDate "2023.??.??"]
+
+1. d4 Nf6 2. Nf3 d6 3. c4 Bg4 4. Qb3 Qc8 5. Nc3 c6 *
+
+[Event "Hamburg TV-B"]
+[Site "Hamburg"]
+[Date "1982.??.??"]
+[Round "2"]
+[White "Timman, Jan H"]
+[Black "Spassky, Boris V"]
+[Result "1/2-1/2"]
+[ECO "B00"]
+[WhiteElo "2600"]
+[BlackElo "2610"]
+[PlyCount "10"]
+[GameId "2129306434499048"]
+[EventDate "1982.??.??"]
+
+1. e4 b6 2. d4 Bb7 3. Bd3 e6 4. Qe2 d6 5. Nf3 Nd7 1/2-1/2
+
+[Event "URS-ch37"]
+[Site "URS"]
+[Date "1969.??.??"]
+[Round "?"]
+[White "Taimanov, Mark E"]
+[Black "Tal, Mihail"]
+[Result "1-0"]
+[ECO "A86"]
+[PlyCount "10"]
+[GameId "2129306434503157"]
+[EventDate "1969.??.??"]
+
+1. c4 g6 2. g3 f5 3. d4 Bg7 4. Bg2 d6 5. d5 c5 1-0
+
+[Event "S25 Div P"]
+[Site "+0.52"]
+[Date "2023.02.25"]
+[Round "?"]
+[White "Pirc-Ufimzev"]
+[Black "?"]
+[Result "*"]
+[ECO "B09"]
+[PlyCount "12"]
+[GameId "2129306312998027"]
+[EventDate "2023.??.??"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. f4 Bg7 5. Nf3 O-O 6. Be2 Bg4 *
+
+[Event "S25 Div P"]
+[Site "+0.45"]
+[Date "2023.02.25"]
+[Round "?"]
+[White "Caro-Kann Larsen"]
+[Black "?"]
+[Result "*"]
+[ECO "B16"]
+[PlyCount "12"]
+[GameId "2129306313002139"]
+[EventDate "2023.??.??"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Nxf6+ gxf6 6. Bc4 h5 *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.07.06"]
+[Round "?"]
+[White "Pirc"]
+[Black "(Fischer-Udovcic, 1961)"]
+[Result "*"]
+[ECO "B09"]
+[PlyCount "12"]
+[GameId "2129306416886123"]
+[EventDate "2023.07.06"]
+
+1. e4 d6 2. d4 g6 3. Nc3 Bg7 4. f4 Nf6 5. Nf3 O-O 6. Be2 c6 *
+
+[Event "S25 Div P"]
+[Site "+0.44"]
+[Date "2023.02.25"]
+[Round "?"]
+[White "Pirc-Ufimzev"]
+[Black "?"]
+[Result "*"]
+[ECO "B07"]
+[PlyCount "12"]
+[GameId "2129306312998024"]
+[EventDate "2023.??.??"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Bg5 Bg7 5. Qd2 Nbd7 6. Bh6 O-O *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.07.06"]
+[Round "?"]
+[White "King's Indian Four Pawns"]
+[Black "(Englisch-Tarrasch, 1885)"]
+[Result "*"]
+[ECO "E76"]
+[PlyCount "12"]
+[GameId "2129306416886122"]
+[EventDate "2023.07.06"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. f4 O-O 6. Nf3 Nbd7 *
+
+[Event "TCEC26 Premier Division"]
+[Site "?"]
+[Date "2023.09.12"]
+[Round "?"]
+[White "Queen's Pawn"]
+[Black "?"]
+[Result "*"]
+[ECO "D06"]
+[PlyCount "12"]
+[GameId "2129306334682611"]
+[EventDate "2023.??.??"]
+
+1. d4 d5 2. c4 Nf6 3. cxd5 Nxd5 4. e4 Nb6 5. Nf3 Bg4 6. Nc3 e6 *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.07.06"]
+[Round "?"]
+[White "Nimzo Indian"]
+[Black "(Euwe-Alekhine, WCh 1937)"]
+[Result "*"]
+[ECO "D38"]
+[PlyCount "12"]
+[GameId "2129306416882020"]
+[EventDate "2023.07.06"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Nf3 Ne4 5. Qc2 d5 6. e3 c5 *
+
+[Event "TCEC S24 DivP Playoff"]
+[Site "+0.47"]
+[Date "2022.10.23"]
+[Round "?"]
+[White "Caro-Kann Larsen"]
+[Black "?"]
+[Result "*"]
+[ECO "B16"]
+[PlyCount "12"]
+[GameId "2129306354372309"]
+[EventDate "2022.??.??"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Nxf6+ gxf6 6. Nf3 Bf5 *
+
+[Event "TCEC S24 DivP Playoff"]
+[Site "+0.52"]
+[Date "2022.10.23"]
+[Round "?"]
+[White "Nimzo Indian"]
+[Black "?"]
+[Result "*"]
+[ECO "E32"]
+[PlyCount "12"]
+[GameId "2129306354372307"]
+[EventDate "2022.??.??"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 O-O 5. e4 Bxc3+ 6. bxc3 d6 *
+
+[Event "TCEC S24 Superfinal"]
+[Site "+0.47 Leela / +0.88 SF"]
+[Date "2022.12.04"]
+[Round "?"]
+[White "Centre Game"]
+[Black "?"]
+[Result "*"]
+[ECO "C22"]
+[PlyCount "12"]
+[GameId "2129306376433553"]
+[EventDate "2022.??.??"]
+
+1. e4 e5 2. d4 exd4 3. Qxd4 Nc6 4. Qe3 g6 5. Bd2 Bg7 6. Nc3 Nge7 *
+
+[Event "S25 Div P"]
+[Site "+0.52"]
+[Date "2023.01.22"]
+[Round "?"]
+[White "Dutch"]
+[Black "?"]
+[Result "*"]
+[ECO "A80"]
+[PlyCount "12"]
+[GameId "2129306313030881"]
+[EventDate "2023.??.??"]
+
+1. d4 f5 2. Nc3 d5 3. Bg5 g6 4. Qd2 Bg7 5. O-O-O Nc6 6. e3 Nf6 *
+
+[Event "TCEC26 Premier Division"]
+[Site "?"]
+[Date "2023.09.12"]
+[Round "?"]
+[White "Sicilian Scheveningen"]
+[Black "?"]
+[Result "*"]
+[ECO "B54"]
+[PlyCount "12"]
+[GameId "2129306334699039"]
+[EventDate "2023.??.??"]
+
+1. e4 c5 2. Nf3 Nc6 3. d4 cxd4 4. Nxd4 e6 5. Nc3 d6 6. g4 Be7 *
+
+[Event "S25 Div P"]
+[Site "+0.46"]
+[Date "2023.01.22"]
+[Round "?"]
+[White "Pirc"]
+[Black "?"]
+[Result "*"]
+[ECO "B07"]
+[PlyCount "12"]
+[GameId "2129306313034991"]
+[EventDate "2023.??.??"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 c6 4. a4 Qa5 5. Bd3 e5 6. Nge2 Nbd7 *
+
+[Event "TCEC26 Premier Division"]
+[Site "?"]
+[Date "2023.09.12"]
+[Round "?"]
+[White "French McCutcheon"]
+[Black "?"]
+[Result "*"]
+[ECO "C12"]
+[PlyCount "12"]
+[GameId "2129306334682604"]
+[EventDate "2023.??.??"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Bb4 5. e5 h6 6. Bd2 Nfd7 *
+
+[Event "S25 Div P"]
+[Site "+0.44"]
+[Date "2023.01.22"]
+[Round "?"]
+[White "Pirc"]
+[Black "?"]
+[Result "*"]
+[ECO "B07"]
+[PlyCount "11"]
+[GameId "2129306313034990"]
+[EventDate "2023.??.??"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 c6 4. f4 Qa5 5. Bd3 e5 6. Nf3 *
+
+[Event "S25 Div P"]
+[Site "+0.48"]
+[Date "2023.01.22"]
+[Round "?"]
+[White "French"]
+[Black "?"]
+[Result "*"]
+[ECO "C05"]
+[PlyCount "12"]
+[GameId "2129306313014456"]
+[EventDate "2023.??.??"]
+
+1. e4 e6 2. d4 d5 3. Nd2 Nf6 4. e5 Nfd7 5. f4 c5 6. c3 g6 *
+
+[Event "Amsterdam"]
+[Site "Amsterdam"]
+[Date "1936.??.??"]
+[Round "?"]
+[White "Kmoch, Hans"]
+[Black "Alekhine, Alexander"]
+[Result "0-1"]
+[ECO "A44"]
+[PlyCount "11"]
+[GameId "2129306434494944"]
+[EventDate "1936.??.??"]
+
+1. d4 c5 2. d5 e5 3. e4 d6 4. Bd3 Ne7 5. Ne2 Ng6 6. O-O 0-1
+
+[Event "URS-chTJ Coop"]
+[Site "Riga"]
+[Date "1954.??.??"]
+[Round "?"]
+[White "Tal, Mihail"]
+[Black "Taimanov, Mark E"]
+[Result "0-1"]
+[ECO "C16"]
+[WhiteElo "2560"]
+[BlackElo "2560"]
+[PlyCount "12"]
+[GameId "2129306434503156"]
+[EventDate "1954.??.??"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 b6 5. a3 Bxc3+ 6. bxc3 Ba6 0-1
+
+[Event "Moscow"]
+[Site "Moscow"]
+[Date "1975.??.??"]
+[Round "?"]
+[White "Tal, Mihail"]
+[Black "Hort, Vlastimil"]
+[Result "1/2-1/2"]
+[ECO "B06"]
+[WhiteElo "2645"]
+[BlackElo "2600"]
+[PlyCount "11"]
+[GameId "2129306434494947"]
+[EventDate "1975.??.??"]
+
+1. e4 d6 2. d4 g6 3. Nf3 Bg7 4. Nc3 Bg4 5. Be3 Nc6 6. Bb5 1/2-1/2
+

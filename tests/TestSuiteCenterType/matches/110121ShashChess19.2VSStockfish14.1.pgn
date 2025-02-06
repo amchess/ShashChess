@@ -1,0 +1,452 @@
+﻿[Event "281021"]
+[Site "?"]
+[Date "2021.10.28"]
+[Round "1"]
+[White "Stockfish 14.1"]
+[Black "ShashChess 19.2"]
+[Result "1/2-1/2"]
+[ECO "E11"]
+[PlyCount "165"]
+[EventDate "2021.??.??"]
+
+1. c4 Nf6 2. d4 e6 3. Nf3 Bb4+ 4. Nbd2 O-O 5. a3 Be7 6. e4 d6 7. Be2 c5 8. d5
+Nbd7 9. O-O e5 10. Kh1 g6 11. g3 Nh5 12. Rg1 a5 13. a4 Ng7 14. g4 Nf6 15. Ne1
+Nd7 16. Nb1 Bg5 17. Bxg5 Qxg5 18. Nc3 Kh8 19. Qd3 Qe7 20. Qe3 Rg8 21. Nf3 f6
+22. Rg3 Nf8 23. h4 b6 24. Rag1 Qd8 25. Kg2 Ra7 26. Kf1 Ne8 27. Rh1 g5 28. Rgg1
+Rgg7 29. Ne1 Kg8 30. Rh2 h6 31. Nb5 Raf7 32. Rgh1 Rh7 33. Qb3 Ng6 34. Ng2 Rfg7
+35. Ke1 Nf4 36. Ne3 h5 37. gxh5 Nxe2 38. Kxe2 g4 39. h6 Rxh6 40. Nc3 Rh5 41.
+Qc2 Qe7 42. Rg2 Kf8 43. Kd2 Rgh7 44. Rgh2 f5 45. exf5 Qf7 46. Qb3 Bxf5 47. Qxb6
+Bg6 48. Qd8 Qf6 49. Qxf6+ Nxf6 50. Ke1 Bd3 51. b3 Kf7 52. Rg1 Rxh4 53. Rhg2 Rg7
+54. Kd1 Bh7 55. Nb5 Ke7 56. f3 Rh3 57. Nxg4 e4 58. Nxf6 Rxg2 59. Rxg2 exf3 60.
+Ng8+ Bxg8 61. Rg7+ Bf7 62. Nxd6 Kxd6 63. Rxf7 Ke5 64. Ke1 Ke4 65. Re7+ Kf4 66.
+d6 Rh1+ 67. Kd2 Rh6 68. Rf7+ Ke4 69. Re7+ Kf4 70. Rf7+ Ke4 71. Rd7 f2 72. Ke2
+Rf6 73. Kf1 Ke3 74. Re7+ Kd4 75. d7 Rd6 76. Kxf2 Kc3 77. Ke3 Kxb3 78. Ke4 Kxa4
+79. Ke5 Rd3 80. Ke6 Kb4 81. Re8 a4 82. d8=Q Rxd8 83. Rxd8 1/2-1/2
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.28"]
+[Round "1"]
+[White "ShashChess 19.2"]
+[Black "Stockfish 14.1"]
+[Result "1/2-1/2"]
+[ECO "E11"]
+[PlyCount "227"]
+[EventDate "2021.??.??"]
+
+1. c4 Nf6 2. d4 e6 3. Nf3 Bb4+ 4. Nbd2 O-O 5. a3 Be7 6. e4 d6 7. Be2 c5 8. d5
+Nbd7 9. O-O e5 10. a4 g6 11. Ne1 Ne8 12. Ra3 a5 13. g4 Kg7 14. Ng2 Rh8 15. Rg3
+h6 16. b3 b6 17. f4 exf4 18. Nxf4 Bh4 19. Rg2 Ne5 20. Bb2 Bf6 21. Qa1 Bg5 22.
+h4 Bxf4 23. Rxf4 g5 24. Rff2 f6 25. Nf3 Qe7 26. Qf1 Kg8 27. Nxe5 dxe5 28. Rh2
+Bd7 29. Bc1 Qg7 30. Bb2 Qe7 31. Qh3 Qg7 32. Qf3 h5 33. hxg5 Qxg5 34. Qh1 Nd6
+35. Rxh5 Rxh5 36. Qxh5 Qxh5 37. gxh5 Nxe4 38. Rg2+ Kh7 39. Bd3 Bf5 40. Bc1 Rg8
+41. Kh2 Rxg2+ 42. Kxg2 Kg7 43. Bb1 Kg8 44. Bc2 Kh7 45. Bd3 Kg7 46. Be3 Kf7 47.
+Bd2 Kg7 48. Bc2 Kh7 49. Be3 Kg7 50. Bd2 Bh7 51. Bd3 Bf5 52. Bc1 Bh7 53. Kf3
+Ng5+ 54. Bxg5 Bxd3 55. Bh4 Bc2 56. d6 Kf7 57. h6 Ke6 58. Ke3 Bg6 59. d7 Kxd7
+60. Bxf6 Bf5 61. Kd2 Bh7 62. Ke3 Bg6 63. Kd2 Bf5 64. Bxe5 Bh7 65. Bb8 Be4 66.
+Kc1 Bf5 67. Kb2 Bh7 68. Ka3 Bf5 69. Kb2 Bh7 70. Kc1 Kc8 71. Bf4 Kd7 72. Kd2 Bb1
+73. Bb8 Bg6 74. Be5 Bh7 75. Kc3 Bf5 76. Bh2 Bb1 77. Kd2 Bf5 78. Bb8 Bb1 79. Kc1
+Bg6 80. Kd2 Bf5 81. Bh2 Bb1 82. Kc1 Bf5 83. Bf4 Bd3 84. Kd2 Be4 85. Bb8 Bf5 86.
+Ke3 Bc2 87. Bg3 Bb1 88. Kf4 Ke6 89. Ke3 Kd7 90. Be5 Bh7 91. Kf4 Bc2 92. Ke3 Bh7
+93. Bc3 Bf5 94. Kf4 Ke6 95. Ke3 Bb1 96. Bb2 Bg6 97. Kf4 Bh7 98. Ke3 Bc2 99. Bc3
+Bb1 100. Be1 Bc2 101. Kd2 Bg6 102. Bh4 Kd7 103. Bg3 Bb1 104. Bh4 Bg6 105. Bg3
+Bb1 106. Bf4 Bf5 107. Kc3 Bh7 108. Bg5 Kc7 109. Kb2 Kd7 110. Bf6 Kc7 111. Bh4
+Kd7 112. Bg5 Kc7 113. Bc1 Kd6 114. Be3 1/2-1/2
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.28"]
+[Round "1"]
+[White "Stockfish 14.1"]
+[Black "ShashChess 19.2"]
+[Result "1/2-1/2"]
+[ECO "E60"]
+[PlyCount "192"]
+[EventDate "2021.??.??"]
+
+1. d4 Nf6 2. c4 g6 3. Nf3 Bg7 4. g3 O-O 5. Bg2 d6 6. O-O e5 7. dxe5 dxe5 8.
+Nxe5 Qe7 9. Nd3 Ne4 10. Nd2 Nc5 11. Nb3 Nxd3 12. exd3 Nc6 13. Re1 Qf6 14. Bd2
+Qxb2 15. Bxc6 bxc6 16. Bc1 Qf6 17. Ba3 c5 18. Bxc5 Bh3 19. Bxf8 Qc6 20. f3 Bxa1
+21. Qxa1 Rxf8 22. Kf2 Bf5 23. Qc3 Qb6+ 24. Re3 h5 25. d4 c6 26. a4 Rb8 27. a5
+Qd8 28. d5 cxd5 29. c5 Rc8 30. Nd4 Bd7 31. Re2 Qf6 32. h4 Rb8 33. Kg2 Kh7 34.
+Re1 Rc8 35. Rc1 Kg8 36. Rb1 Qa6 37. Rc1 Qf6 38. Qd2 Qa6 39. Qb4 Qf6 40. Rc2 Kh7
+41. Kf2 Kg8 42. Qc3 Ba4 43. Rc1 Be8 44. Qe3 Qa6 45. Qd2 Bd7 46. Kg2 Ba4 47. Ra1
+Bc6 48. Rc1 Ba4 49. Kf2 Be8 50. Kg1 Qf6 51. Kg2 Ba4 52. Qe3 Re8 53. Qc3 Rc8 54.
+Kg1 Kh7 55. Kf2 Bd7 56. Rb1 Rc7 57. Rb2 Kg8 58. Kg2 Kh7 59. Rb1 Kg8 60. Kf2 Kh7
+61. Rc1 Rc8 62. Qe3 Rb8 63. Qd2 Bc8 64. c6 Qd6 65. Qc3 Rb4 66. Qa3 Qb8 67. c7
+Qb7 68. Ke3 Rb1 69. Rxb1 Qxb1 70. Kd2 Qg1 71. Ne2 Qb1 72. Qc3 Qa2+ 73. Ke3 Qa4
+74. Qc5 Qa2 75. Nd4 Qb2 76. Kf4 Qd2+ 77. Ke5 Qe1+ 78. Kxd5 Qxg3 79. Kc6 Qe1 80.
+Qxa7 Qe8+ 81. Kb6 Qe5 82. Kc6 Qe8+ 83. Kd5 g5 84. hxg5 Qd7+ 85. Kc5 Qe7+ 86.
+Kc4 h4 87. Qc5 Qe8 88. Qd6 h3 89. g6+ fxg6 90. Kc5 Qe1 91. Kb6 Qb1+ 92. Nb5
+Qg1+ 93. Kc6 Qc1+ 94. Kb6 Qg1+ 95. Kc6 Qc1+ 96. Kb6 Qg1+ 1/2-1/2
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.28"]
+[Round "1"]
+[White "ShashChess 19.2"]
+[Black "Stockfish 14.1"]
+[Result "1-0"]
+[ECO "E60"]
+[PlyCount "102"]
+[EventDate "2021.??.??"]
+
+1. d4 Nf6 2. c4 g6 3. Nf3 Bg7 4. g3 O-O 5. Bg2 d6 6. O-O e5 7. dxe5 dxe5 8.
+Nxe5 Qe7 9. Nd3 Ne4 10. Nd2 Nc5 11. Nb3 Nxd3 12. exd3 Nc6 13. Re1 Qf6 14. Bd2
+Qxb2 15. Bxc6 bxc6 16. Bc1 Qf6 17. Ba3 c5 18. Bxc5 Bh3 19. Bxf8 Qc6 20. f3 Bxa1
+21. Qxa1 Rxf8 22. Kf2 Bf5 23. Qc3 Qd6 24. Re5 h5 25. Qd4 Qb6 26. Re3 Rc8 27. c5
+Qa6 28. Nc1 Rf8 29. g4 hxg4 30. fxg4 Bc8 31. a4 g5 32. Ne2 Qh6 33. Kg1 Qh4 34.
+Qf6 Be6 35. Nc3 Rb8 36. h3 Qh8 37. Qxg5+ Qg7 38. Qxg7+ Kxg7 39. Nb5 Bd7 40.
+Nxc7 Rc8 41. Re7 Bxa4 42. Ne6+ Kf6 43. Rxa7 Bb5 44. Nf4 Rxc5 45. h4 Rc8 46. Kf2
+Kg7 47. g5 Kg8 48. Ra5 Rb8 49. h5 Bc6 50. h6 Kh7 51. Ra7 Rb2+ 1-0
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.28"]
+[Round "1"]
+[White "Stockfish 14.1"]
+[Black "ShashChess 19.2"]
+[Result "1/2-1/2"]
+[ECO "B90"]
+[PlyCount "207"]
+[EventDate "2021.??.??"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Be3 h6 7. f3 Qc7 8. g4
+e6 9. Qd2 b5 10. O-O-O b4 11. Na4 d5 12. h4 Bd7 13. Nxe6 fxe6 14. Nb6 Bc6 15.
+Nxa8 Bxa8 16. Bh3 dxe4 17. g5 hxg5 18. hxg5 Nd5 19. fxe4 Nxe3 20. Qxe3 Bc5 21.
+Qf3 Rf8 22. Qb3 Qe5 23. Bxe6 Bc6 24. Kb1 Bd6 25. Bf5 Kd8 26. Qxb4 Kc7 27. Qc4
+Qc5 28. Qxc5 Bxc5 29. Rh7 Rf7 30. g6 Re7 31. e5 Nd7 32. e6 Nf6 33. Rh8 Re8 34.
+Rxe8 Bxe8 35. a3 a5 36. c4 Bc6 37. Re1 a4 38. Ka2 Ng8 39. Be4 Ne7 40. b4 axb3+
+41. Kxb3 Bxe4 42. Rxe4 Nc6 43. a4 Kd6 44. Ka2 Ba7 45. Kb3 Nd4+ 46. Kc3 Nxe6 47.
+a5 Bc5 48. Kb3 Bf2 49. Kb4 Bc5+ 50. Kb5 Ba7 51. Kb4 Bc5+ 52. Kb5 Ba7 53. Re1
+Nc7+ 54. Ka4 Bd4 55. Rd1 Kc5 56. Kb3 Na6 57. Re1 Kd6 58. Re8 Nc5+ 59. Kc2 Kc7
+60. Re2 Kc6 61. Rd2 Be5 62. Rd8 Bd6 63. Re8 Kb7 64. Kc3 Kc6 65. Rc8+ Kb7 66.
+Rg8 Ne6 67. Re8 Nc7 68. Re2 Kc6 69. Re1 Na6 70. Kd3 Kd7 71. Rf1 Be5 72. Ke4 Bc3
+73. Rf3 Bb2 74. Kd5 Nc7+ 75. Ke4 Na6 76. Rf2 Bc3 77. Rf7+ Kc6 78. Kd3 Be5 79.
+Rf8 Nc5+ 80. Kc2 Ne6 81. Rc8+ Nc7 82. Rf8 Kc5 83. Kd3 Kd6 84. Rf7 Kc6 85. Rf5
+Kd6 86. Kc2 Ke6 87. Rf8 Kd6 88. Rf5 Ke6 89. Rf8 Kd6 90. Rb8 Kc6 91. Kd3 Bd6 92.
+c5 Kxc5 93. Ke4 Kc6 94. Rb6+ Kc5 95. Rb8 Kc6 96. Rb6+ Kc5 97. Rb3 Na6 98. Rb7
+Bc7 99. Ra7 Kb5 100. Kd5 Nb4+ 101. Ke4 Na6 102. Kd5 Nb4+ 103. Ke6 Na6 104. Kd5
+1/2-1/2
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.28"]
+[Round "1"]
+[White "ShashChess 19.2"]
+[Black "Stockfish 14.1"]
+[Result "1-0"]
+[ECO "B90"]
+[PlyCount "118"]
+[EventDate "2021.??.??"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Be3 h6 7. f3 Qc7 8. g4
+e6 9. Qd2 b5 10. O-O-O Bb7 11. h4 Nc6 12. Rh3 Ne5 13. Kb1 b4 14. Na4 Rc8 15. b3
+Nfd7 16. Be2 Be7 17. Qxb4 O-O 18. Qe1 Nc5 19. Nb2 Rfe8 20. Rc1 Ng6 21. c4 Qd8
+22. h5 Ne5 23. Rd1 d5 24. cxd5 exd5 25. Nf5 Ned7 26. Qd2 dxe4 27. Bxc5 Nxc5 28.
+Qxd8 Bxd8 29. Nd6 Bc7 30. Nxc8 Rxc8 31. Rc1 Ne6 32. fxe4 Re8 33. Rc4 Nf4 34.
+Rxc7 Bxe4+ 35. Kc1 Nxh3 36. Bxa6 Ra8 37. Bc4 Rxa2 38. Rxf7 Kh7 39. Re7 Nf2 40.
+Bf7 Ra1+ 41. Kd2 Bb1 42. b4 Ne4+ 43. Ke2 Nf6 44. b5 Be4 45. b6 Ra8 46. Nc4 Bh1
+47. b7 Rb8 48. Bg6+ Kg8 49. Nd6 Bd5 50. Rc7 Bxb7 51. Nxb7 Nxg4 52. Nd6 Kh8 53.
+Nf5 Rg8 54. Ra7 Nf6 55. Ke3 Nd5+ 56. Ke4 Nf6+ 57. Ke5 Rd8 58. Ke6 Ne4 59. Rxg7
+Ng5+ 1-0
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.29"]
+[Round "1"]
+[White "Stockfish 14.1"]
+[Black "ShashChess 19.2"]
+[Result "1/2-1/2"]
+[ECO "D02"]
+[PlyCount "96"]
+[EventDate "2021.??.??"]
+
+1. d4 d5 2. Bf4 c5 3. e3 Nf6 4. c3 Nc6 5. Nd2 e6 6. Ngf3 Bd6 7. Bg3 O-O 8. Bd3
+b6 9. e4 Be7 10. e5 Nh5 11. Ng5 Bxg5 12. Qxh5 g6 13. Qe2 cxd4 14. h4 Be7 15. h5
+dxc3 16. bxc3 d4 17. hxg6 hxg6 18. Ne4 Kg7 19. Nd6 Rh8 20. Rxh8 Qxh8 21. Qf3
+Qh1+ 22. Bf1 Bxd6 23. exd6 Bd7 24. cxd4 Rc8 25. Rc1 f6 26. Qe4 Qh5 27. Bf4 g5
+28. Bd2 Qh2 29. g3 Qg1 30. Be3 f5 31. Qg2 Qxg2 32. Bxg2 Kf6 33. a3 f4 34. gxf4
+gxf4 35. Bxf4 Nxd4 36. Rc7 Rxc7 37. dxc7 Bc8 38. Kd2 e5 39. Bg3 Nf5 40. Bh2 Ke6
+41. f4 exf4 42. Bxf4 Kd7 43. Bh3 Kc6 44. a4 Nd6 45. Bg2+ Kxc7 46. a5 bxa5 47.
+Kc3 Bf5 48. Bxd6+ Kxd6 1/2-1/2
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.29"]
+[Round "1"]
+[White "ShashChess 19.2"]
+[Black "Stockfish 14.1"]
+[Result "1/2-1/2"]
+[ECO "D02"]
+[PlyCount "88"]
+[EventDate "2021.??.??"]
+
+1. d4 d5 2. Bf4 c5 3. e3 Nf6 4. c3 Nc6 5. Nd2 e6 6. Ngf3 Bd6 7. Bg3 O-O 8. Bd3
+b6 9. e4 Be7 10. e5 Nh5 11. Ng5 Bxg5 12. Qxh5 g6 13. Qe2 cxd4 14. h4 Be7 15. h5
+dxc3 16. bxc3 d4 17. hxg6 hxg6 18. O-O-O Kg7 19. Ne4 Rh8 20. Qg4 Bb7 21. Rxh8
+Qxh8 22. Nd6 Rb8 23. Be4 Bxd6 24. exd6 f5 25. Bxc6 fxg4 26. Be5+ Kf7 27. Bxh8
+Bxc6 28. Bxd4 Rd8 29. Be5 g5 30. Kb2 Bxg2 31. c4 Kg6 32. Kc3 Bc6 33. Rd3 Rf8
+34. d7 Rd8 35. Bb8 Rxd7 36. Rxd7 Bxd7 37. Bxa7 g3 38. fxg3 b5 39. cxb5 Bxb5 40.
+a3 Bd7 41. Be3 Kf5 42. Kb4 Bc6 43. a4 Bxa4 44. g4+ Kxg4 1/2-1/2
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.29"]
+[Round "1"]
+[White "Stockfish 14.1"]
+[Black "ShashChess 19.2"]
+[Result "1/2-1/2"]
+[ECO "D43"]
+[PlyCount "139"]
+[EventDate "2021.??.??"]
+
+1. d4 d5 2. c4 e6 3. Nf3 Nf6 4. Nc3 c6 5. Bg5 h6 6. Bxf6 Qxf6 7. e3 Nd7 8. Be2
+Bb4 9. O-O O-O 10. Qc2 Rd8 11. a3 Bxc3 12. Qxc3 dxc4 13. Qxc4 e5 14. Rad1 exd4
+15. Nxd4 Nf8 16. Qb4 a5 17. Qb6 a4 18. h3 Nd7 19. Qc7 Re8 20. Rfe1 Kf8 21. f4
+g6 22. Bf3 Kg7 23. Rc1 Nf8 24. Rc3 Rd8 25. Rc2 Re8 26. Rd2 h5 27. Bd1 Rd8 28.
+Rf2 Qd6 29. Qxd6 Rxd6 30. Rd2 Kf6 31. Be2 Ne6 32. Nf3 Ke7 33. Rc2 Ra5 34. Ne5
+Rdd5 35. Rec1 Rdc5 36. Bc4 Ra8 37. Nd3 Rca5 38. Ne5 Rc5 39. g4 Nf8 40. Kg2 hxg4
+41. hxg4 Rxe5 42. fxe5 Bxg4 43. Rf2 Ne6 44. Rd2 Bf5 45. Bxe6 Kxe6 46. Rd4 Ra5
+47. Kg3 Kxe5 48. Rb4 Be6 49. Rxb7 Ke4 50. Kf2 Rf5+ 51. Ke2 Rb5 52. Rxb5 cxb5
+53. Kd2 Bc4 54. Rg1 Kf3 55. Rg5 Be2 56. Rc5 Kf2 57. e4 Bc4 58. e5 Kf3 59. e6
+Bxe6 60. Rxb5 Bc4 61. Rb4 Bb3 62. Kd3 g5 63. Rxb3 axb3 64. a4 g4 65. a5 g3 66.
+a6 g2 67. a7 g1=Q 68. a8=Q+ Kf4 69. Qb8+ Kf3 70. Qxb3 1/2-1/2
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.29"]
+[Round "1"]
+[White "ShashChess 19.2"]
+[Black "Stockfish 14.1"]
+[Result "1/2-1/2"]
+[ECO "D43"]
+[PlyCount "120"]
+[EventDate "2021.??.??"]
+
+1. d4 d5 2. c4 e6 3. Nf3 Nf6 4. Nc3 c6 5. Bg5 h6 6. Bxf6 Qxf6 7. e3 Nd7 8. Be2
+Be7 9. O-O O-O 10. Qc2 Rd8 11. a3 a6 12. b4 Bf8 13. Rfd1 dxc4 14. Bxc4 Qe7 15.
+Be2 a5 16. b5 cxb5 17. Bxb5 Nf6 18. Ne5 Bd7 19. Nxd7 Nxd7 20. g3 Nf6 21. Qb3 g6
+22. Be2 e5 23. dxe5 Qxe5 24. Rac1 Rac8 25. Rxd8 Rxd8 26. Bc4 Rd7 27. Rd1 a4 28.
+Qc2 Kg7 29. Rxd7 Nxd7 30. Bd5 Nb6 31. Bxb7 Qc7 32. Be4 Bxa3 33. Nxa4 Qxc2 34.
+Bxc2 Nxa4 35. Bxa4 Bc5 36. Bb5 f5 37. Kf1 g5 38. Be8 Kf6 39. Ke2 g4 40. Kd3 Bd6
+41. Ke2 Kg5 42. Kf1 Bb4 43. Kg2 Bd6 44. h4+ gxh3+ 45. Kxh3 h5 46. Kg2 Be7 47.
+f4+ Kh6 48. Bd7 Kg6 49. Be8+ Kh6 50. Bd7 Kg6 51. Kf3 h4 52. g4 fxg4+ 53. Bxg4
+Kf6 54. Bh3 Ba3 55. Ke2 Bc5 56. Kf3 Bb6 57. Ke4 Ba7 58. Kf3 Bb8 59. e4 Bd6 60.
+e5+ Bxe5 1/2-1/2
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.29"]
+[Round "1"]
+[White "Stockfish 14.1"]
+[Black "ShashChess 19.2"]
+[Result "1/2-1/2"]
+[ECO "B22"]
+[PlyCount "111"]
+[EventDate "2021.??.??"]
+
+1. e4 c5 2. c3 e6 3. d4 cxd4 4. cxd4 d5 5. exd5 exd5 6. Nc3 Nc6 7. Bb5 Bb4 8.
+Nge2 Nge7 9. O-O O-O 10. a3 Bd6 11. h3 a6 12. Bd3 Be6 13. Bf4 Rc8 14. Re1 Ng6
+15. Bxd6 Qxd6 16. Nc1 Na5 17. Na4 Nf4 18. Ne2 Nc6 19. Nac3 Rfe8 20. Rc1 h6 21.
+Bb1 Ng6 22. Ng3 Rcd8 23. Re3 Nh4 24. Nce2 Na5 25. b3 Ng6 26. Qd2 Nc6 27. b4 Bd7
+28. Rxe8+ Rxe8 29. Rc5 Nge7 30. Nf4 Kf8 31. Ngh5 b6 32. Rc1 Bf5 33. g4 Be4 34.
+Ng3 Bxb1 35. Rxb1 Ng6 36. Nxg6+ fxg6 37. Rb3 Qf6 38. Rd3 Kg8 39. Ne2 Rf8 40.
+Qe3 Qf7 41. Rc3 Re8 42. Qf4 Rxe2 43. Qxf7+ Kxf7 44. Rxc6 Ra2 45. Rxb6 Rxa3 46.
+Rb7+ Kf8 47. Rb8+ Ke7 48. Kg2 Rb3 49. Rb7+ Kf8 50. g5 hxg5 51. Rb6 Ke7 52. Rxa6
+Rxb4 53. Rxg6 Rxd4 54. Rxg5 Kf6 55. h4 Rxh4 56. Rxd5 1/2-1/2
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.29"]
+[Round "1"]
+[White "ShashChess 19.2"]
+[Black "Stockfish 14.1"]
+[Result "1/2-1/2"]
+[ECO "B22"]
+[PlyCount "97"]
+[EventDate "2021.??.??"]
+
+1. e4 c5 2. c3 e6 3. d4 cxd4 4. cxd4 d5 5. exd5 exd5 6. Nc3 Nc6 7. Nf3 Bb4 8.
+h3 h6 9. Bf4 Bf5 10. Rc1 Rc8 11. Qb3 Nf6 12. Bb5 Bxc3+ 13. Qxc3 O-O 14. O-O Bd7
+15. Qa3 Qb6 16. Bxc6 Bxc6 17. Rfd1 Rfe8 18. Ne5 Ne4 19. Rc2 a5 20. Qf3 Rc7 21.
+Qa3 Rcc8 22. f3 Ng5 23. Bg3 f6 24. Ng4 Ne6 25. Rcd2 Kf7 26. h4 h5 27. Ne3 g6
+28. Kh2 Qb5 29. b3 Ng7 30. Re1 Bd7 31. Qd6 Be6 32. Rde2 Rc6 33. Qf4 Qb6 34. Qh6
+Rcc8 35. Kh1 Rc6 36. Kg1 Rc3 37. Qf4 Qc6 38. Kh2 Qb6 39. Qh6 Rc6 40. f4 Qxd4
+41. f5 gxf5 42. Nxf5 Bxf5 43. Re7+ Rxe7 44. Rxe7+ Kxe7 45. Qxg7+ Ke6 46. Qg8+
+Ke7 47. Qg7+ Ke6 48. Qg8+ Ke7 49. Qg7+ 1/2-1/2
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.29"]
+[Round "1"]
+[White "Stockfish 14.1"]
+[Black "ShashChess 19.2"]
+[Result "1/2-1/2"]
+[ECO "E60"]
+[PlyCount "119"]
+[EventDate "2021.??.??"]
+
+1. d4 Nf6 2. c4 g6 3. f3 e6 4. e4 d5 5. cxd5 exd5 6. Nc3 dxe4 7. fxe4 Bb4 8.
+Bd3 c5 9. a3 Bxc3+ 10. bxc3 Nxe4 11. Ne2 Bf5 12. O-O O-O 13. Qc2 Nd6 14. dxc5
+Bxd3 15. Qxd3 Nf5 16. Nd4 Nxd4 17. cxd4 Qd5 18. Rb1 Nc6 19. Bh6 Rfb8 20. Rfd1
+Ne7 21. Qb5 b6 22. h3 Rd8 23. Be3 Qf5 24. Qb3 Qd5 25. Qc2 Qc6 26. Rbc1 Rd5 27.
+Bf2 Nf5 28. Qb3 Rad8 29. Qf3 h6 30. Re1 Qc7 31. cxb6 Qxb6 32. Rc5 Qb7 33. Rxd5
+Rxd5 34. Re8+ Kh7 35. Re5 Qb1+ 36. Re1 Qb7 37. Re5 Qb1+ 38. Re1 Qb7 39. g4 Ng7
+40. Bh4 Ne6 41. Bf6 Ng5 42. Qg2 Ne6 43. Rf1 Qd7 44. Qf3 a5 45. Be5 Ng5 46. Qg2
+Kg8 47. Kh2 Nh7 48. h4 Qe6 49. h5 Rd8 50. Qf3 a4 51. hxg6 Qxg6 52. Qf5 Qxf5 53.
+Rxf5 Rd5 54. Kg2 f6 55. Bf4 Rxd4 56. Bxh6 Rxg4+ 57. Kf3 Rc4 58. Rf4 Rxf4+ 59.
+Kxf4 Ng5 60. Bxg5 1/2-1/2
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.29"]
+[Round "1"]
+[White "ShashChess 19.2"]
+[Black "Stockfish 14.1"]
+[Result "1/2-1/2"]
+[ECO "E60"]
+[PlyCount "96"]
+[EventDate "2021.??.??"]
+
+1. d4 Nf6 2. c4 g6 3. f3 e6 4. e4 d5 5. cxd5 exd5 6. Nc3 dxe4 7. fxe4 Bb4 8.
+Bg5 h6 9. Bxf6 Qxf6 10. Nf3 Bg4 11. Bb5+ c6 12. Be2 Nd7 13. O-O Qe7 14. Qc2 Ba5
+15. Rad1 Bc7 16. b4 Nb6 17. a4 a5 18. bxa5 Rxa5 19. h3 Bc8 20. e5 O-O 21. h4
+Kg7 22. h5 Nd5 23. Nxd5 Rxd5 24. Bc4 Rdd8 25. Ba2 Bg4 26. Qe4 Qd7 27. hxg6 fxg6
+28. Nh4 Bh5 29. Rxf8 Rxf8 30. Rb1 b5 31. axb5 Bb6 32. bxc6 Qxd4+ 33. Qxd4 Bxd4+
+34. Kh1 Bxe5 35. Be6 Rf4 36. Nf3 Bxf3 37. gxf3 Kf6 38. Bd5 Rh4+ 39. Kg1 Rd4 40.
+Be4 h5 41. Rb7 Rc4 42. Kf2 h4 43. Rh7 Kg5 44. Kg2 Rd4 45. c7 Rc4 46. c8=B Rxc8
+47. Bxg6 h3+ 48. Rxh3 Kxg6 1/2-1/2
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.29"]
+[Round "1"]
+[White "Stockfish 14.1"]
+[Black "ShashChess 19.2"]
+[Result "1/2-1/2"]
+[ECO "D46"]
+[PlyCount "134"]
+[EventDate "2021.??.??"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 d5 4. Nc3 c6 5. e3 Nbd7 6. Qc2 Bd6 7. Bd3 e5 8. cxd5
+cxd5 9. Nb5 Bb8 10. dxe5 Nxe5 11. Nxe5 Bxe5 12. Bd2 O-O 13. Bc3 Bxc3+ 14. Qxc3
+Ne4 15. Qd4 Re8 16. Bxe4 Rxe4 17. Qd2 b6 18. Nc3 Rc4 19. O-O Bb7 20. Ne2 Rac8
+21. Nd4 h6 22. Rfd1 R8c5 23. h3 a5 24. Qe2 Qc7 25. Qf1 Qc8 26. Qe2 Qc7 27. Qe1
+Ba6 28. Rab1 Qc8 29. Kh1 Bb5 30. Rd2 Bd7 31. Kg1 Bf5 32. Rbd1 Bc2 33. Ra1 Bg6
+34. a3 Qd8 35. b3 Rc3 36. b4 R5c4 37. bxa5 bxa5 38. Ne2 Rc2 39. Nf4 Be4 40.
+Rad1 Qb6 41. Rxc2 Rxc2 42. f3 g5 43. Nxd5 Bxd5 44. Rxd5 Qc7 45. Rd1 Ra2 46. Rd4
+Rxa3 47. Qd2 Kg7 48. Rd6 Qc4 49. Kh2 Ra2 50. Qd4+ Qxd4 51. Rxd4 a4 52. h4 gxh4
+53. Kh3 Ra1 54. Kxh4 a3 55. Rg4+ Kf6 56. Ra4 a2 57. Kg3 Ke5 58. Kg4 Kd5 59. Kf5
+Kc5 60. Kf6 Kb5 61. Ra8 Kb4 62. Kxf7 Kb3 63. e4 Re1 64. Kf6 a1=Q+ 65. Rxa1 Rxa1
+66. e5 Ra2 67. e6 Rxg2 1/2-1/2
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.29"]
+[Round "1"]
+[White "ShashChess 19.2"]
+[Black "Stockfish 14.1"]
+[Result "1/2-1/2"]
+[ECO "D46"]
+[PlyCount "161"]
+[EventDate "2021.??.??"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 d5 4. Nc3 c6 5. e3 Nbd7 6. Qc2 Bd6 7. Bd3 e5 8. cxd5
+cxd5 9. Nb5 Bb8 10. dxe5 Nxe5 11. Nxe5 Bxe5 12. Bd2 O-O 13. Bc3 Bxc3+ 14. Qxc3
+Ne4 15. Qd4 Re8 16. Bxe4 Rxe4 17. Qd2 b6 18. Nc3 Rc4 19. O-O Bb7 20. Ne2 Rac8
+21. Nd4 h6 22. Qd1 Bc6 23. Qf3 Qd6 24. Rad1 Bd7 25. h3 a5 26. Rd2 a4 27. Rfd1
+Rc1 28. Rxc1 Rxc1+ 29. Rd1 Rc8 30. Rb1 a3 31. bxa3 Rc3 32. Qd1 Rxa3 33. Rb2 Rc3
+34. Ne2 Rc4 35. Rd2 Be6 36. Rb2 Bd7 37. Rd2 Be6 38. Qb1 Rb4 39. Qc2 Qc5 40. Nd4
+Bd7 41. Qd3 Qc7 42. a3 Rc4 43. Ne2 Be6 44. Qb1 b5 45. Rd1 Qc5 46. Qa1 Rc2 47.
+Re1 Rc4 48. Qe5 Kh7 49. Ra1 Ra4 50. Qc3 Qc4 51. Qe1 Qc5 52. Qc3 Qc4 53. Qd2 Bf5
+54. Nd4 Bg6 55. Kh1 Qd3 56. Qb2 b4 57. axb4 Rxa1+ 58. Qxa1 Qd2 59. Kg1 Qxb4 60.
+Qc1 Qb1 61. Qxb1 Bxb1 62. f3 Kg6 63. g3 Kf6 64. h4 Ke5 65. Kf2 g5 66. Kf1 Bf5
+67. Nc6+ Kd6 68. Nd4 Ke5 69. Ke2 Bc8 70. Nc6+ Kd6 71. Nd4 Ke5 72. Nb3 Ba6+ 73.
+Kf2 Bb5 74. hxg5 hxg5 75. f4+ gxf4 76. gxf4+ Ke4 77. Nc5+ Kf5 78. Ke1 Kg4 79.
+Nb3 Kf3 80. Nd4+ Kxe3 81. Nxb5 1/2-1/2
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.29"]
+[Round "1"]
+[White "Stockfish 14.1"]
+[Black "ShashChess 19.2"]
+[Result "1-0"]
+[ECO "D05"]
+[PlyCount "136"]
+[EventDate "2021.??.??"]
+
+1. d4 d5 2. Nf3 Nf6 3. e3 e6 4. Bd3 Bd6 5. O-O O-O 6. Nbd2 c6 7. Re1 Qc7 8. e4
+dxe4 9. Nxe4 Be7 10. Nxf6+ Bxf6 11. Ng5 Bxg5 12. Bxg5 f6 13. Bd2 Qf7 14. Qf3
+Nd7 15. Qe4 f5 16. Qxe6 Qxe6 17. Rxe6 Nc5 18. Re7 Nxd3 19. cxd3 Rf7 20. Re8+
+Rf8 21. Rae1 Rxe8 22. Rxe8+ Kf7 23. Rd8 b6 24. Bf4 Ke7 25. Rh8 Kf7 26. Be5 Bb7
+27. Rxh7 Rg8 28. f4 Bc8 29. d5 cxd5 30. Kf2 Bb7 31. Rh5 Bc8 32. Ke3 Kg6 33.
+Rg5+ Kf7 34. Rh5 Kg6 35. Rh3 Kf7 36. a3 Be6 37. Rh4 Bd7 38. Kd4 Ke6 39. Rh3 Bb5
+40. Re3 a5 41. h4 g6 42. Bc7+ Kd7 43. Bxb6 a4 44. Kxd5 Ba6 45. Bc5 Bb7+ 46. Kc4
+Ba6+ 47. Kc3 Rc8 48. Re5 Kc6 49. Kd2 Bb7 50. Bb4 Rg8 51. g3 Kc7 52. Re7+ Kc6
+53. Re6+ Kd7 54. Rd6+ Ke8 55. Ke3 Bg2 56. Ra6 Kd7 57. Ra7+ Kc6 58. Rxa4 Kb7 59.
+Bc5 Bf1 60. Rb4+ Kc6 61. Bd4 Re8+ 62. Be5 Bg2 63. Rc4+ Kb6 64. Rd4 Rc8 65. Rd6+
+Rc6 66. Kd4 Bf3 67. Rxc6+ Kxc6 68. Bb8 Kd7 1-0
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.29"]
+[Round "1"]
+[White "ShashChess 19.2"]
+[Black "Stockfish 14.1"]
+[Result "1-0"]
+[ECO "D05"]
+[PlyCount "102"]
+[EventDate "2021.??.??"]
+
+1. d4 d5 2. Nf3 Nf6 3. e3 e6 4. Bd3 Bd6 5. O-O O-O 6. Nbd2 c6 7. Re1 Qc7 8. e4
+dxe4 9. Nxe4 Be7 10. Nxf6+ Bxf6 11. Ng5 Bxg5 12. Bxg5 f6 13. Bd2 Qf7 14. Qf3
+Nd7 15. Qe4 f5 16. Qxe6 Qxe6 17. Rxe6 Nc5 18. Re7 Nxd3 19. cxd3 a5 20. Rae1 Rf7
+21. Re8+ Rf8 22. h4 Rxe8 23. Rxe8+ Kf7 24. Rd8 b6 25. Bf4 Ke7 26. Rh8 Kf7 27.
+Be5 Bb7 28. Rxh7 Rg8 29. Rh5 Bc8 30. f3 Kg6 31. Rg5+ Kh7 32. d5 cxd5 33. Kf2 g6
+34. Ke3 a4 35. Kd4 Be6 36. h5 gxh5 37. Rxh5+ Kg6 38. Rh3 Rc8 39. Rg3+ Kf7 40.
+Rg7+ Ke8 41. Bd6 Bf7 42. a3 Rc2 43. Ke5 d4 44. Kxf5 Rxb2 45. Ke4 Kd7 46. Be5
+Re2+ 47. Kxd4 Ke6 48. f4 b5 49. Kc3 Ke7 50. g4 Kf8 51. g5 Re1 1-0
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.29"]
+[Round "1"]
+[White "Stockfish 14.1"]
+[Black "ShashChess 19.2"]
+[Result "1/2-1/2"]
+[ECO "A29"]
+[PlyCount "146"]
+[EventDate "2021.??.??"]
+
+1. c4 e5 2. Nc3 Nf6 3. g3 d5 4. cxd5 Nxd5 5. Bg2 Nb6 6. d3 Be7 7. Nf3 Nc6 8.
+O-O O-O 9. Be3 Re8 10. d4 exd4 11. Nxd4 Nxd4 12. Bxd4 c6 13. Qd3 Bf5 14. Qxf5
+Qxd4 15. e3 Qc4 16. Rac1 g6 17. Qb1 Rad8 18. Nd5 Qa4 19. Nxb6 axb6 20. b3 Qa3
+21. Rfd1 Bf6 22. Rc2 Qa5 23. Rcc1 Qa3 24. Bf3 Ra8 25. Rc2 b5 26. Rd7 Re7 27.
+Rcd2 Bc3 28. Rd8+ Kg7 29. Rxa8 Qxa8 30. Rd3 Bf6 31. Qc2 h5 32. a4 bxa4 33. bxa4
+Qa5 34. Rd1 Rc7 35. Kg2 Qb4 36. Be2 Re7 37. Kg1 h4 38. Rb1 Qa5 39. Qc4 Rc7 40.
+Qf4 Bg5 41. Qg4 Bf6 42. Qf4 hxg3 43. hxg3 Re7 44. Kg2 Qc5 45. Rh1 Rd7 46. Bc4
+Bg5 47. Qe4 Qe7 48. Qc2 Bf6 49. Rb1 Qe5 50. Bb3 Bd8 51. Qc4 Qf6 52. Bd1 Ba5 53.
+Bf3 Qe7 54. Qb3 Qc5 55. Qb2+ Bc3 56. Qb3 Ba5 57. Qb2+ Bc3 58. Qb6 Qxb6 59. Rxb6
+Ba5 60. Rb3 Kf6 61. Bg4 Rc7 62. Be2 Ke6 63. Bd3 Re7 64. f4 f5 65. e4 fxe4 66.
+Bxe4 Kf6 67. Kf3 g5 68. fxg5+ Kxg5 69. g4 Rd7 70. Rb2 Rd4 71. Rxb7 Rxa4 72.
+Bxc6 Ra3+ 73. Ke4 Kxg4 1/2-1/2
+
+[Event "281021"]
+[Site "?"]
+[Date "2021.10.29"]
+[Round "1"]
+[White "ShashChess 19.2"]
+[Black "Stockfish 14.1"]
+[Result "1/2-1/2"]
+[ECO "A29"]
+[PlyCount "66"]
+[EventDate "2021.??.??"]
+
+1. c4 e5 2. Nc3 Nf6 3. g3 d5 4. cxd5 Nxd5 5. Bg2 Nb6 6. d3 Be7 7. Nf3 Nc6 8.
+O-O O-O 9. a3 Re8 10. Ne4 a5 11. Bg5 f5 12. Bxe7 Qxe7 13. Nc3 Be6 14. Rc1 a4
+15. Nd2 Bf7 16. Bxc6 bxc6 17. Qc2 c5 18. Nd1 Ra5 19. Qc3 Rb5 20. Qc2 Qd7 21. f3
+h6 22. Nc3 Ra5 23. Rf2 Rd8 24. Nc4 Bxc4 25. dxc4 Qe6 26. e4 fxe4 27. Qxe4 Nxc4
+28. Re1 Rd4 29. Qc2 Nd6 30. Ne2 Qd5 31. Nc3 Qe6 32. Ne2 Qd5 33. Nc3 Qe6 1/2-1/2
+

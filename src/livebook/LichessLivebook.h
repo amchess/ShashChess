@@ -5,7 +5,7 @@
     #include "json/json.hpp"
     #include "BaseLivebook.h"
 
-namespace Alexander::Livebook {
+namespace ShashChess::Livebook {
 class LichessLivebook: public BaseLivebook {
    public:
     ~LichessLivebook() override = default;

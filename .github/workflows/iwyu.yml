@@ -7,13 +7,13 @@ jobs:
     runs-on: ubuntu-22.04
     defaults:
       run:
-        working-directory: Alexander/src
+        working-directory: ShashChess/src
         shell: bash
     steps:
-      - name: Checkout Alexander
+      - name: Checkout ShashChess
         uses: actions/checkout@v4
         with:
-          path: Alexander
+          path: ShashChess
           persist-credentials: false
 
       - name: Checkout include-what-you-use
@@ -46,4 +46,4 @@ jobs:
           make analyze
           COMP=clang
           CXX=include-what-you-use
-          CXXFLAGS="-stdlib=libc++ -Xiwyu --comment_style=long -Xiwyu --mapping='${{ github.workspace }}/Alexander/.github/ci/libcxx17.imp' -Xiwyu --error"
+          CXXFLAGS="-stdlib=libc++ -Xiwyu --comment_style=long -Xiwyu --mapping='${{ github.workspace }}/ShashChess/.github/ci/libcxx17.imp' -Xiwyu --error"

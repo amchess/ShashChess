@@ -56,10 +56,10 @@ body:
 
 - type: input
   attributes:
-    label: Alexander version
+    label: ShashChess version
     description: |
       This can be found by running the engine.
       You can also use the commit ID.
-    placeholder: Alexander 15 / e6e324e
+    placeholder: ShashChess 15 / e6e324e
   validations:
     required: true

@@ -4,7 +4,7 @@
 #include "ctg/ctg.h"
 #include "book.h"
 
-namespace Alexander {
+namespace ShashChess {
 namespace Book {
 /*static*/ Book* Book::create_book(const std::string& filename) {
     size_t extIndex = filename.find_last_of('.');

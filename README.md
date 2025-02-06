@@ -1,8 +1,8 @@
 # Introduction
 
-![Alexander Logo](logo/Alexander.bmp)
+![ShashChess Logo](logo/ShashChess.bmp)
 
-Alexander is a free UCI chess engine derived from Stockfish family chess engines.
+ShashChess is a free UCI chess engine derived from Stockfish family chess engines.
 For the evaluation function, we utilize the collaboration between Leela Chess Zero and Stockfish, for which we express our sincere gratitude.
 The goal is to apply Alexander Shashin theory exposed on the following book :
 https://www.amazon.com/Best-Play-Method-Discovering-Strongest/dp/1936277468
@@ -32,7 +32,7 @@ itself or as part of some bigger software package), or using it as the starting 
 
 project of your own.
 
-The only real limitation is that whenever you distribute Alexander in some way, you must always
+The only real limitation is that whenever you distribute ShashChess in some way, you must always
 
 include the full source code, or a pointer to where the source code can be found. If you make any
 
@@ -42,7 +42,7 @@ For full details, read the copy of the GPL found in the file named _Copying.txt_
 
 ## Files
 
-This distribution of AlexanderPro consists of the following files:
+This distribution of ShashChessPro consists of the following files:
 
 - Readme.md, the file you are currently reading.
 - Copying.txt, a text file containing the GNU General Public License.
@@ -102,7 +102,7 @@ Usually not on the configuration window.
 
 ### UCI_Chess960 (checkbox)
 
-Whether or not Alexander should play using Chess 960 mode. Usually not on the configuration
+Whether or not ShashChess should play using Chess 960 mode. Usually not on the configuration
 window.
 
 ### Move overhead 
@@ -114,54 +114,6 @@ In ms, the default value seems to be the best on Linux systems, but must be incr
 
 _Default 84, min 10, max 1000_
  "Time usage percent": how much the engine thinks on a move. Many engines seem to move faster and the engine is behind in time clock. With lower values it plays faster, with higher values slower - of course always within the time control.
-
-### Handicap mode
-
-#### UCI_LimitStrength
-
-Activate the handicap mode and the related following options: in this case, the evaluation function is always the classical one.
-
-#### UCI_Elo (CB only for chessbase products users)
-
-_Default 2850, min 1350, max 2850_
-UCI-protocol compliant version of Strength parameter.
-A very refined handicap mode based on the four famous sovietic chess school levels:
-Internally the UCI_Elo value will be converted to a Strength value according to the following table:
-
-- _beginner: elo < 2000_
-- _intermediate: 2000 <= elo < 2200_
-- _advanced: 2200 <= elo < 2400_
-- _expert: elo >= 2400_
-
-Every school corresponds to a different evaluation function, more and more refined.
-The UCI_Elo feature is controlled by the chess GUI, and usually doesn't appear in the configuration
-window.
-
-#### Handicapped Depth
-The engine stop calculating when it joins the handicapped depth, based on the following table:
-
-Elo range     | Handicapped Depth |
-| ----------- | ----------------- |
-| [0,1999]    | [1,6]             |
-| [2000,2199] | [7,9]             |
-| [2200,2399] | [10,12]           |
-| [2400,3190] | [13,20]           |
-
-#### Simulate human blunders
-If enabled, the engine not only simulates the thought process of a player of a certain level but also the mistakes he can make. These mistakes become more frequent the lower the player's Elo rating. This is the handicap mode implemented by Stockfish, but when combined with the previous options that simulate a player's thinking system, it truly approximates a "human avatar".
-
-#### Avatar File
-A file in .avt format with a player profile. You can edit this file containing the weights of Stockfish's classic evaluation terms, from 0 to 100, but with a private tool, we can generate these values to simulate a real player.
-The private tool first analyzes the player's games and then generates his player card and avatar.
-In this way, Alexander turns into the player's alter ego, simulating not only his playing strength but also his style:
-no frustration for the OTB player who will not always lose. Once in a while, he will win, and most importantly, he will have an ideal sparring partner to improve.
-The data sheet and our private NLG sw (Virtual trainer) will also allow him to understand his own mistakes verbally, simulating a live instructor!
-Examples:
-
-[Player card](examples/PlayerCard.xlsx)
-
-[Avatar](examples/Avatar.avt)
-
 
 ### Sygyzy End Game table bases
 
@@ -194,7 +146,7 @@ as wins or losses. This is useful for ICCF correspondence games.
 #### SygyzyProbeLimit
 
 _Integer, Default: 6, Min: 0, Max: 6_
-How many pieces need to be on the board before Alexander begins probing (even at the root).
+How many pieces need to be on the board before ShashChess begins probing (even at the root).
 Current default, obviously, is for 6-man.
 
 ### Advanced Chess Analyzer
@@ -358,11 +310,11 @@ we have the following mapping:
 
 | **WDL Range (W, D, L)**       | **Shashin Position’s Type**          | **Win Probability Range** | **Informator Symbols**| **Description**                                             |
 |-------------------------------|--------------------------------------|---------------------------|-----------------------|-------------------------------------------------------------|
-| [0, 3], [0, 4], [96, 100]    | High Petrosian                       | [0, 5]                  | -+                     | Winning: a decisive disadvantage, with the position clearly leading to victory.      |
-| [4, 6], [5, 8], [89, 95]     | High-Middle Petrosian                | [6, 10]                 | -+ \ -/+               | Decisive disadvantage: dominant position and likely winning.                      |
-| [7, 9], [9, 12], [80, 87]    | Middle Petrosian                     | [11, 15]                 | -/+                    | Clear disadvantage: a substantial positional advantage, but a win is not yet inevitable.                          |
-| [10, 12], [13, 16], [73, 79]  | Middle-Low Petrosian                 | [16, 20]                 | -/+ \ =/+              | Significant disadvantage: strong edge                   |
-| [13, 15], [17, 39], [66, 71]  | Low Petrosian                        | [21, 24]                 | =/+                    | Slight disadvantage with a positional edge, but no immediate threats.              |
+| [0, 3], [0, 4], [96, 100]    | High Petrosian                       | [0, 5]                  | -+                     | Winning: a decisive advantage, with the position clearly leading to victory.      |
+| [4, 6], [5, 8], [89, 95]     | High-Middle Petrosian                | [6, 10]                 | -+ \ -/+               | Decisive advantage: dominant position and likely winning.                      |
+| [7, 9], [9, 12], [80, 87]    | Middle Petrosian                     | [11, 15]                 | -/+                    | Clear advantage: a substantial positional advantage, but a win is not yet inevitable.                          |
+| [10, 12], [13, 16], [73, 79]  | Middle-Low Petrosian                 | [16, 20]                 | -/+ \ =/+              | Significant advantage: strong edge                   |
+| [13, 15], [17, 39], [66, 71]  | Low Petrosian                        | [21, 24]                 | =/+                    | Slight advantage with a positional edge, but no immediate threats.              |
 | [0, 30], [40, 99], [31, 64]  | Chaos: Capablanca-Petrosian          | [25, 49]                 | ↓                      | Opponent pressure and initiative: defensive position.        |
 | [0, 0], [100, 100], [0, 0]    | Capablanca                           | [50, 50]                 | =                      | Equal position. Both sides are evenly matched, with no evident advantage.           |
 | [30, 64], [40, 99], [0, 30]  | Chaos: Capablanca-Tal                | [51, 75]                 | ↑                      | Initiative: playing dictation with active moves and forcing ideas.                     |
@@ -400,7 +352,7 @@ Defense position/algorithm (the "reversed colors" Tal)
 
 Stockfish community
 
-## Alexander team
+## ShashChess team
 - engine owner and main developer: ICCF IM Andrea Manzo (https://www.iccf.com/player?id=241224)
 - IM Yohan Benitah for his professional chess understanding and help in testing against neural networks 
 - official tester: ICCF CCE and CCM Maurizio Platino (https://www.iccf.com/player?id=241094)
@@ -413,7 +365,7 @@ Stockfish community
 
 Sorry If I forgot someone.
 
-<h1 align="center">Stockfish</h1>
+<h1 align="center">Stockfish NNUE</h1>
 
 ## Overview
 
@@ -427,8 +379,9 @@ Cute Chess, eboard, Arena, Sigma Chess, Shredder, Chess Partner or Fritz) in ord
 to be used comfortably. Read the documentation for your GUI of choice for information
 about how to use Stockfish with it.
 
-The Stockfish engine features the classical evaluation based on handcrafted terms. 
-The classical evaluation runs efficiently on almost all CPU architectures.
+The Stockfish engine features the NNUE evaluation based on efficiently
+updateable neural networks. The NNUE evaluation benefits from the vector
+intrinsics available on most CPUs (sse2, avx2, neon, or similar).
 
 
 ## Files
@@ -441,6 +394,20 @@ This distribution of Stockfish consists of the following files:
 
   * src, a subdirectory containing the full source code, including a Makefile
     that can be used to compile Stockfish on Unix-like systems.
+
+  * a file with the .nnue extension, storing the neural network for the NNUE 
+    evaluation. Binary distributions will have this file embedded.
+
+Note: to use the NNUE evaluation, the additional data file with neural network parameters
+needs to be available. Normally, this file is already embedded in the binary or it can be downloaded.
+The filename for the default (recommended) net can be found as the default
+value of the `EvalFile` UCI option, with the format `nn-[SHA256 first 12 digits].nnue`
+(for instance, `nn-c157e0a5755b.nnue`). This file can be downloaded from
+```
+https://tests.stockfishchess.org/api/nn/[filename]
+```
+replacing `[filename]` as needed.
+
 
 ## UCI options
 
@@ -459,6 +426,12 @@ Currently, Stockfish has the following UCI options:
   * #### MultiPV
     Output the N best lines (principal variations, PVs) when searching.
     Leave at 1 for best performance.
+
+  * #### EvalFile
+    The name of the file of the NNUE evaluation parameters. Depending on the GUI the
+    filename might have to include the full path to the folder/directory that contains the file.
+    Other locations, such as the directory that contains the binary and the working directory,
+    are also searched.
 
   * #### UCI_AnalyseMode
     An option handled by your GUI.
@@ -529,11 +502,26 @@ Currently, Stockfish has the following UCI options:
   * #### Debug Log File
     Write all communication to and from the engine into a text file.
 
-## A note on classical evaluation
+## A note on the NNUE evaluation
 
-It assigns a value to a position that is used in alpha-beta (PVS) search
-to find the best move. The classical evaluation computes this value as a function
-of various chess concepts, handcrafted by experts, tested and tuned using fishtest.
+The NNUE evaluation computes this value with a neural network based on basic
+inputs (e.g. piece positions only). The network is optimized and trained
+on the evaluations of millions of positions at moderate search depth.
+
+The NNUE evaluation was first introduced in shogi, and ported to Stockfish afterward.
+It can be evaluated efficiently on CPUs, and exploits the fact that only parts
+of the neural network need to be updated after a typical chess move.
+[The nodchip repository](https://github.com/nodchip/Stockfish) provides additional
+tools to train and develop the NNUE networks.
+
+On CPUs supporting modern vector instructions (avx2 and similar), the NNUE evaluation
+results in stronger playing strength, even if the nodes per second computed by the engine
+is somewhat lower (roughly 60% of nps is typical).
+
+Note that the NNUE evaluation depends on the Stockfish binary and the network parameter
+file (see EvalFile). Not every parameter file is compatible with a given Stockfish binary.
+The default value of the EvalFile UCI option is the name of a network that is guaranteed
+to be compatible with that binary.
 
 ## What to expect from Syzygybases?
 
@@ -598,6 +586,7 @@ targets with corresponding descriptions.
 ```
     cd src
     make help
+    make net
     make build ARCH=x86-64-modern
 ```
 
@@ -645,20 +634,20 @@ first, where the basics of Stockfish development are explained.
 
 ## Terms of use
 
-Alexander is free and distributed under the
-[**GNU General Public License version 3**][license-link] (GPL v3). Essentially,
-this means you are free to do almost exactly what you want with the program,
-including distributing it among your friends, making it available for download
-from your website, selling it (either by itself or as part of some bigger
-software package), or using it as the starting point for a software project of
-your own.
+Stockfish is free, and distributed under the **GNU General Public License version 3**
+(GPL v3). Essentially, this means that you are free to do almost exactly
+what you want with the program, including distributing it among your
+friends, making it available for download from your web site, selling
+it (either by itself or as part of some bigger software package), or
+using it as the starting point for a software project of your own.
 
-The only real limitation is that whenever you distribute Brainlearn in some way,
-you MUST always include the license and the full source code (or a pointer to
-where the source code can be found) to generate the exact binary you are
-distributing. If you make any changes to the source code, these changes must
-also be made available under GPL v3.
+The only real limitation is that whenever you distribute Stockfish in
+some way, you must always include the full source code, or a pointer
+to where the source code can be found. If you make any changes to the
+source code, these changes must also be made available under the GPL.
 
+For full details, read the copy of the GPL v3 found in the file named
+*Copying.txt*.
 ## Acknowledgements
 
 Stockfish uses neural networks trained on [data provided by the Leela Chess Zero
