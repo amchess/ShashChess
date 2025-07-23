@@ -7,7 +7,7 @@
 namespace ShashChess::Livebook {
 class Proxy final: public ChessDb {
    public:
-    explicit Proxy(const std::string& endpoint);
+    explicit Proxy(const std::string& endpoint_);
     ~Proxy() override = default;
 };
 }  // namespace ShashChess::Livebook;

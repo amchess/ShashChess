@@ -19,7 +19,7 @@ making contributions to ShashChess.
 In case you do not have a C++ compiler installed, you can follow the
 instructions from our wiki.
 
-- [Linux][linux-compiling-link]
+- [Ubuntu][ubuntu-compiling-link]
 - [Windows][windows-compiling-link]
 - [macOS][macos-compiling-link]
 
@@ -49,7 +49,7 @@ further discussion._
 - Provide a clear and concise description of the changes in the pull request
   description.
 
-_First time contributors should add their name to [AUTHORS](../AUTHORS)._
+_First time contributors should add their name to [AUTHORS](./AUTHORS)._
 
 _ShashChess's development is not focused on adding new features. Thus any pull
 request introducing new features will potentially be closed without further
@@ -59,7 +59,7 @@ discussion._
 
 Changes to ShashChess C++ code should respect our coding style defined by
 [.clang-format](.clang-format). You can format your changes by running
-`make format`. This requires clang-format version 18 to be installed on your system.
+`make format`. This requires clang-format version 20 to be installed on your system.
 
 ## Navigate
 
@@ -86,12 +86,11 @@ more details.
 
 Thank you for contributing to ShashChess and helping us make it even better!
 
-
-[copying-link]:           https://github.com/official-shashchess/ShashChess/blob/master/Copying.txt
+[copying-link]:           https://github.com/amchess/ShashChess/blob/master/Copying.txt
 [discord-link]:           https://discord.gg/GWDRS3kU6R
-[discussions-link]:       https://github.com/official-shashchess/ShashChess/discussions/new
-[creating-my-first-test]: https://github.com/official-shashchess/fishtest/wiki/Creating-my-first-test#create-your-test
-[issue-tracker-link]:     https://github.com/official-shashchess/ShashChess/issues
-[linux-compiling-link]:   https://github.com/official-shashchess/ShashChess/wiki/Compiling-from-source#linux
-[windows-compiling-link]: https://github.com/official-shashchess/ShashChess/wiki/Compiling-from-source#windows
-[macos-compiling-link]:   https://github.com/official-shashchess/ShashChess/wiki/Compiling-from-source#macos
+[discussions-link]:       https://github.com/amchess/ShashChess/discussions/new
+[creating-my-first-test]: https://github.com/amchess/fishtest/wiki/Creating-my-first-test#create-your-test
+[issue-tracker-link]:     https://github.com/amchess/ShashChess/issues
+[ubuntu-compiling-link]:  https://github.com/amchess/ShashChess/wiki/Developers#user-content-installing-a-compiler-1
+[windows-compiling-link]: https://github.com/amchess/ShashChess/wiki/Developers#user-content-installing-a-compiler
+[macos-compiling-link]:   https://github.com/amchess/ShashChess/wiki/Developers#user-content-installing-a-compiler-2

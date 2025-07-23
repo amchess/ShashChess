@@ -1,5 +1,5 @@
 /*
-  ShashChess, a UCI chess playing engine derived from Stockfish
+  ShashChess, a UCI chess playing engine derived from Glaurung 2.1
   Copyright (C) 2004-2025 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
@@ -106,7 +106,7 @@ class ClippedReLU {
         constexpr IndexType NumChunks = InputDimensions / SimdWidth;
 
     #ifndef USE_SSE41
-        const __m128i       k0x80s    = _mm_set1_epi8(-128);
+        const __m128i k0x80s = _mm_set1_epi8(-128);
     #endif
 
         const auto in  = reinterpret_cast<const __m128i*>(input);
@@ -153,7 +153,9 @@ class ClippedReLU {
 #endif
 
         for (IndexType i = Start; i < InputDimensions; ++i)
-        { output[i] = static_cast<OutputType>(std::clamp(input[i] >> WeightScaleBits, 0, 127)); }
+        {
+            output[i] = static_cast<OutputType>(std::clamp(input[i] >> WeightScaleBits, 0, 127));
+        }
     }
 };
 

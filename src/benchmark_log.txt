@@ -1,0 +1,11 @@
+=== Benchmark ShashChess 07/22/2025 16:49:08 ===
+========================================Time: 2238 ms, Nodes: 2387120, Nodes/sec: 1066630
+Time: 2210 ms, Nodes: 2387120, Nodes/sec: 1080144
+Time: 2209 ms, Nodes: 2387120, Nodes/sec: 1080633
+Time: 2216 ms, Nodes: 2387120, Nodes/sec: 1077220
+Time: 2224 ms, Nodes: 2387120, Nodes/sec: 1073345
+========================================
+Media dei risultati su 5 esecuzioni:
+Average Total time (ms) : 2219
+Average Nodes searched  : 2387120
+Average Nodes/second    : 1075594

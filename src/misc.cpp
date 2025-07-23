@@ -31,8 +31,7 @@
 #include <limits>
 #include <mutex>
 #include <sstream>
-#include <string_view>
-#include <system_error>
+//not used string_view: improved from Stockfish
 //from ShashChess begin
 #include <algorithm>
 #include <stdarg.h>
@@ -45,7 +44,7 @@ namespace ShashChess {
 namespace {
 
 // Version number or dev.
-constexpr std::string_view version = "38";
+constexpr std::string_view version = "39";
 
 // Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 // cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
@@ -162,7 +161,7 @@ std::string engine_version_info() {
 
 std::string engine_info(bool to_uci) {
     return engine_version_info() + (to_uci ? "\nid author " : " by ")
-         + "A. Manzo, F. Ferraguti, K. Kiniama and Stockfish developers (see AUTHORS file)";
+         + "A. Manzo, F. Ferraguti, K. Kiniama and the Stockfish developers (see AUTHORS file)";
 }
 
 
@@ -291,11 +290,17 @@ namespace {
 
 template<size_t N>
 struct DebugInfo {
-    std::atomic<int64_t> data[N] = {0};
+    std::array<std::atomic<int64_t>, N> data = {0};
 
     [[nodiscard]] constexpr std::atomic<int64_t>& operator[](size_t index) {
         assert(index < N);
         return data[index];
+    }
+
+    constexpr DebugInfo& operator=(const DebugInfo& other) {
+        for (size_t i = 0; i < N; i++)
+            data[i].store(other.data[i].load());
+        return *this;
     }
 };
 
@@ -369,7 +374,9 @@ void dbg_print() {
 
     for (int i = 0; i < MaxDebugSlots; ++i)
         if ((n = mean[i][0]))
-        { std::cerr << "Mean #" << i << ": Total " << n << " Mean " << E(mean[i][1]) << std::endl; }
+        {
+            std::cerr << "Mean #" << i << ": Total " << n << " Mean " << E(mean[i][1]) << std::endl;
+        }
 
     for (int i = 0; i < MaxDebugSlots; ++i)
         if ((n = stdev[i][0]))
@@ -395,6 +402,13 @@ void dbg_print() {
         }
 }
 
+void dbg_clear() {
+    hit.fill({});
+    mean.fill({});
+    stdev.fill({});
+    correl.fill({});
+    extremes.fill({});
+}
 
 // Used to serialize access to std::cout
 // to avoid multiple threads writing at the same time.
@@ -465,18 +479,19 @@ bool is_whitespace(std::string_view s) {
     return std::all_of(s.begin(), s.end(), [](char c) { return std::isspace(c); });
 }
 
-//from Khalid begin
+//from learning begin
 CommandLine::CommandLine(int _argc, char** _argv) :
     argc(_argc),
     argv(_argv) {
     workingDirectory = CommandLine::get_working_directory();
     binaryDirectory  = CommandLine::get_binary_directory(argv[0], workingDirectory);
     Util::init(this);
-    //from Khalid end
+    //from learning end
 }
 
 std::string CommandLine::get_binary_directory(std::string argv0, std::string workingDirectory) {
     std::string pathSeparator;
+
 #ifdef _WIN32
     pathSeparator = "\\";
     #ifdef _MSC_VER
@@ -489,7 +504,7 @@ std::string CommandLine::get_binary_directory(std::string argv0, std::string wor
 #else
     pathSeparator = "/";
 #endif
-    //from Khalid end
+    //from learning end
     // Extract the binary directory path from argv0
     auto   binaryDirectory = argv0;
     size_t pos             = binaryDirectory.find_last_of("\\/");
@@ -499,11 +514,13 @@ std::string CommandLine::get_binary_directory(std::string argv0, std::string wor
         binaryDirectory.resize(pos + 1);
 
     // Pattern replacement: "./" at the start of path is replaced by the working directory
-    //from Khalid begin
+    //from learning begin
     if (binaryDirectory.find("." + pathSeparator) == 0)
-    { binaryDirectory.replace(0, 1, workingDirectory); }
+    {
+        binaryDirectory.replace(0, 1, workingDirectory);
+    }
     binaryDirectory = Util::fix_path(binaryDirectory);
-    //from Khalid end
+    //from learning end
     return binaryDirectory;
 }
 
@@ -511,11 +528,13 @@ std::string CommandLine::get_working_directory() {
     std::string workingDirectory = "";
     char        buff[40000];
     char*       cwd = GETCWD(buff, 40000);
-    //from Khalid begin
+    //from learning begin
     if (cwd)
-    { workingDirectory = cwd; }
-    workingDirectory = Util::fix_path(workingDirectory);  //khalid
-    //from Khalid end
+    {
+        workingDirectory = cwd;
+    }
+    workingDirectory = Util::fix_path(workingDirectory);  //learning
+    //from learning end
     return workingDirectory;
 }
 
@@ -523,15 +542,17 @@ std::string CommandLine::get_working_directory() {
 CommandLine* Util::cli = nullptr;
 void         Util::init(CommandLine* _cli) { cli = _cli; }
 std::string  Util::unquote(const std::string& s) {
-     std::string s1 = s;
+    std::string s1 = s;
 
-     if (s1.size() > 2)
-     {
-         if ((s1.front() == '\"' && s1.back() == '\"') || (s1.front() == '\'' && s1.back() == '\''))
-         { s1 = s1.substr(1, s1.size() - 2); }
+    if (s1.size() > 2)
+    {
+        if ((s1.front() == '\"' && s1.back() == '\"') || (s1.front() == '\'' && s1.back() == '\''))
+        {
+            s1 = s1.substr(1, s1.size() - 2);
+        }
     }
 
-     return s1;
+    return s1;
 }
 
 bool Util::is_empty_filename(const std::string& fn) {

@@ -16,15 +16,15 @@ enum class Action {
 class ChessDb: public BaseLivebook {
    public:
     ChessDb();
-    explicit ChessDb(std::string endpoint);
-    explicit ChessDb(Action action);
-    explicit ChessDb(std::string endpoint, Action action);
+    explicit ChessDb(std::string endpoint_);
+    explicit ChessDb(Action action_);
+    explicit ChessDb(std::string endpoint_, Action action_);
     ~ChessDb() override = default;
 
-    std::vector<std::pair<std::string, Analysis>> lookup(const Position& position) override;
+    std::vector<std::pair<std::string, Analysis>> lookup(const Position& position_) override;
 
-    void set_action(Action action);
-    void set_min_rank(int min_rank);
+    void set_action(Action action_);
+    void set_min_rank(int min_rank_);
 
    protected:
     Action      action;
@@ -32,12 +32,12 @@ class ChessDb: public BaseLivebook {
     int         min_rank = 2;
 
     std::pair<std::string, Analysis>
-    parse_move(const Position& position, std::string& item, bool check_rank) const;
+    parse_move(const Position& position_, std::string& item_, bool check_rank_) const;
 
-    std::vector<std::pair<std::string, Analysis>> parse_query_all(const Position& position);
-    std::vector<std::pair<std::string, Analysis>> parse_query_best(const Position& position);
+    std::vector<std::pair<std::string, Analysis>> parse_query_all(const Position& position_);
+    std::vector<std::pair<std::string, Analysis>> parse_query_best(const Position& position_);
 
-    [[nodiscard]] std::string format_uri(const Position& position) const;
+    [[nodiscard]] std::string format_uri(const Position& position_) const;
 };
 }
 

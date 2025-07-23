@@ -21,9 +21,10 @@
 #include "bitboard.h"
 #include "misc.h"
 #include "position.h"
+//wdl model
 #include "uci.h"
 #include "tune.h"
-#include "win_probability.h"
+#include "wdl/win_probability.h"
 #include "learn/learn.h"  //learning
 using namespace ShashChess;
 
@@ -31,13 +32,13 @@ int main(int argc, char* argv[]) {
 
     std::cout << engine_info() << std::endl;
 
-    WDLModel::init();
+    WDLModel::init();  //wdl model
 
     Bitboards::init();
     Position::init();
 
     UCIEngine uci(argc, argv);
-    LD.init(uci.engine_options());  //Kelly
+    LD.init(uci.engine_options());  //learning
     Tune::init(uci.engine_options());
 
     uci.loop();

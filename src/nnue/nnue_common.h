@@ -1,5 +1,5 @@
 /*
-  ShashChess, a UCI chess playing engine derived from Stockfish
+  ShashChess, a UCI chess playing engine derived from Glaurung 2.1
   Copyright (C) 2004-2025 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
@@ -48,6 +48,11 @@
 
 namespace ShashChess::Eval::NNUE {
 
+using BiasType       = std::int16_t;
+using WeightType     = std::int16_t;
+using PSQTWeightType = std::int32_t;
+using IndexType      = std::uint32_t;
+
 // Version of the evaluation file
 constexpr std::uint32_t Version = 0x7AF32F20u;
 
@@ -76,7 +81,6 @@ constexpr std::size_t MaxSimdWidth = 32;
 
 // Type of input feature after conversion
 using TransformedFeatureType = std::uint8_t;
-using IndexType              = std::uint32_t;
 
 // Round n up to be a multiple of base
 template<typename IntType>

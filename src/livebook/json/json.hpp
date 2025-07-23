@@ -133,7 +133,7 @@
 
 #ifndef NLOHMANN_JSON_NAMESPACE_END
     #define NLOHMANN_JSON_NAMESPACE_END \
-        }  /* namespace (inline namespace) NOLINT(readability/namespace) */ \
+        } /* namespace (inline namespace) NOLINT(readability/namespace) */ \
         }  // namespace nlohmann
 #endif
 
@@ -348,7 +348,7 @@ NLOHMANN_JSON_NAMESPACE_END
         #undef JSON_HEDLEY_VERSION_ENCODE
     #endif
     #define JSON_HEDLEY_VERSION_ENCODE(major, minor, revision) \
-        (((major) *1000000) + ((minor) *1000) + (revision))
+        (((major) * 1000000) + ((minor) * 1000) + (revision))
 
     #if defined(JSON_HEDLEY_VERSION_DECODE_MAJOR)
         #undef JSON_HEDLEY_VERSION_DECODE_MAJOR
@@ -489,7 +489,7 @@ NLOHMANN_JSON_NAMESPACE_END
     #elif defined(__SUNPRO_C)
         #define JSON_HEDLEY_SUNPRO_VERSION \
             JSON_HEDLEY_VERSION_ENCODE((__SUNPRO_C >> 8) & 0xf, (__SUNPRO_C >> 4) & 0xf, \
-                                       (__SUNPRO_C) &0xf)
+                                       (__SUNPRO_C) & 0xf)
     #elif defined(__SUNPRO_CC) && (__SUNPRO_CC > 0x1000)
         #define JSON_HEDLEY_SUNPRO_VERSION \
             JSON_HEDLEY_VERSION_ENCODE( \
@@ -499,7 +499,7 @@ NLOHMANN_JSON_NAMESPACE_END
     #elif defined(__SUNPRO_CC)
         #define JSON_HEDLEY_SUNPRO_VERSION \
             JSON_HEDLEY_VERSION_ENCODE((__SUNPRO_CC >> 8) & 0xf, (__SUNPRO_CC >> 4) & 0xf, \
-                                       (__SUNPRO_CC) &0xf)
+                                       (__SUNPRO_CC) & 0xf)
     #endif
 
     #if defined(JSON_HEDLEY_SUNPRO_VERSION_CHECK)
@@ -2061,12 +2061,12 @@ JSON_HEDLEY_DIAGNOSTIC_POP
             #if defined(__INTPTR_TYPE__)
                 #define JSON_HEDLEY_IS_CONSTEXPR_(expr) \
                     __builtin_types_compatible_p( \
-                      __typeof__((1 ? (void*) ((__INTPTR_TYPE__) ((expr) *0)) : (int*) 0)), int*)
+                      __typeof__((1 ? (void*) ((__INTPTR_TYPE__) ((expr) * 0)) : (int*) 0)), int*)
             #else
                 #include <stdint.h>
                 #define JSON_HEDLEY_IS_CONSTEXPR_(expr) \
                     __builtin_types_compatible_p( \
-                      __typeof__((1 ? (void*) ((intptr_t) ((expr) *0)) : (int*) 0)), int*)
+                      __typeof__((1 ? (void*) ((intptr_t) ((expr) * 0)) : (int*) 0)), int*)
             #endif
         #elif (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) \
                && !defined(JSON_HEDLEY_SUNPRO_VERSION) && !defined(JSON_HEDLEY_PGI_VERSION) \
@@ -2077,8 +2077,9 @@ JSON_HEDLEY_DIAGNOSTIC_POP
           || JSON_HEDLEY_IBM_VERSION_CHECK(12, 1, 0) || JSON_HEDLEY_ARM_VERSION_CHECK(5, 3, 0)
             #if defined(__INTPTR_TYPE__)
                 #define JSON_HEDLEY_IS_CONSTEXPR_(expr) \
-                    _Generic((1 ? (void*) ((__INTPTR_TYPE__) ((expr) *0)) : (int*) 0), int*: 1, \
-                             void*: 0)
+                    _Generic((1 ? (void*) ((__INTPTR_TYPE__) ((expr) * 0)) : (int*) 0), \
+                      int*: 1, \
+                      void*: 0)
             #else
                 #include <stdint.h>
                 #define JSON_HEDLEY_IS_CONSTEXPR_(expr) \
@@ -2091,7 +2092,7 @@ JSON_HEDLEY_DIAGNOSTIC_POP
           || defined(JSON_HEDLEY_TI_CL7X_VERSION) || defined(JSON_HEDLEY_TI_CLPRU_VERSION) \
           || defined(__clang__)
             #define JSON_HEDLEY_IS_CONSTEXPR_(expr) \
-                (sizeof(void) != sizeof(*(1 ? ((void*) ((expr) *0L)) : ((struct { \
+                (sizeof(void) != sizeof(*(1 ? ((void*) ((expr) * 0L)) : ((struct { \
                      char v[sizeof(void) * 2]; \
                  }*) 1))))
         #endif
@@ -3803,8 +3804,8 @@ struct actual_object_comparator {
     using object_t            = typename BasicJsonType::object_t;
     using object_comparator_t = typename BasicJsonType::default_object_comparator_t;
     using type                = typename std::conditional<has_key_compare<object_t>::value,
-                                           typename object_t::key_compare,
-                                           object_comparator_t>::type;
+                                                          typename object_t::key_compare,
+                                                          object_comparator_t>::type;
 };
 
 template<typename BasicJsonType>
@@ -4612,7 +4613,9 @@ class exception: public std::exception {
         }
 
         if (tokens.empty())
-        { return ""; }
+        {
+            return "";
+        }
 
         auto str = std::accumulate(tokens.rbegin(), tokens.rend(), std::string{},
                                    [](const std::string& a, const std::string& b) {
@@ -4978,7 +4981,9 @@ auto from_json(
     [N])  // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
   -> decltype(j.template get<T>(), void()) {
     for (std::size_t i = 0; i < N; ++i)
-    { arr[i] = j.at(i).template get<T>(); }
+    {
+        arr[i] = j.at(i).template get<T>();
+    }
 }
 
 template<typename BasicJsonType>
@@ -4992,7 +4997,9 @@ template<typename BasicJsonType, typename T, std::size_t N>
 auto from_json_array_impl(const BasicJsonType& j, std::array<T, N>& arr, priority_tag<2> /*unused*/)
   -> decltype(j.template get<T>(), void()) {
     for (std::size_t i = 0; i < N; ++i)
-    { arr[i] = j.at(i).template get<T>(); }
+    {
+        arr[i] = j.at(i).template get<T>();
+    }
 }
 
 template<
@@ -5368,7 +5375,7 @@ class iteration_proxy_value {
     using reference         = value_type&;
     using iterator_category = std::input_iterator_tag;
     using string_type       = typename std::remove_cv<
-      typename std::remove_reference<decltype(std::declval<IteratorType>().key())>::type>::type;
+            typename std::remove_reference<decltype(std::declval<IteratorType>().key())>::type>::type;
 
    private:
     /// the iterator
@@ -5385,8 +5392,8 @@ class iteration_proxy_value {
    public:
     explicit iteration_proxy_value() = default;
     explicit iteration_proxy_value(IteratorType it, std::size_t array_index_ = 0) noexcept(
-      std::is_nothrow_move_constructible<IteratorType>::value&&
-        std::is_nothrow_default_constructible<string_type>::value) :
+      std::is_nothrow_move_constructible<IteratorType>::value
+      && std::is_nothrow_default_constructible<string_type>::value) :
         anchor(std::move(it)),
         array_index(array_index_) {}
 
@@ -5394,12 +5401,12 @@ class iteration_proxy_value {
     iteration_proxy_value& operator=(iteration_proxy_value const&) = default;
     // older GCCs are a bit fussy and require explicit noexcept specifiers on defaulted functions
     iteration_proxy_value(iteration_proxy_value&&) noexcept(
-      std::is_nothrow_move_constructible<IteratorType>::value&&
-        std::is_nothrow_move_constructible<string_type>::value) =
+      std::is_nothrow_move_constructible<IteratorType>::value
+      && std::is_nothrow_move_constructible<string_type>::value) =
       default;  // NOLINT(hicpp-noexcept-move,performance-noexcept-move-constructor,cppcoreguidelines-noexcept-move-operations)
     iteration_proxy_value& operator=(iteration_proxy_value&&) noexcept(
-      std::is_nothrow_move_assignable<IteratorType>::value&&
-        std::is_nothrow_move_assignable<string_type>::value) =
+      std::is_nothrow_move_assignable<IteratorType>::value
+      && std::is_nothrow_move_assignable<string_type>::value) =
       default;  // NOLINT(hicpp-noexcept-move,performance-noexcept-move-constructor,cppcoreguidelines-noexcept-move-operations)
     ~iteration_proxy_value() = default;
 
@@ -5733,7 +5740,9 @@ struct external_constructor<value_t::array> {
         j.m_data.m_value = value_t::array;
         j.m_data.m_value.array->resize(arr.size());
         if (arr.size() > 0)
-        { std::copy(std::begin(arr), std::end(arr), j.m_data.m_value.array->begin()); }
+        {
+            std::copy(std::begin(arr), std::end(arr), j.m_data.m_value.array->begin());
+        }
         j.set_parents();
         j.assert_invariant();
     }
@@ -6193,7 +6202,9 @@ std::size_t hash(const BasicJsonType& j) {
     case BasicJsonType::value_t::array : {
         auto seed = combine(type, j.size());
         for (const auto& element : j)
-        { seed = combine(seed, hash(element)); }
+        {
+            seed = combine(seed, hash(element));
+        }
         return seed;
     }
 
@@ -6228,7 +6239,9 @@ std::size_t hash(const BasicJsonType& j) {
         seed            = combine(seed, h);
         seed            = combine(seed, static_cast<std::size_t>(j.get_binary().subtype()));
         for (const auto byte : j.get_binary())
-        { seed = combine(seed, std::hash<std::uint8_t>{}(byte)); }
+        {
+            seed = combine(seed, std::hash<std::uint8_t>{}(byte));
+        }
         return seed;
     }
 
@@ -6362,7 +6375,9 @@ class input_stream_adapter {
         // clear stream flags; we use underlying streambuf I/O, do not
         // maintain ifstream flags, except eof
         if (is != nullptr)
-        { is->clear(is->rdstate() & std::ios::eofbit); }
+        {
+            is->clear(is->rdstate() & std::ios::eofbit);
+        }
     }
 
     explicit input_stream_adapter(std::istream& i) :
@@ -6388,7 +6403,9 @@ class input_stream_adapter {
         auto res = sb->sbumpc();
         // set eof manually, as we don't use the istream interface.
         if (JSON_HEDLEY_UNLIKELY(res == std::char_traits<char>::eof()))
-        { is->clear(is->rdstate() | std::ios::eofbit); }
+        {
+            is->clear(is->rdstate() | std::ios::eofbit);
+        }
         return res;
     }
 
@@ -7038,7 +7055,9 @@ class json_sax_dom_parser {
         errored = true;
         static_cast<void>(ex);
         if (allow_exceptions)
-        { JSON_THROW(ex); }
+        {
+            JSON_THROW(ex);
+        }
         return false;
     }
 
@@ -7197,7 +7216,9 @@ class json_sax_dom_callback_parser {
                 *ref_stack.back() = discarded;
             }
             else
-            { ref_stack.back()->set_parents(); }
+            {
+                ref_stack.back()->set_parents();
+            }
         }
 
         JSON_ASSERT(!ref_stack.empty());
@@ -7249,7 +7270,9 @@ class json_sax_dom_callback_parser {
             keep = callback(static_cast<int>(ref_stack.size()) - 1, parse_event_t::array_end,
                             *ref_stack.back());
             if (keep)
-            { ref_stack.back()->set_parents(); }
+            {
+                ref_stack.back()->set_parents();
+            }
             else
             {
                 // discard array
@@ -7264,7 +7287,9 @@ class json_sax_dom_callback_parser {
 
         // remove discarded value
         if (!keep && !ref_stack.empty() && ref_stack.back()->is_array())
-        { ref_stack.back()->m_data.m_value.array->pop_back(); }
+        {
+            ref_stack.back()->m_data.m_value.array->pop_back();
+        }
 
         return true;
     }
@@ -7274,7 +7299,9 @@ class json_sax_dom_callback_parser {
         errored = true;
         static_cast<void>(ex);
         if (allow_exceptions)
-        { JSON_THROW(ex); }
+        {
+            JSON_THROW(ex);
+        }
         return false;
     }
 
@@ -7303,7 +7330,9 @@ class json_sax_dom_callback_parser {
         // do not handle this value if we know it would be added to a discarded
         // container
         if (!keep_stack.back())
-        { return {false, nullptr}; }
+        {
+            return {false, nullptr};
+        }
 
         // create value
         auto value = BasicJsonType(std::forward<Value>(v));
@@ -7314,7 +7343,9 @@ class json_sax_dom_callback_parser {
 
         // do not handle this value if we just learnt it shall be discarded
         if (!keep)
-        { return {false, nullptr}; }
+        {
+            return {false, nullptr};
+        }
 
         if (ref_stack.empty())
         {
@@ -7325,7 +7356,9 @@ class json_sax_dom_callback_parser {
         // skip this value if we already decided to skip the parent
         // (https://github.com/nlohmann/json/issues/971#issuecomment-413678360)
         if (!ref_stack.back())
-        { return {false, nullptr}; }
+        {
+            return {false, nullptr};
+        }
 
         // we now only expect arrays and objects
         JSON_ASSERT(ref_stack.back()->is_array() || ref_stack.back()->is_object());
@@ -7345,7 +7378,9 @@ class json_sax_dom_callback_parser {
         key_keep_stack.pop_back();
 
         if (!store_element)
-        { return {false, nullptr}; }
+        {
+            return {false, nullptr};
+        }
 
         JSON_ASSERT(object_element);
         *object_element = std::move(value);
@@ -7608,7 +7643,9 @@ class lexer: public lexer_base<BasicJsonType> {
                   static_cast<int>((static_cast<unsigned int>(current) - 0x57u) << factor);
             }
             else
-            { return -1; }
+            {
+                return -1;
+            }
         }
 
         JSON_ASSERT(0x0000 <= codepoint && codepoint <= 0xFFFF);
@@ -7640,7 +7677,9 @@ class lexer: public lexer_base<BasicJsonType> {
             if (JSON_HEDLEY_LIKELY(*range <= current
                                    && current
                                         <= *(++range)))  // NOLINT(bugprone-inc-dec-in-conditions)
-            { add(current); }
+            {
+                add(current);
+            }
             else
             {
                 error_message = "invalid string: ill-formed UTF-8 byte";
@@ -8166,14 +8205,18 @@ class lexer: public lexer_base<BasicJsonType> {
             case 0xDE :
             case 0xDF : {
                 if (JSON_HEDLEY_UNLIKELY(!next_byte_in_range({0x80, 0xBF})))
-                { return token_type::parse_error; }
+                {
+                    return token_type::parse_error;
+                }
                 break;
             }
 
             // U+0800..U+0FFF: bytes E0 A0..BF 80..BF
             case 0xE0 : {
                 if (JSON_HEDLEY_UNLIKELY(!(next_byte_in_range({0xA0, 0xBF, 0x80, 0xBF}))))
-                { return token_type::parse_error; }
+                {
+                    return token_type::parse_error;
+                }
                 break;
             }
 
@@ -8194,14 +8237,18 @@ class lexer: public lexer_base<BasicJsonType> {
             case 0xEE :
             case 0xEF : {
                 if (JSON_HEDLEY_UNLIKELY(!(next_byte_in_range({0x80, 0xBF, 0x80, 0xBF}))))
-                { return token_type::parse_error; }
+                {
+                    return token_type::parse_error;
+                }
                 break;
             }
 
             // U+D000..U+D7FF: bytes ED 80..9F 80..BF
             case 0xED : {
                 if (JSON_HEDLEY_UNLIKELY(!(next_byte_in_range({0x80, 0x9F, 0x80, 0xBF}))))
-                { return token_type::parse_error; }
+                {
+                    return token_type::parse_error;
+                }
                 break;
             }
 
@@ -8209,7 +8256,9 @@ class lexer: public lexer_base<BasicJsonType> {
             case 0xF0 : {
                 if (JSON_HEDLEY_UNLIKELY(
                       !(next_byte_in_range({0x90, 0xBF, 0x80, 0xBF, 0x80, 0xBF}))))
-                { return token_type::parse_error; }
+                {
+                    return token_type::parse_error;
+                }
                 break;
             }
 
@@ -8219,7 +8268,9 @@ class lexer: public lexer_base<BasicJsonType> {
             case 0xF3 : {
                 if (JSON_HEDLEY_UNLIKELY(
                       !(next_byte_in_range({0x80, 0xBF, 0x80, 0xBF, 0x80, 0xBF}))))
-                { return token_type::parse_error; }
+                {
+                    return token_type::parse_error;
+                }
                 break;
             }
 
@@ -8227,7 +8278,9 @@ class lexer: public lexer_base<BasicJsonType> {
             case 0xF4 : {
                 if (JSON_HEDLEY_UNLIKELY(
                       !(next_byte_in_range({0x80, 0x8F, 0x80, 0xBF, 0x80, 0xBF}))))
-                { return token_type::parse_error; }
+                {
+                    return token_type::parse_error;
+                }
                 break;
             }
 
@@ -8631,7 +8684,9 @@ scan_number_done:
             {
                 value_unsigned = static_cast<number_unsigned_t>(x);
                 if (value_unsigned == x)
-                { return token_type::value_unsigned; }
+                {
+                    return token_type::value_unsigned;
+                }
             }
         }
         else if (number_type == token_type::value_integer)
@@ -8645,7 +8700,9 @@ scan_number_done:
             {
                 value_integer = static_cast<number_integer_t>(x);
                 if (value_integer == x)
-                { return token_type::value_integer; }
+                {
+                    return token_type::value_integer;
+                }
             }
         }
 
@@ -8711,10 +8768,14 @@ scan_number_done:
             next_unget = false;
         }
         else
-        { current = ia.get_character(); }
+        {
+            current = ia.get_character();
+        }
 
         if (JSON_HEDLEY_LIKELY(current != char_traits<char_type>::eof()))
-        { token_string.push_back(char_traits<char_type>::to_char_type(current)); }
+        {
+            token_string.push_back(char_traits<char_type>::to_char_type(current));
+        }
 
         if (current == '\n')
         {
@@ -8742,10 +8803,14 @@ scan_number_done:
         if (position.chars_read_current_line == 0)
         {
             if (position.lines_read > 0)
-            { --position.lines_read; }
+            {
+                --position.lines_read;
+            }
         }
         else
-        { --position.chars_read_current_line; }
+        {
+            --position.chars_read_current_line;
+        }
 
         if (JSON_HEDLEY_LIKELY(current != char_traits<char_type>::eof()))
         {
@@ -8838,7 +8903,9 @@ scan_number_done:
 
     void skip_whitespace() {
         do
-        { get(); } while (current == ' ' || current == '\t' || current == '\n' || current == '\r');
+        {
+            get();
+        } while (current == ' ' || current == '\t' || current == '\n' || current == '\r');
     }
 
     token_type scan() {
@@ -8856,7 +8923,9 @@ scan_number_done:
         while (ignore_comments && current == '/')
         {
             if (!scan_comment())
-            { return token_type::parse_error; }
+            {
+                return token_type::parse_error;
+            }
 
             // skip following whitespace
             skip_whitespace();
@@ -9236,9 +9305,13 @@ class binary_reader {
         if (result && strict)
         {
             if (input_format == input_format_t::ubjson || input_format == input_format_t::bjdata)
-            { get_ignore_noop(); }
+            {
+                get_ignore_noop();
+            }
             else
-            { get(); }
+            {
+                get();
+            }
 
             if (JSON_HEDLEY_UNLIKELY(current != char_traits<char_type>::eof()))
             {
@@ -9270,10 +9343,14 @@ class binary_reader {
         get_number<std::int32_t, true>(input_format_t::bson, document_size);
 
         if (JSON_HEDLEY_UNLIKELY(!sax->start_object(static_cast<std::size_t>(-1))))
-        { return false; }
+        {
+            return false;
+        }
 
         if (JSON_HEDLEY_UNLIKELY(!parse_bson_element_list(/*is_array*/ false)))
-        { return false; }
+        {
+            return false;
+        }
 
         return sax->end_object();
     }
@@ -9291,9 +9368,13 @@ class binary_reader {
         {
             get();
             if (JSON_HEDLEY_UNLIKELY(!unexpect_eof(input_format_t::bson, "cstring")))
-            { return false; }
+            {
+                return false;
+            }
             if (current == 0x00)
-            { return true; }
+            {
+                return true;
+            }
             *out++ = static_cast<typename string_t::value_type>(current);
         }
     }
@@ -9466,18 +9547,26 @@ class binary_reader {
         while (auto element_type = get())
         {
             if (JSON_HEDLEY_UNLIKELY(!unexpect_eof(input_format_t::bson, "element list")))
-            { return false; }
+            {
+                return false;
+            }
 
             const std::size_t element_type_parse_position = chars_read;
             if (JSON_HEDLEY_UNLIKELY(!get_bson_cstr(key)))
-            { return false; }
+            {
+                return false;
+            }
 
             if (!is_array && !sax->key(key))
-            { return false; }
+            {
+                return false;
+            }
 
             if (JSON_HEDLEY_UNLIKELY(
                   !parse_bson_element_internal(element_type, element_type_parse_position)))
-            { return false; }
+            {
+                return false;
+            }
 
             // get_bson_cstr only appends
             key.clear();
@@ -9495,10 +9584,14 @@ class binary_reader {
         get_number<std::int32_t, true>(input_format_t::bson, document_size);
 
         if (JSON_HEDLEY_UNLIKELY(!sax->start_array(static_cast<std::size_t>(-1))))
-        { return false; }
+        {
+            return false;
+        }
 
         if (JSON_HEDLEY_UNLIKELY(!parse_bson_element_list(/*is_array*/ true)))
-        { return false; }
+        {
+            return false;
+        }
 
         return sax->end_array();
     }
@@ -9942,10 +10035,14 @@ class binary_reader {
         {
             const auto byte1_raw = get();
             if (JSON_HEDLEY_UNLIKELY(!unexpect_eof(input_format_t::cbor, "number")))
-            { return false; }
+            {
+                return false;
+            }
             const auto byte2_raw = get();
             if (JSON_HEDLEY_UNLIKELY(!unexpect_eof(input_format_t::cbor, "number")))
-            { return false; }
+            {
+                return false;
+            }
 
             const auto byte1 = static_cast<unsigned char>(byte1_raw);
             const auto byte2 = static_cast<unsigned char>(byte2_raw);
@@ -10021,7 +10118,9 @@ class binary_reader {
     */
     bool get_cbor_string(string_t& result) {
         if (JSON_HEDLEY_UNLIKELY(!unexpect_eof(input_format_t::cbor, "string")))
-        { return false; }
+        {
+            return false;
+        }
 
         switch (current)
         {
@@ -10088,7 +10187,9 @@ class binary_reader {
             {
                 string_t chunk;
                 if (!get_cbor_string(chunk))
-                { return false; }
+                {
+                    return false;
+                }
                 result.append(chunk);
             }
             return true;
@@ -10124,7 +10225,9 @@ class binary_reader {
     */
     bool get_cbor_binary(binary_t& result) {
         if (JSON_HEDLEY_UNLIKELY(!unexpect_eof(input_format_t::cbor, "binary")))
-        { return false; }
+        {
+            return false;
+        }
 
         switch (current)
         {
@@ -10191,7 +10294,9 @@ class binary_reader {
             {
                 binary_t chunk;
                 if (!get_cbor_binary(chunk))
-                { return false; }
+                {
+                    return false;
+                }
                 result.insert(result.end(), chunk.begin(), chunk.end());
             }
             return true;
@@ -10222,14 +10327,18 @@ class binary_reader {
     */
     bool get_cbor_array(const std::size_t len, const cbor_tag_handler_t tag_handler) {
         if (JSON_HEDLEY_UNLIKELY(!sax->start_array(len)))
-        { return false; }
+        {
+            return false;
+        }
 
         if (len != static_cast<std::size_t>(-1))
         {
             for (std::size_t i = 0; i < len; ++i)
             {
                 if (JSON_HEDLEY_UNLIKELY(!parse_cbor_internal(true, tag_handler)))
-                { return false; }
+                {
+                    return false;
+                }
             }
         }
         else
@@ -10237,7 +10346,9 @@ class binary_reader {
             while (get() != 0xFF)
             {
                 if (JSON_HEDLEY_UNLIKELY(!parse_cbor_internal(false, tag_handler)))
-                { return false; }
+                {
+                    return false;
+                }
             }
         }
 
@@ -10252,7 +10363,9 @@ class binary_reader {
     */
     bool get_cbor_object(const std::size_t len, const cbor_tag_handler_t tag_handler) {
         if (JSON_HEDLEY_UNLIKELY(!sax->start_object(len)))
-        { return false; }
+        {
+            return false;
+        }
 
         if (len != 0)
         {
@@ -10263,10 +10376,14 @@ class binary_reader {
                 {
                     get();
                     if (JSON_HEDLEY_UNLIKELY(!get_cbor_string(key) || !sax->key(key)))
-                    { return false; }
+                    {
+                        return false;
+                    }
 
                     if (JSON_HEDLEY_UNLIKELY(!parse_cbor_internal(true, tag_handler)))
-                    { return false; }
+                    {
+                        return false;
+                    }
                     key.clear();
                 }
             }
@@ -10275,10 +10392,14 @@ class binary_reader {
                 while (get() != 0xFF)
                 {
                     if (JSON_HEDLEY_UNLIKELY(!get_cbor_string(key) || !sax->key(key)))
-                    { return false; }
+                    {
+                        return false;
+                    }
 
                     if (JSON_HEDLEY_UNLIKELY(!parse_cbor_internal(true, tag_handler)))
-                    { return false; }
+                    {
+                        return false;
+                    }
                     key.clear();
                 }
             }
@@ -10689,7 +10810,9 @@ class binary_reader {
     */
     bool get_msgpack_string(string_t& result) {
         if (JSON_HEDLEY_UNLIKELY(!unexpect_eof(input_format_t::msgpack, "string")))
-        { return false; }
+        {
+            return false;
+        }
 
         switch (current)
         {
@@ -10888,12 +11011,16 @@ class binary_reader {
     */
     bool get_msgpack_array(const std::size_t len) {
         if (JSON_HEDLEY_UNLIKELY(!sax->start_array(len)))
-        { return false; }
+        {
+            return false;
+        }
 
         for (std::size_t i = 0; i < len; ++i)
         {
             if (JSON_HEDLEY_UNLIKELY(!parse_msgpack_internal()))
-            { return false; }
+            {
+                return false;
+            }
         }
 
         return sax->end_array();
@@ -10905,17 +11032,23 @@ class binary_reader {
     */
     bool get_msgpack_object(const std::size_t len) {
         if (JSON_HEDLEY_UNLIKELY(!sax->start_object(len)))
-        { return false; }
+        {
+            return false;
+        }
 
         string_t key;
         for (std::size_t i = 0; i < len; ++i)
         {
             get();
             if (JSON_HEDLEY_UNLIKELY(!get_msgpack_string(key) || !sax->key(key)))
-            { return false; }
+            {
+                return false;
+            }
 
             if (JSON_HEDLEY_UNLIKELY(!parse_msgpack_internal()))
-            { return false; }
+            {
+                return false;
+            }
             key.clear();
         }
 
@@ -10958,7 +11091,9 @@ class binary_reader {
         }
 
         if (JSON_HEDLEY_UNLIKELY(!unexpect_eof(input_format, "value")))
-        { return false; }
+        {
+            return false;
+        }
 
         switch (current)
         {
@@ -10989,21 +11124,27 @@ class binary_reader {
 
         case 'u' : {
             if (input_format != input_format_t::bjdata)
-            { break; }
+            {
+                break;
+            }
             std::uint16_t len{};
             return get_number(input_format, len) && get_string(input_format, len, result);
         }
 
         case 'm' : {
             if (input_format != input_format_t::bjdata)
-            { break; }
+            {
+                break;
+            }
             std::uint32_t len{};
             return get_number(input_format, len) && get_string(input_format, len, result);
         }
 
         case 'M' : {
             if (input_format != input_format_t::bjdata)
-            { break; }
+            {
+                break;
+            }
             std::uint64_t len{};
             return get_number(input_format, len) && get_string(input_format, len, result);
         }
@@ -11040,7 +11181,9 @@ class binary_reader {
         bool                                  no_ndarray = true;
 
         if (JSON_HEDLEY_UNLIKELY(!get_ubjson_size_type(size_and_type, no_ndarray)))
-        { return false; }
+        {
+            return false;
+        }
 
         if (size_and_type.first != npos)
         {
@@ -11052,7 +11195,9 @@ class binary_reader {
                     {
                         if (JSON_HEDLEY_UNLIKELY(
                               !get_ubjson_size_value(dimlen, no_ndarray, size_and_type.second)))
-                        { return false; }
+                        {
+                            return false;
+                        }
                         dim.push_back(dimlen);
                     }
                 }
@@ -11062,7 +11207,9 @@ class binary_reader {
                 for (std::size_t i = 0; i < size_and_type.first; ++i)
                 {
                     if (JSON_HEDLEY_UNLIKELY(!get_ubjson_size_value(dimlen, no_ndarray)))
-                    { return false; }
+                    {
+                        return false;
+                    }
                     dim.push_back(dimlen);
                 }
             }
@@ -11072,7 +11219,9 @@ class binary_reader {
             while (current != ']')
             {
                 if (JSON_HEDLEY_UNLIKELY(!get_ubjson_size_value(dimlen, no_ndarray, current)))
-                { return false; }
+                {
+                    return false;
+                }
                 dim.push_back(dimlen);
                 get_ignore_noop();
             }
@@ -11093,14 +11242,18 @@ class binary_reader {
     */
     bool get_ubjson_size_value(std::size_t& result, bool& is_ndarray, char_int_type prefix = 0) {
         if (prefix == 0)
-        { prefix = get_ignore_noop(); }
+        {
+            prefix = get_ignore_noop();
+        }
 
         switch (prefix)
         {
         case 'U' : {
             std::uint8_t number{};
             if (JSON_HEDLEY_UNLIKELY(!get_number(input_format, number)))
-            { return false; }
+            {
+                return false;
+            }
             result = static_cast<std::size_t>(number);
             return true;
         }
@@ -11108,7 +11261,9 @@ class binary_reader {
         case 'i' : {
             std::int8_t number{};
             if (JSON_HEDLEY_UNLIKELY(!get_number(input_format, number)))
-            { return false; }
+            {
+                return false;
+            }
             if (number < 0)
             {
                 return sax->parse_error(
@@ -11127,7 +11282,9 @@ class binary_reader {
         case 'I' : {
             std::int16_t number{};
             if (JSON_HEDLEY_UNLIKELY(!get_number(input_format, number)))
-            { return false; }
+            {
+                return false;
+            }
             if (number < 0)
             {
                 return sax->parse_error(
@@ -11145,7 +11302,9 @@ class binary_reader {
         case 'l' : {
             std::int32_t number{};
             if (JSON_HEDLEY_UNLIKELY(!get_number(input_format, number)))
-            { return false; }
+            {
+                return false;
+            }
             if (number < 0)
             {
                 return sax->parse_error(
@@ -11163,7 +11322,9 @@ class binary_reader {
         case 'L' : {
             std::int64_t number{};
             if (JSON_HEDLEY_UNLIKELY(!get_number(input_format, number)))
-            { return false; }
+            {
+                return false;
+            }
             if (number < 0)
             {
                 return sax->parse_error(
@@ -11188,30 +11349,42 @@ class binary_reader {
 
         case 'u' : {
             if (input_format != input_format_t::bjdata)
-            { break; }
+            {
+                break;
+            }
             std::uint16_t number{};
             if (JSON_HEDLEY_UNLIKELY(!get_number(input_format, number)))
-            { return false; }
+            {
+                return false;
+            }
             result = static_cast<std::size_t>(number);
             return true;
         }
 
         case 'm' : {
             if (input_format != input_format_t::bjdata)
-            { break; }
+            {
+                break;
+            }
             std::uint32_t number{};
             if (JSON_HEDLEY_UNLIKELY(!get_number(input_format, number)))
-            { return false; }
+            {
+                return false;
+            }
             result = conditional_static_cast<std::size_t>(number);
             return true;
         }
 
         case 'M' : {
             if (input_format != input_format_t::bjdata)
-            { break; }
+            {
+                break;
+            }
             std::uint64_t number{};
             if (JSON_HEDLEY_UNLIKELY(!get_number(input_format, number)))
-            { return false; }
+            {
+                return false;
+            }
             if (!value_in_range_of<std::size_t>(number))
             {
                 return sax->parse_error(
@@ -11226,7 +11399,9 @@ class binary_reader {
 
         case '[' : {
             if (input_format != input_format_t::bjdata)
-            { break; }
+            {
+                break;
+            }
             if (
               is_ndarray)  // ndarray dimensional vector can only contain integers, and can not embed another array
             {
@@ -11240,7 +11415,9 @@ class binary_reader {
             }
             std::vector<size_t> dim;
             if (JSON_HEDLEY_UNLIKELY(!get_ubjson_ndarray_size(dim)))
-            { return false; }
+            {
+                return false;
+            }
             if (dim.size() == 1
                 || (dim.size() == 2
                     && dim.at(0) == 1))  // return normal array size if 1D row vector
@@ -11264,7 +11441,9 @@ class binary_reader {
                 string_t key = "_ArraySize_";
                 if (JSON_HEDLEY_UNLIKELY(!sax->start_object(3) || !sax->key(key)
                                          || !sax->start_array(dim.size())))
-                { return false; }
+                {
+                    return false;
+                }
                 result = 1;
                 for (auto i : dim)
                 {
@@ -11284,7 +11463,9 @@ class binary_reader {
                     }
                     if (JSON_HEDLEY_UNLIKELY(
                           !sax->number_unsigned(static_cast<number_unsigned_t>(i))))
-                    { return false; }
+                    {
+                        return false;
+                    }
                 }
                 is_ndarray = true;
                 return sax->end_array();
@@ -11356,13 +11537,17 @@ class binary_reader {
             }
 
             if (JSON_HEDLEY_UNLIKELY(!unexpect_eof(input_format, "type")))
-            { return false; }
+            {
+                return false;
+            }
 
             get_ignore_noop();
             if (JSON_HEDLEY_UNLIKELY(current != '#'))
             {
                 if (JSON_HEDLEY_UNLIKELY(!unexpect_eof(input_format, "value")))
-                { return false; }
+                {
+                    return false;
+                }
                 auto last_token = get_token_string();
                 return sax->parse_error(
                   chars_read, last_token,
@@ -11457,34 +11642,46 @@ class binary_reader {
 
         case 'u' : {
             if (input_format != input_format_t::bjdata)
-            { break; }
+            {
+                break;
+            }
             std::uint16_t number{};
             return get_number(input_format, number) && sax->number_unsigned(number);
         }
 
         case 'm' : {
             if (input_format != input_format_t::bjdata)
-            { break; }
+            {
+                break;
+            }
             std::uint32_t number{};
             return get_number(input_format, number) && sax->number_unsigned(number);
         }
 
         case 'M' : {
             if (input_format != input_format_t::bjdata)
-            { break; }
+            {
+                break;
+            }
             std::uint64_t number{};
             return get_number(input_format, number) && sax->number_unsigned(number);
         }
 
         case 'h' : {
             if (input_format != input_format_t::bjdata)
-            { break; }
+            {
+                break;
+            }
             const auto byte1_raw = get();
             if (JSON_HEDLEY_UNLIKELY(!unexpect_eof(input_format, "number")))
-            { return false; }
+            {
+                return false;
+            }
             const auto byte2_raw = get();
             if (JSON_HEDLEY_UNLIKELY(!unexpect_eof(input_format, "number")))
-            { return false; }
+            {
+                return false;
+            }
 
             const auto byte1 = static_cast<unsigned char>(byte1_raw);
             const auto byte2 = static_cast<unsigned char>(byte2_raw);
@@ -11539,7 +11736,9 @@ class binary_reader {
         {
             get();
             if (JSON_HEDLEY_UNLIKELY(!unexpect_eof(input_format, "char")))
-            { return false; }
+            {
+                return false;
+            }
             if (JSON_HEDLEY_UNLIKELY(current > 127))
             {
                 auto last_token = get_token_string();
@@ -11587,7 +11786,9 @@ class binary_reader {
     bool get_ubjson_array() {
         std::pair<std::size_t, char_int_type> size_and_type;
         if (JSON_HEDLEY_UNLIKELY(!get_ubjson_size_type(size_and_type)))
-        { return false; }
+        {
+            return false;
+        }
 
         // if bit-8 of size_and_type.second is set to 1, encode bjdata ndarray as an object in JData annotated array format (https://github.com/NeuroJSON/jdata):
         // {"_ArrayType_" : "typeid", "_ArraySize_" : [n1, n2, ...], "_ArrayData_" : [v1, v2, ...]}
@@ -11616,19 +11817,27 @@ class binary_reader {
 
             string_t type = it->second;  // sax->string() takes a reference
             if (JSON_HEDLEY_UNLIKELY(!sax->key(key) || !sax->string(type)))
-            { return false; }
+            {
+                return false;
+            }
 
             if (size_and_type.second == 'C')
-            { size_and_type.second = 'U'; }
+            {
+                size_and_type.second = 'U';
+            }
 
             key = "_ArrayData_";
             if (JSON_HEDLEY_UNLIKELY(!sax->key(key) || !sax->start_array(size_and_type.first)))
-            { return false; }
+            {
+                return false;
+            }
 
             for (std::size_t i = 0; i < size_and_type.first; ++i)
             {
                 if (JSON_HEDLEY_UNLIKELY(!get_ubjson_value(size_and_type.second)))
-                { return false; }
+                {
+                    return false;
+                }
             }
 
             return (sax->end_array() && sax->end_object());
@@ -11637,7 +11846,9 @@ class binary_reader {
         if (size_and_type.first != npos)
         {
             if (JSON_HEDLEY_UNLIKELY(!sax->start_array(size_and_type.first)))
-            { return false; }
+            {
+                return false;
+            }
 
             if (size_and_type.second != 0)
             {
@@ -11646,7 +11857,9 @@ class binary_reader {
                     for (std::size_t i = 0; i < size_and_type.first; ++i)
                     {
                         if (JSON_HEDLEY_UNLIKELY(!get_ubjson_value(size_and_type.second)))
-                        { return false; }
+                        {
+                            return false;
+                        }
                     }
                 }
             }
@@ -11655,19 +11868,25 @@ class binary_reader {
                 for (std::size_t i = 0; i < size_and_type.first; ++i)
                 {
                     if (JSON_HEDLEY_UNLIKELY(!parse_ubjson_internal()))
-                    { return false; }
+                    {
+                        return false;
+                    }
                 }
             }
         }
         else
         {
             if (JSON_HEDLEY_UNLIKELY(!sax->start_array(static_cast<std::size_t>(-1))))
-            { return false; }
+            {
+                return false;
+            }
 
             while (current != ']')
             {
                 if (JSON_HEDLEY_UNLIKELY(!parse_ubjson_internal(false)))
-                { return false; }
+                {
+                    return false;
+                }
                 get_ignore_noop();
             }
         }
@@ -11681,7 +11900,9 @@ class binary_reader {
     bool get_ubjson_object() {
         std::pair<std::size_t, char_int_type> size_and_type;
         if (JSON_HEDLEY_UNLIKELY(!get_ubjson_size_type(size_and_type)))
-        { return false; }
+        {
+            return false;
+        }
 
         // do not accept ND-array size in objects in BJData
         if (input_format == input_format_t::bjdata && size_and_type.first != npos
@@ -11702,16 +11923,22 @@ class binary_reader {
         if (size_and_type.first != npos)
         {
             if (JSON_HEDLEY_UNLIKELY(!sax->start_object(size_and_type.first)))
-            { return false; }
+            {
+                return false;
+            }
 
             if (size_and_type.second != 0)
             {
                 for (std::size_t i = 0; i < size_and_type.first; ++i)
                 {
                     if (JSON_HEDLEY_UNLIKELY(!get_ubjson_string(key) || !sax->key(key)))
-                    { return false; }
+                    {
+                        return false;
+                    }
                     if (JSON_HEDLEY_UNLIKELY(!get_ubjson_value(size_and_type.second)))
-                    { return false; }
+                    {
+                        return false;
+                    }
                     key.clear();
                 }
             }
@@ -11720,9 +11947,13 @@ class binary_reader {
                 for (std::size_t i = 0; i < size_and_type.first; ++i)
                 {
                     if (JSON_HEDLEY_UNLIKELY(!get_ubjson_string(key) || !sax->key(key)))
-                    { return false; }
+                    {
+                        return false;
+                    }
                     if (JSON_HEDLEY_UNLIKELY(!parse_ubjson_internal()))
-                    { return false; }
+                    {
+                        return false;
+                    }
                     key.clear();
                 }
             }
@@ -11730,14 +11961,20 @@ class binary_reader {
         else
         {
             if (JSON_HEDLEY_UNLIKELY(!sax->start_object(static_cast<std::size_t>(-1))))
-            { return false; }
+            {
+                return false;
+            }
 
             while (current != '}')
             {
                 if (JSON_HEDLEY_UNLIKELY(!get_ubjson_string(key, false) || !sax->key(key)))
-                { return false; }
+                {
+                    return false;
+                }
                 if (JSON_HEDLEY_UNLIKELY(!parse_ubjson_internal()))
-                { return false; }
+                {
+                    return false;
+                }
                 get_ignore_noop();
                 key.clear();
             }
@@ -11755,7 +11992,9 @@ class binary_reader {
         bool        no_ndarray = true;
         auto        res        = get_ubjson_size_value(size, no_ndarray);
         if (JSON_HEDLEY_UNLIKELY(!res))
-        { return res; }
+        {
+            return res;
+        }
 
         // get number string
         std::vector<char> number_vector;
@@ -11763,7 +12002,9 @@ class binary_reader {
         {
             get();
             if (JSON_HEDLEY_UNLIKELY(!unexpect_eof(input_format, "number")))
-            { return false; }
+            {
+                return false;
+            }
             number_vector.push_back(static_cast<char>(current));
         }
 
@@ -11846,7 +12087,9 @@ class binary_reader {
     */
     char_int_type get_ignore_noop() {
         do
-        { get(); } while (current == 'N');
+        {
+            get();
+        } while (current == 'N');
 
         return current;
     }
@@ -11874,11 +12117,15 @@ class binary_reader {
         {
             get();
             if (JSON_HEDLEY_UNLIKELY(!unexpect_eof(format, "number")))
-            { return false; }
+            {
+                return false;
+            }
 
             // reverse byte order prior to conversion if necessary
             if (is_little_endian != (InputIsLittleEndian || format == input_format_t::bjdata))
-            { vec[sizeof(NumberType) - i - 1] = static_cast<std::uint8_t>(current); }
+            {
+                vec[sizeof(NumberType) - i - 1] = static_cast<std::uint8_t>(current);
+            }
             else
             {
                 vec[i] = static_cast<std::uint8_t>(current);  // LCOV_EXCL_LINE
@@ -12201,7 +12448,9 @@ class parser {
             // set top-level value to null if it was discarded by the callback
             // function
             if (result.is_discarded())
-            { result = nullptr; }
+            {
+                result = nullptr;
+            }
         }
         else
         {
@@ -12276,13 +12525,17 @@ class parser {
                 {
                 case token_type::begin_object : {
                     if (JSON_HEDLEY_UNLIKELY(!sax->start_object(static_cast<std::size_t>(-1))))
-                    { return false; }
+                    {
+                        return false;
+                    }
 
                     // closing } -> we are done
                     if (get_token() == token_type::end_object)
                     {
                         if (JSON_HEDLEY_UNLIKELY(!sax->end_object()))
-                        { return false; }
+                        {
+                            return false;
+                        }
                         break;
                     }
 
@@ -12296,7 +12549,9 @@ class parser {
                             exception_message(token_type::value_string, "object key"), nullptr));
                     }
                     if (JSON_HEDLEY_UNLIKELY(!sax->key(m_lexer.get_string())))
-                    { return false; }
+                    {
+                        return false;
+                    }
 
                     // parse separator (:)
                     if (JSON_HEDLEY_UNLIKELY(get_token() != token_type::name_separator))
@@ -12319,13 +12574,17 @@ class parser {
 
                 case token_type::begin_array : {
                     if (JSON_HEDLEY_UNLIKELY(!sax->start_array(static_cast<std::size_t>(-1))))
-                    { return false; }
+                    {
+                        return false;
+                    }
 
                     // closing ] -> we are done
                     if (get_token() == token_type::end_array)
                     {
                         if (JSON_HEDLEY_UNLIKELY(!sax->end_array()))
-                        { return false; }
+                        {
+                            return false;
+                        }
                         break;
                     }
 
@@ -12350,44 +12609,58 @@ class parser {
                     }
 
                     if (JSON_HEDLEY_UNLIKELY(!sax->number_float(res, m_lexer.get_string())))
-                    { return false; }
+                    {
+                        return false;
+                    }
 
                     break;
                 }
 
                 case token_type::literal_false : {
                     if (JSON_HEDLEY_UNLIKELY(!sax->boolean(false)))
-                    { return false; }
+                    {
+                        return false;
+                    }
                     break;
                 }
 
                 case token_type::literal_null : {
                     if (JSON_HEDLEY_UNLIKELY(!sax->null()))
-                    { return false; }
+                    {
+                        return false;
+                    }
                     break;
                 }
 
                 case token_type::literal_true : {
                     if (JSON_HEDLEY_UNLIKELY(!sax->boolean(true)))
-                    { return false; }
+                    {
+                        return false;
+                    }
                     break;
                 }
 
                 case token_type::value_integer : {
                     if (JSON_HEDLEY_UNLIKELY(!sax->number_integer(m_lexer.get_number_integer())))
-                    { return false; }
+                    {
+                        return false;
+                    }
                     break;
                 }
 
                 case token_type::value_string : {
                     if (JSON_HEDLEY_UNLIKELY(!sax->string(m_lexer.get_string())))
-                    { return false; }
+                    {
+                        return false;
+                    }
                     break;
                 }
 
                 case token_type::value_unsigned : {
                     if (JSON_HEDLEY_UNLIKELY(!sax->number_unsigned(m_lexer.get_number_unsigned())))
-                    { return false; }
+                    {
+                        return false;
+                    }
                     break;
                 }
 
@@ -12433,7 +12706,9 @@ class parser {
                 }
             }
             else
-            { skip_to_state_evaluation = false; }
+            {
+                skip_to_state_evaluation = false;
+            }
 
             // we reached this line after we successfully parsed a value
             if (states.empty())
@@ -12456,7 +12731,9 @@ class parser {
                 if (JSON_HEDLEY_LIKELY(last_token == token_type::end_array))
                 {
                     if (JSON_HEDLEY_UNLIKELY(!sax->end_array()))
-                    { return false; }
+                    {
+                        return false;
+                    }
 
                     // We are done with this array. Before we can parse a
                     // new value, we need to evaluate the new state first.
@@ -12490,7 +12767,9 @@ class parser {
                 }
 
                 if (JSON_HEDLEY_UNLIKELY(!sax->key(m_lexer.get_string())))
-                { return false; }
+                {
+                    return false;
+                }
 
                 // parse separator (:)
                 if (JSON_HEDLEY_UNLIKELY(get_token() != token_type::name_separator))
@@ -12512,7 +12791,9 @@ class parser {
             if (JSON_HEDLEY_LIKELY(last_token == token_type::end_object))
             {
                 if (JSON_HEDLEY_UNLIKELY(!sax->end_object()))
-                { return false; }
+                {
+                    return false;
+                }
 
                 // We are done with this object. Before we can parse a
                 // new value, we need to evaluate the new state first.
@@ -12538,7 +12819,9 @@ class parser {
         std::string error_msg = "syntax error ";
 
         if (!context.empty())
-        { error_msg += concat("while parsing ", context, ' '); }
+        {
+            error_msg += concat("while parsing ", context, ' ');
+        }
 
         error_msg += "- ";
 
@@ -12548,10 +12831,14 @@ class parser {
                                 m_lexer.get_token_string(), '\'');
         }
         else
-        { error_msg += concat("unexpected ", lexer_t::token_type_name(last_token)); }
+        {
+            error_msg += concat("unexpected ", lexer_t::token_type_name(last_token));
+        }
 
         if (expected != token_type::uninitialized)
-        { error_msg += concat("; expected ", lexer_t::token_type_name(expected)); }
+        {
+            error_msg += concat("; expected ", lexer_t::token_type_name(expected));
+        }
 
         return error_msg;
     }
@@ -13024,7 +13311,9 @@ class
         case value_t::discarded :
         default : {
             if (JSON_HEDLEY_LIKELY(m_it.primitive_iterator.is_begin()))
-            { return *m_object; }
+            {
+                return *m_object;
+            }
 
             JSON_THROW(invalid_iterator::create(214, "cannot get value", m_object));
         }
@@ -13060,7 +13349,9 @@ class
         case value_t::discarded :
         default : {
             if (JSON_HEDLEY_LIKELY(m_it.primitive_iterator.is_begin()))
-            { return m_object; }
+            {
+                return m_object;
+            }
 
             JSON_THROW(invalid_iterator::create(214, "cannot get value", m_object));
         }
@@ -13394,7 +13685,9 @@ class
         case value_t::discarded :
         default : {
             if (JSON_HEDLEY_LIKELY(m_it.primitive_iterator.get_value() == -n))
-            { return *m_object; }
+            {
+                return *m_object;
+            }
 
             JSON_THROW(invalid_iterator::create(214, "cannot get value", m_object));
         }
@@ -13409,7 +13702,9 @@ class
         JSON_ASSERT(m_object != nullptr);
 
         if (JSON_HEDLEY_LIKELY(m_object->is_object()))
-        { return m_it.object_iterator->first; }
+        {
+            return m_it.object_iterator->first;
+        }
 
         JSON_THROW(
           invalid_iterator::create(207, "cannot use key() for non-object iterators", m_object));
@@ -13545,7 +13840,7 @@ class json_reverse_iterator: public std::reverse_iterator<Base> {
 
     /// return the value of an iterator
     reference value() const {
-        auto      it = --this->base();
+        auto it = --this->base();
         return it.operator*();
     }
 };
@@ -13724,7 +14019,9 @@ class json_pointer {
     /// @sa https://json.nlohmann.me/api/json_pointer/parent_pointer/
     json_pointer parent_pointer() const {
         if (empty())
-        { return *this; }
+        {
+            return *this;
+        }
 
         json_pointer res = *this;
         res.pop_back();
@@ -13735,7 +14032,9 @@ class json_pointer {
     /// @sa https://json.nlohmann.me/api/json_pointer/pop_back/
     void pop_back() {
         if (JSON_HEDLEY_UNLIKELY(empty()))
-        { JSON_THROW(detail::out_of_range::create(405, "JSON pointer has no parent", nullptr)); }
+        {
+            JSON_THROW(detail::out_of_range::create(405, "JSON pointer has no parent", nullptr));
+        }
 
         reference_tokens.pop_back();
     }
@@ -13744,7 +14043,9 @@ class json_pointer {
     /// @sa https://json.nlohmann.me/api/json_pointer/back/
     const string_t& back() const {
         if (JSON_HEDLEY_UNLIKELY(empty()))
-        { JSON_THROW(detail::out_of_range::create(405, "JSON pointer has no parent", nullptr)); }
+        {
+            JSON_THROW(detail::out_of_range::create(405, "JSON pointer has no parent", nullptr));
+        }
 
         return reference_tokens.back();
     }
@@ -13818,7 +14119,9 @@ class json_pointer {
 
     JSON_PRIVATE_UNLESS_TESTED: json_pointer top() const {
         if (JSON_HEDLEY_UNLIKELY(empty()))
-        { JSON_THROW(detail::out_of_range::create(405, "JSON pointer has no parent", nullptr)); }
+        {
+            JSON_THROW(detail::out_of_range::create(405, "JSON pointer has no parent", nullptr));
+        }
 
         json_pointer result     = *this;
         result.reference_tokens = {reference_tokens[0]};
@@ -14226,7 +14529,9 @@ class json_pointer {
 
         // special case: empty reference string -> no reference tokens
         if (reference_string.empty())
-        { return result; }
+        {
+            return result;
+        }
 
         // check if nonempty reference string begins with slash
         if (JSON_HEDLEY_UNLIKELY(reference_string[0] != '/'))
@@ -14360,7 +14665,9 @@ class json_pointer {
     template<typename BasicJsonType>
     static BasicJsonType unflatten(const BasicJsonType& value) {
         if (JSON_HEDLEY_UNLIKELY(!value.is_object()))
-        { JSON_THROW(detail::type_error::create(314, "only objects can be unflattened", &value)); }
+        {
+            JSON_THROW(detail::type_error::create(314, "only objects can be unflattened", &value));
+        }
 
         BasicJsonType result;
 
@@ -14459,7 +14766,7 @@ class json_pointer {
     /// @brief compares two JSON pointer for less-than
     template<typename RefStringTypeLhs, typename RefStringTypeRhs>
     // NOLINTNEXTLINE(readability-redundant-declaration)
-    friend bool      operator<(const json_pointer<RefStringTypeLhs>& lhs,
+    friend bool operator<(const json_pointer<RefStringTypeLhs>& lhs,
                           const json_pointer<RefStringTypeRhs>& rhs) noexcept;
 #endif
 
@@ -14567,7 +14874,9 @@ class json_ref {
 
     value_type moved_or_copied() const {
         if (value_ref == nullptr)
-        { return std::move(owned_value); }
+        {
+            return std::move(owned_value);
+        }
         return *value_ref;
     }
 
@@ -14825,7 +15134,9 @@ class binary_writer {
                 // integers and unsigned integers. Therefore, we used the
                 // code from the value_t::number_unsigned case here.
                 if (j.m_data.m_value.number_integer <= 0x17)
-                { write_number(static_cast<std::uint8_t>(j.m_data.m_value.number_integer)); }
+                {
+                    write_number(static_cast<std::uint8_t>(j.m_data.m_value.number_integer));
+                }
                 else if (j.m_data.m_value.number_integer
                          <= (std::numeric_limits<std::uint8_t>::max)())
                 {
@@ -14856,7 +15167,9 @@ class binary_writer {
                 // byte, and the value is converted to a positive number.
                 const auto positive_number = -1 - j.m_data.m_value.number_integer;
                 if (j.m_data.m_value.number_integer >= -24)
-                { write_number(static_cast<std::uint8_t>(0x20 + positive_number)); }
+                {
+                    write_number(static_cast<std::uint8_t>(0x20 + positive_number));
+                }
                 else if (positive_number <= (std::numeric_limits<std::uint8_t>::max)())
                 {
                     oa->write_character(to_char_type(0x38));
@@ -14883,7 +15196,9 @@ class binary_writer {
 
         case value_t::number_unsigned : {
             if (j.m_data.m_value.number_unsigned <= 0x17)
-            { write_number(static_cast<std::uint8_t>(j.m_data.m_value.number_unsigned)); }
+            {
+                write_number(static_cast<std::uint8_t>(j.m_data.m_value.number_unsigned));
+            }
             else if (j.m_data.m_value.number_unsigned <= (std::numeric_limits<std::uint8_t>::max)())
             {
                 oa->write_character(to_char_type(0x18));
@@ -14926,7 +15241,9 @@ class binary_writer {
                 oa->write_character(to_char_type(0x00));
             }
             else
-            { write_compact_float(j.m_data.m_value.number_float, detail::input_format_t::cbor); }
+            {
+                write_compact_float(j.m_data.m_value.number_float, detail::input_format_t::cbor);
+            }
             break;
         }
 
@@ -14934,7 +15251,9 @@ class binary_writer {
             // step 1: write control byte and the string length
             const auto N = j.m_data.m_value.string->size();
             if (N <= 0x17)
-            { write_number(static_cast<std::uint8_t>(0x60 + N)); }
+            {
+                write_number(static_cast<std::uint8_t>(0x60 + N));
+            }
             else if (N <= (std::numeric_limits<std::uint8_t>::max)())
             {
                 oa->write_character(to_char_type(0x78));
@@ -14969,7 +15288,9 @@ class binary_writer {
             // step 1: write control byte and the array size
             const auto N = j.m_data.m_value.array->size();
             if (N <= 0x17)
-            { write_number(static_cast<std::uint8_t>(0x80 + N)); }
+            {
+                write_number(static_cast<std::uint8_t>(0x80 + N));
+            }
             else if (N <= (std::numeric_limits<std::uint8_t>::max)())
             {
                 oa->write_character(to_char_type(0x98));
@@ -14995,7 +15316,9 @@ class binary_writer {
 
             // step 2: write each element
             for (const auto& el : *j.m_data.m_value.array)
-            { write_cbor(el); }
+            {
+                write_cbor(el);
+            }
             break;
         }
 
@@ -15031,7 +15354,9 @@ class binary_writer {
             // step 1: write control byte and the binary array size
             const auto N = j.m_data.m_value.binary->size();
             if (N <= 0x17)
-            { write_number(static_cast<std::uint8_t>(0x40 + N)); }
+            {
+                write_number(static_cast<std::uint8_t>(0x40 + N));
+            }
             else if (N <= (std::numeric_limits<std::uint8_t>::max)())
             {
                 oa->write_character(to_char_type(0x58));
@@ -15066,7 +15391,9 @@ class binary_writer {
             // step 1: write control byte and the object size
             const auto N = j.m_data.m_value.object->size();
             if (N <= 0x17)
-            { write_number(static_cast<std::uint8_t>(0xA0 + N)); }
+            {
+                write_number(static_cast<std::uint8_t>(0xA0 + N));
+            }
             else if (N <= (std::numeric_limits<std::uint8_t>::max)())
             {
                 oa->write_character(to_char_type(0xB8));
@@ -15308,7 +15635,9 @@ class binary_writer {
 
             // step 2: write each element
             for (const auto& el : *j.m_data.m_value.array)
-            { write_msgpack(el); }
+            {
+                write_msgpack(el);
+            }
             break;
         }
 
@@ -15356,7 +15685,9 @@ class binary_writer {
 
                 oa->write_character(to_char_type(output_type));
                 if (!fixed)
-                { write_number(static_cast<std::uint8_t>(N)); }
+                {
+                    write_number(static_cast<std::uint8_t>(N));
+                }
             }
             else if (N <= (std::numeric_limits<std::uint16_t>::max)())
             {
@@ -15377,7 +15708,9 @@ class binary_writer {
 
             // step 1.5: if this is an ext type, write the subtype
             if (use_ext)
-            { write_number(static_cast<std::int8_t>(j.m_data.m_value.binary->subtype())); }
+            {
+                write_number(static_cast<std::int8_t>(j.m_data.m_value.binary->subtype()));
+            }
 
             // step 2: write the byte string
             oa->write_characters(reinterpret_cast<const CharType*>(j.m_data.m_value.binary->data()),
@@ -15438,7 +15771,9 @@ class binary_writer {
         {
         case value_t::null : {
             if (add_prefix)
-            { oa->write_character(to_char_type('Z')); }
+            {
+                oa->write_character(to_char_type('Z'));
+            }
             break;
         }
 
@@ -15470,7 +15805,9 @@ class binary_writer {
 
         case value_t::string : {
             if (add_prefix)
-            { oa->write_character(to_char_type('S')); }
+            {
+                oa->write_character(to_char_type('S'));
+            }
             write_number_with_ubjson_prefix(j.m_data.m_value.string->size(), true, use_bjdata);
             oa->write_characters(
               reinterpret_cast<const CharType*>(j.m_data.m_value.string->c_str()),
@@ -15480,7 +15817,9 @@ class binary_writer {
 
         case value_t::array : {
             if (add_prefix)
-            { oa->write_character(to_char_type('[')); }
+            {
+                oa->write_character(to_char_type('['));
+            }
 
             bool prefix_required = true;
             if (use_type && !j.m_data.m_value.array->empty())
@@ -15488,7 +15827,7 @@ class binary_writer {
                 JSON_ASSERT(use_count);
                 const CharType first_prefix = ubjson_prefix(j.front(), use_bjdata);
                 const bool     same_prefix  = std::all_of(
-                       j.begin() + 1, j.end(), [this, first_prefix, use_bjdata](const BasicJsonType& v) {
+                  j.begin() + 1, j.end(), [this, first_prefix, use_bjdata](const BasicJsonType& v) {
                       return ubjson_prefix(v, use_bjdata) == first_prefix;
                   });
 
@@ -15513,17 +15852,23 @@ class binary_writer {
             }
 
             for (const auto& el : *j.m_data.m_value.array)
-            { write_ubjson(el, use_count, use_type, prefix_required, use_bjdata); }
+            {
+                write_ubjson(el, use_count, use_type, prefix_required, use_bjdata);
+            }
 
             if (!use_count)
-            { oa->write_character(to_char_type(']')); }
+            {
+                oa->write_character(to_char_type(']'));
+            }
 
             break;
         }
 
         case value_t::binary : {
             if (add_prefix)
-            { oa->write_character(to_char_type('[')); }
+            {
+                oa->write_character(to_char_type('['));
+            }
 
             if (use_type && !j.m_data.m_value.binary->empty())
             {
@@ -15554,7 +15899,9 @@ class binary_writer {
             }
 
             if (!use_count)
-            { oa->write_character(to_char_type(']')); }
+            {
+                oa->write_character(to_char_type(']'));
+            }
 
             break;
         }
@@ -15569,11 +15916,15 @@ class binary_writer {
                   !write_bjdata_ndarray(
                     *j.m_data.m_value.object, use_count,
                     use_type))  // decode bjdata ndarray in the JData format (https://github.com/NeuroJSON/jdata)
-                { break; }
+                {
+                    break;
+                }
             }
 
             if (add_prefix)
-            { oa->write_character(to_char_type('{')); }
+            {
+                oa->write_character(to_char_type('{'));
+            }
 
             bool prefix_required = true;
             if (use_type && !j.m_data.m_value.object->empty())
@@ -15581,7 +15932,7 @@ class binary_writer {
                 JSON_ASSERT(use_count);
                 const CharType first_prefix = ubjson_prefix(j.front(), use_bjdata);
                 const bool     same_prefix  = std::all_of(
-                       j.begin(), j.end(), [this, first_prefix, use_bjdata](const BasicJsonType& v) {
+                  j.begin(), j.end(), [this, first_prefix, use_bjdata](const BasicJsonType& v) {
                       return ubjson_prefix(v, use_bjdata) == first_prefix;
                   });
 
@@ -15614,7 +15965,9 @@ class binary_writer {
             }
 
             if (!use_count)
-            { oa->write_character(to_char_type('}')); }
+            {
+                oa->write_character(to_char_type('}'));
+            }
 
             break;
         }
@@ -15801,7 +16154,9 @@ class binary_writer {
         std::size_t array_index = 0ul;
 
         for (const auto& el : value)
-        { write_bson_element(std::to_string(array_index++), el); }
+        {
+            write_bson_element(std::to_string(array_index++), el);
+        }
 
         oa->write_character(to_char_type(0x00));
     }
@@ -15932,7 +16287,9 @@ class binary_writer {
         write_number<std::int32_t>(static_cast<std::int32_t>(calc_bson_object_size(value)), true);
 
         for (const auto& el : value)
-        { write_bson_element(el.first, el.second); }
+        {
+            write_bson_element(el.first, el.second);
+        }
 
         oa->write_character(to_char_type(0x00));
     }
@@ -15972,7 +16329,9 @@ class binary_writer {
                                          const bool       add_prefix,
                                          const bool       use_bjdata) {
         if (add_prefix)
-        { oa->write_character(get_ubjson_float_prefix(n)); }
+        {
+            oa->write_character(get_ubjson_float_prefix(n));
+        }
         write_number(n, use_bjdata);
     }
 
@@ -16056,7 +16415,9 @@ class binary_writer {
             const auto number = BasicJsonType(n).dump();
             write_number_with_ubjson_prefix(number.size(), true, use_bjdata);
             for (std::size_t i = 0; i < number.size(); ++i)
-            { oa->write_character(to_char_type(static_cast<std::uint8_t>(number[i]))); }
+            {
+                oa->write_character(to_char_type(static_cast<std::uint8_t>(number[i])));
+            }
         }
     }
 
@@ -16146,7 +16507,9 @@ class binary_writer {
             const auto number = BasicJsonType(n).dump();
             write_number_with_ubjson_prefix(number.size(), true, use_bjdata);
             for (std::size_t i = 0; i < number.size(); ++i)
-            { oa->write_character(to_char_type(static_cast<std::uint8_t>(number[i]))); }
+            {
+                oa->write_character(to_char_type(static_cast<std::uint8_t>(number[i])));
+            }
         }
         // LCOV_EXCL_STOP
     }
@@ -16166,29 +16529,43 @@ class binary_writer {
         case value_t::number_integer : {
             if ((std::numeric_limits<std::int8_t>::min)() <= j.m_data.m_value.number_integer
                 && j.m_data.m_value.number_integer <= (std::numeric_limits<std::int8_t>::max)())
-            { return 'i'; }
+            {
+                return 'i';
+            }
             if ((std::numeric_limits<std::uint8_t>::min)() <= j.m_data.m_value.number_integer
                 && j.m_data.m_value.number_integer <= (std::numeric_limits<std::uint8_t>::max)())
-            { return 'U'; }
+            {
+                return 'U';
+            }
             if ((std::numeric_limits<std::int16_t>::min)() <= j.m_data.m_value.number_integer
                 && j.m_data.m_value.number_integer <= (std::numeric_limits<std::int16_t>::max)())
-            { return 'I'; }
+            {
+                return 'I';
+            }
             if (use_bjdata
                 && ((std::numeric_limits<std::uint16_t>::min)() <= j.m_data.m_value.number_integer
                     && j.m_data.m_value.number_integer
                          <= (std::numeric_limits<std::uint16_t>::max)()))
-            { return 'u'; }
+            {
+                return 'u';
+            }
             if ((std::numeric_limits<std::int32_t>::min)() <= j.m_data.m_value.number_integer
                 && j.m_data.m_value.number_integer <= (std::numeric_limits<std::int32_t>::max)())
-            { return 'l'; }
+            {
+                return 'l';
+            }
             if (use_bjdata
                 && ((std::numeric_limits<std::uint32_t>::min)() <= j.m_data.m_value.number_integer
                     && j.m_data.m_value.number_integer
                          <= (std::numeric_limits<std::uint32_t>::max)()))
-            { return 'm'; }
+            {
+                return 'm';
+            }
             if ((std::numeric_limits<std::int64_t>::min)() <= j.m_data.m_value.number_integer
                 && j.m_data.m_value.number_integer <= (std::numeric_limits<std::int64_t>::max)())
-            { return 'L'; }
+            {
+                return 'L';
+            }
             // anything else is treated as high-precision number
             return 'H';  // LCOV_EXCL_LINE
         }
@@ -16196,30 +16573,46 @@ class binary_writer {
         case value_t::number_unsigned : {
             if (j.m_data.m_value.number_unsigned
                 <= static_cast<std::uint64_t>((std::numeric_limits<std::int8_t>::max)()))
-            { return 'i'; }
+            {
+                return 'i';
+            }
             if (j.m_data.m_value.number_unsigned
                 <= static_cast<std::uint64_t>((std::numeric_limits<std::uint8_t>::max)()))
-            { return 'U'; }
+            {
+                return 'U';
+            }
             if (j.m_data.m_value.number_unsigned
                 <= static_cast<std::uint64_t>((std::numeric_limits<std::int16_t>::max)()))
-            { return 'I'; }
+            {
+                return 'I';
+            }
             if (use_bjdata
                 && j.m_data.m_value.number_unsigned
                      <= static_cast<std::uint64_t>((std::numeric_limits<std::uint16_t>::max)()))
-            { return 'u'; }
+            {
+                return 'u';
+            }
             if (j.m_data.m_value.number_unsigned
                 <= static_cast<std::uint64_t>((std::numeric_limits<std::int32_t>::max)()))
-            { return 'l'; }
+            {
+                return 'l';
+            }
             if (use_bjdata
                 && j.m_data.m_value.number_unsigned
                      <= static_cast<std::uint64_t>((std::numeric_limits<std::uint32_t>::max)()))
-            { return 'm'; }
+            {
+                return 'm';
+            }
             if (j.m_data.m_value.number_unsigned
                 <= static_cast<std::uint64_t>((std::numeric_limits<std::int64_t>::max)()))
-            { return 'L'; }
+            {
+                return 'L';
+            }
             if (use_bjdata
                 && j.m_data.m_value.number_unsigned <= (std::numeric_limits<std::uint64_t>::max)())
-            { return 'M'; }
+            {
+                return 'M';
+            }
             // anything else is treated as high-precision number
             return 'H';  // LCOV_EXCL_LINE
         }
@@ -16265,17 +16658,23 @@ class binary_writer {
         string_t key = "_ArrayType_";
         auto     it  = bjdtype.find(static_cast<string_t>(value.at(key)));
         if (it == bjdtype.end())
-        { return true; }
+        {
+            return true;
+        }
         CharType dtype = it->second;
 
         key             = "_ArraySize_";
         std::size_t len = (value.at(key).empty() ? 0 : 1);
         for (const auto& el : value.at(key))
-        { len *= static_cast<std::size_t>(el.m_data.m_value.number_unsigned); }
+        {
+            len *= static_cast<std::size_t>(el.m_data.m_value.number_unsigned);
+        }
 
         key = "_ArrayData_";
         if (value.at(key).size() != len)
-        { return true; }
+        {
+            return true;
+        }
 
         oa->write_character('[');
         oa->write_character('$');
@@ -16289,52 +16688,72 @@ class binary_writer {
         if (dtype == 'U' || dtype == 'C')
         {
             for (const auto& el : value.at(key))
-            { write_number(static_cast<std::uint8_t>(el.m_data.m_value.number_unsigned), true); }
+            {
+                write_number(static_cast<std::uint8_t>(el.m_data.m_value.number_unsigned), true);
+            }
         }
         else if (dtype == 'i')
         {
             for (const auto& el : value.at(key))
-            { write_number(static_cast<std::int8_t>(el.m_data.m_value.number_integer), true); }
+            {
+                write_number(static_cast<std::int8_t>(el.m_data.m_value.number_integer), true);
+            }
         }
         else if (dtype == 'u')
         {
             for (const auto& el : value.at(key))
-            { write_number(static_cast<std::uint16_t>(el.m_data.m_value.number_unsigned), true); }
+            {
+                write_number(static_cast<std::uint16_t>(el.m_data.m_value.number_unsigned), true);
+            }
         }
         else if (dtype == 'I')
         {
             for (const auto& el : value.at(key))
-            { write_number(static_cast<std::int16_t>(el.m_data.m_value.number_integer), true); }
+            {
+                write_number(static_cast<std::int16_t>(el.m_data.m_value.number_integer), true);
+            }
         }
         else if (dtype == 'm')
         {
             for (const auto& el : value.at(key))
-            { write_number(static_cast<std::uint32_t>(el.m_data.m_value.number_unsigned), true); }
+            {
+                write_number(static_cast<std::uint32_t>(el.m_data.m_value.number_unsigned), true);
+            }
         }
         else if (dtype == 'l')
         {
             for (const auto& el : value.at(key))
-            { write_number(static_cast<std::int32_t>(el.m_data.m_value.number_integer), true); }
+            {
+                write_number(static_cast<std::int32_t>(el.m_data.m_value.number_integer), true);
+            }
         }
         else if (dtype == 'M')
         {
             for (const auto& el : value.at(key))
-            { write_number(static_cast<std::uint64_t>(el.m_data.m_value.number_unsigned), true); }
+            {
+                write_number(static_cast<std::uint64_t>(el.m_data.m_value.number_unsigned), true);
+            }
         }
         else if (dtype == 'L')
         {
             for (const auto& el : value.at(key))
-            { write_number(static_cast<std::int64_t>(el.m_data.m_value.number_integer), true); }
+            {
+                write_number(static_cast<std::int64_t>(el.m_data.m_value.number_integer), true);
+            }
         }
         else if (dtype == 'd')
         {
             for (const auto& el : value.at(key))
-            { write_number(static_cast<float>(el.m_data.m_value.number_float), true); }
+            {
+                write_number(static_cast<float>(el.m_data.m_value.number_float), true);
+            }
         }
         else if (dtype == 'D')
         {
             for (const auto& el : value.at(key))
-            { write_number(static_cast<double>(el.m_data.m_value.number_float), true); }
+            {
+                write_number(static_cast<double>(el.m_data.m_value.number_float), true);
+            }
         }
         return false;
     }
@@ -17215,7 +17634,9 @@ inline void grisu2_digit_gen(
         delta *= 10;
         dist *= 10;
         if (p2 <= delta)
-        { break; }
+        {
+            break;
+        }
     }
 
     // V = buffer * 10^-m, with M- <= V <= M+.
@@ -17360,7 +17781,9 @@ inline char* append_exponent(char* buf, int e) {
         *buf++ = '-';
     }
     else
-    { *buf++ = '+'; }
+    {
+        *buf++ = '+';
+    }
 
     auto k = static_cast<std::uint32_t>(e);
     if (k < 10)
@@ -17646,7 +18069,9 @@ class serializer {
                 // variable to hold indentation for recursive calls
                 const auto new_indent = current_indent + indent_step;
                 if (JSON_HEDLEY_UNLIKELY(indent_string.size() < new_indent))
-                { indent_string.resize(indent_string.size() * 2, ' '); }
+                {
+                    indent_string.resize(indent_string.size() * 2, ' ');
+                }
 
                 // first n-1 elements
                 auto i = val.m_data.m_value.object->cbegin();
@@ -17716,7 +18141,9 @@ class serializer {
                 // variable to hold indentation for recursive calls
                 const auto new_indent = current_indent + indent_step;
                 if (JSON_HEDLEY_UNLIKELY(indent_string.size() < new_indent))
-                { indent_string.resize(indent_string.size() * 2, ' '); }
+                {
+                    indent_string.resize(indent_string.size() * 2, ' ');
+                }
 
                 // first n-1 elements
                 for (auto i = val.m_data.m_value.array->cbegin();
@@ -17774,7 +18201,9 @@ class serializer {
                 // variable to hold indentation for recursive calls
                 const auto new_indent = current_indent + indent_step;
                 if (JSON_HEDLEY_UNLIKELY(indent_string.size() < new_indent))
-                { indent_string.resize(indent_string.size() * 2, ' '); }
+                {
+                    indent_string.resize(indent_string.size() * 2, ' ');
+                }
 
                 o->write_characters(indent_string.c_str(), new_indent);
 
@@ -17796,9 +18225,13 @@ class serializer {
 
                 o->write_characters("\"subtype\": ", 11);
                 if (val.m_data.m_value.binary->has_subtype())
-                { dump_integer(val.m_data.m_value.binary->subtype()); }
+                {
+                    dump_integer(val.m_data.m_value.binary->subtype());
+                }
                 else
-                { o->write_characters("null", 4); }
+                {
+                    o->write_characters("null", 4);
+                }
                 o->write_character('\n');
                 o->write_characters(indent_string.c_str(), current_indent);
                 o->write_character('}');
@@ -17825,16 +18258,22 @@ class serializer {
                     o->write_character('}');
                 }
                 else
-                { o->write_characters("null}", 5); }
+                {
+                    o->write_characters("null}", 5);
+                }
             }
             return;
         }
 
         case value_t::boolean : {
             if (val.m_data.m_value.boolean)
-            { o->write_characters("true", 4); }
+            {
+                o->write_characters("true", 4);
+            }
             else
-            { o->write_characters("false", 5); }
+            {
+                o->write_characters("false", 5);
+            }
             return;
         }
 
@@ -18020,7 +18459,9 @@ class serializer {
                     // may be OK for itself, but just not OK for the
                     // previous sequence
                     if (undumped_chars > 0)
-                    { --i; }
+                    {
+                        --i;
+                    }
 
                     // reset length buffer to the last accepted index;
                     // thus removing/ignoring the invalid characters
@@ -18092,7 +18533,9 @@ class serializer {
         {
             // write buffer
             if (bytes > 0)
-            { o->write_characters(string_buffer.data(), bytes); }
+            {
+                o->write_characters(string_buffer.data(), bytes);
+            }
         }
         else
         {
@@ -18118,9 +18561,13 @@ class serializer {
                 o->write_characters(string_buffer.data(), bytes_after_last_accept);
                 // add a replacement character
                 if (ensure_ascii)
-                { o->write_characters("\\ufffd", 6); }
+                {
+                    o->write_characters("\\ufffd", 6);
+                }
                 else
-                { o->write_characters("\xEF\xBF\xBD", 3); }
+                {
+                    o->write_characters("\xEF\xBF\xBD", 3);
+                }
                 break;
             }
 
@@ -18145,13 +18592,21 @@ class serializer {
         for (;;)
         {
             if (x < 10)
-            { return n_digits; }
+            {
+                return n_digits;
+            }
             if (x < 100)
-            { return n_digits + 1; }
+            {
+                return n_digits + 1;
+            }
             if (x < 1000)
-            { return n_digits + 2; }
+            {
+                return n_digits + 2;
+            }
             if (x < 10000)
-            { return n_digits + 3; }
+            {
+                return n_digits + 3;
+            }
             x = x / 10000u;
             n_digits += 4;
         }
@@ -18271,7 +18726,9 @@ class serializer {
             *(--buffer_ptr)         = digits_to_99[digits_index][0];
         }
         else
-        { *(--buffer_ptr) = static_cast<char>('0' + abs_value); }
+        {
+            *(--buffer_ptr) = static_cast<char>('0' + abs_value);
+        }
 
         o->write_characters(number_buffer.data(), n_chars);
     }
@@ -18347,7 +18804,9 @@ class serializer {
             const auto dec_pos =
               std::find(number_buffer.begin(), number_buffer.end(), decimal_point);
             if (dec_pos != number_buffer.end())
-            { *dec_pos = '.'; }
+            {
+                *dec_pos = '.';
+            }
         }
 
         o->write_characters(number_buffer.data(), static_cast<std::size_t>(len));
@@ -18358,7 +18817,9 @@ class serializer {
                        [](char c) { return c == '.' || c == 'e'; });
 
         if (value_is_int_like)
-        { o->write_characters(".0", 2); }
+        {
+            o->write_characters(".0", 2);
+        }
     }
 
     /*!
@@ -18527,7 +18988,7 @@ struct ordered_map: std::vector<std::pair<const Key, T>, Allocator> {
 #ifdef JSON_HAS_CPP_14
     using key_compare = std::equal_to<>;
 #else
-    using key_compare  = std::equal_to<Key>;
+    using key_compare = std::equal_to<Key>;
 #endif
 
     // Explicit constructors instead of `using Container::Container`
@@ -18546,7 +19007,9 @@ struct ordered_map: std::vector<std::pair<const Key, T>, Allocator> {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
             if (m_compare(it->first, key))
-            { return {it, false}; }
+            {
+                return {it, false};
+            }
         }
         Container::emplace_back(key, std::forward<T>(t));
         return {std::prev(this->end()), true};
@@ -18560,7 +19023,9 @@ struct ordered_map: std::vector<std::pair<const Key, T>, Allocator> {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
             if (m_compare(it->first, key))
-            { return {it, false}; }
+            {
+                return {it, false};
+            }
         }
         Container::emplace_back(std::forward<KeyType>(key), std::forward<T>(t));
         return {std::prev(this->end()), true};
@@ -18590,7 +19055,9 @@ struct ordered_map: std::vector<std::pair<const Key, T>, Allocator> {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
             if (m_compare(it->first, key))
-            { return it->second; }
+            {
+                return it->second;
+            }
         }
 
         JSON_THROW(std::out_of_range("key not found"));
@@ -18605,7 +19072,9 @@ struct ordered_map: std::vector<std::pair<const Key, T>, Allocator> {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
             if (m_compare(it->first, key))
-            { return it->second; }
+            {
+                return it->second;
+            }
         }
 
         JSON_THROW(std::out_of_range("key not found"));
@@ -18615,7 +19084,9 @@ struct ordered_map: std::vector<std::pair<const Key, T>, Allocator> {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
             if (m_compare(it->first, key))
-            { return it->second; }
+            {
+                return it->second;
+            }
         }
 
         JSON_THROW(std::out_of_range("key not found"));
@@ -18630,7 +19101,9 @@ struct ordered_map: std::vector<std::pair<const Key, T>, Allocator> {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
             if (m_compare(it->first, key))
-            { return it->second; }
+            {
+                return it->second;
+            }
         }
 
         JSON_THROW(std::out_of_range("key not found"));
@@ -18681,7 +19154,9 @@ struct ordered_map: std::vector<std::pair<const Key, T>, Allocator> {
 
     iterator erase(iterator first, iterator last) {
         if (first == last)
-        { return first; }
+        {
+            return first;
+        }
 
         const auto elements_affected = std::distance(first, last);
         const auto offset            = std::distance(Container::begin(), first);
@@ -18734,7 +19209,9 @@ struct ordered_map: std::vector<std::pair<const Key, T>, Allocator> {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
             if (m_compare(it->first, key))
-            { return 1; }
+            {
+                return 1;
+            }
         }
         return 0;
     }
@@ -18748,7 +19225,9 @@ struct ordered_map: std::vector<std::pair<const Key, T>, Allocator> {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
             if (m_compare(it->first, key))
-            { return 1; }
+            {
+                return 1;
+            }
         }
         return 0;
     }
@@ -18757,7 +19236,9 @@ struct ordered_map: std::vector<std::pair<const Key, T>, Allocator> {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
             if (m_compare(it->first, key))
-            { return it; }
+            {
+                return it;
+            }
         }
         return Container::end();
     }
@@ -18771,7 +19252,9 @@ struct ordered_map: std::vector<std::pair<const Key, T>, Allocator> {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
             if (m_compare(it->first, key))
-            { return it; }
+            {
+                return it;
+            }
         }
         return Container::end();
     }
@@ -18780,7 +19263,9 @@ struct ordered_map: std::vector<std::pair<const Key, T>, Allocator> {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
             if (m_compare(it->first, key))
-            { return it; }
+            {
+                return it;
+            }
         }
         return Container::end();
     }
@@ -18793,7 +19278,9 @@ struct ordered_map: std::vector<std::pair<const Key, T>, Allocator> {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
             if (m_compare(it->first, value.first))
-            { return {it, false}; }
+            {
+                return {it, false};
+            }
         }
         Container::push_back(value);
         return {--this->end(), true};
@@ -18807,7 +19294,9 @@ struct ordered_map: std::vector<std::pair<const Key, T>, Allocator> {
     template<typename InputIt, typename = require_input_iter<InputIt>>
     void insert(InputIt first, InputIt last) {
         for (auto it = first; it != last; ++it)
-        { insert(*it); }
+        {
+            insert(*it);
+        }
     }
 
    private:
@@ -19015,7 +19504,7 @@ class
 #ifdef _WIN32
         result["platform"] = "win32";
 #elif defined __linux__
-        result["platform"]        = "linux";
+        result["platform"] = "linux";
 #elif defined __APPLE__
         result["platform"] = "apple";
 #elif defined __unix__
@@ -19027,7 +19516,7 @@ class
 #if defined(__ICC) || defined(__INTEL_COMPILER)
         result["compiler"] = {{"family", "icc"}, { "version", __INTEL_COMPILER }};
 #elif defined(__clang__)
-        result["compiler"]        = {{"family", "clang"}, { "version", __clang_version__ }};
+        result["compiler"] = {{"family", "clang"}, { "version", __clang_version__ }};
 #elif defined(__GNUC__) || defined(__GNUG__)
         result["compiler"] = {
           {"family", "gcc"},
@@ -19323,7 +19812,9 @@ class
                 {
                     stack.reserve(object->size());
                     for (auto&& it : *object)
-                    { stack.push_back(std::move(it.second)); }
+                    {
+                        stack.push_back(std::move(it.second));
+                    }
                 }
 
                 while (!stack.empty())
@@ -19345,7 +19836,9 @@ class
                     else if (current_item.is_object())
                     {
                         for (auto&& it : *current_item.m_data.m_value.object)
-                        { stack.push_back(std::move(it.second)); }
+                        {
+                            stack.push_back(std::move(it.second));
+                        }
 
                         current_item.m_data.m_value.object->clear();
                     }
@@ -19441,13 +19934,17 @@ class
         {
         case value_t::array : {
             for (auto& element : *m_data.m_value.array)
-            { element.m_parent = this; }
+            {
+                element.m_parent = this;
+            }
             break;
         }
 
         case value_t::object : {
             for (auto& element : *m_data.m_value.object)
-            { element.second.m_parent = this; }
+            {
+                element.second.m_parent = this;
+            }
             break;
         }
 
@@ -19468,7 +19965,9 @@ class
     iterator set_parents(iterator it, typename iterator::difference_type count_set_parents) {
 #if JSON_DIAGNOSTICS
         for (typename iterator::difference_type i = 0; i < count_set_parents; ++i)
-        { (it + i)->m_parent = this; }
+        {
+            (it + i)->m_parent = this;
+        }
 #else
         static_cast<void>(count_set_parents);
 #endif
@@ -19650,7 +20149,9 @@ class
         {
             // if array is wanted, do not create an object though possible
             if (manual_type == value_t::array)
-            { is_an_object = false; }
+            {
+                is_an_object = false;
+            }
 
             // if object is wanted but impossible, throw an exception
             if (JSON_HEDLEY_UNLIKELY(manual_type == value_t::object && !is_an_object))
@@ -19762,7 +20263,9 @@ class
 
         // make sure iterator fits the current value
         if (JSON_HEDLEY_UNLIKELY(first.m_object != last.m_object))
-        { JSON_THROW(invalid_iterator::create(201, "iterators are not compatible", nullptr)); }
+        {
+            JSON_THROW(invalid_iterator::create(201, "iterators are not compatible", nullptr));
+        }
 
         // copy type from first iterator
         m_data.m_type = first.m_object->m_data.m_type;
@@ -19777,7 +20280,9 @@ class
         case value_t::string : {
             if (JSON_HEDLEY_UNLIKELY(!first.m_it.primitive_iterator.is_begin()
                                      || !last.m_it.primitive_iterator.is_end()))
-            { JSON_THROW(invalid_iterator::create(204, "iterators out of range", first.m_object)); }
+            {
+                JSON_THROW(invalid_iterator::create(204, "iterators out of range", first.m_object));
+            }
             break;
         }
 
@@ -19938,10 +20443,11 @@ class
     /// @brief copy assignment
     /// @sa https://json.nlohmann.me/api/basic_json/operator=/
     basic_json& operator=(basic_json other) noexcept(
-      std::is_nothrow_move_constructible<value_t>::value&& std::is_nothrow_move_assignable<
-        value_t>::value&& std::is_nothrow_move_constructible<json_value>::value&&
-                          std::is_nothrow_move_assignable<json_value>::value&&
-                          std::is_nothrow_move_assignable<json_base_class_t>::value) {
+      std::is_nothrow_move_constructible<value_t>::value
+      && std::is_nothrow_move_assignable<value_t>::value
+      && std::is_nothrow_move_constructible<json_value>::value
+      && std::is_nothrow_move_assignable<json_value>::value
+      && std::is_nothrow_move_assignable<json_base_class_t>::value) {
         // check that passed value is valid
         other.assert_invariant();
 
@@ -19980,9 +20486,13 @@ class
         serializer s(detail::output_adapter<char, string_t>(result), indent_char, error_handler);
 
         if (indent >= 0)
-        { s.dump(*this, true, ensure_ascii, static_cast<unsigned int>(indent)); }
+        {
+            s.dump(*this, true, ensure_ascii, static_cast<unsigned int>(indent));
+        }
         else
-        { s.dump(*this, false, ensure_ascii, 0); }
+        {
+            s.dump(*this, false, ensure_ascii, 0);
+        }
 
         return result;
     }
@@ -20066,7 +20576,9 @@ class
     /// get a boolean (explicit)
     boolean_t get_impl(boolean_t* /*unused*/) const {
         if (JSON_HEDLEY_LIKELY(is_boolean()))
-        { return m_data.m_value.boolean; }
+        {
+            return m_data.m_value.boolean;
+        }
 
         JSON_THROW(type_error::create(
           302, detail::concat("type must be boolean, but is ", type_name()), this));
@@ -20171,7 +20683,9 @@ class
         auto* ptr = obj.template get_ptr<typename std::add_pointer<ReferenceType>::type>();
 
         if (JSON_HEDLEY_LIKELY(ptr != nullptr))
-        { return *ptr; }
+        {
+            return *ptr;
+        }
 
         JSON_THROW(type_error::create(
           303,
@@ -20753,7 +21267,9 @@ class
     const_reference operator[](size_type idx) const {
         // const operator[] only works for arrays
         if (JSON_HEDLEY_LIKELY(is_array()))
-        { return m_data.m_value.array->operator[](idx); }
+        {
+            return m_data.m_value.array->operator[](idx);
+        }
 
         JSON_THROW(type_error::create(
           305, detail::concat("cannot use operator[] with a numeric argument with ", type_name()),
@@ -20883,7 +21399,9 @@ class
             // if key is found, return value and given default value otherwise
             const auto it = find(key);
             if (it != end())
-            { return it->template get<ValueType>(); }
+            {
+                return it->template get<ValueType>();
+            }
 
             return default_value;
         }
@@ -20907,7 +21425,9 @@ class
             // if key is found, return value and given default value otherwise
             const auto it = find(key);
             if (it != end())
-            { return it->template get<ReturnType>(); }
+            {
+                return it->template get<ReturnType>();
+            }
 
             return std::forward<ValueType>(default_value);
         }
@@ -20933,7 +21453,9 @@ class
             // if key is found, return value and given default value otherwise
             const auto it = find(std::forward<KeyType>(key));
             if (it != end())
-            { return it->template get<ValueType>(); }
+            {
+                return it->template get<ValueType>();
+            }
 
             return default_value;
         }
@@ -20960,7 +21482,9 @@ class
             // if key is found, return value and given default value otherwise
             const auto it = find(std::forward<KeyType>(key));
             if (it != end())
-            { return it->template get<ReturnType>(); }
+            {
+                return it->template get<ReturnType>();
+            }
 
             return std::forward<ValueType>(default_value);
         }
@@ -21073,7 +21597,9 @@ class
     IteratorType erase(IteratorType pos) {
         // make sure iterator fits the current value
         if (JSON_HEDLEY_UNLIKELY(this != pos.m_object))
-        { JSON_THROW(invalid_iterator::create(202, "iterator does not fit current value", this)); }
+        {
+            JSON_THROW(invalid_iterator::create(202, "iterator does not fit current value", this));
+        }
 
         IteratorType result = end();
 
@@ -21086,7 +21612,9 @@ class
         case value_t::string :
         case value_t::binary : {
             if (JSON_HEDLEY_UNLIKELY(!pos.m_it.primitive_iterator.is_begin()))
-            { JSON_THROW(invalid_iterator::create(205, "iterator out of range", this)); }
+            {
+                JSON_THROW(invalid_iterator::create(205, "iterator out of range", this));
+            }
 
             if (is_string())
             {
@@ -21138,7 +21666,9 @@ class
     IteratorType erase(IteratorType first, IteratorType last) {
         // make sure iterator fits the current value
         if (JSON_HEDLEY_UNLIKELY(this != first.m_object || this != last.m_object))
-        { JSON_THROW(invalid_iterator::create(203, "iterators do not fit current value", this)); }
+        {
+            JSON_THROW(invalid_iterator::create(203, "iterators do not fit current value", this));
+        }
 
         IteratorType result = end();
 
@@ -21152,7 +21682,9 @@ class
         case value_t::binary : {
             if (JSON_HEDLEY_LIKELY(!first.m_it.primitive_iterator.is_begin()
                                    || !last.m_it.primitive_iterator.is_end()))
-            { JSON_THROW(invalid_iterator::create(204, "iterators out of range", this)); }
+            {
+                JSON_THROW(invalid_iterator::create(204, "iterators out of range", this));
+            }
 
             if (is_string())
             {
@@ -21288,7 +21820,9 @@ class
         auto result = end();
 
         if (is_object())
-        { result.m_it.object_iterator = m_data.m_value.object->find(key); }
+        {
+            result.m_it.object_iterator = m_data.m_value.object->find(key);
+        }
 
         return result;
     }
@@ -21299,7 +21833,9 @@ class
         auto result = cend();
 
         if (is_object())
-        { result.m_it.object_iterator = m_data.m_value.object->find(key); }
+        {
+            result.m_it.object_iterator = m_data.m_value.object->find(key);
+        }
 
         return result;
     }
@@ -21314,7 +21850,9 @@ class
         auto result = end();
 
         if (is_object())
-        { result.m_it.object_iterator = m_data.m_value.object->find(std::forward<KeyType>(key)); }
+        {
+            result.m_it.object_iterator = m_data.m_value.object->find(std::forward<KeyType>(key));
+        }
 
         return result;
     }
@@ -21329,7 +21867,9 @@ class
         auto result = cend();
 
         if (is_object())
-        { result.m_it.object_iterator = m_data.m_value.object->find(std::forward<KeyType>(key)); }
+        {
+            result.m_it.object_iterator = m_data.m_value.object->find(std::forward<KeyType>(key));
+        }
 
         return result;
     }
@@ -21759,7 +22299,9 @@ class
                                                     (init.begin() + 1)->moved_or_copied()));
         }
         else
-        { push_back(basic_json(init)); }
+        {
+            push_back(basic_json(init));
+        }
     }
 
     /// @brief add an object to an object
@@ -21903,11 +22445,15 @@ class
 
         // check if iterator pos fits to this JSON value
         if (JSON_HEDLEY_UNLIKELY(pos.m_object != this))
-        { JSON_THROW(invalid_iterator::create(202, "iterator does not fit current value", this)); }
+        {
+            JSON_THROW(invalid_iterator::create(202, "iterator does not fit current value", this));
+        }
 
         // check if range iterators belong to the same JSON object
         if (JSON_HEDLEY_UNLIKELY(first.m_object != last.m_object))
-        { JSON_THROW(invalid_iterator::create(210, "iterators do not fit", this)); }
+        {
+            JSON_THROW(invalid_iterator::create(210, "iterators do not fit", this));
+        }
 
         if (JSON_HEDLEY_UNLIKELY(first.m_object == this))
         {
@@ -21931,7 +22477,9 @@ class
 
         // check if iterator pos fits to this JSON value
         if (JSON_HEDLEY_UNLIKELY(pos.m_object != this))
-        { JSON_THROW(invalid_iterator::create(202, "iterator does not fit current value", this)); }
+        {
+            JSON_THROW(invalid_iterator::create(202, "iterator does not fit current value", this));
+        }
 
         // insert to array and return iterator
         return insert_iterator(pos, ilist.begin(), ilist.end());
@@ -21949,7 +22497,9 @@ class
 
         // check if range iterators belong to the same JSON object
         if (JSON_HEDLEY_UNLIKELY(first.m_object != last.m_object))
-        { JSON_THROW(invalid_iterator::create(210, "iterators do not fit", this)); }
+        {
+            JSON_THROW(invalid_iterator::create(210, "iterators do not fit", this));
+        }
 
         // passed iterators must belong to objects
         if (JSON_HEDLEY_UNLIKELY(!first.m_object->is_object()))
@@ -21986,7 +22536,9 @@ class
 
         // check if range iterators belong to the same JSON object
         if (JSON_HEDLEY_UNLIKELY(first.m_object != last.m_object))
-        { JSON_THROW(invalid_iterator::create(210, "iterators do not fit", this)); }
+        {
+            JSON_THROW(invalid_iterator::create(210, "iterators do not fit", this));
+        }
 
         // passed iterators must belong to objects
         if (JSON_HEDLEY_UNLIKELY(!first.m_object->is_object()))
@@ -22017,10 +22569,11 @@ class
     /// @brief exchanges the values
     /// @sa https://json.nlohmann.me/api/basic_json/swap/
     void swap(reference other) noexcept(
-      std::is_nothrow_move_constructible<value_t>::value&&
-        std::is_nothrow_move_assignable<value_t>::value&& std::is_nothrow_move_constructible<
-          json_value>::value&&  // NOLINT(cppcoreguidelines-noexcept-swap,performance-noexcept-swap)
-          std::is_nothrow_move_assignable<json_value>::value) {
+      std::is_nothrow_move_constructible<value_t>::value
+      && std::is_nothrow_move_assignable<value_t>::value
+      && std::is_nothrow_move_constructible<json_value>::value
+      &&  // NOLINT(cppcoreguidelines-noexcept-swap,performance-noexcept-swap)
+      std::is_nothrow_move_assignable<json_value>::value) {
         std::swap(m_data.m_type, other.m_data.m_type);
         std::swap(m_data.m_value, other.m_data.m_value);
 
@@ -22032,10 +22585,11 @@ class
     /// @brief exchanges the values
     /// @sa https://json.nlohmann.me/api/basic_json/swap/
     friend void swap(reference left, reference right) noexcept(
-      std::is_nothrow_move_constructible<value_t>::value&&
-        std::is_nothrow_move_assignable<value_t>::value&& std::is_nothrow_move_constructible<
-          json_value>::value&&  // NOLINT(cppcoreguidelines-noexcept-swap,performance-noexcept-swap)
-          std::is_nothrow_move_assignable<json_value>::value) {
+      std::is_nothrow_move_constructible<value_t>::value
+      && std::is_nothrow_move_assignable<value_t>::value
+      && std::is_nothrow_move_constructible<json_value>::value
+      &&  // NOLINT(cppcoreguidelines-noexcept-swap,performance-noexcept-swap)
+      std::is_nothrow_move_assignable<json_value>::value) {
         left.swap(right);
     }
 
@@ -22215,7 +22769,9 @@ class
           rhs.m_data.m_value.number_unsigned); \
     } \
     else if (compares_unordered(lhs, rhs)) \
-    { return (unordered_result); } \
+    { \
+        return (unordered_result); \
+    } \
 \
     return (default_result);
 
@@ -22233,7 +22789,9 @@ class
              && rhs.is_number())
             || (rhs.is_number_float() && std::isnan(rhs.m_data.m_value.number_float)
                 && lhs.is_number()))
-        { return true; }
+        {
+            return true;
+        }
 #if JSON_USE_LEGACY_DISCARDED_VALUE_COMPARISON
         return (lhs.is_discarded() || rhs.is_discarded()) && !inverse;
 #else
@@ -22266,14 +22824,18 @@ class
     /// @brief comparison: equal
     /// @sa https://json.nlohmann.me/api/basic_json/operator_eq/
     template<typename ScalarType>
-    requires std::is_scalar_v<ScalarType>
-    bool operator==(ScalarType rhs) const noexcept { return *this == basic_json(rhs); }
+        requires std::is_scalar_v<ScalarType>
+    bool operator==(ScalarType rhs) const noexcept {
+        return *this == basic_json(rhs);
+    }
 
     /// @brief comparison: not equal
     /// @sa https://json.nlohmann.me/api/basic_json/operator_ne/
     bool operator!=(const_reference rhs) const noexcept {
         if (compares_unordered(rhs, true))
-        { return false; }
+        {
+            return false;
+        }
         return !operator==(rhs);
     }
 
@@ -22292,8 +22854,8 @@ class
     /// @brief comparison: 3-way
     /// @sa https://json.nlohmann.me/api/basic_json/operator_spaceship/
     template<typename ScalarType>
-    requires std::is_scalar_v<ScalarType> std::partial_ordering
-                                          operator<=>(ScalarType rhs) const noexcept  // *NOPAD*
+        requires std::is_scalar_v<ScalarType>
+    std::partial_ordering operator<=>(ScalarType rhs) const noexcept  // *NOPAD*
     {
         return *this <=> basic_json(rhs);  // *NOPAD*
     }
@@ -22307,30 +22869,38 @@ class
     JSON_HEDLEY_DEPRECATED_FOR(3.11.0, undef JSON_USE_LEGACY_DISCARDED_VALUE_COMPARISON)
     bool operator<=(const_reference rhs) const noexcept {
         if (compares_unordered(rhs, true))
-        { return false; }
+        {
+            return false;
+        }
         return !(rhs < *this);
     }
 
     /// @brief comparison: less than or equal
     /// @sa https://json.nlohmann.me/api/basic_json/operator_le/
     template<typename ScalarType>
-    requires std::is_scalar_v<ScalarType>
-    bool operator<=(ScalarType rhs) const noexcept { return *this <= basic_json(rhs); }
+        requires std::is_scalar_v<ScalarType>
+    bool operator<=(ScalarType rhs) const noexcept {
+        return *this <= basic_json(rhs);
+    }
 
     /// @brief comparison: greater than or equal
     /// @sa https://json.nlohmann.me/api/basic_json/operator_ge/
     JSON_HEDLEY_DEPRECATED_FOR(3.11.0, undef JSON_USE_LEGACY_DISCARDED_VALUE_COMPARISON)
     bool operator>=(const_reference rhs) const noexcept {
         if (compares_unordered(rhs, true))
-        { return false; }
+        {
+            return false;
+        }
         return !(*this < rhs);
     }
 
     /// @brief comparison: greater than or equal
     /// @sa https://json.nlohmann.me/api/basic_json/operator_ge/
     template<typename ScalarType>
-    requires std::is_scalar_v<ScalarType>
-    bool operator>=(ScalarType rhs) const noexcept { return *this >= basic_json(rhs); }
+        requires std::is_scalar_v<ScalarType>
+    bool operator>=(ScalarType rhs) const noexcept {
+        return *this >= basic_json(rhs);
+    }
     #endif
 #else
     /// @brief comparison: equal
@@ -22366,7 +22936,9 @@ class
     /// @sa https://json.nlohmann.me/api/basic_json/operator_ne/
     friend bool operator!=(const_reference lhs, const_reference rhs) noexcept {
         if (compares_unordered(lhs, rhs, true))
-        { return false; }
+        {
+            return false;
+        }
         return !(lhs == rhs);
     }
 
@@ -22415,7 +22987,9 @@ class
     /// @sa https://json.nlohmann.me/api/basic_json/operator_le/
     friend bool operator<=(const_reference lhs, const_reference rhs) noexcept {
         if (compares_unordered(lhs, rhs, true))
-        { return false; }
+        {
+            return false;
+        }
         return !(rhs < lhs);
     }
 
@@ -22440,7 +23014,9 @@ class
     friend bool operator>(const_reference lhs, const_reference rhs) noexcept {
         // double inverse
         if (compares_unordered(lhs, rhs))
-        { return false; }
+        {
+            return false;
+        }
         return !(lhs <= rhs);
     }
 
@@ -22464,7 +23040,9 @@ class
     /// @sa https://json.nlohmann.me/api/basic_json/operator_ge/
     friend bool operator>=(const_reference lhs, const_reference rhs) noexcept {
         if (compares_unordered(lhs, rhs, true))
-        { return false; }
+        {
+            return false;
+        }
         return !(lhs < rhs);
     }
 
@@ -23198,17 +23776,29 @@ class
 
         const auto get_op = [](const std::string& op) {
             if (op == "add")
-            { return patch_operations::add; }
+            {
+                return patch_operations::add;
+            }
             if (op == "remove")
-            { return patch_operations::remove; }
+            {
+                return patch_operations::remove;
+            }
             if (op == "replace")
-            { return patch_operations::replace; }
+            {
+                return patch_operations::replace;
+            }
             if (op == "move")
-            { return patch_operations::move; }
+            {
+                return patch_operations::move;
+            }
             if (op == "copy")
-            { return patch_operations::copy; }
+            {
+                return patch_operations::copy;
+            }
             if (op == "test")
-            { return patch_operations::test; }
+            {
+                return patch_operations::test;
+            }
 
             return patch_operations::invalid;
         };
@@ -23225,7 +23815,9 @@ class
             // make sure the top element of the pointer exists
             json_pointer const top_pointer = ptr.top();
             if (top_pointer != ptr)
-            { result.at(top_pointer); }
+            {
+                result.at(top_pointer);
+            }
 
             // get reference to parent of JSON pointer ptr
             const auto last_path = ptr.back();
@@ -23293,7 +23885,9 @@ class
                 // perform range check
                 auto it = parent.find(last_path);
                 if (JSON_HEDLEY_LIKELY(it != parent.end()))
-                { parent.erase(it); }
+                {
+                    parent.erase(it);
+                }
                 else
                 {
                     JSON_THROW(out_of_range::create(
@@ -23458,7 +24052,9 @@ class
 
         // if the values are the same, return empty patch
         if (source == target)
-        { return result; }
+        {
+            return result;
+        }
 
         if (source.type() != target.type())
         {
@@ -23573,17 +24169,25 @@ class
         if (apply_patch.is_object())
         {
             if (!is_object())
-            { *this = object(); }
+            {
+                *this = object();
+            }
             for (auto it = apply_patch.begin(); it != apply_patch.end(); ++it)
             {
                 if (it.value().is_null())
-                { erase(it.key()); }
+                {
+                    erase(it.key());
+                }
                 else
-                { operator[](it.key()).merge_patch(it.value()); }
+                {
+                    operator[](it.key()).merge_patch(it.value());
+                }
             }
         }
         else
-        { *this = apply_patch; }
+        {
+            *this = apply_patch;
+        }
     }
 
     /// @}
@@ -23603,7 +24207,7 @@ JSON_HEDLEY_NON_NULL(1)
 #if !defined(JSON_HEDLEY_GCC_VERSION) || JSON_HEDLEY_GCC_VERSION_CHECK(4, 9, 0)
 inline nlohmann::json operator""_json(const char* s, std::size_t n)
 #else
-inline nlohmann::json               operator"" _json(const char* s, std::size_t n)
+inline nlohmann::json operator"" _json(const char* s, std::size_t n)
 #endif
 {
     return nlohmann::json::parse(s, s + n);
@@ -23672,9 +24276,9 @@ inline void
 swap(nlohmann::NLOHMANN_BASIC_JSON_TPL& j1,
      nlohmann::NLOHMANN_BASIC_JSON_TPL&
        j2) noexcept(  // NOLINT(readability-inconsistent-declaration-parameter-name, cert-dcl58-cpp)
-  is_nothrow_move_constructible<nlohmann::NLOHMANN_BASIC_JSON_TPL>::
-    value&&  // NOLINT(misc-redundant-expression,cppcoreguidelines-noexcept-swap,performance-noexcept-swap)
-      is_nothrow_move_assignable<nlohmann::NLOHMANN_BASIC_JSON_TPL>::value) {
+  is_nothrow_move_constructible<nlohmann::NLOHMANN_BASIC_JSON_TPL>::value
+  &&  // NOLINT(misc-redundant-expression,cppcoreguidelines-noexcept-swap,performance-noexcept-swap)
+  is_nothrow_move_assignable<nlohmann::NLOHMANN_BASIC_JSON_TPL>::value) {
     j1.swap(j2);
 }
 

@@ -71,7 +71,9 @@ size_t str_to_size_t(const std::string& s);
 struct PipeDeleter {
     void operator()(FILE* file) const {
         if (file != nullptr)
-        { pclose(file); }
+        {
+            pclose(file);
+        }
     }
 };
 
@@ -87,6 +89,7 @@ void dbg_stdev_of(int64_t value, int slot = 0);
 void dbg_extremes_of(int64_t value, int slot = 0);
 void dbg_correl_of(int64_t value1, int64_t value2, int slot = 0);
 void dbg_print();
+void dbg_clear();
 
 using TimePoint = std::chrono::milliseconds::rep;  // A value in milliseconds
 static_assert(sizeof(TimePoint) == sizeof(int64_t), "TimePoint should be 64 bits");
@@ -134,11 +137,8 @@ void sync_cout_start();
 void sync_cout_end();
 
 // True if and only if the binary is compiled on a little-endian machine
-static inline const union {
-    uint32_t i;
-    char     c[4];
-} Le                                    = {0x01020304};
-static inline const bool IsLittleEndian = (Le.c[0] == 4);
+static inline const std::uint16_t Le             = 1;
+static inline const bool          IsLittleEndian = *reinterpret_cast<const char*>(&Le) == 1;
 
 
 template<typename T, std::size_t MaxSize>
@@ -171,6 +171,10 @@ template<typename T, std::size_t Size>
 struct MultiArrayHelper<T, Size> {
     using ChildType = T;
 };
+
+template<typename To, typename From>
+constexpr bool is_strictly_assignable_v =
+  std::is_assignable_v<To&, From> && (std::is_same_v<To, From> || !std::is_convertible_v<From, To>);
 
 }
 
@@ -229,7 +233,8 @@ class MultiArray {
 
     template<typename U>
     void fill(const U& v) {
-        static_assert(std::is_assignable_v<T, U>, "Cannot assign fill value to entry type");
+        static_assert(Detail::is_strictly_assignable_v<T, U>,
+                      "Cannot assign fill value to entry type");
         for (auto& ele : data_)
         {
             if constexpr (sizeof...(Sizes) == 0)
@@ -304,16 +309,16 @@ inline uint64_t mul_hi64(uint64_t a, uint64_t b) {
 
 struct CommandLine {
    public:
-    CommandLine(int, char**);  //from Khalid
+    CommandLine(int, char**);  //from learning
 
     int    argc;
     char** argv;
-    //from Khalid begin
+    //from learning begin
     std::string        binaryDirectory;   // path of the executable directory
     std::string        workingDirectory;  // path of the working directory
     static std::string get_working_directory();
     static std::string get_binary_directory(std::string argv0, std::string workingDirectory);
-    //from Khalid end
+    //from learning end
 };
 
 namespace Utility {
@@ -323,10 +328,29 @@ void move_to_front(std::vector<T>& vec, Predicate pred) {
     auto it = std::find_if(vec.begin(), vec.end(), pred);
 
     if (it != vec.end())
-    { std::rotate(vec.begin(), it, it + 1); }
+    {
+        std::rotate(vec.begin(), it, it + 1);
+    }
 }
 }
-//begin from khalid
+
+#if defined(__GNUC__) && !defined(__clang__)
+    #if __GNUC__ >= 13
+        #define sf_assume(cond) __attribute__((assume(cond)))
+    #else
+        #define sf_assume(cond) \
+            do \
+            { \
+                if (!(cond)) \
+                    __builtin_unreachable(); \
+            } while (0)
+    #endif
+#else
+    // do nothing for other compilers
+    #define sf_assume(cond)
+#endif
+
+//begin from learning
 #define EMPTY "<empty>"
 
 class Util {
@@ -355,7 +379,7 @@ class Util {
 
     static std::string format_string(const char* const fmt, ...);
 };
-//end from khalid
+//end from learning
 
 }  // namespace ShashChess
 

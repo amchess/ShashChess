@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <cstring>
 #include <cstdint>
 #include <cstdlib>
 #include <string>
@@ -61,7 +62,6 @@ extern uint8_t SquareDistance[SQUARE_NB][SQUARE_NB];
 extern Bitboard BetweenBB[SQUARE_NB][SQUARE_NB];
 extern Bitboard LineBB[SQUARE_NB][SQUARE_NB];
 extern Bitboard PseudoAttacks[PIECE_TYPE_NB][SQUARE_NB];
-extern Bitboard PawnAttacks[COLOR_NB][SQUARE_NB];
 
 
 // Magic holds all magic bitboards relevant data for a single square
@@ -102,17 +102,17 @@ constexpr Bitboard square_bb(Square s) {
 // Overloads of bitwise operators between a Bitboard and a Square for testing
 // whether a given bit is set in a bitboard, and for setting and clearing bits.
 
-inline Bitboard  operator&(Bitboard b, Square s) { return b & square_bb(s); }
-inline Bitboard  operator|(Bitboard b, Square s) { return b | square_bb(s); }
-inline Bitboard  operator^(Bitboard b, Square s) { return b ^ square_bb(s); }
-inline Bitboard& operator|=(Bitboard& b, Square s) { return b |= square_bb(s); }
-inline Bitboard& operator^=(Bitboard& b, Square s) { return b ^= square_bb(s); }
+constexpr Bitboard  operator&(Bitboard b, Square s) { return b & square_bb(s); }
+constexpr Bitboard  operator|(Bitboard b, Square s) { return b | square_bb(s); }
+constexpr Bitboard  operator^(Bitboard b, Square s) { return b ^ square_bb(s); }
+constexpr Bitboard& operator|=(Bitboard& b, Square s) { return b |= square_bb(s); }
+constexpr Bitboard& operator^=(Bitboard& b, Square s) { return b ^= square_bb(s); }
 
-inline Bitboard operator&(Square s, Bitboard b) { return b & s; }
-inline Bitboard operator|(Square s, Bitboard b) { return b | s; }
-inline Bitboard operator^(Square s, Bitboard b) { return b ^ s; }
+constexpr Bitboard operator&(Square s, Bitboard b) { return b & s; }
+constexpr Bitboard operator|(Square s, Bitboard b) { return b | s; }
+constexpr Bitboard operator^(Square s, Bitboard b) { return b ^ s; }
 
-inline Bitboard operator|(Square s1, Square s2) { return square_bb(s1) | s2; }
+constexpr Bitboard operator|(Square s1, Square s2) { return square_bb(s1) | s2; }
 
 constexpr bool more_than_one(Bitboard b) { return b & (b - 1); }
 
@@ -154,11 +154,6 @@ constexpr Bitboard pawn_attacks_bb(Bitboard b) {
                       : shift<SOUTH_WEST>(b) | shift<SOUTH_EAST>(b);
 }
 
-inline Bitboard pawn_attacks_bb(Color c, Square s) {
-
-    assert(is_ok(s));
-    return PawnAttacks[c][s];
-}
 
 // Returns a bitboard representing an entire line (from board edge
 // to board edge) that intersects the two given squares. If the given squares
@@ -215,10 +210,10 @@ inline int edge_distance(File f) { return std::min(f, File(FILE_H - f)); }
 // Returns the pseudo attacks of the given piece type
 // assuming an empty board.
 template<PieceType Pt>
-inline Bitboard attacks_bb(Square s) {
+inline Bitboard attacks_bb(Square s, Color c = COLOR_NB) {
 
-    assert((Pt != PAWN) && (is_ok(s)));
-    return PseudoAttacks[Pt][s];
+    assert((Pt != PAWN || c < COLOR_NB) && (is_ok(s)));
+    return Pt == PAWN ? PseudoAttacks[c][s] : PseudoAttacks[Pt][s];
 }
 
 
@@ -268,11 +263,10 @@ inline int popcount(Bitboard b) {
 
 #ifndef USE_POPCNT
 
-    union {
-        Bitboard bb;
-        uint16_t u[4];
-    } v = {b};
-    return PopCnt16[v.u[0]] + PopCnt16[v.u[1]] + PopCnt16[v.u[2]] + PopCnt16[v.u[3]];
+    std::uint16_t indices[4];
+    std::memcpy(indices, &b, sizeof(b));
+    return PopCnt16[indices[0]] + PopCnt16[indices[1]] + PopCnt16[indices[2]]
+         + PopCnt16[indices[3]];
 
 #elif defined(_MSC_VER)
 

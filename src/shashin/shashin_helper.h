@@ -1,56 +1,62 @@
-//shashin begin
 #ifndef SHASHIN_HELPER_H
 #define SHASHIN_HELPER_H
 
 #include <type_traits>
-#include "shashin_types.h" 
+#include <utility>
+#include "shashin_types.h"
 
 namespace ShashChess {
 
-// Helper per verificare se un valore è in uno o più range
-template <typename... Args>
-inline bool isInRanges(ShashinPosition value, Args... ranges) {
-    static_assert((std::is_same_v<ShashinPosition, Args> && ...), "All ranges must be of type ShashinPosition");
-    return ((... || ((value & ranges) != ShashinPosition(0))));
+template<typename E>
+constexpr auto to_underlying(E e) noexcept
+  -> std::enable_if_t<std::is_enum_v<E>, std::underlying_type_t<E>> {
+    return static_cast<std::underlying_type_t<E>>(e);
+}
+// =============================================
+// Template Metaprogramming Utilities
+// =============================================
+
+template<typename... Ts>
+using are_all_shashin = std::conjunction<std::is_same<Ts, ShashinPosition>...>;
+
+// =============================================
+// Core Bitmask Operations (Type-Safe)
+// =============================================
+
+template<typename... Args>
+__attribute__((always_inline)) constexpr bool anyOf(ShashinPosition value, Args... ranges) {
+    static_assert((std::is_same_v<ShashinPosition, Args> && ...),
+                  "All ranges must be ShashinPosition");
+
+    return (((to_underlying(value) & to_underlying(ranges)) != 0) || ...);
 }
 
-// Helper per convertire un enum class al tipo sottostante
-template <typename Enum>
-constexpr auto to_underlying(Enum e) -> std::underlying_type_t<Enum> {
-    return static_cast<std::underlying_type_t<Enum>>(e);
+// =============================================
+// Bitwise Operator Overloads
+// =============================================
+
+inline constexpr ShashinPosition operator|(ShashinPosition lhs, ShashinPosition rhs) noexcept {
+    return static_cast<ShashinPosition>(to_underlying(lhs) | to_underlying(rhs));
 }
 
-// Operatore bitwise OR (|)
-inline constexpr ShashinPosition operator|(ShashinPosition lhs, ShashinPosition rhs) {
-    using T = std::underlying_type_t<ShashinPosition>;
-    return static_cast<ShashinPosition>(static_cast<T>(lhs) | static_cast<T>(rhs));
+inline constexpr ShashinPosition operator&(ShashinPosition lhs, ShashinPosition rhs) noexcept {
+    return static_cast<ShashinPosition>(to_underlying(lhs) & to_underlying(rhs));
 }
 
-// Operatore bitwise AND (&)
-inline constexpr ShashinPosition operator&(ShashinPosition lhs, ShashinPosition rhs) {
-    using T = std::underlying_type_t<ShashinPosition>;
-    return static_cast<ShashinPosition>(static_cast<T>(lhs) & static_cast<T>(rhs));
+inline constexpr ShashinPosition operator~(ShashinPosition v) noexcept {
+    return static_cast<ShashinPosition>(~to_underlying(v));
 }
 
-// Operatore NOT (~)
-inline constexpr ShashinPosition operator~(ShashinPosition lhs) {
-    using T = std::underlying_type_t<ShashinPosition>;
-    return static_cast<ShashinPosition>(~static_cast<T>(lhs));
-}
-
-// Operatore OR assegnazione (|=)
-inline constexpr ShashinPosition& operator|=(ShashinPosition& lhs, ShashinPosition rhs) {
+inline constexpr ShashinPosition& operator|=(ShashinPosition& lhs, ShashinPosition rhs) noexcept {
     lhs = lhs | rhs;
     return lhs;
 }
 
-// Operatore AND assegnazione (&=)
-inline constexpr ShashinPosition& operator&=(ShashinPosition& lhs, ShashinPosition rhs) {
+inline constexpr ShashinPosition& operator&=(ShashinPosition& lhs, ShashinPosition rhs) noexcept {
     lhs = lhs & rhs;
     return lhs;
 }
 
-} // namespace ShashChess
+}  // namespace ShashChess
 
-#endif // SHASHIN_HELPER_H
-//shashin end
+#endif  // SHASHIN_HELPER_H

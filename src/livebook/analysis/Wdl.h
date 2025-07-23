@@ -5,7 +5,7 @@
 
 class Wdl {
    public:
-    Wdl(uint32_t wins, uint32_t draws, uint32_t losses);
+    Wdl(uint32_t wins_, uint32_t draws_, uint32_t losses_);
 
     ~Wdl() = default;
 

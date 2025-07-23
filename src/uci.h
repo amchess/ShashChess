@@ -28,13 +28,13 @@
 #include "misc.h"
 #include "search.h"
 #include "book/book_manager.h"  //book management
-#include "win_probability.h"
+#include "wdl/win_probability.h"
 namespace ShashChess {
 
 class Position;
 class Move;
 class Score;
-enum Square : int;
+enum Square : int8_t;
 using Value = int;
 
 class UCIEngine {

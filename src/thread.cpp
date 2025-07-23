@@ -180,7 +180,7 @@ void ThreadPool::set(const NumaConfig&                           numaConfig,
             const size_t    threadId = threads.size();
             const NumaIndex numaId   = doBindThreads ? boundThreadToNumaNode[threadId] : 0;
             auto            manager  = threadId == 0 ? std::unique_ptr<Search::ISearchManager>(
-                             std::make_unique<Search::SearchManager>(updateContext))
+                                             std::make_unique<Search::SearchManager>(updateContext))
                                                      : std::make_unique<Search::NullSearchManager>();
 
             // When not binding threads we want to force all access to happen
@@ -293,13 +293,11 @@ void ThreadPool::start_thinking(const OptionsMap&  options,
     {
         th->run_custom_job([&]() {
             th->worker->limits = limits;
-            //from Crystal begin
+            //from Shashin Crystal begin
             (th->worker->nodes =
-               (th->worker->tbHits =
-                  (th->worker->nmpGuardV =
-                     (th->worker->nmpGuard =
-                        (th->worker->nmpMinPly = th->worker->bestMoveChanges = 0)))));
-            //from Crystal end
+               (th->worker->tbHits = (th->worker->nmpGuard = (th->worker->nmpMinPly =
+                                                                th->worker->bestMoveChanges = 0))));
+            //from Shashin Crystal end
             th->worker->rootDepth = th->worker->completedDepth = 0;
             th->worker->nmpSide                                = 0;  //from crystal
             th->worker->rootMoves                              = rootMoves;

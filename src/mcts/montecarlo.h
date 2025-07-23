@@ -160,6 +160,7 @@ mctsNodeInfo* get_node(const MonteCarlo* mcts, const Position& pos);
 // The Monte-Carlo tree is stored implicitly in one big hash table
 ///////////////////////////////////////////////////////////////////////////////////////
 typedef std::unordered_multimap<Key, mctsNodeInfo*> MCTS_MAP_BASE;
+extern std::atomic<size_t>                          MCTSNodeCount;
 class MCTSHashTable: public MCTS_MAP_BASE {
    public:
     ~MCTSHashTable() { clear(); }
@@ -172,9 +173,12 @@ class MCTSHashTable: public MCTS_MAP_BASE {
         }
 
         MCTS_MAP_BASE::clear();
+        MCTSNodeCount = 0;
     }
 };
 extern MCTSHashTable MCTS;
+extern MCTSHashTable MCTS;
+const size_t         MCTSMaxNodes = 100000;
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Main MCTS search class
@@ -247,10 +251,10 @@ class MonteCarlo {
     TimePoint startTime{};
     TimePoint lastOutputTime{};
 
-    //double max_epsilon = 0.99;
-    //double min_epsilon = 0.00;
-    //double decay_rate  = 0.8;
-    bool AB_Rollout{};
+    [[maybe_unused]] double max_epsilon = 0.99;
+    [[maybe_unused]] double min_epsilon = 0.00;
+    [[maybe_unused]] double decay_rate  = 0.8;
+    bool                    AB_Rollout{};
 
     // Flags and limits to tweak the algorithm
     double BACKUP_MINIMAX{};
@@ -266,7 +270,7 @@ class MonteCarlo {
     // implementation, we want to be able to reference from stack[-4] to stack[MAX_PLY+2].
     mctsNodeInfo *nodesBuffer[MAX_PLY + 10]{}, **nodes  = nodesBuffer + 7;
     Edge *        edgesBuffer[MAX_PLY + 10]{}, **edges  = edgesBuffer + 7;
-    Search::Stack stackBuffer[MAX_PLY + 10]{}, *stack   = stackBuffer + 7;
+    Search::Stack stackBuffer[MAX_PLY + 17]{}, *stack   = stackBuffer + 7;
     StateInfo     statesBuffer[MAX_PLY + 10]{}, *states = statesBuffer + 7;
 };
 }

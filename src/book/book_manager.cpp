@@ -78,7 +78,9 @@ void BookManager::show_moves(const Position& pos, const OptionsMap& options) con
     for (size_t i = 0; i < NumberOfBooks; ++i)
     {
         if (books[i] == nullptr)
-        { std::cout << "Book " << i + 1 << ": No book loaded" << std::endl; }
+        {
+            std::cout << "Book " << i + 1 << ": No book loaded" << std::endl;
+        }
         else
         {
             std::cout << "Book " << i + 1 << " (" << books[i]->type() << "): "

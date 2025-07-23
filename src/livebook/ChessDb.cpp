@@ -16,25 +16,25 @@ ChessDb::ChessDb() :
     action(DEFAULT_ACTION),
     endpoint(CHESS_DB_ENDPOINT) {}
 
-ChessDb::ChessDb(std::string endpoint) :
+ChessDb::ChessDb(std::string endpoint_) :
     action(DEFAULT_ACTION),
-    endpoint(std::move(endpoint)) {}
+    endpoint(std::move(endpoint_)) {}
 
-ChessDb::ChessDb(const Action action) :
-    action(action),
+ChessDb::ChessDb(const Action action_) :
+    action(action_),
     endpoint(CHESS_DB_ENDPOINT) {}
 
-ChessDb::ChessDb(std::string endpoint, const Action action) :
-    action(action),
-    endpoint(std::move(endpoint)) {}
+ChessDb::ChessDb(std::string endpoint_, const Action action_) :
+    action(action_),
+    endpoint(std::move(endpoint_)) {}
 
 
 std::pair<std::string, Analysis>
-ChessDb::parse_move(const Position& position, std::string& item, bool check_rank) const {
-    std::string move_type = item.substr(0, item.find(':'));
-    std::string move      = item.substr(item.find(':') + 1);
+ChessDb::parse_move(const Position& position_, std::string& item_, bool check_rank_) const {
+    std::string move_type = item_.substr(0, item_.find(':'));
+    std::string move      = item_.substr(item_.find(':') + 1);
 
-    std::stringstream stream(item);
+    std::stringstream stream(item_);
     std::string       token;
     std::string       key, value;
 
@@ -51,15 +51,17 @@ ChessDb::parse_move(const Position& position, std::string& item, bool check_rank
             value = token.substr(token.find(':') + 1);
             rank  = std::stoi(value);
 
-            if (check_rank && rank < this->min_rank)
-            { break; }
+            if (check_rank_ && rank < this->min_rank)
+            {
+                break;
+            }
         }
 
         value = token.substr(token.find(':') + 1);
 
         if (key == "move")
         {
-            if (auto uci_move = UCIEngine::to_move(position, value); !uci_move)
+            if (auto uci_move = UCIEngine::to_move(position_, value); !uci_move)
             {
                 uci = "";
                 break;
@@ -94,23 +96,27 @@ ChessDb::parse_move(const Position& position, std::string& item, bool check_rank
     return element;
 }
 
-std::vector<std::pair<std::string, Analysis>> ChessDb::parse_query_all(const Position& position) {
+std::vector<std::pair<std::string, Analysis>> ChessDb::parse_query_all(const Position& position_) {
     std::vector<std::pair<std::string, Analysis>> moves = {};
 
     this->clean_buffer_from_terminator();
 
     if (this->readBuffer == "invalid board" || this->readBuffer == "nobestmove")
-    { return moves; }
+    {
+        return moves;
+    }
 
     std::stringstream ss(this->readBuffer);
     std::string       item;
 
     while (std::getline(ss, item, '|'))
     {
-        auto element = parse_move(position, item, true);
+        auto element = parse_move(position_, item, true);
 
         if (element.first.empty())
-        { continue; }
+        {
+            continue;
+        }
 
         moves.push_back(element);
     }
@@ -118,23 +124,27 @@ std::vector<std::pair<std::string, Analysis>> ChessDb::parse_query_all(const Pos
     return moves;
 }
 
-std::vector<std::pair<std::string, Analysis>> ChessDb::parse_query_best(const Position& position) {
+std::vector<std::pair<std::string, Analysis>> ChessDb::parse_query_best(const Position& position_) {
     std::vector<std::pair<std::string, Analysis>> moves = {};
 
     this->clean_buffer_from_terminator();
 
     if (this->readBuffer == "invalid board" || this->readBuffer == "nobestmove")
-    { return moves; }
+    {
+        return moves;
+    }
 
     std::stringstream ss(this->readBuffer);
     std::string       item;
 
     while (std::getline(ss, item, '|'))
     {
-        auto element = parse_move(position, item, false);
+        auto element = parse_move(position_, item, false);
 
         if (element.first.empty())
-        { continue; }
+        {
+            continue;
+        }
 
         moves.push_back(element);
     }
@@ -142,26 +152,28 @@ std::vector<std::pair<std::string, Analysis>> ChessDb::parse_query_best(const Po
     return moves;
 }
 
-std::vector<std::pair<std::string, Analysis>> ChessDb::lookup(const Position& position) {
-    const std::string full_uri = format_uri(position);
+std::vector<std::pair<std::string, Analysis>> ChessDb::lookup(const Position& position_) {
+    const std::string full_uri = format_uri(position_);
 
     auto ret = std::vector<std::pair<std::string, Analysis>>();
 
     if (const CURLcode res = do_request(full_uri); res != CURLE_OK)
-    { return ret; }
+    {
+        return ret;
+    }
 
     std::vector<std::pair<std::string, Analysis>> output;
 
     switch (this->action)
     {
     case Action::QUERY_ALL :
-        output = parse_query_all(position);
+        output = parse_query_all(position_);
         break;
 
     case Action::QUERY_BEST :
     case Action::QUERY :
     case Action::QUERY_SEARCH :
-        output = parse_query_best(position);
+        output = parse_query_best(position_);
         break;
     default :
         break;
@@ -170,20 +182,24 @@ std::vector<std::pair<std::string, Analysis>> ChessDb::lookup(const Position& po
     return output;
 }
 
-void ChessDb::set_action(const Action new_action) { this->action = new_action; }
+void ChessDb::set_action(const Action new_action_) { this->action = new_action_; }
 
-void ChessDb::set_min_rank(const int new_min_rank) {
-    if (new_min_rank < 0)
-    { return; }
+void ChessDb::set_min_rank(const int new_min_rank_) {
+    if (new_min_rank_ < 0)
+    {
+        return;
+    }
 
-    if (new_min_rank > 2)
-    { return; }
+    if (new_min_rank_ > 2)
+    {
+        return;
+    }
 
-    this->min_rank = new_min_rank;
+    this->min_rank = new_min_rank_;
 }
 
-std::string ChessDb::format_uri(const Position& position) const {
-    auto fen_encoded = position.fen();
+std::string ChessDb::format_uri(const Position& position_) const {
+    auto fen_encoded = position_.fen();
 
     std::replace(fen_encoded.begin(), fen_encoded.end(), ' ',
                  '_');  // replace all ' ' to '_'

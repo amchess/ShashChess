@@ -278,6 +278,20 @@ N.B.
 
 Because of disk access, to be effective, the learning must be made at no bullet time controls (less than 5 minutes/game).
 
+**Note on Architecture Support for Reinforcement Learning**  
+The reinforcement learning feature (experience file) is supported on 64-bit little-endian architectures. The following 64-bit non-little-endian architectures are relatively rare and specialized:
+- **IBM z/Architecture** (mainframe systems)
+- **POWER** (PowerPC 64-bit, used in IBM servers)
+- **SPARC** (historically used in enterprise servers)
+
+These big-endian architectures are not currently supported. The experience file format uses native little-endian byte ordering, which is compatible with:
+- x86-64 (Intel/AMD processors)
+- ARM64 (Apple Silicon, modern smartphones and tablets)
+- RISC-V (in little-endian mode)
+- All other mainstream 64-bit little-endian platforms
+
+If you're using one of the specialized big-endian architectures, you may need to convert the experience files or disable the reinforcement learning feature.
+
 ### Read only learning
 
 _Boolean, Default: False_ 
@@ -310,11 +324,11 @@ we have the following mapping:
 
 | **WDL Range (W, D, L)**       | **Shashin Position’s Type**          | **Win Probability Range** | **Informator Symbols**| **Description**                                             |
 |-------------------------------|--------------------------------------|---------------------------|-----------------------|-------------------------------------------------------------|
-| [0, 3], [0, 4], [96, 100]    | High Petrosian                       | [0, 5]                  | -+                     | Winning: a decisive advantage, with the position clearly leading to victory.      |
-| [4, 6], [5, 8], [89, 95]     | High-Middle Petrosian                | [6, 10]                 | -+ \ -/+               | Decisive advantage: dominant position and likely winning.                      |
-| [7, 9], [9, 12], [80, 87]    | Middle Petrosian                     | [11, 15]                 | -/+                    | Clear advantage: a substantial positional advantage, but a win is not yet inevitable.                          |
-| [10, 12], [13, 16], [73, 79]  | Middle-Low Petrosian                 | [16, 20]                 | -/+ \ =/+              | Significant advantage: strong edge                   |
-| [13, 15], [17, 39], [66, 71]  | Low Petrosian                        | [21, 24]                 | =/+                    | Slight advantage with a positional edge, but no immediate threats.              |
+| [0, 3], [0, 4], [96, 100]    | High Petrosian                       | [0, 5]                  | -+                     | Winning: a decisive disadvantage, with the position clearly leading to victory.      |
+| [4, 6], [5, 8], [89, 95]     | High-Middle Petrosian                | [6, 10]                 | -+ \ -/+               | Decisive disadvantage: dominant position and likely winning.                      |
+| [7, 9], [9, 12], [80, 87]    | Middle Petrosian                     | [11, 15]                 | -/+                    | Clear disadvantage: a substantial positional advantage, but a win is not yet inevitable.                          |
+| [10, 12], [13, 16], [73, 79]  | Middle-Low Petrosian                 | [16, 20]                 | -/+ \ =/+              | Significant disadvantage: strong edge                   |
+| [13, 15], [17, 39], [66, 71]  | Low Petrosian                        | [21, 24]                 | =/+                    | Slight disadvantage with a positional edge, but no immediate threats.              |
 | [0, 30], [40, 99], [31, 64]  | Chaos: Capablanca-Petrosian          | [25, 49]                 | ↓                      | Opponent pressure and initiative: defensive position.        |
 | [0, 0], [100, 100], [0, 0]    | Capablanca                           | [50, 50]                 | =                      | Equal position. Both sides are evenly matched, with no evident advantage.           |
 | [30, 64], [40, 99], [0, 30]  | Chaos: Capablanca-Tal                | [51, 75]                 | ↑                      | Initiative: playing dictation with active moves and forcing ideas.                     |

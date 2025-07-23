@@ -1,4 +1,4 @@
 make profile-build ARCH=native COMP=gcc -j$(nproc)
-strip stockfish
-mv 'stockfish' 'StockfishDev-native'
+strip shashchess
+mv 'shashchess' 'ShashChessDev-native'
 make clean

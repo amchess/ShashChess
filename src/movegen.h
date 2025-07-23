@@ -23,13 +23,8 @@
 #include <cstddef>
 
 #include "types.h"
-
+#include "./shashin/moveconfig.h"  //from shashin
 namespace ShashChess {
-//for crystal-shashin begin
-namespace MoveGenConfig {
-extern bool useMoveGenCrystalLogic;
-}
-//for crystal-shashin end
 class Position;
 
 enum GenType {

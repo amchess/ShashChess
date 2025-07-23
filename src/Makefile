@@ -56,31 +56,31 @@ SRCS = benchmark.cpp bitboard.cpp evaluate.cpp main.cpp \
 	search.cpp thread.cpp timeman.cpp tt.cpp uci.cpp ucioption.cpp tune.cpp syzygy/tbprobe.cpp \
 	learn/learn.cpp mcts/montecarlo.cpp  \
 	book/file_mapping.cpp book/book.cpp book/book_manager.cpp book/polyglot/polyglot.cpp book/ctg/ctg.cpp \
-	nnue/nnue_misc.cpp nnue/features/half_ka_v2_hm.cpp nnue/network.cpp engine.cpp score.cpp memory.cpp \
-	win_probability.cpp \
+	nnue/nnue_accumulator.cpp nnue/nnue_misc.cpp nnue/features/half_ka_v2_hm.cpp nnue/network.cpp engine.cpp score.cpp memory.cpp \
+	wdl/win_probability.cpp \
 	livebook/BaseLivebook.cpp livebook/LichessOpening.cpp livebook/LichessEndgame.cpp livebook/ChessDb.cpp \
 	livebook/analysis/Cp.cpp livebook/analysis/Analysis.cpp livebook/analysis/Wdl.cpp livebook/analysis/Mate.cpp \
 	livebook/LichessLivebook.cpp livebook/LichessMaster.cpp livebook/LichessPlayer.cpp livebook/LichessUsers.cpp \
-	livebook/LichessGames.cpp livebook/Proxy.cpp livebook/ChessDBContributor.cpp shashin/shashin_manager.cpp
+	livebook/LichessGames.cpp livebook/Proxy.cpp livebook/ChessDBContributor.cpp shashin/shashin_manager.cpp shashin/moveconfig.cpp
 
 HEADERS = benchmark.h bitboard.h evaluate.h misc.h movegen.h  movepick.h history.h \
 		nnue/nnue_misc.h nnue/features/half_ka_v2_hm.h nnue/layers/affine_transform.h \
-		nnue/layers/affine_transform_sparse_input.h nnue/layers/clipped_relu.h nnue/layers/simd.h \
+		nnue/layers/affine_transform_sparse_input.h nnue/layers/clipped_relu.h \
 		nnue/layers/sqr_clipped_relu.h nnue/nnue_accumulator.h nnue/nnue_architecture.h \
-		nnue/nnue_common.h nnue/nnue_feature_transformer.h position.h \
+		nnue/nnue_common.h nnue/nnue_feature_transformer.h nnue/simd.h position.h \
 		search.h syzygy/tbprobe.h thread.h thread_win32_osx.h timeman.h \
 		tt.h tune.h types.h uci.h ucioption.h perft.h nnue/network.h engine.h score.h numa.h memory.h \
 		book/file_mapping.h book/book.h book/book_manager.h book/polyglot/polyglot.h book/ctg/ctg.h learn/learn.h mcts/montecarlo.h \
-		win_probability.h \
+		wdl/win_probability.h \
 		livebook/BaseLivebook.h livebook/LichessOpening.h livebook/LichessEndgame.h livebook/ChessDb.h \
 		livebook/analysis/Cp.h livebook/analysis/Analysis.h livebook/analysis/Wdl.h livebook/analysis/Mate.h \
 		livebook/LichessLivebook.h livebook/LichessMaster.h livebook/LichessPlayer.h livebook/LichessUsers.h livebook/Proxy.h \
 		livebook/LichessGames.h  livebook/ChessDBContributor.h \
-		livebook/json/json.hpp shashin/shashin_helper.h shashin/shashin_manager.h shashin/shashin_types.h
+		livebook/json/json.hpp shashin/shashin_helper.h shashin/shashin_manager.h shashin/shashin_types.h shashin/moveconfig.h shashin/shashin_position.h shashin/shashin_params.h
 
 OBJS = $(notdir $(SRCS:.cpp=.o))
 
-VPATH = mcts:syzygy:nnue:nnue/features:book:book/polyglot:book/ctg:learn:shashin:livebook:livebook/analysis:livebook/json
+VPATH = mcts:syzygy:nnue:nnue/features:book:book/polyglot:book/ctg:learn:shashin:livebook:livebook/analysis:livebook/json:wdl
 
 ### ==========================================================================
 ### Section 2. High-level Configuration
@@ -175,8 +175,8 @@ lsx = no
 lasx = no
 STRIP = strip
 
-ifneq ($(shell which clang-format-18 2> /dev/null),)
-	CLANG-FORMAT = clang-format-18
+ifneq ($(shell which clang-format-20 2> /dev/null),)
+	CLANG-FORMAT = clang-format-20
 else
 	CLANG-FORMAT = clang-format
 endif
@@ -451,6 +451,15 @@ ifneq ($(OS),Android)
 	endif
 endif
 
+ifeq ($(KERNEL),Linux)
+    # Soppressione warning ABI e impostazioni vettoriali per Linux
+    CXXFLAGS += -Wno-psabi -mprefer-vector-width=256 -mno-avx512f
+    
+    # Flag specifiche per architetture AVX2
+    ifeq ($(avx2),yes)
+        CXXFLAGS += -mavx2 -mbmi2 -mfma
+    endif
+endif
 
 ifeq ($(COMP),)
 	COMP=gcc
@@ -563,14 +572,12 @@ ifeq ($(KERNEL),Darwin)
 	XCRUN = xcrun
 endif
 
-# To cross-compile for Android, NDK version r21 or later is recommended.
-# In earlier NDK versions, you'll need to pass -fno-addrsig if using GNU binutils.
-# Currently we don't know how to make PGO builds with the NDK yet.
+# To cross-compile for Android, use NDK version r27c or later.
 ifeq ($(COMP),ndk)
-	CXXFLAGS += -stdlib=libc++ -fPIE
+	CXXFLAGS += -stdlib=libc++
 	comp=clang
 	ifeq ($(arch),armv7)
-		CXX=armv7a-linux-androideabi16-clang++
+		CXX=armv7a-linux-androideabi29-clang++
 		CXXFLAGS += -mthumb -march=armv7-a -mfloat-abi=softfp -mfpu=neon
 		ifneq ($(shell which arm-linux-androideabi-strip 2>/dev/null),)
 			STRIP=arm-linux-androideabi-strip
@@ -579,7 +586,7 @@ ifeq ($(COMP),ndk)
 		endif
 	endif
 	ifeq ($(arch),armv8)
-		CXX=aarch64-linux-android21-clang++
+		CXX=aarch64-linux-android29-clang++
 		ifneq ($(shell which aarch64-linux-android-strip 2>/dev/null),)
 			STRIP=aarch64-linux-android-strip
 		else
@@ -587,14 +594,28 @@ ifeq ($(COMP),ndk)
 		endif
 	endif
 	ifeq ($(arch),x86_64)
-		CXX=x86_64-linux-android21-clang++
+		CXX=x86_64-linux-android29-clang++
 		ifneq ($(shell which x86_64-linux-android-strip 2>/dev/null),)
 			STRIP=x86_64-linux-android-strip
 		else
 			STRIP=llvm-strip
 		endif
 	endif
-	LDFLAGS += -static-libstdc++ -pie -lm -latomic
+	LDFLAGS += -static-libstdc++
+endif
+
+### Allow overwriting CXX from command line
+ifdef COMPCXX
+	CXX=$(COMPCXX)
+endif
+
+# llvm-profdata must be version compatible with the specified CXX (be it clang, or the gcc alias)
+# make -j profile-build CXX=clang++-20 COMP=clang
+# Locate the version in the same directory as the compiler used,
+# with fallback to a generic one if it can't be located
+	LLVM_PROFDATA := $(dir $(realpath $(shell which $(CXX) 2> /dev/null)))llvm-profdata
+ifeq ($(wildcard $(LLVM_PROFDATA)),)
+	LLVM_PROFDATA := llvm-profdata
 endif
 
 ifeq ($(comp),icx)
@@ -609,11 +630,6 @@ else
 	ifeq ($(KERNEL),Darwin)
 		EXTRAPROFILEFLAGS = -fvisibility=hidden
 	endif
-endif
-
-### Allow overwriting CXX from command line
-ifdef COMPCXX
-	CXX=$(COMPCXX)
 endif
 
 ### Sometimes gcc is really clang
@@ -724,7 +740,7 @@ endif
 ifeq ($(avx512),yes)
 	CXXFLAGS += -DUSE_AVX512
 	ifeq ($(comp),$(filter $(comp),gcc clang mingw icx))
-		CXXFLAGS += -mavx512f -mavx512bw
+		CXXFLAGS += -mavx512f -mavx512bw -mavx512dq -mavx512vl
 	endif
 endif
 
@@ -1000,12 +1016,12 @@ clean: objclean profileclean
 
 # clean binaries and objects
 objclean:
-	@rm -f shashchess shashchess.exe *.o ./syzygy/*.o ./nnue/*.o ./nnue/features/*.o ./book/*.o ./book/polyglot/*.o ./book/ctg/*.o ./learn/*.o ./livebook/*.o ./livebook/analysis/*.o ./livebook/json/*.o ./shashin/shashin_manager.o
+	@rm -f shashchess shashchess.exe *.o ./syzygy/*.o ./nnue/*.o ./nnue/features/*.o ./book/*.o ./book/polyglot/*.o ./book/ctg/*.o ./learn/*.o ./livebook/*.o ./livebook/analysis/*.o ./livebook/json/*.o ./shashin/*.o ./wdl/*.o
 
 # clean auxiliary profiling files
 profileclean:
 	@rm -rf profdir
-	@rm -f bench.txt *.gcda *.gcno ./syzygy/*.gcda ./nnue/*.gcda ./nnue/features/*.gcda ./book/*.gcda ./book/polyglot/*.gcda ./book/ctg/*.gcda ./learn/*.gcda ./livebook/*.gcda ./shashin/*.gcda *.s PGOBENCH.out
+	@rm -f bench.txt *.gcda *.gcno ./syzygy/*.gcda ./nnue/*.gcda ./nnue/features/*.gcda ./book/*.gcda ./book/polyglot/*.gcda ./book/ctg/*.gcda ./learn/*.gcda ./livebook/*.gcda ./shashin/*.gcda ./wdl/*.o *.s PGOBENCH.out
 	@rm -f shashchess.profdata *.profraw
 	@rm -f shashchess.*args*
 	@rm -f shashchess.*lt*
@@ -1018,10 +1034,6 @@ net:
 
 format:
 	$(CLANG-FORMAT) -i $(SRCS) $(HEADERS) -style=file
-
-# default target
-default:
-	help
 
 ### ==========================================================================
 ### Section 5. Private Targets
@@ -1111,7 +1123,7 @@ clang-profile-make:
 	all
 
 clang-profile-use:
-	$(XCRUN) llvm-profdata merge -output=shashchess.profdata *.profraw
+	$(XCRUN) $(LLVM_PROFDATA) merge -output=shashchess.profdata *.profraw
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
 	EXTRACXXFLAGS='-fprofile-use=shashchess.profdata' \
 	EXTRALDFLAGS='-fprofile-use ' \
@@ -1148,6 +1160,6 @@ icx-profile-use:
 .depend: $(SRCS)
 	-@$(CXX) $(DEPENDFLAGS) -MM $(SRCS) > $@ 2> /dev/null
 
-ifeq (, $(filter $(MAKECMDGOALS), help strip install clean net objclean profileclean config-sanity))
+ifeq (, $(filter $(MAKECMDGOALS), help strip install clean net objclean profileclean format config-sanity))
 -include .depend
 endif

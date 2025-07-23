@@ -7,8 +7,6 @@
 #include <cstdint>
 #include "../uci.h"
 
-#include "../win_probability.h"
-
 using namespace std;
 using namespace ShashChess;
 
@@ -87,13 +85,19 @@ bool LearningData::load(const string& filename) {
 
 inline bool should_update(const LearningMove existing_move, const LearningMove learning_move) {
     if (learning_move.depth > existing_move.depth)
-    { return true; }
+    {
+        return true;
+    }
 
     if (learning_move.depth < existing_move.depth)
-    { return false; }
+    {
+        return false;
+    }
 
     if (learning_move.score != existing_move.score)
-    { return true; }
+    {
+        return true;
+    }
 
     return learning_move.performance != existing_move.performance;
 }
@@ -157,14 +161,18 @@ void LearningData::insert_or_update(PersistedLearningMove* plm, bool qLearning) 
             if (qLearning)
             {
                 if (bestNewMoveCandidate->score > currentBestMove->score)
-                { newBestMove = true; }
+                {
+                    newBestMove = true;
+                }
             }
             else
             {
                 if ((currentBestMove->depth < bestNewMoveCandidate->depth)
                     || (currentBestMove->depth == bestNewMoveCandidate->depth
                         && currentBestMove->score <= bestNewMoveCandidate->score))
-                { newBestMove = true; }
+                {
+                    newBestMove = true;
+                }
             }
         }
 
@@ -244,11 +252,15 @@ void LearningData::init(ShashChess::OptionsMap& o) {
 
     //We need to write all consolidated experience to disk
     if (!slaveFiles.empty())
-    { persist(options); }
+    {
+        persist(options);
+    }
 
     //Remove slave files
     for (const string& fn : slaveFiles)
-    { remove(fn.c_str()); }
+    {
+        remove(fn.c_str());
+    }
 
     // Clear the 'needPersisting' flag
     needPersisting = false;
@@ -469,12 +481,16 @@ void LearningData::sortLearningMoves(std::vector<LearningMove*>& learningMoves) 
     std::sort(learningMoves.begin(), learningMoves.end(),
               [](const LearningMove* a, const LearningMove* b) {
                   if (a->depth != b->depth)
-                  { return a->depth > b->depth; }
+                  {
+                      return a->depth > b->depth;
+                  }
                   const int winProbA = a->performance;
                   const int winProbB = b->performance;
 
                   if (winProbA != winProbB)
-                  { return winProbA > winProbB; }
+                  {
+                      return winProbA > winProbB;
+                  }
                   return a->score > b->score;
               });
 }
@@ -482,7 +498,9 @@ vector<LearningMove*> LearningData::probe(ShashChess::Key key) {
     vector<LearningMove*> result;
     auto                  range = HT.equal_range(key);
     for (auto it = range.first; it != range.second; ++it)
-    { result.push_back(it->second); }
+    {
+        result.push_back(it->second);
+    }
 
     return result;
 }

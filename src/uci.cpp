@@ -61,7 +61,9 @@ void UCIEngine::print_info_string(std::string_view str) {
     for (auto& line : split(str, "\n"))
     {
         if (!is_whitespace(line))
-        { std::cout << "info string " << line << '\n'; }
+        {
+            std::cout << "info string " << line << '\n';
+        }
     }
     sync_cout_end();
 }
@@ -110,10 +112,10 @@ void UCIEngine::loop() {
         is >> std::skipws >> token;
 
         if (token == "quit" || token == "stop")
-        {  //Khalid
+        {  //learning
             engine.stop();
 
-            //Kelly begin
+            //learning begin
             if (token == "quit" && LD.is_enabled() && !LD.is_paused())
             {
                 //Wait for the current search operation (if any) to stop
@@ -122,14 +124,16 @@ void UCIEngine::loop() {
 
                 //Perform Q-learning if enabled
                 if (LD.learning_mode() == LearningMode::Self)
-                { putQLearningTrajectoryIntoLearningTable(); }
+                {
+                    putQLearningTrajectoryIntoLearningTable();
+                }
                 if (!LD.is_readonly())
                 {
                     //Save to learning file
                     LD.persist(engine.get_options());
                 }
             }
-            //Kelly end
+            //learning end
         }
         // The GUI sends 'ponderhit' to tell that the user has played the expected move.
         // So, 'ponderhit' is sent if pondering was done on the same move that the user
@@ -161,13 +165,15 @@ void UCIEngine::loop() {
             pos.set(engine.fen(), engine.get_options()["UCI_Chess960"], &states->back());
         }  //Experience Book
         else if (token == "ucinewgame")
-        //Kelly and Khalid begin
+        //learning begin
         {
             if (LD.is_enabled())
             {
                 //Perform Q-learning if enabled
                 if (LD.learning_mode() == LearningMode::Self)
-                { putQLearningTrajectoryIntoLearningTable(); }
+                {
+                    putQLearningTrajectoryIntoLearningTable();
+                }
 
                 if (!LD.is_readonly())
                 {
@@ -178,7 +184,7 @@ void UCIEngine::loop() {
             }
             engine.search_clear();
         }
-        //Kelly and Khalid end
+        //learning end
         else if (token == "isready")
             sync_cout << "readyok" << sync_endl;
 
@@ -332,14 +338,16 @@ void UCIEngine::bench(std::istream& args) {
             position(is);
         else if (token == "ucinewgame")
         {
-            //Kelly begin
+            //learning begin
             if (LD.is_enabled())
             {
                 if (LD.learning_mode() == LearningMode::Self && !LD.is_paused())
-                { putQLearningTrajectoryIntoLearningTable(); }
+                {
+                    putQLearningTrajectoryIntoLearningTable();
+                }
                 setStartPoint();
             }
-            //Kelly end
+            //learning end
             engine.search_clear();  // search_clear may take a while
             elapsed = now();
         }
@@ -552,7 +560,9 @@ void UCIEngine::position(std::istringstream& is) {
     std::vector<std::string> moves;
 
     while (is >> token)
-    { moves.push_back(token); }
+    {
+        moves.push_back(token);
+    }
 
     engine.set_position(fen, moves);
 }
@@ -574,12 +584,12 @@ std::string UCIEngine::format_score(const Score& s) {
 
     return s.visit(format);
 }
-//from Khalid begin
+//from learning begin
 int UCIEngine::getNormalizeToPawnValue(Position& pos) {
     auto [a, b] = WDLModel::win_rate_params(pos);
     return a;
 }
-//from Khalid end
+//from learning end
 
 // Turns a Value to an integer centipawn number,
 // without treatment of mate and similar special scores.
@@ -594,6 +604,7 @@ int UCIEngine::to_cp(Value v, const Position& pos) {
     return std::round(100 * int(v) / a);
 }
 
+//in wdl package for wdl model
 std::string UCIEngine::square(Square s) {
     return std::string{char('a' + file_of(s)), char('1' + rank_of(s))};
 }

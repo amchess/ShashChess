@@ -9,14 +9,14 @@
 namespace ShashChess::Livebook {
 class LichessPlayer final: public LichessOpening {
    public:
-    LichessPlayer(const std::string& player, std::string color);
+    LichessPlayer(const std::string& player_, std::string color_);
     ~LichessPlayer() override = default;
 
    protected:
     std::string player;
     std::string color;
 
-    std::string format_url(const Position& position) override;
+    std::string format_url(const Position& position_) override;
 };
 }
 

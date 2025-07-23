@@ -36,7 +36,7 @@ namespace ShashChess {
 constexpr int PAWN_HISTORY_SIZE        = 512;    // has to be a power of 2
 constexpr int CORRECTION_HISTORY_SIZE  = 32768;  // has to be a power of 2
 constexpr int CORRECTION_HISTORY_LIMIT = 1024;
-constexpr int LOW_PLY_HISTORY_SIZE     = 4;
+constexpr int LOW_PLY_HISTORY_SIZE     = 5;
 
 static_assert((PAWN_HISTORY_SIZE & (PAWN_HISTORY_SIZE - 1)) == 0,
               "PAWN_HISTORY_SIZE has to be a power of 2");
@@ -52,10 +52,6 @@ enum PawnHistoryType {
 template<PawnHistoryType T = Normal>
 inline int pawn_structure_index(const Position& pos) {
     return pos.pawn_key() & ((T == Normal ? PAWN_HISTORY_SIZE : CORRECTION_HISTORY_SIZE) - 1);
-}
-
-inline int major_piece_index(const Position& pos) {
-    return pos.major_piece_key() & (CORRECTION_HISTORY_SIZE - 1);
 }
 
 inline int minor_piece_index(const Position& pos) {
@@ -75,7 +71,7 @@ inline int non_pawn_index(const Position& pos) {
 template<typename T, int D>
 class StatsEntry {
 
-    static_assert(std::is_arithmetic<T>::value, "Not an arithmetic type");
+    static_assert(std::is_arithmetic_v<T>, "Not an arithmetic type");
     static_assert(D <= std::numeric_limits<T>::max(), "D overflows T");
 
     T entry;
@@ -136,18 +132,17 @@ using PawnHistory = Stats<std::int16_t, 8192, PAWN_HISTORY_SIZE, PIECE_NB, SQUAR
 // see https://www.chessprogramming.org/Static_Evaluation_Correction_History
 enum CorrHistType {
     Pawn,          // By color and pawn structure
-    Major,         // By color and positions of major pieces (Queen, Rook) and King
-    Minor,         // By color and positions of minor pieces (Knight, Bishop) and King
-    NonPawn,       // By color and non-pawn material positions
+    Minor,         // By color and positions of minor pieces (Knight, Bishop)
+    NonPawn,       // By non-pawn material positions and color
     PieceTo,       // By [piece][to] move
     Continuation,  // Combined history of move pairs
 };
 
 namespace Detail {
 
-template<CorrHistType _>
+template<CorrHistType>
 struct CorrHistTypedef {
-    using type = Stats<std::int16_t, CORRECTION_HISTORY_LIMIT, COLOR_NB, CORRECTION_HISTORY_SIZE>;
+    using type = Stats<std::int16_t, CORRECTION_HISTORY_LIMIT, CORRECTION_HISTORY_SIZE, COLOR_NB>;
 };
 
 template<>
@@ -160,11 +155,19 @@ struct CorrHistTypedef<Continuation> {
     using type = MultiArray<CorrHistTypedef<PieceTo>::type, PIECE_NB, SQUARE_NB>;
 };
 
+template<>
+struct CorrHistTypedef<NonPawn> {
+    using type =
+      Stats<std::int16_t, CORRECTION_HISTORY_LIMIT, CORRECTION_HISTORY_SIZE, COLOR_NB, COLOR_NB>;
+};
+
 }
 
 template<CorrHistType T>
 using CorrectionHistory = typename Detail::CorrHistTypedef<T>::type;
 
-}  // namespace Stockfish
+using TTMoveHistory = StatsEntry<std::int16_t, 8192>;
+
+}  // namespace ShashChess
 
 #endif  // #ifndef HISTORY_H_INCLUDED

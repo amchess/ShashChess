@@ -1,8 +1,8 @@
 #ifdef USE_LIVEBOOK
     #include "Mate.h"
 
-Mate::Mate(const int32_t mate) :
-    mate(mate) {}
+Mate::Mate(const int32_t mate_) :
+    mate(mate_) {}
 
 Mate* Mate::opponent() const { return new Mate(-mate); }
 

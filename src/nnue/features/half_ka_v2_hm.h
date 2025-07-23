@@ -1,5 +1,5 @@
 /*
-  ShashChess, a UCI chess playing engine derived from Stockfish
+  ShashChess, a UCI chess playing engine derived from Glaurung 2.1
   Copyright (C) 2004-2025 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
@@ -28,7 +28,6 @@
 #include "../nnue_common.h"
 
 namespace ShashChess {
-struct StateInfo;
 class Position;
 }
 
@@ -135,14 +134,9 @@ class HalfKAv2_hm {
     static void
     append_changed_indices(Square ksq, const DirtyPiece& dp, IndexList& removed, IndexList& added);
 
-    // Returns the cost of updating one perspective, the most costly one.
-    // Assumes no refresh needed.
-    static int update_cost(const StateInfo* st);
-    static int refresh_cost(const Position& pos);
-
-    // Returns whether the change stored in this StateInfo means
+    // Returns whether the change stored in this DirtyPiece means
     // that a full accumulator refresh is required.
-    static bool requires_refresh(const StateInfo* st, Color perspective);
+    static bool requires_refresh(const DirtyPiece& dirtyPiece, Color perspective);
 };
 
 }  // namespace ShashChess::Eval::NNUE::Features

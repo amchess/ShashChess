@@ -35,6 +35,7 @@
 #include "../thread.h"
 #include "../uci.h"
 #include "../syzygy/tbprobe.h"
+#include "../shashin/shashin_position.h"
 
 namespace ShashChess {
 
@@ -108,12 +109,13 @@ class AutoSpinLock {
 #define LOCK_(m, n, l) LOCK__(m, n, l)
 #define LOCK(m, n) LOCK_(m, n, __LINE__)
 
-MCTSHashTable MCTS;
-Edge          EDGE_NONE;
-Spinlock      createLock;
-size_t        mctsThreads;
-size_t        mctsMultiStrategy;
-double        mctsMultiMinVisits;
+MCTSHashTable       MCTS;
+Edge                EDGE_NONE;
+Spinlock            createLock;
+size_t              mctsThreads;
+size_t              mctsMultiStrategy;
+double              mctsMultiMinVisits;
+std::atomic<size_t> MCTSNodeCount(0);
 
 template<typename T>
 T TRand(const T min, const T max) {
@@ -135,7 +137,10 @@ mctsNodeInfo* get_node(const MonteCarlo* mcts, const Position& p) {
 
     //Lock
     LOCK(mcts, createLock);
-
+    if (MCTSNodeCount.load(std::memory_order_relaxed) >= MCTSMaxNodes)
+    {
+        return nullptr;
+    }
     // If the node already exists in the hash table, we want to return it.
     // We search in the range of all the hash table entries with key "key1".
     const auto [fst, snd] = MCTS.equal_range(key1);
@@ -152,7 +157,8 @@ mctsNodeInfo* get_node(const MonteCarlo* mcts, const Position& p) {
     }
 
     // Node was not found, so we have to create a new one
-    node                 = new mctsNodeInfo();
+    node = new mctsNodeInfo();
+    MCTSNodeCount.fetch_add(1, std::memory_order_relaxed);
     node->key1           = key1;          // Zobrist hash of all pieces, including pawns
     node->key2           = key2;          // Zobrist hash of pawns
     node->node_visits    = 0;             // number of visits by the Monte-Carlo algorithm
@@ -201,7 +207,7 @@ void MonteCarlo::search(ShashChess::ThreadPool&        threads,
     mctsNodeInfo* node = nullptr;
     AB_Rollout         = false;
     Reward reward      = value_to_reward(
-           VALUE_DRAW);  //TODO: Perhaps we should use static_value() here instead of 'VALUE_DRAW'
+      VALUE_DRAW);  //TODO: Perhaps we should use static_value() here instead of 'VALUE_DRAW'
 
     while (computational_budget(threads, limits) && (node = tree_policy(threads, limits)))
     {
@@ -229,7 +235,9 @@ void MonteCarlo::search(ShashChess::ThreadPool&        threads,
                 maximumPly = ply;
         }
         else
-        { reward = playout_policy(node); }
+        {
+            reward = playout_policy(node);
+        }
 
         if (ply >= 1)
             node->ttValue = backup(reward, AB_Rollout);
@@ -270,7 +278,11 @@ void MonteCarlo::create_root(Search::Worker* worker) {
     lastOutputTime = startTime;
 
     // Prepare the stack to go down and up in the game tree
-    std::memset(stackBuffer, 0, sizeof stackBuffer);
+
+    for (auto& currentStack : stackBuffer)
+    {
+        currentStack = ShashChess::Search::Stack();
+    }
 
     for (int i = -7; i <= MAX_PLY + 10; i++)
     {
@@ -278,11 +290,14 @@ void MonteCarlo::create_root(Search::Worker* worker) {
           &worker->continuationHistory[0][0][NO_PIECE][0];  // Use as a sentinel
         stack[i].continuationCorrectionHistory =
           &worker->continuationCorrectionHistory[NO_PIECE][0];
+        stack[i].staticEval = VALUE_NONE;
+        stack[i].reduction  = 0;
     }
     for (int i = 0; i <= MAX_PLY + 2; ++i)
-        stack[i].ply = i;
-
-    // TODO : what to do with killers ???
+    {
+        stack[i].ply       = i;
+        stack[i].reduction = 0;
+    }
 
     // Erase the list of nodes, and set the current node to the root node
     std::memset(nodesBuffer, 0, sizeof(nodesBuffer));
@@ -314,7 +329,9 @@ mctsNodeInfo* MonteCarlo::tree_policy(ShashChess::ThreadPool&        threads,
     assert(ply == 1);
 
     if (root->number_of_sons == 0)
-    { return root; }
+    {
+        return root;
+    }
 
     mctsNodeInfo* node = nullptr;
     while ((node = nodes[ply]))
@@ -345,6 +362,10 @@ mctsNodeInfo* MonteCarlo::tree_policy(ShashChess::ThreadPool&        threads,
         do_move(m);
 
         nodes[ply] = get_node(this, pos);
+        if (nodes[ply] == nullptr)
+        {
+            break;
+        }
     }
 
     if (node)
@@ -354,7 +375,9 @@ mctsNodeInfo* MonteCarlo::tree_policy(ShashChess::ThreadPool&        threads,
         const size_t greedy = TRand<size_t>(0, 100);
         if (!is_root(node) && node->ttValue < VALUE_KNOWN_WIN && node->ttValue > -VALUE_KNOWN_WIN
             && (node->number_of_sons > 5 && greedy >= mctsMultiStrategy))
-        { AB_Rollout = true; }
+        {
+            AB_Rollout = true;
+        }
     }
 
     return node;
@@ -533,6 +556,10 @@ void MonteCarlo::emit_pv(Search::Worker* worker, ShashChess::ThreadPool& threads
             rootMoves[index].previousScore = reward_to_value(list[k]->meanActionValue);
             rootMoves[index].score         = rootMoves[index].previousScore;
             rootMoves[index].selDepth      = maximumPly;
+            if (k > 0)
+            {
+                rootMoves[index].score = rootMoves[index].previousScore - k * 10;
+            }
         }
 
         // Extract from the tree the principal variation of the best move
@@ -543,7 +570,10 @@ void MonteCarlo::emit_pv(Search::Worker* worker, ShashChess::ThreadPool& threads
             cnt++;
             do_move(move);
             mctsNodeInfo* node = nodes[ply] = get_node(this, pos);
-
+            if (node == nullptr)
+            {
+                break;
+            }
             LOCK(this, node);
 
             if (ply > maximumPly)
@@ -564,7 +594,8 @@ void MonteCarlo::emit_pv(Search::Worker* worker, ShashChess::ThreadPool& threads
         assert(int(rootMoves.size()) == root->number_of_sons);
         assert(ply == 1);
 
-        threads.main_manager()->pv(*worker, threads, tt, worker->completedDepth);
+        threads.main_manager()->pv(*worker, threads, tt, worker->completedDepth,
+                                   true);  //shashin //TO CHECK
     }
     else
     {
@@ -621,7 +652,6 @@ inline bool MonteCarlo::is_terminal(mctsNodeInfo* node) const {
 void MonteCarlo::do_move(const Move m) {
 
     assert(ply < MAX_PLY);
-
     stack[ply].ply         = ply;
     stack[ply].currentMove = m;
     stack[ply].inCheck     = pos.checkers();
@@ -632,7 +662,7 @@ void MonteCarlo::do_move(const Move m) {
     stack[ply].continuationCorrectionHistory =
       &thisThread->continuationCorrectionHistory[pos.moved_piece(m)][m.to_sq()];
 
-    pos.do_move(m, states[ply]);
+    pos.do_move(m, states[ply], &tt);
 
     ply++;
     if (ply > maximumPly)
@@ -665,13 +695,17 @@ void MonteCarlo::generate_moves(mctsNodeInfo* node) {
     auto [ttHit, ttData, ttWriter] = tt.probe(pos.key());
     Depth depth                    = 30;
 
-    const PieceToHistory* contHist[] = {stack[ply - 1].continuationHistory,
-                                        stack[ply - 2].continuationHistory,
-                                        stack[ply - 3].continuationHistory,
-                                        stack[ply - 4].continuationHistory,
-                                        nullptr,
-                                        stack[ply - 6].continuationHistory};
-    MovePicker mp(pos, ttData.move, depth, &thisThread->mainHistory, &thisThread->lowPlyHistory,
+    const PieceToHistory* contHist[] = {
+      stack[ply - 1].continuationHistory, stack[ply - 2].continuationHistory,
+      stack[ply - 3].continuationHistory, stack[ply - 4].continuationHistory,
+      stack[ply - 5].continuationHistory, stack[ply - 6].continuationHistory};
+    Move ttMove = Move::none();
+    if (ttHit && ttData.move && pos.pseudo_legal(ttData.move) && pos.legal(ttData.move))
+    {
+        ttMove = ttData.move;
+    }
+    bool       kingInDanger = Shashin::king_danger(pos, pos.side_to_move());
+    MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory, &thisThread->lowPlyHistory,
                   &thisThread->captureHistory, contHist, &thisThread->pawnHistory, stack[ply].ply);
     Move       move;
     int        moveCount = 0;
@@ -682,13 +716,23 @@ void MonteCarlo::generate_moves(mctsNodeInfo* node) {
         if (pos.legal(move))
         {
             stack[ply].moveCount = ++moveCount;
-            const Reward prior   = calculate_prior(move);
+            Reward prior         = calculate_prior(move);
             if (prior > bestPrior)
             {
                 node->ttValue = reward_to_value(prior);
                 bestPrior     = prior;
             }
-
+            if (kingInDanger)
+            {
+                if (type_of(pos.moved_piece(move)) == KING)
+                {
+                    prior = std::min(1.0, prior + 0.3);
+                }
+                if (pos.gives_check(move))
+                {
+                    prior = std::min(1.0, prior + 0.2);
+                }
+            }
             add_prior_to_node(node, move, prior);
         }
 
@@ -823,9 +867,13 @@ double MonteCarlo::ucb(const Edge* edge, long fatherVisits, bool priorMode) cons
     double result = 0.0;
     if (((mctsThreads > 1) && (edge->visits > mctsMultiMinVisits))
         || ((mctsThreads == 1) && edge->visits))
-    { result += edge->meanActionValue; }
+    {
+        result += edge->meanActionValue;
+    }
     else
-    { result += UCB_UNEXPANDED_NODE; }
+    {
+        result += UCB_UNEXPANDED_NODE;
+    }
 
     const double C =
       UCB_USE_FATHER_VISITS ? exploration_constant() * sqrt(fatherVisits) : exploration_constant();
@@ -844,8 +892,8 @@ double MonteCarlo::ucb(const Edge* edge, long fatherVisits, bool priorMode) cons
 void MonteCarlo::default_parameters() {
 
     BACKUP_MINIMAX           = 1.0;
-    PRIOR_FAST_EVAL_DEPTH    = 1;
-    PRIOR_SLOW_EVAL_DEPTH    = 1;
+    PRIOR_FAST_EVAL_DEPTH    = 2;
+    PRIOR_SLOW_EVAL_DEPTH    = 3;
     UCB_UNEXPANDED_NODE      = 1.0;
     UCB_EXPLORATION_CONSTANT = 1.0;
     UCB_LOSSES_AVOIDANCE     = 1.0;
@@ -877,12 +925,4 @@ void MonteCarlo::print_children() {
 
     lastOutputTime = now();
 }
-
-// List of FIXME/TODO for the monte-carlo branch
-//
-// 1. ttMove = Move::none() in generate_moves() ?
-// 2. what to do with killers in create_root(Search::Worker* worker) ?
-// 3. why do we get losses on time with small prior depths ?
-// 4. should we set rm.score to -VALUE_INFINITE for moves >= 2 in emit_principal_variation() ?
-// 5. r2qk2r/1p1b1pb1/4p2p/1p1p4/1n1P4/NQ3PP1/PP2N2P/R1B2RK1 b kq - 23 12
 }
