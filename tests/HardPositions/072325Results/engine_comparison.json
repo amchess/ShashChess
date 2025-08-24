@@ -1,0 +1,190 @@
+[
+  {
+    "engineA": "Stockfish",
+    "engineB": "ShashChess",
+    "rating_diff": 0.0,
+    "a_wins": 11,
+    "b_wins": 137,
+    "draws": 108,
+    "critical_positions": [
+      {
+        "id": "pos_1",
+        "fen": "1B1r4/rp2npkp/2b1pbp1/1qp5/nPN1R3/1P1P1QP1/2P2PBP/5R1K w - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_4",
+        "fen": "1nb3rr/2pp3p/p1k2P2/n1q1PN2/P1pR3N/b4PBp/1R2P3/1KQ5 w - -",
+        "winner": "Stockfish",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_5",
+        "fen": "1q1r3k/3P1pp1/ppBR1n1p/4Q2P/P4P2/8/5PK1/8 w - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_7",
+        "fen": "1r1rb1k1/5ppp/4p3/1p1p3P/1q2P2Q/pN3P2/PPP4P/1K1R2R1 w - -",
+        "winner": "Stockfish",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_12",
+        "fen": "1r4k1/pb3p1p/r1p1p1p1/2p1P3/P1P2P2/1PB5/2K3PP/5R2 w - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_18",
+        "fen": "2b1rk2/5p2/p1P5/2p2P2/2p5/7B/P7/2KR4 w - -",
+        "winner": "Stockfish",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_20",
+        "fen": "2bk2r1/5q2/1p2pP1Q/pP1pP1P1/P2P4/8/2RK4/8 w - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_26",
+        "fen": "2r2rk1/2q2p1p/p1p1nPpQ/3p4/4p1B1/8/PPP3PP/R4R1K w - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_37",
+        "fen": "4K2k/1pQp3p/1R4p1/1P4P1/8/3P3P/1q3r2/8 w - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_46",
+        "fen": "6R1/8/2pB3k/2P4p/5p1q/5P2/4P1K1/8 w - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_54",
+        "fen": "7k/pp2Np1p/2p2P1N/5pP1/7K/P4n2/1q3Q2/5n2 w - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_56",
+        "fen": "8/1p1pNpbk/1q1P4/pP2p2K/P3N3/4P1P1/3P4/8 w - -",
+        "winner": "Stockfish",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_81",
+        "fen": "r1b3k1/ppppn1pp/4n1q1/8/5P2/2N1B3/PPP3QP/3R1RK1 w - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_102",
+        "fen": "rn2kr2/1pp1b1p1/4p3/1Pp1P2p/p1P1NP1P/P7/1B4P1/3RR1K1 w - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_116",
+        "fen": "2brrbk1/qp1n1ppp/pnp5/4p3/1PR5/PN1P1NPP/4PPB1/B1Q1R1K1 w - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_118",
+        "fen": "4r3/2p3kp/R1Pp1q2/3P2p1/1P2rp2/7P/1Q3RP1/6K1 w - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_127",
+        "fen": "7k/3q1pp1/1p3r2/p1bP4/P1P2p2/1P2rNpP/2Q3P1/4RR1K b - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_130",
+        "fen": "r1b2rk1/pp1n1ppp/4p3/3pP3/1bPNnB1q/2NB2P1/PPQ2P1P/R3K2R b KQ -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_132",
+        "fen": "2kr3r/qp1n1p2/p2p2p1/N2Pn2p/1P3Q1P/7R/P1P1B1P1/2KR4 w - -",
+        "winner": "Stockfish",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_138",
+        "fen": "1r3rk1/1bqnbpp1/p2ppn1B/1p6/4PP1Q/PNNB4/1PP3PP/1K1R3R b - -",
+        "winner": "Stockfish",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_140",
+        "fen": "r3k1nr/p3pp2/1pnp1bp1/2p5/1PP1P3/P1NP1NPq/3B1P1P/1R1Q1RK1 w kq -",
+        "winner": "Stockfish",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_154",
+        "fen": "3r2k1/p4pP1/1ppr4/5Bp1/P2qPnQP/4R3/5P2/5RK1 w - -",
+        "winner": "Stockfish",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_191",
+        "fen": "8/8/p1Kp4/k6p/B1P2N1P/1R6/P7/3q4 w - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_195",
+        "fen": "8/1p3p2/8/1P1NP3/B4K2/1R6/p1Pp4/2k5 w - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_227",
+        "fen": "1r3rk1/6p1/p1pb1qPp/3p4/4nPR1/2N4Q/PPP4P/2K1BR2 b - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_231",
+        "fen": "r1b5/1pk2pr1/1Rp1p1q1/p1PpPp1p/P2P1Q1P/4P1P1/4B1K1/3R4 w - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_233",
+        "fen": "8/3p4/p3b3/P4p1p/4pP1P/2pP2Np/Q2P2kp/2N1K3 w - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_241",
+        "fen": "rb2n3/p3B3/1P5p/2P4K/5k2/1r4p1/3R2R1/8 w - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      },
+      {
+        "id": "pos_243",
+        "fen": "6K1/5p2/6p1/1N2qk1p/p6R/7P/Pp2N3/2B5 w - -",
+        "winner": "ShashChess",
+        "time_diff": 0.0
+      }
+    ],
+    "psi_diff": 0.07408205345547414,
+    "time_advantage": "A",
+    "avg_time_A": 60.000015625,
+    "avg_time_B": 60.00005078125
+  }
+]
