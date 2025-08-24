@@ -441,11 +441,7 @@ LDFLAGS = $(ENV_LDFLAGS) $(EXTRALDFLAGS)
 ifneq ($(OS),Android)
 	CXXFLAGS += -DUSE_LIVEBOOK
 	ifeq ($(target_windows),yes)
-		ifeq ($(ARCH),x86_64)
-			LDFLAGS += -DUSE_LIVEBOOK -lcurl -lmsvcrt -lnghttp2 -lnghttp3 -lidn2 -lssh2 -lssh2 -lpsl -lbcrypt -ladvapi32 -lcrypt32 -lbcrypt -lssl -lcrypto -lssl -lcrypto -lgdi32 -lwldap32 -lzstd -lzstd -lbrotlidec -lz -lws2_32 -lidn2 -liconv -lunistring -lbrotlidec -lbrotlicommon --static
-		else
-			LDFLAGS += -DUSE_LIVEBOOK -lcurl -lmsvcrt -lnghttp2 -lidn2 -lssh2 -lssh2 -lpsl -lbcrypt -ladvapi32 -lcrypt32 -lbcrypt -lssl -lcrypto -lssl -lcrypto -lgdi32 -lwldap32 -lzstd -lzstd -lbrotlidec -lz -lws2_32 -lidn2 -liconv -lunistring -lbrotlidec -lbrotlicommon --static
-		endif
+		LDFLAGS += -DUSE_LIVEBOOK --static $(shell pkg-config --static --libs libcurl)
 	else
 		LDFLAGS += -DUSE_LIVEBOOK -lcurl	
 	endif
@@ -1126,7 +1122,7 @@ clang-profile-use:
 	$(XCRUN) $(LLVM_PROFDATA) merge -output=shashchess.profdata *.profraw
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
 	EXTRACXXFLAGS='-fprofile-use=shashchess.profdata' \
-	EXTRALDFLAGS='-fprofile-use ' \
+	EXTRALDFLAGS='-fprofile-use=shashchess.profdata' \
 	all
 
 gcc-profile-make:
