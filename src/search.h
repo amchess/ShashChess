@@ -83,12 +83,11 @@ struct Stack {
     bool                        ttHit;
     int                         cutoffCnt;
     int                         reduction;
-    bool                        isPvNode;
     int                         quietMoveStreak;
-    //from Shashin Crystal-shashin begin
+    //from Shashin Crystal begin
     bool secondaryLine = false;
     bool mainLine      = false;
-    //from Shashin Crystal-shashin end
+    //from Shashin Crystal end
 };
 
 
@@ -301,8 +300,9 @@ class Worker {
    private:
     void iterative_deepening();
 
-    void do_move(Position& pos, const Move move, StateInfo& st);
-    void do_move(Position& pos, const Move move, StateInfo& st, const bool givesCheck);
+    void do_move(Position& pos, const Move move, StateInfo& st, Stack* const ss);
+    void
+    do_move(Position& pos, const Move move, StateInfo& st, const bool givesCheck, Stack* const ss);
     void do_null_move(Position& pos, StateInfo& st);
     void undo_move(Position& pos, const Move move);
     void undo_null_move(Position& pos);
@@ -315,7 +315,8 @@ class Worker {
     template<NodeType nodeType>
     Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta);
 
-    Depth reduction(bool i, Depth d, int mn, int delta) const;
+    Depth
+    reduction(bool i, Depth d, int mn, int delta, bool isStrategical, bool isAggressive) const;
 
     // Pointer to the search manager, only allowed to be called by the main thread
     SearchManager* main_manager() const {

@@ -70,7 +70,7 @@ struct ShashinConfig {
 // Packed structs for better cache utilization
 struct DynamicBaseState {
     int             currentDepth = 0;
-    int rootDepth = 0;
+    int             rootDepth    = 0;
     ShashinPosition currentRange = ShashinPosition::CAPABLANCA;
 };
 
@@ -86,8 +86,7 @@ struct DynamicDerivedState {
         isStrategical(false),
         isTacticalReactive(false),
         isHighTal(false),
-        useMoveGenCrystalLogic(false)
-        {}
+        useMoveGenCrystalLogic(false) {}
 };
 
 struct StaticState {

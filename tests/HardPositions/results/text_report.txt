@@ -1,0 +1,2082 @@
+Chess Position Analysis Report
+==================================================
+
+Engine Performance Summary:
+--------------------------------------------------
+Engine: ShashChess
+  Rating: 2602.1 ± 54.9
+  WDL Stats: 15.0% Wins, 76.5% Draws, 8.5% Losses
+  WDL Counts: 460 Wins, 2340 Draws, 260 Losses
+  Avg Points: 2.7
+  Solve Rate: 54.7%
+  Time Consistency (TCS): 0.000
+  Stability Grade: D
+
+  Solved: 140/256 (54.7%)
+Engine: Stockfish
+  Rating: 2597.9 ± 54.9
+  WDL Stats: 8.5% Wins, 76.5% Draws, 15.0% Losses
+  WDL Counts: 260 Wins, 2340 Draws, 460 Losses
+  Avg Points: 2.5
+  Solve Rate: 50.8%
+  Time Consistency (TCS): 0.000
+  Stability Grade: D
+
+  Solved: 130/256 (50.8%)
+
+Position Analysis:
+--------------------------------------------------
+
+Position: pos_0
+EPD: 1B1K1k2/4N2p/3pP1pP/6p1/p7/3N2b1/2r2p2/8 w - - bm Nc6; c0 "Nc6=10"; id "HTC114, 1";
+Classification: Capablanca (=)
+Volatility: 52.269
+Engine Results:
+  Stockfish: Move=e7g6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e7g6, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_1
+EPD: 1B1r4/rp2npkp/2b1pbp1/1qp5/nPN1R3/1P1P1QP1/2P2PBP/5R1K w - - bm Qxf6+; c0 "Qxf6+=10"; id "HTC114, 2";
+Classification: High Tal (+-)
+Volatility: 92.105
+Engine Results:
+  Stockfish: Move=f3f6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f3f6, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_2
+EPD: 1N4K1/1pp1p3/7k/2r3pP/p2pp1P1/P6N/8/2B5 w - - bm Nc6; c0 "Nc6=10"; id "HTC114, 3";
+Classification: Capablanca (=)
+Volatility: 105.764
+Engine Results:
+  Stockfish: Move=b8c6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=b8c6, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_3
+EPD: 1k6/3p4/1B6/4Pp1p/1p5R/1p4p1/pP3n2/K6n w - - bm Rxh1; c0 "Rxh1=10"; id "HTC114, 4";
+Classification: High Petrosian (-+)
+Volatility: 82.604
+Engine Results:
+  Stockfish: Move=h4c4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=h4b4, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_4
+EPD: 1nb3rr/2pp3p/p1k2P2/n1q1PN2/P1pR3N/b4PBp/1R2P3/1KQ5 w - - bm Rd6+; c0 "Rd6+=10"; id "HTC114, 5";
+Classification: High Tal (+-)
+Volatility: 136.503
+Engine Results:
+  Stockfish: Move=d4d6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f5e7, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_5
+EPD: 1q1r3k/3P1pp1/ppBR1n1p/4Q2P/P4P2/8/5PK1/8 w - - bm Rxf6; c0 "Rxf6+=10"; id "HTC114, 6";
+Classification: High Tal (+-)
+Volatility: 1.800
+Engine Results:
+  Stockfish: Move=d6f6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d6f6, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_6
+EPD: 1r1q1rk1/1p2b2p/pN6/P1pP1bp1/5p2/2B2Q2/1P4PP/R4RK1 w - - bm g4; c0 "g4=10"; id "HTC114, 7";
+Classification: High Tal (+-)
+Volatility: 26.224
+Engine Results:
+  Stockfish: Move=a1d1, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=a1d1, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_7
+EPD: 1r1rb1k1/5ppp/4p3/1p1p3P/1q2P2Q/pN3P2/PPP4P/1K1R2R1 w - - bm Rxg7+; c0 "Rxg7+=10"; id "HTC114, 8";
+Classification: High Tal (+-)
+Volatility: 36.387
+Engine Results:
+  Stockfish: Move=d1d4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=d1d4, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_8
+EPD: 1r2kb1r/p5p1/1np1p1N1/3pPnB1/1p1P2B1/qP6/2PQ1P1P/1K1R3R b k - bm Nc4; c0 "Nc4=10"; id "HTC114, 9";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 66.414
+Engine Results:
+  Stockfish: Move=b6c4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=b6c4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_9
+EPD: 1r3r2/4bpkp/1qb1p1p1/3pP1P1/p1pP1Q2/PpP2N1R/1Pn1B2P/3RB2K w - - bm Qf6+; c0 "Qf6+=10"; id "HTC114, 10";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 157.157
+Engine Results:
+  Stockfish: Move=f4f6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f4f6, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_10
+EPD: 1r3rk1/3bbppp/1qn2P2/p2pP1P1/3P4/2PB1N2/6K1/qNBQ1R2 w - - bm Bxh7+; c0 "Bxh7+=10"; id "HTC114, 11";
+Classification: High Tal (+-)
+Volatility: 88.709
+Engine Results:
+  Stockfish: Move=d3h7, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d3h7, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_11
+EPD: 1r3rk1/5p1p/p2pb1p1/3Np1P1/2pRPR2/qP2Q1N1/P1PK3P/8 w - - bm Nf5; c0 "Nf5=10"; id "HTC114, 12";
+Classification: High Tal (+-)
+Volatility: 77.782
+Engine Results:
+  Stockfish: Move=d5f6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=d5f6, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_12
+EPD: 1r4k1/pb3p1p/r1p1p1p1/2p1P3/P1P2P2/1PB5/2K3PP/5R2 w - - bm a5; c0 "a5=10"; id "HTC114, 13";
+Classification: High Petrosian (-+)
+Volatility: 0.333
+Engine Results:
+  Stockfish: Move=f1d1, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=a4a5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_13
+EPD: 1r6/4k3/r2p2p1/2pR1p1p/2P1pP1P/pPK1P1P1/P7/1B6 b - - bm Rxb3+; c0 "Rxb3+=10"; id "HTC114, 14";
+Classification: High Tal (+-)
+Volatility: 54.016
+Engine Results:
+  Stockfish: Move=b8b3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=b8b3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_14
+EPD: 1rb1qrk1/2b2pp1/p3pBn1/3pP1Pp/1ppP4/2P1QN2/PP3P1P/R2BR1K1 w - - bm Nh4; c0 "Nh4=10"; id "HTC114, 15";
+Classification: High-Middle Tal (+/-/+-)
+Volatility: 115.559
+Engine Results:
+  Stockfish: Move=f3h4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f3h4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_15
+EPD: 1rbq1r1k/7p/2np2p1/p2N1p2/R1B1PP1b/1PP1N3/8/3Q1K1R w - - bm Ra2; c0 "Ra2=10"; id "HTC114, 16";
+Classification: High-Middle Tal (+/-/+-)
+Volatility: 158.039
+Engine Results:
+  Stockfish: Move=a4a2, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=a4a2, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_16
+EPD: 1rbq1rk1/1p2ppbn/p2p2p1/P1pP4/4P3/2PB1N2/2P3PP/R1B1QRK1 w - - bm e5; c0 "e5=10"; id "HTC114, 17";
+Classification: High-Middle Tal (+/-/+-)
+Volatility: 76.005
+Engine Results:
+  Stockfish: Move=e4e5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e4e5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_17
+EPD: 2R5/k1p1p1K1/P1p1Pp2/5P2/7P/pB6/2p5/2r5 w - - bm Rxc7+; c0 "Rxc7+=10"; id "HTC114, 18";
+Classification: High Tal (+-)
+Volatility: 100.859
+Engine Results:
+  Stockfish: Move=c8c7, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=c8c7, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_18
+EPD: 2b1rk2/5p2/p1P5/2p2P2/2p5/7B/P7/2KR4 w - - bm f6; c0 "f6=10"; id "HTC114, 19";
+Classification: Capablanca (=)
+Volatility: 47.625
+Engine Results:
+  Stockfish: Move=c6c7, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=c6c7, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_19
+EPD: 2b3r1/1p1p2pk/2nBp2p/2P1Ppq1/R7/4QBPP/5P2/5K2 w - - bm Qxg5; c0 "Qxg5=10"; id "HTC114, 20";
+Classification: High Tal (+-)
+Volatility: 5.436
+Engine Results:
+  Stockfish: Move=e3g5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e3g5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_20
+EPD: 2bk2r1/5q2/1p2pP1Q/pP1pP1P1/P2P4/8/2RK4/8 w - - bm Kc1; c0 "Kc1=10"; id "HTC114, 21";
+Classification: High Tal (+-)
+Volatility: 83.837
+Engine Results:
+  Stockfish: Move=c2c6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=d2c1, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_21
+EPD: 2k2Br1/p6b/Pq1r4/1p2p1b1/1Ppp2p1/Q1P3N1/5RPP/R3N1K1 b - - bm Rf6; c0 "Rf6=10"; id "HTC114, 22";
+Classification: High-Middle Tal (+/-/+-)
+Volatility: 180.707
+Engine Results:
+  Stockfish: Move=g5e3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g5e3, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_22
+EPD: 2q2r1k/p1p1b1pp/br1p1n2/2p1N1BP/Q1P1P3/8/PP1N1PP1/2KR3R w - - bm Ng6+; c0 "Ng6+=10"; id "HTC114, 23";
+Classification: High Tal (+-)
+Volatility: 87.099
+Engine Results:
+  Stockfish: Move=e5d3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e5d3, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_23
+EPD: 2r2bk1/pNq3p1/2Pp3p/1p1Prp2/1P2p1P1/6Q1/P4P1P/2RR2K1 w - - bm Qxe5; c0 "Qxe5=10"; id "HTC114, 24";
+Classification: High Tal (+-)
+Volatility: 97.037
+Engine Results:
+  Stockfish: Move=g3e5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=g3e5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_24
+EPD: 2r2r1k/qb3p1p/p2p1Np1/np1Pp1P1/2P5/3RP2P/5R2/4Q1K1 w - - bm Rf4; c0 "Rf4=10"; id "HTC114, 25";
+Classification: Capablanca (=)
+Volatility: 62.718
+Engine Results:
+  Stockfish: Move=f2f4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f2f4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_25
+EPD: 2r2rk1/1bpR1p2/1pq1pQp1/p3P2p/P1PR3P/5N2/2P2PPK/8 w - - bm Kg3; c0 "Kg3=10"; id "HTC114, 26";
+Classification: High Tal (+-)
+Volatility: 0.000
+Engine Results:
+  Stockfish: Move=h2g3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=h2g3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_26
+EPD: 2r2rk1/2q2p1p/p1p1nPpQ/3p4/4p1B1/8/PPP3PP/R4R1K w - - bm Rf5; c0 "Rf5=10"; id "HTC114, 27";
+Classification: High Tal (+-)
+Volatility: 69.650
+Engine Results:
+  Stockfish: Move=a1e1, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=a1e1, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_27
+EPD: 2r4r/3n1pk1/pq1p1bp1/3B4/1p2P1N1/7P/PP1Q1PK1/3RR3 w - - bm Bxf7; c0 "Bxf7=10"; id "HTC114, 28";
+Classification: High Tal (+-)
+Volatility: 103.170
+Engine Results:
+  Stockfish: Move=d5f7, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d5f7, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_28
+EPD: 2r5/prkpR1p1/2p1ppK1/P1p1N1B1/P1P1P3/8/8/8 w - - bm Bf4; c0 "Bf4=10"; id "HTC114, 29";
+Classification: Capablanca (=)
+Volatility: 30.247
+Engine Results:
+  Stockfish: Move=e7d7, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g5f4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_29
+EPD: 3B4/1r2p3/r2p1p2/bkp1P1p1/1p1P1PPp/p1P1K2P/PPB5/8 w - - bm Ba4+; c0 "Ba4+=10"; id "HTC114, 30";
+Classification: High Petrosian (-+)
+Volatility: 0.137
+Engine Results:
+  Stockfish: Move=e5f6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=c3c4, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_30
+EPD: 3b2n1/1q3p1k/6pp/np2N3/2bBPN2/1pP4P/4QPP1/1B4K1 w - - bm Nexg6; c0 "Nexg6=10"; id "HTC114, 31";
+Classification: High Tal (+-)
+Volatility: 136.806
+Engine Results:
+  Stockfish: Move=e5c4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e5c4, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_31
+EPD: 3k4/4pp2/n2n4/5BN1/3N4/b7/4K3/8 w - - bm Nxf7+; c0 "Nxf7+=10"; id "HTC114, 32";
+Classification: Capablanca (=)
+Volatility: 65.165
+Engine Results:
+  Stockfish: Move=g5f7, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=g5f7, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_32
+EPD: 3kB3/5K2/7p/3p4/3pn3/4NN2/8/1b4B1 w - - bm Nf5; c0 "Nf5=10"; id "HTC114, 33";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 33.076
+Engine Results:
+  Stockfish: Move=f7f8, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=f7f8, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_33
+EPD: 3q1r1k/6rp/3p4/P2Pbp1Q/N3Pp1n/2P5/P1B2RPP/R6K b - - bm f3; c0 "f3=10"; id "HTC114, 34";
+Classification: High Tal (+-)
+Volatility: 141.709
+Engine Results:
+  Stockfish: Move=f4f3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f4f3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_34
+EPD: 3rqbk1/2p3p1/b6p/Q1p5/2N1PP2/1P1P2P1/2P4P/5R1K b - - bm Bc8; c0 "Bc8=10"; id "HTC114, 35";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 91.086
+Engine Results:
+  Stockfish: Move=a6c8, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=a6c8, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_35
+EPD: 4B3/1Pb4p/8/4p1k1/3p1p2/5K2/2P5/8 b - - bm e4+; c0 "e4+=10"; id "HTC114, 36";
+Classification: High Tal (+-)
+Volatility: 87.864
+Engine Results:
+  Stockfish: Move=e5e4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e5e4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_36
+EPD: 4K1k1/8/1p5p/1Pp3b1/8/1P3P2/P1B2P2/8 w - - bm f4; c0 "f4=10"; id "HTC114, 37";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 73.508
+Engine Results:
+  Stockfish: Move=e8d7, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e8d7, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_37
+EPD: 4K2k/1pQp3p/1R4p1/1P4P1/8/3P3P/1q3r2/8 w - - bm Qd8; c0 "Qd8=10"; id "HTC114, 38";
+Classification: Capablanca (=)
+Volatility: 63.656
+Engine Results:
+  Stockfish: Move=d3d4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=c7d8, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_38
+EPD: 4b1k1/P4pPp/1R3P1P/2r5/8/1P6/1K6/8 w - - bm a8=B; c0 "a8=B=10"; id "HTC114, 39";
+Classification: High Tal (+-)
+Volatility: 0.000
+Engine Results:
+  Stockfish: Move=a7a8b, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=a7a8b, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_39
+EPD: 4b3/7p/4k3/B4pPP/5K2/P4P2/8/8 w - - bm g6; c0 "g6=10"; id "HTC114, 40";
+Classification: High Tal (+-)
+Volatility: 56.569
+Engine Results:
+  Stockfish: Move=g5g6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=g5g6, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_40
+EPD: 4k1br/1K1p1n1r/2p2pN1/P2p1N2/2P3pP/5B2/P2P4/8 w - - bm Kc8; c0 "Kc8=10"; id "HTC114, 41";
+Classification: High Tal (+-)
+Volatility: 77.460
+Engine Results:
+  Stockfish: Move=a5a6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=a5a6, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_41
+EPD: 4q1kr/p6p/1prQPppB/4n3/4P3/2P5/PP2B2P/R5K1 w - - bm Qxe5; c0 "Qxe5=10"; id "HTC114, 42";
+Classification: High Tal (+-)
+Volatility: 99.405
+Engine Results:
+  Stockfish: Move=d6e5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d6e5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_42
+EPD: 4r1rk/p3qpp1/1pnp1n1p/5P2/P1PPP3/4Q2P/2BB2R1/6RK w - - bm Rxg7; c0 "Rxg7=10"; id "HTC114, 43";
+Classification: High Tal (+-)
+Volatility: 0.530
+Engine Results:
+  Stockfish: Move=e3f4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g2g7, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_43
+EPD: 5k2/8/pppppppp/8/PPPPPPPP/8/8/5K2 w - - bm d5; c0 "d5=10"; id "HTC114, 44";
+Classification: High Tal (+-)
+Volatility: 28.051
+Engine Results:
+  Stockfish: Move=d4d5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d4d5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_44
+EPD: 5nr1/2Pp2pk/3Pp1p1/4P1P1/6P1/5K2/8/7n w - - bm c8=N; c0 "c8=N=10"; id "HTC114, 45";
+Classification: High Tal (+-)
+Volatility: 30.918
+Engine Results:
+  Stockfish: Move=c7c8n, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=f3g2, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_45
+EPD: 5rk1/pp3p1p/7b/2pR4/8/2P4P/P1PNr1P1/2K4R b - - bm Rxd2; c0 "Rxd2=10"; id "HTC114, 46";
+Classification: High Tal (+-)
+Volatility: 1.512
+Engine Results:
+  Stockfish: Move=e2d2, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e2d2, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_46
+EPD: 6R1/8/2pB3k/2P4p/5p1q/5P2/4P1K1/8 w - - bm Bf8+; c0 "Bf8+=10"; id "HTC114, 47";
+Classification: High Tal (+-)
+Volatility: 28.152
+Engine Results:
+  Stockfish: Move=d6f8, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d6f8, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_47
+EPD: 6br/1KNp1n1r/2p2p2/P1ppRP2/1kP3pP/3PBB2/PN1P4/8 w - - bm Bxc5+; c0 "Bxc5+=10"; id "HTC114, 48";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 157.767
+Engine Results:
+  Stockfish: Move=b7b6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=b7b6, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_48
+EPD: 6k1/1qr1p2p/ppN5/3p1N2/6p1/1P1P2Pp/PP2PP1P/2RK4 w - - bm Ncxe7+; c0 "Ncxe7+=10"; id "HTC114, 49";
+Classification: High Petrosian (-+)
+Volatility: 14.309
+Engine Results:
+  Stockfish: Move=f5d4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=d1d2, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_49
+EPD: 6k1/8/1pK4p/bPp5/8/1P6/P1B2P2/8 w - - bm b4; c0 "b4=10"; id "HTC114, 50";
+Classification: Capablanca (=)
+Volatility: 27.709
+Engine Results:
+  Stockfish: Move=f2f4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=c6d6, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_50
+EPD: 6k1/p7/8/4B3/Pp3p1P/qP5P/P1Rb2K1/8 w - - bm Kf3; c0 "Kf3=10"; id "HTC114, 51";
+Classification: Capablanca (=)
+Volatility: 12.599
+Engine Results:
+  Stockfish: Move=c2d2, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g2f3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_51
+EPD: 6k1/ppn2p2/8/2P2P1p/1P2K3/2N5/P7/8 w - - bm Nd5; c0 "Nd5=10"; id "HTC114, 52";
+Classification: High Tal (+-)
+Volatility: 53.219
+Engine Results:
+  Stockfish: Move=c3d5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=c3d5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_52
+EPD: 6r1/6r1/2p1k1pp/p1pbP2q/Pp1p1PpP/1P1P2NR/1KPQ3R/8 b - - bm Qf5; c0 "Qf5=10"; id "HTC114, 53";
+Classification: High Petrosian (-+)
+Volatility: 45.538
+Engine Results:
+  Stockfish: Move=h5f5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=h5f5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_53
+EPD: 7k/4PBNp/7P/2p5/2P5/2rq2Pp/1P3P1K/8 b - - bm Qxg3+; c0 "Qxg3+=10"; id "HTC114, 54";
+Classification: Capablanca (=)
+Volatility: 16.889
+Engine Results:
+  Stockfish: Move=d3g3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d3g3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_54
+EPD: 7k/pp2Np1p/2p2P1N/5pP1/7K/P4n2/1q3Q2/5n2 w - - bm Kh5; c0 "Kh5=10"; id "HTC114, 55";
+Classification: Capablanca (=)
+Volatility: 47.209
+Engine Results:
+  Stockfish: Move=f2f3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=h4h5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_55
+EPD: 8/1B3b1p/7P/p2p4/P2pp1kp/Q7/1N1Pq2P/7K w - - bm Qh3+; c0 "Qh3+=10"; id "HTC114, 56";
+Classification: High Petrosian (-+)
+Volatility: 142.901
+Engine Results:
+  Stockfish: Move=b7c8, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=b7c8, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_56
+EPD: 8/1p1pNpbk/1q1P4/pP2p2K/P3N3/4P1P1/3P4/8 w - - bm Nc8; c0 "Nc8=10"; id "HTC114, 57";
+Classification: Capablanca (=)
+Volatility: 41.740
+Engine Results:
+  Stockfish: Move=e4g5, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e4g5, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_57
+EPD: 8/2N4r/1p3pkp/8/5K1p/2P4N/P3Bn2/8 w - - bm Bh5+; c0 "Bh5+=10"; id "HTC114, 58";
+Classification: High Petrosian (-+)
+Volatility: 111.102
+Engine Results:
+  Stockfish: Move=h3f2, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=h3f2, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_58
+EPD: 8/2p1q3/p3P3/2P4p/1PBP2kP/2N3P1/7K/8 w - - bm Be2+; c0 "Be2+=10"; id "HTC114, 59";
+Classification: Capablanca (=)
+Volatility: 120.690
+Engine Results:
+  Stockfish: Move=c4f1, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=c4e2, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_59
+EPD: 8/2pN1k2/p4p1p/Pn1R4/3b4/6Pp/1P3K1P/8 w - - bm Ke1; c0 "Ke1=10"; id "HTC114, 60";
+Classification: Middle-Low Tal (+/=/+/-)
+Volatility: 92.574
+Engine Results:
+  Stockfish: Move=f2e1, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f2e1, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_60
+EPD: 8/3P3k/n2K3p/2p3n1/1b4N1/2p1p1P1/8/3B4 w - - bm Nf6+; c0 "Nf6+=10"; id "HTC114, 61";
+Classification: High Petrosian (-+)
+Volatility: 106.229
+Engine Results:
+  Stockfish: Move=g4e3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g4e3, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_61
+EPD: 8/3ppp1p/3P4/4N3/8/3n1pKp/8/7k w - - bm Nxd3; c0 "Nxd3=10"; id "HTC114, 62";
+Classification: High Tal (+-)
+Volatility: 52.339
+Engine Results:
+  Stockfish: Move=e5d3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e5d3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_62
+EPD: 8/4nk2/1p3p2/1r1p2pp/1P1R1N1P/6P1/3KPP2/8 w - - bm Nd3; c0 "Nd3=10"; id "HTC114, 63";
+Classification: High Tal (+-)
+Volatility: 85.770
+Engine Results:
+  Stockfish: Move=f4d3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f4d3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_63
+EPD: 8/4nk2/1p3p2/2rp2pp/1P1R1N1P/6P1/3KPP2/8 b - - am Rb5; c0 "Rb5=10"; id "HTC114, 64";
+Classification: Capablanca (=)
+Volatility: 3.145
+Engine Results:
+  Stockfish: Move=c5c4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=c5c4, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_64
+EPD: 8/5p2/N1p3p1/3pP1P1/7P/2kP4/Pb6/7K w - - bm h5; c0 "h5=10"; id "HTC114, 65";
+Classification: High Tal (+-)
+Volatility: 30.342
+Engine Results:
+  Stockfish: Move=h4h5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=h4h5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_65
+EPD: 8/6pp/1K6/N5P1/3N4/8/npn1P3/k7 w - - bm Nab3+; c0 "Nab3+=10"; id "HTC114, 66";
+Classification: Capablanca (=)
+Volatility: 42.514
+Engine Results:
+  Stockfish: Move=d4c2, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=d4c2, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_66
+EPD: 8/8/4kpp1/3p1b2/p6P/2B5/6P1/6K1 b - - bm Bh3; c0 "Bh3=10"; id "HTC114, 67";
+Classification: High Tal (+-)
+Volatility: 50.869
+Engine Results:
+  Stockfish: Move=f5h3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f5h3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_67
+EPD: 8/8/p2k1p2/1p1p3p/1P1P3p/P3NPP1/5K2/1b6 w - - bm Ng2; c0 "Ng2=10"; id "HTC114, 68";
+Classification: High Tal (+-)
+Volatility: 175.941
+Engine Results:
+  Stockfish: Move=e3g2, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e3g2, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_68
+EPD: 8/bp4Pk/4KB2/R6p/2pNp1P1/p7/3p1Pnq/2r5 w - - bm Nc6; c0 "Nc6=10"; id "HTC114, 69";
+Classification: Capablanca (=)
+Volatility: 43.012
+Engine Results:
+  Stockfish: Move=d4c6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=g7g8q, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_69
+EPD: 8/p3N3/1n3N2/2n3pP/pkP5/8/3P4/K7 b - - bm Nxc4; c0 "Nxc4=10"; id "HTC114, 70";
+Classification: Capablanca (=)
+Volatility: 136.815
+Engine Results:
+  Stockfish: Move=b6c4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=b6c4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_70
+EPD: 8/p7/qkpN1p2/8/1B1P4/PP3K2/5P2/8 w - - bm Ba5+; c0 "Ba5+=10"; id "HTC114, 71";
+Classification: High Petrosian (-+)
+Volatility: 62.333
+Engine Results:
+  Stockfish: Move=b4c5, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=b4c5, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_71
+EPD: N7/8/2KQ2rp/6k1/3p3p/2p4P/4PP2/5N2 w - - bm f4+; c0 "f4+=10"; id "HTC114, 72";
+Classification: High Petrosian (-+)
+Volatility: 121.258
+Engine Results:
+  Stockfish: Move=a8c7, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=a8c7, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_72
+EPD: Nq3n1k/8/P1p2Npp/2Kp3R/pp6/n3p3/8/4Q3 w - - bm Nc7; c0 "Nc7=10"; id "HTC114, 73";
+Classification: Capablanca (=)
+Volatility: 70.862
+Engine Results:
+  Stockfish: Move=h5h6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=a8c7, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_73
+EPD: br1r2k1/5pp1/R6p/2pN4/P1P1q3/2P1p1P1/P3P2P/3RQ1K1 b - - bm Qxc4; c0 "Qxc4=10"; id "HTC114, 74";
+Classification: High Tal (+-)
+Volatility: 122.754
+Engine Results:
+  Stockfish: Move=e4c4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e4c4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_74
+EPD: k7/p1pR4/1p3p2/2P2rpB/PbP4p/2N1p2p/KP6/8 w - - bm Bf3+; c0 "Bf3+=10"; id "HTC114, 75";
+Classification: High Tal (+-)
+Volatility: 73.989
+Engine Results:
+  Stockfish: Move=h5f3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=h5f3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_75
+EPD: n1QBq1k1/5p1p/5KP1/p7/8/8/8/8 w - - bm Bc7; c0 "Bc7=10"; id "HTC114, 76";
+Classification: Capablanca (=)
+Volatility: 20.632
+Engine Results:
+  Stockfish: Move=g6h7, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=d8c7, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_76
+EPD: q7/7R/k7/1p6/1p6/1P2B3/7K/8 w - - bm Bd4; c0 "Cd4=10"; id "HTC114, 77";
+Classification: Capablanca (=)
+Volatility: 19.596
+Engine Results:
+  Stockfish: Move=e3d4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e3d4, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_77
+EPD: r1b1qr1k/2p3pp/4p3/1pb1PpN1/pn3N1P/8/PPP1QPP1/2KR3R w - - bm Rd8; c0 "Rd8=10"; id "HTC114, 78";
+Classification: High Tal (+-)
+Volatility: 227.728
+Engine Results:
+  Stockfish: Move=d1d8, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d1d8, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_78
+EPD: r1b1qr1k/2p3pp/4p3/1pb1PpN1/pn3N1P/P7/1PP1QPP1/2KR3R w - - bm Rd8; c0 "Rd8=10"; id "HTC114, 79";
+Classification: High Tal (+-)
+Volatility: 42.527
+Engine Results:
+  Stockfish: Move=d1d8, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d1d8, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_79
+EPD: r1b2rk1/pp3ppp/1n2p3/3pP3/2P2B2/b1PB1qP1/P1Q1NP1P/1K1R3R w - - bm Nd4; c0 "Nd4=10"; id "HTC114, 80";
+Classification: High Tal (+-)
+Volatility: 80.699
+Engine Results:
+  Stockfish: Move=e2d4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e2d4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_80
+EPD: r1b3k1/ppp1q1pp/2n1p3/3pP2P/8/2NB2Q1/PPP3P1/2K2R2 w - - bm Bg6; c0 "Bg6=10"; id "HTC114, 81";
+Classification: High Tal (+-)
+Volatility: 160.299
+Engine Results:
+  Stockfish: Move=d3g6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d3g6, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_81
+EPD: r1b3k1/ppppn1pp/4n1q1/8/5P2/2N1B3/PPP3QP/3R1RK1 w - - bm f5; c0 "f5=10"; id "HTC114, 82";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 76.978
+Engine Results:
+  Stockfish: Move=g2g6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g2g6, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_82
+EPD: r1bq1b1r/pp1pp1pp/2n1k3/8/4nQ2/N1p1BN1P/PP3PP1/R3K2R w KQ - bm Nb5; c0 "Nb5=10"; id "HTC114, 83";
+Classification: High Tal (+-)
+Volatility: 168.391
+Engine Results:
+  Stockfish: Move=a3b5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=a3b5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_83
+EPD: r1bq1rk1/1p1nbppp/p3p3/2ppP3/5B1P/2PBP3/PP1N1PP1/R2QK2R w - - bm Bxh7+; c0 "Bxh7+=10"; id "HTC114, 84";
+Classification: High Tal (+-)
+Volatility: 41.237
+Engine Results:
+  Stockfish: Move=d3h7, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d3h7, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_84
+EPD: r1bq1rk1/pp2b2p/2p1pppQ/8/1n1PN2P/3B1N2/PPP2PP1/2KR3R w - - bm Neg5; c0 "Neg5=10"; id "HTC114, 85";
+Classification: High Tal (+-)
+Volatility: 26.652
+Engine Results:
+  Stockfish: Move=e4g5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e4g5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_85
+EPD: r1br2k1/1p1nqppp/p1p1pn2/3p4/1bPP4/PPN1PN2/2BB1PPP/R2Q1RK1 b - - am Bxa3; c0 "Bxa3=10"; id "HTC114, 86";
+Classification: Chaos: Capablanca-Petrosian (↓)
+Volatility: 32.027
+Engine Results:
+  Stockfish: Move=b4d6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=b4d6, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_86
+EPD: r1n2N1k/2n2K1p/3pp3/5Pp1/b5R1/8/1PPP4/8 w - - bm Ng6+; c0 "Ng5+=10"; id "HTC114, 87";
+Classification: Capablanca (=)
+Volatility: 28.837
+Engine Results:
+  Stockfish: Move=f8g6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=f8g6, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_87
+EPD: r2q1r2/1b2bpkp/n3p1p1/2ppP1P1/p6R/1PN1BQR1/NPP2P1P/4K3 w - - bm Qf6+; c0 "Qf6+=10"; id "HTC114, 88";
+Classification: Middle Tal (+/-)
+Volatility: 82.486
+Engine Results:
+  Stockfish: Move=f3f6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f3f6, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_88
+EPD: r2q1r2/1b2bpkp/p3p1p1/2ppP1P1/7R/1PN1BQR1/1PP2P1P/4K3 w - - bm Qf6+; c0 "Qf6+=10"; id "HTC114, 89";
+Classification: High Tal (+-)
+Volatility: 72.686
+Engine Results:
+  Stockfish: Move=f3f6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f3f6, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_89
+EPD: r2r2k1/pqp1bppp/1pn1pn2/8/2NP1B2/2N1P1P1/PPQ2P1P/R4RK1 b - - bm Rxd4; c0 "Rxd4=10"; id "HTC114, 90";
+Classification: Low Tal (+/=)
+Volatility: 147.602
+Engine Results:
+  Stockfish: Move=d8d4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d8d4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_90
+EPD: r3kb1r/4Pp2/pn3P2/1pp3B1/2p5/2N3P1/PP3P1P/3RKB1b w - - bm h4; c0 "h4=10"; id "HTC114, 91";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 110.630
+Engine Results:
+  Stockfish: Move=h2h4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=h2h4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_91
+EPD: r3r1k1/1b1n1pbp/pq1p2p1/1pp1P3/3P1B2/nP1B1NNP/P4PP1/R2QR1K1 w - - bm Nh5; c0 "Nh5=10"; id "HTC114, 92";
+Classification: High Tal (+-)
+Volatility: 100.899
+Engine Results:
+  Stockfish: Move=g3h5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=g3h5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_92
+EPD: r3r1k1/1b1nbp1p/1qn1p3/1p1pPp2/p2P4/P2BNN2/1P1Q1BPP/R4RK1 w - - bm Ng4; c0 "Ng4=10";; id "HTC114, 93";
+Classification: High Tal (+-)
+Volatility: 18.482
+Engine Results:
+  Stockfish: Move=e3g4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e3g4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_93
+EPD: r3r1k1/pp1q1p2/2p2npb/PPPp1bnp/3PpN2/2N1P1PP/1R1B1PBK/3Q1R2 b - - bm Bg4; c0 "Bg4=10"; id "HTC114, 94";
+Classification: High-Middle Tal (+/-/+-)
+Volatility: 108.321
+Engine Results:
+  Stockfish: Move=f5g4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f5g4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_94
+EPD: r3r2k/1pq2pp1/4b2p/3pP3/p1nB3P/P2B1RQ1/1PP3P1/3R3K w - - bm Rf6; c0 "Rf6=10"; id "HTC114, 95";
+Classification: High Tal (+-)
+Volatility: 36.460
+Engine Results:
+  Stockfish: Move=g3f4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g3f4, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_95
+EPD: r4rk1/1bq1bppp/p1npp3/2nB1NP1/1p2P3/2N1B3/PPP1QP1P/2KR2R1 w - - bm Qh5; c0 "Qh5=10"; id "HTC114, 96";
+Classification: High Tal (+-)
+Volatility: 47.136
+Engine Results:
+  Stockfish: Move=e2h5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e2h5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_96
+EPD: r4rk1/4bppp/bq2p3/npnpP3/p2B1P2/P1PB1N2/1P2QNPP/R4RK1 w - - bm Bxh7+; c0 "Rxh7+=10"; id "HTC114, 97";
+Classification: High Tal (+-)
+Volatility: 50.137
+Engine Results:
+  Stockfish: Move=d3h7, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=d3h7, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_97
+EPD: r5k1/6b1/2Nq4/2pP1p2/p1P1pPr1/Pp6/3R2PQ/1K3R2 b - - bm e3; c0 "e3=10"; id "HTC114, 98";
+Classification: High Tal (+-)
+Volatility: 106.440
+Engine Results:
+  Stockfish: Move=e4e3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e4e3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_98
+EPD: r5k1/p1pb2bp/3p3r/P1pPp1p1/2B1Pq2/1R2QPp1/1P4PP/5RBK b - - bm Rxh2+; c0 "Rxh2+=10"; id "HTC114, 99";
+Classification: High Tal (+-)
+Volatility: 29.529
+Engine Results:
+  Stockfish: Move=h6h2, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=h6h2, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_99
+EPD: r5rk/1bq1bpp1/1p1ppn1p/pP5P/2P1P3/P1N2P2/1B1Q1P2/1K1R1BR1 w - - bm Nd5; c0 "Nd5=10"; id "HTC114, 100";
+Classification: Middle Tal (+/-)
+Volatility: 108.237
+Engine Results:
+  Stockfish: Move=d2e3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=f1d3, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_100
+EPD: r7/1QP1N1Kp/pn2P1b1/Nnk2p2/7p/p4BP1/1rPPp2q/8 w - - bm Nd5; c0 "Nd5=10"; id "HTC114, 101";
+Classification: High Tal (+-)
+Volatility: 50.917
+Engine Results:
+  Stockfish: Move=b7a8, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=c7c8q, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_101
+EPD: r7/1q1r1p1k/3p1Qpp/pbpP4/1nB1P1P1/1P3NBP/5P1K/4R3 w - - bm Bf4; c0 "Bf4=10"; id "HTC114, 102";
+Classification: High Tal (+-)
+Volatility: 96.214
+Engine Results:
+  Stockfish: Move=g3f4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=g3f4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_102
+EPD: rn2kr2/1pp1b1p1/4p3/1Pp1P2p/p1P1NP1P/P7/1B4P1/3RR1K1 w - - bm g3; c0 "g3=10"; id "HTC114, 103";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 164.875
+Engine Results:
+  Stockfish: Move=g2g3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e4f6, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_103
+EPD: rnb2rk1/1pq1bppp/p3p3/2npP1P1/3N1P2/2NBB3/PPP4P/R2QK2R w KQ - bm Bxh7+; c0 "Bxh7+=10"; id "HTC114, 104";
+Classification: High Tal (+-)
+Volatility: 116.663
+Engine Results:
+  Stockfish: Move=d3h7, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d3h7, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_104
+EPD: rnbq1rk1/p3bp2/2p1p1p1/1p1nP1P1/2pP1P2/2N5/PP4P1/RBBQK2R w KQ - bm Bd2; c0 "Bd2=10"; id "HTC114, 105";
+Classification: High Tal (+-)
+Volatility: 128.441
+Engine Results:
+  Stockfish: Move=c1d2, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=c1d2, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_105
+EPD: rnbq3r/pppp4/3b1pkp/5p2/2BP4/4P3/PPP2PPP/RN1QK2R w KQ - bm Qh5+; c0 "Qh5+=10"; id "HTC114, 106";
+Classification: High Tal (+-)
+Volatility: 20.832
+Engine Results:
+  Stockfish: Move=d1h5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d1h5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_106
+EPD: rnbqk2r/p4p2/2p1p3/1p2N1pp/PbpPn2P/2N1P1B1/1P3PP1/R2QKB1R w KQkq - bm Qf3; c0 "Qf3=10"; id "HTC114, 107";
+Classification: High Tal (+-)
+Volatility: 82.583
+Engine Results:
+  Stockfish: Move=d1f3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d1f3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_107
+EPD: rqn2rk1/1p2ppb1/p1b3pp/2R1P1N1/8/4BB1Q/3R1PPP/6K1 w - - bm Nxf7; c0 "Nxf7=10"; id "HTC114, 108";
+Classification: High Tal (+-)
+Volatility: 212.723
+Engine Results:
+  Stockfish: Move=g5f7, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=g5f7, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_108
+EPD: 5b2/p2k1p2/P3pP1p/n2pP1p1/1p1P2P1/1P1KBN2/7P/8 w - - bm Nxg5;  c0 "Nxg5=10"; id "ENET-2025 002 (ERET 004)_Endspiel L&S vs L&S_Nxg5, Anand-Shirov, Advanced Chess 2000, 2";
+Classification: High Tal (+-)
+Volatility: 144.783
+Engine Results:
+  Stockfish: Move=f3g5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f3g5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_109
+EPD: 8/6N1/3kNKp1/3p4/4P3/p7/P6b/8 w - - bm exd5; c0 "exd5=10"; id "ENET-2025 015 (ERET 038)_Endspiel S&S vs L&B_exd5, Garcia 2000, 15";
+Classification: High Tal (+-)
+Volatility: 110.924
+Engine Results:
+  Stockfish: Move=e4d5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e4d5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_110
+EPD: 2r5/3k1p2/1pnb1p2/p2p1r1p/3p3P/PP1N2P1/1BR1PP2/3R1K2 w - - bm f4; c0 "f4=10"; id "ENET-2025 021 (Onlinegame)_Lc0 vs Stockfish_f4! Lc0 vs Stockfish, Onlinegame, 21";
+Classification: High Tal (+-)
+Volatility: 64.037
+Engine Results:
+  Stockfish: Move=f2f4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f2f4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_111
+EPD: 2b1r3/5pkp/6p1/4P3/QppqPP2/5RPP/6BK/8 b - - bm c3; c0 "c3=10"; id "ENET-2025 022 (ERET 054)_Endspiel D&T&L vs D&T&L_c3, Jussupow-Kasparov, Linares 1990, 22";
+Classification: High Tal (+-)
+Volatility: 155.421
+Engine Results:
+  Stockfish: Move=c4c3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=c4c3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_112
+EPD: 8/2P1P3/b1B2p2/1pPRp3/2k3P1/P4pK1/nP3p1p/N7 w - - bm e8=N; c0 "e8=N=10"; id "ENET-2025 037 (ERET 089)_Unterverwandlung_e8N, Rumaenien 1977, 37";
+Classification: High Tal (+-)
+Volatility: 0.000
+Engine Results:
+  Stockfish: Move=d5d1, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=d5d1, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_113
+EPD: 8/8/4p1Pk/1rp1K1p1/4P1P1/1nP2Q2/p2b1P2/8 w - - bm Kf6; c0 "Kf6=10"; id "ENET-2025 043 (ERET 096)_Endspiel D vs T&L&S_Kf6, Sochnev 2009, 43";
+Classification: Capablanca (=)
+Volatility: 33.516
+Engine Results:
+  Stockfish: Move=f3f8, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=f3f8, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_114
+EPD: rn3r1k/pn1p1ppq/bpp4p/7P/4N1Q1/6P1/PP3PB1/R1B1R1K1 w - - bm Bg5; c0 "Bg5=10"; id "ENET-2025 045_AlphaZero vs Stockfish_Bg5, 45";
+Classification: High Tal (+-)
+Volatility: 90.449
+Engine Results:
+  Stockfish: Move=c1g5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=c1g5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_115
+EPD: 1br2rk1/4q1p1/p3pn1p/Ppp1N3/1P2Pn2/4R1NP/1B1R1PP1/3Q2K1 b - - bm Qb7; c0 "Qb7=10"; id "ENET-2025 046_Ollinegame beste Verteidigung_Qb7, 46";
+Classification: Capablanca (=)
+Volatility: 68.194
+Engine Results:
+  Stockfish: Move=e7b7, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e7b7, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_116
+EPD: 2brrbk1/qp1n1ppp/pnp5/4p3/1PR5/PN1P1NPP/4PPB1/B1Q1R1K1 w - - bm Re4; c0 "Re4=10"; id "ENET-2025 047_Mittelspiel_Re4, 47";
+Classification: Low Tal (+/=)
+Volatility: 91.171
+Engine Results:
+  Stockfish: Move=c4e4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=c4e4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_117
+EPD: 8/1pn2pp1/5k1p/RBr5/P7/P6P/5PPK/8 b - - bm Na6; c0 "Na6=10"; id "ENET-2025 048_Onlinegame Stockfish vs Lc0_Na6, 48";
+Classification: High Tal (+-)
+Volatility: 51.708
+Engine Results:
+  Stockfish: Move=c7a6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=c7a6, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_118
+EPD: 4r3/2p3kp/R1Pp1q2/3P2p1/1P2rp2/7P/1Q3RP1/6K1 w - - bm Qxf6+; c0 "Qxf6+=10"; id "ENET-2025 049_Onlinegame Beste Verteidigung_Qxf6!, 49";
+Classification: Capablanca (=)
+Volatility: 12.887
+Engine Results:
+  Stockfish: Move=b2f6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=a6a7, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_119
+EPD: r3r1n1/2p2ppk/1qppb2p/2b2N1N/p2pP3/2P2Q1P/PP3PP1/R1B1R1K1 b - - bm Bxf5; c0 "Bxf5=10"; id "ENET-2025 050_Onlinegame_Bxf5 (dxc3?), 50";
+Classification: Capablanca (=)
+Volatility: 50.795
+Engine Results:
+  Stockfish: Move=e6f5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e6f5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_120
+EPD: 5b2/5k1p/1pb2pp1/1r1p4/3P1B1P/P7/1P3PP1/2R3K1 w - - bm b4; c0 "b4=10"; id "ENET-2025 051_Lc0 vs Stockfish, Onlinegame_b4!, 51";
+Classification: Capablanca (=)
+Volatility: 1.846
+Engine Results:
+  Stockfish: Move=c1c6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=b2b4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_121
+EPD: r4rk1/pb1qbppp/1p2pn2/2np4/2PN4/1P2P3/PBBNQPPP/2RR2K1 b - - bm Rfc8; c0 "Rfc8=10"; id "ENET-2025 052_Onlinegame Best move_Rfc8, 52";
+Classification: Chaos: Capablanca-Petrosian (↓)
+Volatility: 27.700
+Engine Results:
+  Stockfish: Move=f8d8, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=f8c8, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_122
+EPD: r1b2rk1/pp5p/1n2pp2/3p4/2P2B2/b1P2NPq/P1Q1BP1P/1K1R3R w - - bm g4; c0 "g4=10"; id "ENET-2025 053_Onlinegame_g4!, 53";
+Classification: Middle-Low Tal (+/=/+/-)
+Volatility: 73.772
+Engine Results:
+  Stockfish: Move=g3g4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=g3g4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_123
+EPD: 2kr4/pp1n1pBp/3bp1p1/3p2qP/P7/3B1K2/1PP2P2/R2Q1R2 b - - bm f6; c0 "f6=10"; id "ENET-2025 054_Online Engine game Solista_f6!, 54";
+Classification: Chaos: Capablanca-Petrosian (↓)
+Volatility: 145.042
+Engine Results:
+  Stockfish: Move=f7f6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f7f6, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_124
+EPD: r1b2rk1/1p1n1ppp/1qn5/p2pP3/Pb1p4/1N1B1N1P/1P3PP1/R1BQR1K1 w - - bm Bxh7+; c0 "Bxh7+=10"; id "ENET-2025 055_Online engine game_Bxh7+!, 55";
+Classification: High Tal (+-)
+Volatility: 110.831
+Engine Results:
+  Stockfish: Move=d3h7, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d3h7, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_125
+EPD: r4rk1/1b4pp/4pq2/PB2n3/3N1Pn1/1PN3K1/1B2Q1P1/R4R2 b - - bm Qh6; c0 "Qh6=10"; id "ENET-2025 056_Dorsz, Stockfish v Blue Marli_Qh6!, 56";
+Classification: High Tal (+-)
+Volatility: 107.576
+Engine Results:
+  Stockfish: Move=f6h6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f6h6, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_126
+EPD: r3r2k/p1pq3p/R3bppN/2P5/1p1pP1P1/3P4/2P2P1P/3Q2RK b - - bm Qe7; c0 "Qe7=10"; id "ENET-2025 057_Taktik, Verteidigung_Qe7, 57";
+Classification: Chaos: Capablanca-Petrosian (↓)
+Volatility: 58.396
+Engine Results:
+  Stockfish: Move=d7e7, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d7e7, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_127
+EPD: 7k/3q1pp1/1p3r2/p1bP4/P1P2p2/1P2rNpP/2Q3P1/4RR1K b - - bm Rxf3; c0 "Rxf3=10"; id "ENET-2025 059_Turmopfer_Rxf3!, 59";
+Classification: High Tal (+-)
+Volatility: 0.589
+Engine Results:
+  Stockfish: Move=h8g8, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e3f3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_128
+EPD: 3r1rk1/pbq1bp1p/1n1Rp1p1/2p1P1N1/4N2P/1P3Q2/PB3PP1/K6R w - - bm h5; c0 "h5=10"; id "ENET-2025 061_Königsangriff_h5!, 61";
+Classification: High Tal (+-)
+Volatility: 75.619
+Engine Results:
+  Stockfish: Move=f3g3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=f3g3, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_129
+EPD: 1nrq1rk1/1Q3ppp/p1pbpn2/8/1P1PP3/P4NP1/3N1P1P/R1B2BK1 b - - bm Re8; c0 "Re8=10"; id "ENET-2025 068_Mittelspiel_Re8!, 68";
+Classification: Capablanca (=)
+Volatility: 19.657
+Engine Results:
+  Stockfish: Move=d6e7, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=d6e7, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_130
+EPD: r1b2rk1/pp1n1ppp/4p3/3pP3/1bPNnB1q/2NB2P1/PPQ2P1P/R3K2R b KQ - bm Qh5; c0 "Qh5=10"; id "ENET-2025 069_Damenausfall_Qh5!, 69";
+Classification: Chaos: Capablanca-Petrosian (↓)
+Volatility: 7.575
+Engine Results:
+  Stockfish: Move=h4h3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=h4h5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_131
+EPD: 1k1r3r/1p2q3/3p2p1/1NnP1p1p/4nR2/Q7/P1P1B1PP/2KR4 w - - bm Qa5; c0 "Qa5=10"; id "ENET-2025 070_Königsangriff_Qa5!, 70";
+Classification: Middle Tal (+/-)
+Volatility: 165.572
+Engine Results:
+  Stockfish: Move=a3a5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=a3a5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_132
+EPD: 2kr3r/qp1n1p2/p2p2p1/N2Pn2p/1P3Q1P/7R/P1P1B1P1/2KR4 w - - bm Ra3; c0 "Ra3=10"; id "ENET-2025 071_Angriff_Ra3!, 71";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 108.522
+Engine Results:
+  Stockfish: Move=h3a3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=h3a3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_133
+EPD: 1rbq1r1k/5p1p/2np2p1/p2Np1b1/R1B1P3/1PP1N3/5PPP/3QK2R w K - bm h4; c0 "h4=10"; id "ENET-2025 072_Spieloeffnung_h4!, 72";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 78.195
+Engine Results:
+  Stockfish: Move=h2h4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=h2h4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_134
+EPD: r2q1rk1/1b3p2/p3pQp1/1pnpP1Pp/P2N4/3B4/2P2PP1/1R2R1K1 b - - bm Ne4; c0 "Ne4=10"; id "ENET-2025 073_Mittelspiel Entlastung_Ne4!, 73";
+Classification: Capablanca (=)
+Volatility: 41.630
+Engine Results:
+  Stockfish: Move=c5e4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=c5e4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_135
+EPD: r4r2/pppb1kpQ/3bnp1p/1P1p3q/P2P4/R4N1P/2B2PP1/2B1R1K1 b - - bm Rfe8; c0 "Rfe8=10"; id "ENET-2025 074_Mittellspiel_Rfe8!, 74";
+Classification: Capablanca (=)
+Volatility: 33.273
+Engine Results:
+  Stockfish: Move=f8e8, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f8e8, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_136
+EPD: 5k2/pp2pN2/2n2rrp/2p4Q/7p/1Bq5/P4PP1/R3R1K1 w - - bm Rad1; c0 "Rad1=10"; id "ENET-2025 075_Bestmove_Rad1! Kramnik vs Howell, 75";
+Classification: High Tal (+-)
+Volatility: 13.294
+Engine Results:
+  Stockfish: Move=a1d1, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=b3d5, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_137
+EPD: 5b2/p1p4k/2Pq2pp/4N3/2Bp1r2/PR6/K3Q3/8 w - - bm Bd3; c0 "Bd3=10"; id "ENET-2025 076_Stockfish vs Komodo_Bd3, Bestmove, 76";
+Classification: High Tal (+-)
+Volatility: 3.536
+Engine Results:
+  Stockfish: Move=c4d3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=c4d3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_138
+EPD: 1r3rk1/1bqnbpp1/p2ppn1B/1p6/4PP1Q/PNNB4/1PP3PP/1K1R3R b - - bm Nd5; c0 "Nd5=10"; id "ENET-2025 077_Entlastung_Nd5, 77";
+Classification: Capablanca (=)
+Volatility: 83.368
+Engine Results:
+  Stockfish: Move=g7h6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g7h6, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_139
+EPD: 3q1rk1/2bb2p1/3p3p/1ppP1p2/3p1B2/1P1P1QNP/2P2PP1/R5K1 b - - bm b4; c0 "b4=10"; id "ENET-2025 078_Blockade_b4! Onlinegame, 78";
+Classification: Chaos: Capablanca-Petrosian (↓)
+Volatility: 95.587
+Engine Results:
+  Stockfish: Move=b5b4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d8e7, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_140
+EPD: r3k1nr/p3pp2/1pnp1bp1/2p5/1PP1P3/P1NP1NPq/3B1P1P/1R1Q1RK1 w kq - bm Nd5; c0 "Nd5=10"; id "ENET-2025 079_Beste Verteidigung_Nd5! Onlinegame, 79";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 41.917
+Engine Results:
+  Stockfish: Move=c3d5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=c3d5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_141
+EPD: r3r1k1/2pn1pp1/1qppb2p/2b1p3/p1P1P3/2BP1NNP/PP2RPPK/2RQ4 b - - bm Bb4; c0 "Bb4=10"; id "ENET-2025 080_Mittelspiel_Bb4! Onlinegame, 80";
+Classification: Capablanca (=)
+Volatility: 37.505
+Engine Results:
+  Stockfish: Move=c5b4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=c5b4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_142
+EPD: 2r1r1k1/p3b2p/5p2/PpPb2p1/4PQ2/2B1N1Rq/2P4P/7K w - - bm Nxd5; c0 "Nxd5=10"; id "ENET-2025 081_Taktik_Nxd5! Onlinegame, 81";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 94.951
+Engine Results:
+  Stockfish: Move=e4d5, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e4d5, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_143
+EPD: r3r3/2p3pp/2k1b3/1pBpPq2/2n5/1Q6/4B1PP/R2R2K1 w - - bm Ba7; c0 "Ba7=10"; id "ENET-2025 082_Mittelspiel_Ba7! Onlinegame, 82";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 96.201
+Engine Results:
+  Stockfish: Move=d1b1, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=d1b1, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_144
+EPD: r1bq1bk1/2p2rpp/4npN1/1pp1pN1P/p3P1P1/3PB3/PPPQ1P2/2KR3R b - - bm Qe8; c0 "Qe8=10"; id "ENET-2025 083_b4? (Qe8, Bd6)_Onlinegame, 83";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 23.146
+Engine Results:
+  Stockfish: Move=d8e8, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=b5b4, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_145
+EPD: 3q3N/1p5k/5B2/8/1p2p1Rp/1P5K/p3PP2/8 w - - bm Rg7+ Rxh4+; c0 "Rg7+=10, Rxh4+=10"; id "M. Garcia - P. Krug, Studie 2015_Glarean_The Engine Crackers, 23";
+Classification: High Tal (+-)
+Volatility: 83.127
+Engine Results:
+  Stockfish: Move=g4h4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=g4g7, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_146
+EPD: k7/7p/2p5/2rp1PP1/pp6/7p/5K1P/4R3 w - - bm g6; c0 "g6=10"; id "Zepler, E.E._Studie, 1928._?, 24";
+Classification: Capablanca (=)
+Volatility: 145.477
+Engine Results:
+  Stockfish: Move=g5g6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f5f6, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_147
+EPD: 5N1n/3P1p1p/5P1k/1Pp1P2p/4KP1P/2p5/p4b2/5N2 w - - bm Ne3; c0 "Ne3=10"; id "Formela, Michal_Studie, 2019._Polski Zwiazek Szachowy, 25";
+Classification: High Petrosian (-+)
+Volatility: 84.058
+Engine Results:
+  Stockfish: Move=d7d8q, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=d7d8q, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_148
+EPD: r1b2rk1/3n1pb1/2p1p1p1/p5P1/Pp2B1NQ/1q4P1/2R2P2/3R2K1 w - - bm Rxd7; c0 "Rxd7=10"; id "Stoofvlees_SF_TCEC 2019, 26";
+Classification: High Tal (+-)
+Volatility: 87.808
+Engine Results:
+  Stockfish: Move=d1d7, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d1d7, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_149
+EPD: 8/1pp2k2/p2p3p/3n1KP1/5P1P/8/1P1B4/8 w - - bm Ke4; c0 "Ke4=10"; id "Lasker, Emanuel_Lipke, Paul_Nebenvariante 41.Ke4! MS, 27";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 67.034
+Engine Results:
+  Stockfish: Move=h4h5, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=h4h5, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_150
+EPD: 1r1q1r1k/5pp1/3p1b2/pp1BpPB1/1n2P1QP/1PN5/1PPK4/R7 w - - bm Ne2; c0 "Ne2=10"; id "Los, Andrii_Kubicki, Tadeusz_corr LIPEAD40 (PER), 28";
+Classification: High-Middle Tal (+/-/+-)
+Volatility: 113.183
+Engine Results:
+  Stockfish: Move=c3e2, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=c3e2, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_151
+EPD: r1b2rk1/pp3p2/2p3pp/2n5/8/q3RN2/P4PPP/2RQ1BK1 b - - bm Qa4; c0 "Qa4=10"; id "PurePower_Exxon_Chessbase online, 29";
+Classification: Chaos: Capablanca-Petrosian (↓)
+Volatility: 33.098
+Engine Results:
+  Stockfish: Move=a3a4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=a3a4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_152
+EPD: r2n1r1k/1pp5/3ppn2/P2Pp2p/2P1P1pq/1Q2R2P/R2N1PP1/4N1K1 w - - bm g3; c0 "g3=10"; id "Bauer, Robert_Zhak, Boris Mikhailovich_WC30/final, 30";
+Classification: Middle Tal (+/-)
+Volatility: 162.541
+Engine Results:
+  Stockfish: Move=g2g3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=g2g3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_153
+EPD: 2b5/1pr4p/3bp1pk/1p6/1PpN2PP/K1P1n3/P3N1R1/3R4 w - - bm Nxb5; c0 "Nxb5=10"; id "Mihai Neghina_Desperation_White to move and draw S, 31";
+Classification: Capablanca (=)
+Volatility: 43.387
+Engine Results:
+  Stockfish: Move=d4b5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d4b5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_154
+EPD: 3r2k1/p4pP1/1ppr4/5Bp1/P2qPnQP/4R3/5P2/5RK1 w - - bm e5; c0 "e5=10"; id "Tauber, Hans_Sikorsky, Horst_37.e5!, 32";
+Classification: High Tal (+-)
+Volatility: 68.301
+Engine Results:
+  Stockfish: Move=e4e5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e4e5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_155
+EPD: 1q6/4p3/6Q1/2N1n3/p2P2P1/P2PP1k1/4Kp1p/2B5 w - - bm Ne4+; c0 "Ne4+=10"; id "Bondarenko+Gorgiev, Studie1959_BrillanterSchachzug, 17._?, 33";
+Classification: Capablanca (=)
+Volatility: 97.250
+Engine Results:
+  Stockfish: Move=g6f5, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=c5e4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_156
+EPD: 7k/Bp1R1b1p/1p2pK1n/8/4P1P1/6pB/4p3/8 w - - bm Bb8; c0 "Bb8=10"; id "ACT3, ??._Festung_S, 34";
+Classification: High Petrosian (-+)
+Volatility: 80.415
+Engine Results:
+  Stockfish: Move=g4g5, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g4g5, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_157
+EPD: 5N2/rp6/pB1p1N2/pb2k1K1/3p2p1/1R2pp2/4B1n1/6bn w - - bm Rc3; c0 "Rc3=10"; id "ACT3, ??._Studie?_?, 35";
+Classification: Capablanca (=)
+Volatility: 32.279
+Engine Results:
+  Stockfish: Move=e2b5, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e2b5, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_158
+EPD: Q3b3/1p2q3/1p6/bp5P/1p6/1p6/1P1N1PPp/4NK1k w - - bm Qd8; c0 "Qd8=10"; id "ACT3, ??._?_?, 36";
+Classification: Capablanca (=)
+Volatility: 116.529
+Engine Results:
+  Stockfish: Move=g2g4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=a8d8, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_159
+EPD: 7r/p2b4/rp2p2p/kB6/8/2K5/1P6/4R3 w - - bm Re5; c0 "Re5=10"; id "ACT3, ??._Festung_?, 37";
+Classification: High Petrosian (-+)
+Volatility: 0.000
+Engine Results:
+  Stockfish: Move=b5d7, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=b5d7, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_160
+EPD: 8/qpp5/8/k1p1N3/2p5/P7/1PP1B3/K7 w - - bm Nc6+; c0 "Nc6+=10"; id "ACT3, ??._Festung_S, 38";
+Classification: High Petrosian (-+)
+Volatility: 116.424
+Engine Results:
+  Stockfish: Move=e5c4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e5c4, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_161
+EPD: 8/2q1k3/5N2/1p1P3N/p7/2P5/PBK5/8 w - - bm d6+; c0 "d6+=10"; id "ACT3, ??._Studie?_?, 39";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 24.619
+Engine Results:
+  Stockfish: Move=b2a3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=b2a3, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_162
+EPD: 5k1r/7p/2p3P1/2p5/1p4PK/p6R/7P/4B3 w - - bm Kg5; c0 "Kg5=10"; id "ACT3, ??._Studie?_S, 40";
+Classification: Capablanca (=)
+Volatility: 149.044
+Engine Results:
+  Stockfish: Move=g6g7, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=h4g5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_163
+EPD: 3k4/2pq3p/pp5R/4P3/P6P/2PN4/1PN3K1/8 w - - bm Nd4; c0 "Nd4=10"; id "Neghina, M._GoldenerKäfig, 2009._S, 41";
+Classification: Capablanca (=)
+Volatility: 50.338
+Engine Results:
+  Stockfish: Move=g2f3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g2f3, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_164
+EPD: 8/p7/8/8/7P/1pk4P/P1P5/1K1Qbq1N b - - bm Bf2; c0 "Bf2=10"; id "Matous, Derived_ColoursExch_POW.38, 42";
+Classification: Capablanca (=)
+Volatility: 170.675
+Engine Results:
+  Stockfish: Move=b3a2, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=b3a2, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_165
+EPD: 4q1kn/2Bp1p2/1N1PpPp1/1P2P1P1/2N3b1/6p1/1P4Pb/7K w - - bm Na5; c0 "Na5=10"; id "Neghina, M._WhieTo, MoveAndWin_2018? S, 43";
+Classification: Chaos: Capablanca-Petrosian (↓)
+Volatility: 94.794
+Engine Results:
+  Stockfish: Move=c4d2, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=c4d2, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_166
+EPD: r1b1qk1r/pn3pp1/1p2p3/3pP1Bp/1bPN4/4Q1R1/P2N1PP1/R5K1 w - - bm Bf6; c0 "Bf6=10, N2f3=2"; id "Sikorsky, Horst_Novak, Joze_Sideline, 45";
+Classification: High Tal (+-)
+Volatility: 93.417
+Engine Results:
+  Stockfish: Move=d2f3, Time=60.00s, Points=1.0, Solved=True
+  ShashChess: Move=d2f3, Time=60.00s, Points=1.0, Solved=True
+
+Position: pos_167
+EPD: 8/5p2/1p1r2p1/1p1p1R2/1P3KN1/8/7p/3N2kr w - - bm Re5; c0 "Re5=10"; id "Krug, P._CCC, Paloma_S, 46";
+Classification: Capablanca (=)
+Volatility: 63.188
+Engine Results:
+  Stockfish: Move=f5f7, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=f5f7, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_168
+EPD: 8/3p4/p2kp1N1/p1r4p/P6P/5RK1/8/8 w - - bm Kf4; c0 "Kf4=10"; id "TCEC, Sammlung_Nr.8, j329_CCC, 47";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 68.997
+Engine Results:
+  Stockfish: Move=f3f1, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=f3f1, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_169
+EPD: r2qr1k1/1b1n1pbp/pp2p1p1/7P/1B1PP3/R2BQN2/5PP1/1R4K1 w - - bm h6; c0 "h6=10"; id "TCEC, Sammlung_Nr.22, rj329_CCC, 48";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 110.019
+Engine Results:
+  Stockfish: Move=e4e5, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e4e5, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_170
+EPD: r1bqkb1r/3n1ppp/p3p3/8/Pp1B1n2/3B1N2/1P1NQPPP/R2R2K1 w kq - bm Qe1; c0 "Qe1=10"; id "Sikorsky, Horst_Vinchev, Simeon_corr GER, Hiarcs, 49";
+Classification: Low Tal (+/=)
+Volatility: 110.810
+Engine Results:
+  Stockfish: Move=e2e4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e2e4, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_171
+EPD: r5b1/7P/p7/2B4p/rp6/4N1P1/p2R4/1k1K4 w - - bm Rb2+; c0 "Rb2+=10"; id "Zemljanski, Y.I._1move, cut_Tsjechover-90 S, 50";
+Classification: High Petrosian (-+)
+Volatility: 20.418
+Engine Results:
+  Stockfish: Move=d2b2, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d2b2, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_172
+EPD: 3rqQ2/3ppppp/7k/R7/8/8/1PPP2K1/8 w - - bm Ra3; c0 "Ra3=10"; id "Study, ?._?_IQ 100, 51";
+Classification: High Petrosian (-+)
+Volatility: 0.896
+Engine Results:
+  Stockfish: Move=f8e8, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=f8e8, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_173
+EPD: 7k/1p2B2p/1P2K1p1/3p3P/8/4b1P1/1pP2N2/8 w - - bm Kf7; c0 "Kf7=10"; id "Study?, ?._?_ACT3, 52";
+Classification: Capablanca (=)
+Volatility: 34.383
+Engine Results:
+  Stockfish: Move=e7f6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e7f6, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_174
+EPD: 1K6/RP3pk1/4p3/2rbP1P1/8/8/P7/8 b - - bm Rc2; c0 "Rc2=10"; id "Study?, ?._?_TTT2 31, 53";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 59.822
+Engine Results:
+  Stockfish: Move=c5c2, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=c5c2, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_175
+EPD: r1q3rk/p1p3b1/3p1nn1/2PPp2p/1P2Ppp1/2NN1P2/6PP/R1BQ1R1K b - - bm gxf3; c0 "gxf3=10, Bh6=2"; id "Semenikov+, D A._Sikorsky, H._corr. USA 2021, 54";
+Classification: Chaos: Capablanca-Petrosian (↓)
+Volatility: 11.217
+Engine Results:
+  Stockfish: Move=g4f3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=g7h6, Time=60.00s, Points=1.0, Solved=True
+
+Position: pos_176
+EPD: r1bq2rk/ppp5/3p1nnb/P1PPp1pp/1P2Pp2/2N2P2/3BBNPP/R2Q2RK b - - bm Qd7; c0 "Qd7=10"; id "Petrov, M._Sikorsky, H._CL/2021, 55";
+Classification: Chaos: Capablanca-Petrosian (↓)
+Volatility: 17.475
+Engine Results:
+  Stockfish: Move=d8d7, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d8d7, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_177
+EPD: 4k2q/p4p1B/1pp3pP/2N2pP1/2P2P1N/8/PP2P3/2K5 w - - bm Nxg6; c0 "Nxg6=10"; id "Study, ?._CCC_ACT5 11, 56";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 79.754
+Engine Results:
+  Stockfish: Move=c5d3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=c5d3, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_178
+EPD: 5kbQ/pp4p1/n3p2p/3p2r1/7N/2PPP2P/PP3PP1/4n2K b - - bm Rxg2; c0 "Rxg2=10"; id "Study, ?._?_ACT5 29, 57";
+Classification: Capablanca (=)
+Volatility: 47.385
+Engine Results:
+  Stockfish: Move=e1d3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g5g2, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_179
+EPD: 8/p2p4/r7/1k6/8/pK5Q/P7/b7 w - - bm Qd3+; c0 "Qd3+=10"; id "ERET 015_Endspiel D&B vs T&L&B_Becker 2015, 58";
+Classification: High Tal (+-)
+Volatility: 29.981
+Engine Results:
+  Stockfish: Move=h3d3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=h3d3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_180
+EPD: 8/7p/5P1k/1p5P/5p2/2p1p3/P1P1P1P1/1K3Nb1 w - - bm Ng3; c0 "Ng3=10"; id "ERET 032_Zugzwang_Fahrni 1922, 59";
+Classification: Capablanca (=)
+Volatility: 32.139
+Engine Results:
+  Stockfish: Move=a2a3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=f1g3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_181
+EPD: 1k6/bPN2pp1/Pp2p3/p1p5/2pn4/3P4/PPR5/1K6 w - - bm Na8 Rf2; c0 "Na8=10, Rf2=2"; id "ERET 037_Zugzwang_Garcia 2000, 60";
+Classification: High Tal (+-)
+Volatility: 29.662
+Engine Results:
+  Stockfish: Move=c2f2, Time=60.00s, Points=1.0, Solved=True
+  ShashChess: Move=c2f2, Time=60.00s, Points=1.0, Solved=True
+
+Position: pos_182
+EPD: r4r1k/p1p3bp/2pp2p1/4nb2/N1P4q/1P5P/PBNQ1PP1/R4RK1 b - - bm Nf3+; c0 "Nf3+=10, g5=10"; id "ERET 050_Koenigsangriff_Hansen-Barua, Biel 1993, 62";
+Classification: High Tal (+-)
+Volatility: 45.615
+Engine Results:
+  Stockfish: Move=e5f3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e5f3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_183
+EPD: 2b1r3/r2ppN2/8/1p1p1k2/pP1P4/2P3R1/PP3PP1/2K5 w - - bm Nd6+; c0 "Nd6+=10"; id "ERET 093_Endspiel T&S&B vs T&T&L_Simkhovich 1923, 64";
+Classification: High Petrosian (-+)
+Volatility: 16.641
+Engine Results:
+  Stockfish: Move=g3f3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g3e3, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_184
+EPD: 6bk/5pp1/3N1p1b/8/6pN/5pPp/4pP1P/4K3 w - - bm Ng6+; c0 "Ng6+=10"; id "Fortress, Study?_?_ACT3-51 S, 66";
+Classification: High Petrosian (-+)
+Volatility: 0.917
+Engine Results:
+  Stockfish: Move=h4f5, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=d6f5, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_185
+EPD: 4rkr1/1b2np2/q4Bp1/6P1/2Q5/pP6/K1P3B1/2R5 w - - bm Bxb7; c0 "Bxb7=10"; id "ACT4, Nr.1_?_ACT4-1, 67";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 77.247
+Engine Results:
+  Stockfish: Move=c4h4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=c4h4, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_186
+EPD: 8/8/p2B1R2/Pp2K3/1Pp3pp/2P3pq/4P1kp/7b w - - bm Bb8; c0 "Bb8=10"; id "Cyclic, ZZ?._?_ACT5-25 2, 68";
+Classification: Capablanca (=)
+Volatility: 26.885
+Engine Results:
+  Stockfish: Move=f6f8, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=f6f4, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_187
+EPD: k1b5/1p1p4/p1bP4/PP6/8/6N1/8/K7 w - - bm b6; c0 "b6=10"; id "Blass, U.._CCC_ACT5-27 2, 69";
+Classification: Capablanca (=)
+Volatility: 3.771
+Engine Results:
+  Stockfish: Move=b5c6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=b5c6, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_188
+EPD: 3n3k/8/6PK/5PP1/1b5p/2pp4/1qP5/Q7 w - - bm g7+; c0 "g7+=10"; id "Campioli, M._#14, ?._ACT5-28 2, 70";
+Classification: High Tal (+-)
+Volatility: 69.221
+Engine Results:
+  Stockfish: Move=g6g7, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=g6g7, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_189
+EPD: 5q2/1p6/P5p1/1P1p1pPk/B1p5/2N1pPP1/4P1K1/8 w - - bm f4; c0 "f4=10"; id "Krug, P._?_ACT5-30 2, 71";
+Classification: Capablanca (=)
+Volatility: 112.123
+Engine Results:
+  Stockfish: Move=c3d5, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=c3d5, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_190
+EPD: 5rk1/5p2/5R2/6PK/2b1N3/3N4/pQnp3n/8 w - - bm Rf1; c0 "Rf1=10"; id "KrugP, Garcia_HHdbVI.0044383.001, a.01968?_ACT5-31 1, 72";
+Classification: Capablanca (=)
+Volatility: 26.394
+Engine Results:
+  Stockfish: Move=e4d2, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e4d2, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_191
+EPD: 8/8/p1Kp4/k6p/B1P2N1P/1R6/P7/3q4 w - - bm Ra3; c0 "Ra3=10"; id "Kos, V._?_ACT5-34 2, 73";
+Classification: High Tal (+-)
+Volatility: 84.690
+Engine Results:
+  Stockfish: Move=b3a3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=b3a3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_192
+EPD: Q2q3r/4kp1n/pP2P1pp/3Pp3/K3B3/1PP4P/1P2r3/4B3 w - - bm Qa7+; c0 "Qa7+=10"; id "Sokka, H._HHdbVI.1076075.001, a.53387?_ACT5-36 1, 74";
+Classification: High Tal (+-)
+Volatility: 66.995
+Engine Results:
+  Stockfish: Move=a8a7, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=a8a7, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_193
+EPD: rb6/k1p1n3/P5Q1/1K3p2/3p4/6B1/6p1/8 w - - bm Qc6; c0 "Qc6=10"; id "Sehwers, J?._HHdbVI.1643584.002a., 89051?._ACT5-ana, 75";
+Classification: High Petrosian (-+)
+Volatility: 63.166
+Engine Results:
+  Stockfish: Move=g3c7, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g3c7, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_194
+EPD: 8/p1p1p1P1/P1P1P3/7p/8/P2p1K1P/pp1p4/krbB4 w - - bm g8=N; c0 "g8=N=10"; id "Zinar, M._HHdbVI.0210037.002a., 09076?._ACT5-44 2, 76";
+Classification: Capablanca (=)
+Volatility: 9.916
+Engine Results:
+  Stockfish: Move=g7g8n, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g7g8q, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_195
+EPD: 8/1p3p2/8/1P1NP3/B4K2/1R6/p1Pp4/2k5 w - - bm Nb4; c0 "Nb4=10"; id "Nestorescu, V._HHdbVI.0708805.002a., 33432?._ACT5-46 1, 77";
+Classification: Capablanca (=)
+Volatility: 91.442
+Engine Results:
+  Stockfish: Move=c2c4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=c2c4, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_196
+EPD: 3r4/1K3p1p/3P1p2/3k1P2/3B4/1P6/1P3P1P/8 w - - bm Bc5; c0 "Bc5=10"; id "Timman, J._HHdbVI.0033988.002a., 01480._ACT5-48 2, 78";
+Classification: High Tal (+-)
+Volatility: 47.076
+Engine Results:
+  Stockfish: Move=d4c5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d4c5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_197
+EPD: 8/1p6/p4N2/q6p/Pp1kp3/1P3P2/3K2P1/2R5 w - - bm f4; c0 "f4=10"; id "Unknown, Author_?_ACT5-51 2, 79";
+Classification: Capablanca (=)
+Volatility: 30.105
+Engine Results:
+  Stockfish: Move=f6e4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=f3f4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_198
+EPD: 2r3bq/3N1prk/5Pp1/6P1/3P3B/RP2P1P1/6K1/8 w - - bm Ra4; c0 "Ra4=10"; id "Ivanov, V._?_ACT5-53 2, 80";
+Classification: High Tal (+-)
+Volatility: 59.113
+Engine Results:
+  Stockfish: Move=a3a4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=a3a4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_199
+EPD: 1b6/2P5/8/kP1P4/p7/P4p2/5Kpp/6B1 w - - bm cxb8=B; c0 "cxb8=B=10"; id "Bernhardt, G._?_ACT5-58 2, 81";
+Classification: Middle-Low Tal (+/=/+/-)
+Volatility: 101.483
+Engine Results:
+  Stockfish: Move=g1h2, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=c7b8b, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_200
+EPD: 5b2/4p1p1/p2pP1P1/P3P3/4P1N1/5KP1/4p1pP/4Bbrk w - - bm Kf4; c0 "Kf4=10"; id "Unknows, Author_?_ACT5-61 2, 82";
+Classification: Capablanca (=)
+Volatility: 16.760
+Engine Results:
+  Stockfish: Move=h2h4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e5d6, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_201
+EPD: 6k1/6pp/3K2b1/6P1/4p2P/7P/P7/1B6 w - - bm h5; c0 "h5=10"; id "Naef, W._?_ACT5-63 2, 83";
+Classification: High Petrosian (-+)
+Volatility: 65.076
+Engine Results:
+  Stockfish: Move=h4h5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=h4h5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_202
+EPD: K6n/1BR1p1N1/1P1kP1br/3pnp1q/p2P4/r1p4p/P7/2b1B3 w - - bm Bg3; c0 "Bg3=10"; id "#7, ?._?_ACT5-67 2, 84";
+Classification: High Petrosian (-+)
+Volatility: 0.000
+Engine Results:
+  Stockfish: Move=g7h5, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g7h5, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_203
+EPD: 8/K3p3/5q2/5b2/1Np5/Bp6/p3Q3/k7 w - - bm Qf1+; c0 "Qf1+=10"; id "#9, ?._?_ACT5-68 2, 85";
+Classification: Capablanca (=)
+Volatility: 45.145
+Engine Results:
+  Stockfish: Move=e2c4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e2f1, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_204
+EPD: 6B1/6K1/8/8/7N/8/P1PkN1pp/8 w - - bm Ng1; c0 "Ng1=10"; id "SilhanJ, ZizkaL_?_ACT5-59 3, 86";
+Classification: Capablanca (=)
+Volatility: 3.317
+Engine Results:
+  Stockfish: Move=e2g1, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e2g1, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_205
+EPD: r6k/p2b2pp/q1n1p2n/3pPpB1/2pP4/2P2NQ1/2P1BPP1/1R4K1 w - - bm Bf6; c0 "Bf6=10"; id "Hiarcs, ?._?_TTT2 2, 87";
+Classification: High Tal (+-)
+Volatility: 127.192
+Engine Results:
+  Stockfish: Move=g5f6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=g5f6, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_206
+EPD: 2bq1rk1/p1n1b1p1/1r5p/3pPp2/2pP1B1P/2P4N/P1B1QP2/2K3RR w - - bm Rg3; c0 "Rg3=10"; id "Hiarcs, ?._?_TTT2 6 2, 88";
+Classification: High Tal (+-)
+Volatility: 151.249
+Engine Results:
+  Stockfish: Move=g1g3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=g1g3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_207
+EPD: 1B2b2k/7q/4n2p/3Np1PQ/8/1p6/5N1P/1K1B4 w - - bm g6; c0 "g6=10"; id "Derived, from_StavrietskyA, 2017._TTT2 14, 89";
+Classification: High Petrosian (-+)
+Volatility: 120.504
+Engine Results:
+  Stockfish: Move=b1b2, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=b1b2, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_208
+EPD: 2Br1r1k/qb3p1p/p2p1Np1/np1Pp1P1/2P5/3RP2P/5R2/4Q1K1 b - - bm bxc4; c0 "bxc4=10"; id "Midgame, ?._?._TTT2 23, 90";
+Classification: High-Middle Tal (+/-/+-)
+Volatility: 54.447
+Engine Results:
+  Stockfish: Move=b5c4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=b5c4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_209
+EPD: rnbq3r/1p2b1k1/2pp1p1p/pP3pp1/2BP3N/P3P3/2P2PPP/RN1Q1RK1 w - - bm Ng6; c0 "Ng6=10"; id "TTT2.053_?_TTT2, 91";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 68.655
+Engine Results:
+  Stockfish: Move=h4f3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=h4g6, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_210
+EPD: 5qk1/pp4p1/4ppp1/2Q3P1/7P/P1P5/1P4P1/6K1 w - - bm Qxf8+; c0 "Qxf8+=10"; id "TTT2.073_?_TTT2, 92";
+Classification: High Tal (+-)
+Volatility: 155.666
+Engine Results:
+  Stockfish: Move=c5f8, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=c5f8, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_211
+EPD: 6Bq/5pkp/4P2p/1nN1KP1P/7P/8/8/8 w - - bm f6+; c0 "f6+=10"; id "RoxlauM, GrushkoM_HHdbVI_ACT4 4 1, 93";
+Classification: High Tal (+-)
+Volatility: 68.541
+Engine Results:
+  Stockfish: Move=f5f6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f5f6, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_212
+EPD: 8/5bb1/N1r2k2/3p1p1p/p1pPpP2/PpP1P2P/1P5P/6RK w - - bm Nb8; c0 "Nb8=10"; id "Smyslov, V._?_ACT4-26 1, 94";
+Classification: High Petrosian (-+)
+Volatility: 42.711
+Engine Results:
+  Stockfish: Move=a6b4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=a6c5, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_213
+EPD: 8/8/3k2p1/5ppb/3P4/1P6/1P3NP1/4K3 w - - bm g4; c0 "g4=10"; id "Smyslov, V._?_ACT4-41 1, 95";
+Classification: Capablanca (=)
+Volatility: 19.274
+Engine Results:
+  Stockfish: Move=f2h3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=f2h3, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_214
+EPD: 2n3B1/6p1/2P2p2/1p3P1p/1p1nK2P/3P4/4N2p/7k w - - bm Ke3; c0 "Ke3=10"; id "JostenG_?_?, 96";
+Classification: High Tal (+-)
+Volatility: 187.239
+Engine Results:
+  Stockfish: Move=e4e3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e4e3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_215
+EPD: 7k/pp1pBp1N/1p3Pp1/b3K1PR/P3P2p/2R4P/2P1N1P1/q7 w - - bm Kd6; c0 "Kd6=10"; id "Study, ?._?_ACT4-59, 97";
+Classification: Capablanca (=)
+Volatility: 79.547
+Engine Results:
+  Stockfish: Move=e5d4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e5d4, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_216
+EPD: 2q1k1b1/7p/4p1r1/Pp1pP2Q/1P1P2PB/2P5/1KP5/8 w - - bm Qxg6+; c0 "Qxg6+=10"; id "Wotawa, A._?_ACT4-66 1, 98";
+Classification: High Petrosian (-+)
+Volatility: 12.806
+Engine Results:
+  Stockfish: Move=h4f6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=h4f6, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_217
+EPD: 8/5P2/Np1q1k2/8/p1pP3P/2P2P2/P7/1KB5 b - - bm a3; c0 "a3=10"; id "Study, ?._?_ACT4-90 1, 99";
+Classification: High Tal (+-)
+Volatility: 32.426
+Engine Results:
+  Stockfish: Move=a4a3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=a4a3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_218
+EPD: 8/1p1k4/1Pp1p3/2P1p2N/4K1p1/p5N1/8/8 w - - bm Kd3; c0 "Kd3=10"; id "Bethge, F._?_ACT4-91, 100";
+Classification: High Petrosian (-+)
+Volatility: 15.634
+Engine Results:
+  Stockfish: Move=e4d3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e4d3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_219
+EPD: 2K5/p1p4k/p1p5/2p3p1/6Pb/6p1/p5P1/B7 w - - bm Kd8 Kd7; c0 "Kd8=10, Kd7=100"; id "Blathy, O._?_ACT4-94 1, 101";
+Classification: Capablanca (=)
+Volatility: 14.226
+Engine Results:
+  Stockfish: Move=c8c7, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=c8c7, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_220
+EPD: 4K3/1B1p4/pn1Npb2/k3p3/P1pn4/P7/7B/3N4 w - - bm Bc6; c0 "Bc6=10"; id "Cortlever, N._HHdbVI_ACT3-29 1, 102";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 136.306
+Engine Results:
+  Stockfish: Move=d1b2, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=d1b2, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_221
+EPD: n6r/b7/1R4R1/2k5/2pppppp/8/1PPPPPP1/r4NK1 w - - bm b4+; c0 "b4+=10"; id "Korolkov, V._?_ACT3-38, 103";
+Classification: High Petrosian (-+)
+Volatility: 176.240
+Engine Results:
+  Stockfish: Move=g6c6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g6c6, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_222
+EPD: b1K2b1n/p1BNp2r/3pP1Nr/PB1Pppp1/Pk2P2n/8/PP6/8 w - - bm a6; c0 "a6=10"; id "Fortress, ?._?_ACT3-41 1, 104";
+Classification: Capablanca (=)
+Volatility: 60.743
+Engine Results:
+  Stockfish: Move=g6f8, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g6f8, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_223
+EPD: 2K3b1/8/pPP1p1P1/2p1k2N/2P1pN1P/6PP/n1pQ2p1/1q3r2 w - - bm Kc7; c0 "Kc7=10"; id "Unknown, Author_?_ACT3-48, 105";
+Classification: Capablanca (=)
+Volatility: 74.102
+Engine Results:
+  Stockfish: Move=f4d3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g6g7, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_224
+EPD: 5N1r/5n1n/ppp3R1/5K2/7k/6p1/6PN/8 w - - bm Rg4+; c0 "Rg4+=10"; id "Kraemer, A._?_ACT3-49, 106";
+Classification: Capablanca (=)
+Volatility: 56.103
+Engine Results:
+  Stockfish: Move=f8e6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=f8e6, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_225
+EPD: 8/6Qp/p5pP/P2n4/8/5p2/p2K1P2/1k2Bb2 w - - bm Qa1+; c0 "Qa1+=10"; id "Sivkov, N._#10, ?._ACT3-88, 107";
+Classification: Capablanca (=)
+Volatility: 59.200
+Engine Results:
+  Stockfish: Move=g7d4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g7b7, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_226
+EPD: 5B2/1p1nNp2/8/1P2R3/3p3q/8/p1K1P1Q1/k3b3 w - - bm Ng6; c0 "Ng6=10"; id "Timman=J_Glarean, Nightmare_?, 108";
+Classification: High Tal (+-)
+Volatility: 293.669
+Engine Results:
+  Stockfish: Move=e7g6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e7g6, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_227
+EPD: 1r3rk1/6p1/p1pb1qPp/3p4/4nPR1/2N4Q/PPP4P/2K1BR2 b - - bm Rb7 Rxb2; c0 "Rb7=10, Rxb2=10"; id "Boudy Bueno, J.L.._Szabo, L._Varna 1979 Txb2!? Eret 17, 109";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 108.487
+Engine Results:
+  Stockfish: Move=b8b2, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=f6f5, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_228
+EPD: r1bqk1nr/pp1pnppp/1bp5/1B6/3PP3/5N2/PP3PPP/RNBQ1RK1 w kq - bm d5; c0 "d5=10"; id "Lc0-dev_Stockfish_ECO MegaMatch II! (1|1), 110";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 83.494
+Engine Results:
+  Stockfish: Move=d4d5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d4d5, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_229
+EPD: nq6/pPpB4/2K5/1P2BN2/3Pk2p/5p2/8/6bN w - - bm b6; c0 "b6=10"; id "Bazlo, Yuri_10moves, less_2019 HHdbVI 1, 112";
+Classification: High Petrosian (-+)
+Volatility: 65.425
+Engine Results:
+  Stockfish: Move=d7c8, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=d7c8, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_230
+EPD: r4rk1/ppp1bppp/2p5/4P3/8/1q2B3/PPPR1PPP/3R2K1 w - - bm cxb3; c0 "cxb3=10"; id "TCEC, rj329_?_CCC, 114";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 31.829
+Engine Results:
+  Stockfish: Move=c2b3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=c2b3, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_231
+EPD: r1b5/1pk2pr1/1Rp1p1q1/p1PpPp1p/P2P1Q1P/4P1P1/4B1K1/3R4 w - - bm e4; c0 "e4=10"; id "TCEC, rj329_?_CCC Nr.5, 115";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 44.841
+Engine Results:
+  Stockfish: Move=d1g1, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=d1g1, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_232
+EPD: 3r1r2/pb2nkp1/1pnb1p1p/2pNpP2/q1P1P1PP/3P1N2/P3BR2/3RQ1BK w - - bm g5; c0 "g5=10"; id "Gleichmann, Matthias_Praznik, Niko_corr CT21/final, 116";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 95.847
+Engine Results:
+  Stockfish: Move=d1b1, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=f3d2, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_233
+EPD: 8/3p4/p3b3/P4p1p/4pP1P/2pP2Np/Q2P2kp/2N1K3 w - - bm Qb1; c0 "Qb1=10"; id "Yarmonov, I._Glarean_2020, 117";
+Classification: High Petrosian (-+)
+Volatility: 129.636
+Engine Results:
+  Stockfish: Move=a2a1, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=a2a1, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_234
+EPD: 2r1r3/1p2qppk/1Ppp1nnp/p3p3/P1PPP3/2NBPR1P/6PK/3Q1R2 w - - bm Ne2; c0 "Ne2=10"; id "Eman_SugaR_Glarean, 118";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 103.298
+Engine Results:
+  Stockfish: Move=f3f6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=d1e1, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_235
+EPD: 7k/p1pp2pp/1p1p4/8/2P2B1R/q1PP4/8/3R2K1 w - - bm Rf1; c0 "Rf1=10"; id "Hobacle's, VersionOf_Walter Eigenmann's, Study_?, 119";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 59.587
+Engine Results:
+  Stockfish: Move=f4e3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=f4d2, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_236
+EPD: r1n5/k3pp2/2Rr4/1p6/1p6/p4pp1/QP4Pn/4RBK1 w - - bm Rec1; c0 "Rec1=10"; id "Krug, P.._Glarean, EngineCrackers2_2018, 120";
+Classification: High Petrosian (-+)
+Volatility: 117.238
+Engine Results:
+  Stockfish: Move=c6c2, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=c6c2, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_237
+EPD: r1bqr1k1/pp1nb1p1/2n3P1/3pPp1p/1p1P3P/P4N2/3N1P2/RBBQK2R w KQ - bm Ng5; c0 "Ng5=10"; id "Gniazdowski, Marian_Rau, Johann_corr CL/2019/C8 Glarean, 121";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 87.855
+Engine Results:
+  Stockfish: Move=f3g5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d2f1, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_238
+EPD: 1r6/1n1R1b2/8/1p1p3k/pPpPp1p1/2P1P3/P2K1PP1/8 w - - bm Rxb7; c0 "Rxb7=10"; id "Illescas, Miguel_Glarean, EngineCrackers_?, 122";
+Classification: High Petrosian (-+)
+Volatility: 31.840
+Engine Results:
+  Stockfish: Move=d7f7, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=d7f7, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_239
+EPD: 2k5/1p3pp1/p1p1p1p1/2P1P1P1/PP1P1P1P/K7/8/8 w - - bm f5; c0 "f5=10"; id "Heinz, J._Glarean_Study 1981, 123";
+Classification: High Tal (+-)
+Volatility: 45.041
+Engine Results:
+  Stockfish: Move=f4f5, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=a3b3, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_240
+EPD: 7k/pp1pBp1N/1p3Pp1/b3K1PR/P3P2p/R1n4P/2P1N1P1/3q4 w - - bm Rxc3; c0 "Rxc3=10"; id "Josten, G.._Glarean, EngineCrackers_Studie 2001, 124";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 38.856
+Engine Results:
+  Stockfish: Move=h7f8, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=h7f8, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_241
+EPD: rb2n3/p3B3/1P5p/2P4K/5k2/1r4p1/3R2R1/8 w - - bm Rxg3; c0 "Rxg3=10"; id "Timman, J.._HHdbVI_?, 125";
+Classification: Capablanca (=)
+Volatility: 56.274
+Engine Results:
+  Stockfish: Move=g2g3, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d2d3, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_242
+EPD: 8/1p4p1/1Np2pP1/1p6/6P1/P2kP1PK/P2P4/2b5 w - - bm Na8; c0 "Na8=10"; id "Gelly, M.._HHdbVI_Glarean, 126";
+Classification: High Petrosian (-+)
+Volatility: 103.279
+Engine Results:
+  Stockfish: Move=e3e4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e3e4, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_243
+EPD: 6K1/5p2/6p1/1N2qk1p/p6R/7P/Pp2N3/2B5 w - - bm Ned4+; c0 "Ned4+=10"; id "Krug, P._HHdbVI, Glarean_?, 127";
+Classification: Capablanca (=)
+Volatility: 159.042
+Engine Results:
+  Stockfish: Move=c1b2, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e2d4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_244
+EPD: 8/2p1N3/2p5/2p5/P1kb2R1/4p3/P3p1P1/1B2B2K w - - bm Be4; c0 "Be4=10"; id "Popov, G._#9_Der Standard 2006, 128";
+Classification: High Tal (+-)
+Volatility: 0.000
+Engine Results:
+  Stockfish: Move=e7c6, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=e7c6, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_245
+EPD: r1bqkb1r/ppp3pp/n3pn2/1N1p1p2/3P1B2/4P3/PPP2PPP/R2QKBNR w KQkq - bm c4; c0 "c4=10"; id "Hiarcs_Buch_512, 131";
+Classification: Chaos: Capablanca-Tal (↑)
+Volatility: 56.685
+Engine Results:
+  Stockfish: Move=g1f3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g1f3, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_246
+EPD: r3kr2/pp2bpp1/2b4p/q3p3/2B1p1PP/1Q2B3/PPP2P2/2KR2R1 w q - bm g5; am Rd5; c0 "Rd5=10"; id "AM, Hiarcs_Wrong, Book_512, 132";
+Classification: High Tal (+-)
+Volatility: 122.956
+Engine Results:
+  Stockfish: Move=g4g5, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=g4g5, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_247
+EPD: 6r1/3q1npk/2b1pbnp/Rp1p4/1N1P3P/2PQ1pP1/1K3B2/5B1R w - - bm Qxg6+; c0 "Qxg6+=10"; id "Source?_#13_mulitple, 166";
+Classification: High Tal (+-)
+Volatility: 0.182
+Engine Results:
+  Stockfish: Move=h4h5, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=h4h5, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_248
+EPD: 7q/b1p5/1p1Npkb1/pPP2ppP/P1P5/3B2P1/5P1R/K3R3 w - - bm hxg6; c0 "hxg6=10"; id "Neghina, N._?_Detour, 168";
+Classification: Capablanca (=)
+Volatility: 65.303
+Engine Results:
+  Stockfish: Move=d6b7, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=d6b7, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_249
+EPD: 8/1p1r2R1/p5p1/5bp1/2PB1k2/1PK5/P7/8 b - - bm Rxd4; c0 "Rxd4=10"; id "Svidler, P._Karjakin, S._Glarean, 170";
+Classification: High Tal (+-)
+Volatility: 158.958
+Engine Results:
+  Stockfish: Move=d7d4, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d7d4, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_250
+EPD: 8/2pPpP2/1P1qk1p1/1p4P1/1P4p1/1p1QK1P1/2PpPp2/8 w - - bm f8=Q d8=Q; c0 "f8=Q=10, d8=Q=10"; id "Source?_?_?, 172";
+Classification: High Tal (+-)
+Volatility: 0.218
+Engine Results:
+  Stockfish: Move=d7d8q, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=f7f8q, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_251
+EPD: r1b3r1/5p1k/p1n2P1p/P1qpp1P1/1p1p4/3P2Q1/BPPB2P1/R4RK1 w - - bm Kf2; c0 "Kf2=10"; id "Efremov, A._Fischer, W._2012 Arasan Multiple, 182";
+Classification: High Tal (+-)
+Volatility: 84.998
+Engine Results:
+  Stockfish: Move=a2b3, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=a2b3, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_252
+EPD: r2qkb1r/3bpppp/p4nn1/3P4/1p1N4/1QN3B1/PP3PPP/R3KB1R w KQkq - bm Nc6; c0 "Nc6=10"; id "Hard, Positions_Corbit, Dann_2022, 189";
+Classification: Middle Tal (+/-)
+Volatility: 133.982
+Engine Results:
+  Stockfish: Move=d4c6, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=e1c1, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_253
+EPD: r4r1k/1p4qp/b1pNRbp1/2P5/3p1P1P/PQ4P1/3R2BK/8 w - - bm Rd1; c0 "Rd1=10"; id "Source?_Corbit, Dann_HardPositions 2022, 195";
+Classification: High Tal (+-)
+Volatility: 75.832
+Engine Results:
+  Stockfish: Move=d2d1, Time=60.00s, Points=5.0, Solved=True
+  ShashChess: Move=d2d1, Time=60.00s, Points=5.0, Solved=True
+
+Position: pos_254
+EPD: 1B4bk/p4n1p/6pP/3p4/7p/3Pp2P/1p2P1K1/bB6 w - - bm Bh2; c0 "Bh2=10"; id "Timman, J._Derived, -3m_New in Chess Magazine 2007, 201";
+Classification: Capablanca (=)
+Volatility: 75.848
+Engine Results:
+  Stockfish: Move=b8a7, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=b8a7, Time=60.00s, Points=0.0, Solved=False
+
+Position: pos_255
+EPD: 1N6/B2p1p1p/3P1P1P/2K5/pP6/p3p3/rpp1P2P/qkn4R w - - bm Nc6; c0 "Nc6=10"; id "Zinar, M._Derived, -4m_sp.p Zadachy i Etyudy#3671b 2010, 202";
+Classification: Capablanca (=)
+Volatility: 8.690
+Engine Results:
+  Stockfish: Move=c5c4, Time=60.00s, Points=0.0, Solved=False
+  ShashChess: Move=c5c4, Time=60.00s, Points=0.0, Solved=False
+
+==================================================
+Overall Statistics
+Positions Solved: 153/256
+Positions Analyzed: 256
+Engines Tested: 2

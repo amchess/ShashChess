@@ -27,8 +27,8 @@
 #include "engine.h"
 #include "misc.h"
 #include "search.h"
-#include "book/book_manager.h"  //book management
-#include "wdl/win_probability.h"
+#include "book/book_manager.h"    //book management
+#include "wdl/win_probability.h"  //shashin
 namespace ShashChess {
 
 class Position;

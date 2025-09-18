@@ -53,13 +53,12 @@ class MovePicker {
     MovePicker(const Position&, Move, int, const CapturePieceToHistory*);
     Move next_move();
     void skip_quiet_moves();
-    bool can_move_king_or_pawn() const;
 
    private:
     template<typename Pred>
     Move select(Pred);
-    template<GenType>
-    void     score();
+    template<GenType T>
+    ExtMove* score(MoveList<T>&);
     ExtMove* begin() { return cur; }
     ExtMove* end() { return endCur; }
 
@@ -70,7 +69,7 @@ class MovePicker {
     const PieceToHistory**       continuationHistory;
     const PawnHistory*           pawnHistory;
     Move                         ttMove;
-    ExtMove *                    cur, *endCur, *endBadCaptures, *endCaptures, *endGenerated;
+    ExtMove *                    cur, *endCur, *endBadCaptures, *endCaptures, *endGenerated = moves;
     int                          stage;
     int                          threshold;
     Depth                        depth;

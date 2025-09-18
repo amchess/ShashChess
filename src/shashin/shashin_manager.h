@@ -30,8 +30,8 @@ class ShashinManager {
     explicit ShashinManager(const ShashinParams& params_ = {});
 
     // Core interface
-    ShashinPosition         getResilientShashinRange(ShashinPosition range, int depth);
-    void                    updateRootShashinState(Value score, const Position& rootPos, int depth, int rootDepth);
+    ShashinPosition getResilientShashinRange(ShashinPosition range, int depth);
+    void updateRootShashinState(Value score, const Position& rootPos, int depth, int rootDepth);
     ShashinPosition         getShashinRange(Value value, const Position& rootPos);
     const RootShashinState& getState() const { return state; }
     void                    setDepth(int depth) { state.dynamicBase.currentDepth = depth; }
@@ -61,10 +61,14 @@ class ShashinManager {
                                      Position&                     rootPos,
                                      Search::Stack*                ss,
                                      Value                         optimism,
-                                     const ShashinConfig&          config, Depth rootDepth);
+                                     const ShashinConfig&          config,
+                                     Depth                         rootDepth);
     void setDynamicBaseState(Value score, const Position& rootPos, int depth, int rootDepth);
     void setDynamicDerivedState();
-    void initDynamicBaseState(Value currentValue, Position& rootPos, const ShashinConfig& config, int rootDepth);
+    void initDynamicBaseState(Value                currentValue,
+                              Position&            rootPos,
+                              const ShashinConfig& config,
+                              int                  rootDepth);
 
     // Feature flags
     bool useMoveGenCrystalLogic() const;
@@ -132,26 +136,41 @@ class ShashinManager {
     inline __attribute__((always_inline)) bool isInRange(ShashinPosition position) const {
         return state.dynamicBase.currentRange == position;
     }
-    // Helper functions for styles intensity (inline for performance 
+    // Helper functions for styles intensity (inline for performance
     static inline __attribute__((always_inline)) double getTalIntensity(ShashinPosition style) {
-        switch (style) {
-            case ShashinPosition::HIGH_TAL: return 1.00;  // 100% reductione
-            case ShashinPosition::MIDDLE_HIGH_TAL: return 0.85;  // 85%
-            case ShashinPosition::MIDDLE_TAL: return 0.73;  // 73% (40/55 ≈ 0.727, 55/75 ≈ 0.733)
-            case ShashinPosition::MIDDLE_LOW_TAL: return 0.60;  // 60%
-            case ShashinPosition::LOW_TAL: return 0.45;  // 45%
-            default: return 0.0;
+        switch (style)
+        {
+        case ShashinPosition::HIGH_TAL :
+            return 1.00;  // 100% reduction
+        case ShashinPosition::MIDDLE_HIGH_TAL :
+            return 0.85;  // 85%
+        case ShashinPosition::MIDDLE_TAL :
+            return 0.73;  // 73% (40/55 ≈ 0.727, 55/75 ≈ 0.733)
+        case ShashinPosition::MIDDLE_LOW_TAL :
+            return 0.60;  // 60%
+        case ShashinPosition::LOW_TAL :
+            return 0.45;  // 45%
+        default :
+            return 0.0;
         }
     }
 
-    static inline __attribute__((always_inline)) double getPetrosianIntensity(ShashinPosition style) {
-        switch (style) {
-            case ShashinPosition::HIGH_PETROSIAN: return 0.55;  // 55% (25/55 ≈ 0.45, 35/75 ≈ 0.47 → media 0.46 → 1-0.46=0.54)
-            case ShashinPosition::MIDDLE_HIGH_PETROSIAN: return 0.50;  // 50%
-            case ShashinPosition::MIDDLE_PETROSIAN: return 0.40;  // 40%
-            case ShashinPosition::MIDDLE_LOW_PETROSIAN: return 0.30;  // 30%
-            case ShashinPosition::LOW_PETROSIAN: return 0.20;  // 20%
-            default: return 0.0;
+    static inline __attribute__((always_inline)) double
+    getPetrosianIntensity(ShashinPosition style) {
+        switch (style)
+        {
+        case ShashinPosition::HIGH_PETROSIAN :
+            return 0.55;  // 55% (25/55 ≈ 0.45, 35/75 ≈ 0.47 → media 0.46 → 1-0.46=0.54)
+        case ShashinPosition::MIDDLE_HIGH_PETROSIAN :
+            return 0.50;  // 50%
+        case ShashinPosition::MIDDLE_PETROSIAN :
+            return 0.40;  // 40%
+        case ShashinPosition::MIDDLE_LOW_PETROSIAN :
+            return 0.30;  // 30%
+        case ShashinPosition::LOW_PETROSIAN :
+            return 0.20;  // 20%
+        default :
+            return 0.0;
         }
     }
 

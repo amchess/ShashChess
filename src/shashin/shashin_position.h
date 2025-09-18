@@ -14,36 +14,40 @@ inline uint64_t shashin_position_hash(const Position& pos) noexcept {
 // shashin_position.h
 [[nodiscard]]
 inline int count_safe_waiting_moves(const Position& pos) {
-    int count = 0;
+    int             count = 0;
     MoveList<LEGAL> moves(pos);
-    
-    for (const auto& m : moves) {
-        if (!pos.capture_stage(m) && !pos.gives_check(m)) {
-            const Square to = m.to_sq();
-            Piece moved = pos.moved_piece(m);
-            Value movedValue = PieceValue[type_of(moved)];
+
+    for (const auto& m : moves)
+    {
+        if (!pos.capture_stage(m) && !pos.gives_check(m))
+        {
+            const Square to         = m.to_sq();
+            Piece        moved      = pos.moved_piece(m);
+            Value        movedValue = PieceValue[type_of(moved)];
 
             // Gestione promozioni
             if (m.type_of() == PROMOTION)
                 movedValue = PieceValue[m.promotion_type()];  // Sovrascrive il valore del pedone
 
-            Bitboard attackers = pos.attackers_to(to, ~pos.side_to_move());
-            Value minOpponentAttacker = VALUE_INFINITE;
+            Bitboard attackers           = pos.attackers_to(to, ~pos.side_to_move());
+            Value    minOpponentAttacker = VALUE_INFINITE;
 
             // Trova il pezzo attaccante avversario di valore minimo
-            while (attackers) {
-                Square s = pop_lsb(attackers);
-                Piece attacker = pos.piece_on(s);
+            while (attackers)
+            {
+                Square s            = pop_lsb(attackers);
+                Piece  attacker     = pos.piece_on(s);
                 minOpponentAttacker = std::min(minOpponentAttacker, PieceValue[type_of(attacker)]);
             }
 
             // Condizioni di sicurezza:
-            const bool isSafe = 
-                (minOpponentAttacker > movedValue) ||  // Nessun attacco redditizio
-                (!attackers && m.type_of() != PROMOTION) ||  // Mossa normale non attaccata
-                (m.type_of() == PROMOTION && !attackers);  // Promozione non attaccata
+            const bool isSafe =
+              (minOpponentAttacker > movedValue) ||        // Nessun attacco redditizio
+              (!attackers && m.type_of() != PROMOTION) ||  // Mossa normale non attaccata
+              (m.type_of() == PROMOTION && !attackers);    // Promozione non attaccata
 
-            if (isSafe) count++;
+            if (isSafe)
+                count++;
         }
     }
     return count;

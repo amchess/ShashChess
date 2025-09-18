@@ -100,6 +100,7 @@ MovePicker::MovePicker(const Position&              p,
 
     if (pos.checkers())
         stage = EVASION_TT + !(ttm && pos.pseudo_legal(ttm));
+
     else
         stage = (depth > 0 ? MAIN_TT : QSEARCH_TT) + !(ttm && pos.pseudo_legal(ttm));
 }
@@ -113,38 +114,59 @@ MovePicker::MovePicker(const Position& p, Move ttm, int th, const CapturePieceTo
     threshold(th) {
     assert(!pos.checkers());
 
-    stage = PROBCUT_TT
-          + !(ttm && pos.capture_stage(ttm) && pos.pseudo_legal(ttm) && pos.see_ge(ttm, threshold));
+    stage = PROBCUT_TT + !(ttm && pos.capture_stage(ttm) && pos.pseudo_legal(ttm));
 }
 
 // Assigns a numerical value to each move in a list, used for sorting.
 // Captures are ordered by Most Valuable Victim (MVV), preferring captures
 // with a good history. Quiets moves are ordered using the history tables.
 template<GenType Type>
-void MovePicker::score() {
+ExtMove* MovePicker::score(MoveList<Type>& ml) {
 
     static_assert(Type == CAPTURES || Type == QUIETS || Type == EVASIONS, "Wrong type");
 
-    Color us = pos.side_to_move();
-    //for fortress begin
+    Color      us       = pos.side_to_move();
     const bool fortress = MoveConfig::isFortress;
 
-    int phase           = std::clamp(pos.game_ply() / 25, 0, 3);
-    int breakingPenalty = 1800 + 600 * phase;
-    int preservingBonus = 900 + 300 * (3 - phase);
+    // Precompute all fortress-related values once
+    int  breakingPenalty = 0, preservingBonus = 0, phase = 0;
+    int  shashinBonus = 0;
+    bool noProgress15 = false;
 
-    //for fotress end
-    [[maybe_unused]] Bitboard threatByLesser[QUEEN + 1];
+    if (fortress)
+    {
+        phase           = std::clamp(pos.game_ply() / 25, 0, 3);
+        breakingPenalty = 1200 + 400 * phase;
+        preservingBonus = 600 + 200 * (3 - phase);
+        noProgress15    = no_progress_for(pos, 15);
+
+        if (MoveConfig::useMoveShashinLogic)
+        {
+            double plyFactor = std::min(pos.game_ply() / 40.0, 1.0);
+            if (MoveConfig::isStrategical)
+                shashinBonus = static_cast<int>(100 * plyFactor);
+            else if (MoveConfig::isAggressive)
+                shashinBonus = static_cast<int>(180 * plyFactor);
+        }
+    }
+
+    [[maybe_unused]] Bitboard threatByLesser[KING + 1];
     if constexpr (Type == QUIETS)
     {
+        threatByLesser[PAWN]   = 0;
         threatByLesser[KNIGHT] = threatByLesser[BISHOP] = pos.attacks_by<PAWN>(~us);
         threatByLesser[ROOK] =
           pos.attacks_by<KNIGHT>(~us) | pos.attacks_by<BISHOP>(~us) | threatByLesser[KNIGHT];
         threatByLesser[QUEEN] = pos.attacks_by<ROOK>(~us) | threatByLesser[ROOK];
+        threatByLesser[KING]  = pos.attacks_by<QUEEN>(~us) | threatByLesser[QUEEN];
     }
 
-    for (auto& m : *this)
+    ExtMove* it = cur;
+    for (auto move : ml)
     {
+        ExtMove& m = *it++;
+        m          = move;
+
         const Square    from          = m.from_sq();
         const Square    to            = m.to_sq();
         const Piece     pc            = pos.moved_piece(m);
@@ -156,16 +178,19 @@ void MovePicker::score() {
             m.value = (*captureHistory)[pc][to][type_of(capturedPiece)]
                     + 7 * int(PieceValue[capturedPiece]) + 1024 * bool(pos.check_squares(pt) & to);
 
-            //for fortress begin
-            if (fortress && MoveConfig::isAggressive)
-                m.value += 500;
-            //for fortress end
+            // Bonus aggiuntivi per posizioni aggressive
+            if (MoveConfig::isAggressive)
+            {
+                if (pos.gives_check(m))
+                    m.value += 5000;   // Bonus per scacco
+                if (pos.see_ge(m, 0))  // Bonus per SEE positivo
+                    m.value += 1000;
+            }
         }
         else if constexpr (Type == QUIETS)
         {
-            // histories
             m.value = 2 * (*mainHistory)[us][m.from_to()];
-            m.value += 2 * (*pawnHistory)[pawn_structure_index(pos)][pc][to];
+            m.value += 2 * (*pawnHistory)[pawn_history_index(pos)][pc][to];
             m.value += (*continuationHistory[0])[pc][to];
             m.value += (*continuationHistory[1])[pc][to];
             m.value += (*continuationHistory[2])[pc][to];
@@ -177,26 +202,25 @@ void MovePicker::score() {
 
             // penalty for moving to a square threatened by a lesser piece
             // or bonus for escaping an attack by a lesser piece.
-            if (KNIGHT <= pt && pt <= QUEEN)
-            {
-                static constexpr int bonus[QUEEN + 1] = {0, 0, 144, 144, 256, 517};
-                int v = threatByLesser[pt] & to ? -95 : 100 * bool(threatByLesser[pt] & from);
-                m.value += bonus[pt] * v;
-            }
+            static constexpr int bonus[KING + 1] = {0, 0, 144, 144, 256, 517, 10000};
+            int v = threatByLesser[pt] & to ? -95 : 100 * bool(threatByLesser[pt] & from);
+            m.value += bonus[pt] * v;
 
             if (ply < LOW_PLY_HISTORY_SIZE)
                 m.value += 8 * (*lowPlyHistory)[ply][m.from_to()] / (1 + ply);
-            //for fortress begin
-            if (fortress && MoveConfig::isStrategical)
-                m.value += 200;
-            //for fortress end
+            // Bonus aggiuntivi per posizioni aggressive
+            if (MoveConfig::isAggressive)
+            {
+                if (pos.gives_check(m))
+                    m.value += 5000;   // Bonus per scacco
+                if (pos.see_ge(m, 0))  // Bonus per SEE positivo
+                    m.value += 1000;
+            }
         }
         else
-        {  // EVASIONS
+        {  // Type == EVASIONS
             if (pos.capture_stage(m))
-            {
-                m.value = PieceValue[pos.piece_on(to)] + (1 << 28);
-            }
+                m.value = PieceValue[capturedPiece] + (1 << 28);
             else
             {
                 m.value = (*mainHistory)[us][m.from_to()] + (*continuationHistory[0])[pc][to];
@@ -204,65 +228,46 @@ void MovePicker::score() {
                     m.value += 2 * (*lowPlyHistory)[ply][m.from_to()] / (1 + ply);
             }
         }
-        //for fortress begin
+
+        // Apply fortress logic if needed
         if (fortress)
         {
-            bool preserve = is_fortress_preserving_move(pos, m);
-            if (is_fortress_breaking_move(pos, m))
-            {
-                // Penalità maggiore per mosse che rompono la fortezza
-                m.value -= breakingPenalty * 1.5;
+            bool preserve  = is_fortress_preserving_move(pos, m);
+            bool breakMove = is_fortress_breaking_move(pos, m);
 
-                // Penalità extra per pezzi chiave
+            if (breakMove)
+            {
+                m.value -= breakingPenalty;
                 if (is_fortress_key_piece(pc))
-                    m.value -= 600;
+                    m.value -= 300;
             }
             else if (preserve)
             {
-                // Bonus maggiore per mosse che mantengono la fortezza
-                m.value += preservingBonus * 1.8;
-
-                // Bonus speciale per mosse di re in fase finale
+                m.value += preservingBonus;
                 if (type_of(pc) == KING && phase == 3)
-                    m.value += 300;
-
-                // Bonus aggiuntivo per mosse di pedone che rafforzano la struttura
+                    m.value += 150;
                 if (type_of(pc) == PAWN)
                 {
-                    // Bonus per pedoni connessi (corretto con attacks_bb)
                     Bitboard adjacentPawns = attacks_bb<PAWN>(to, us) & pos.pieces(us, PAWN);
                     if (adjacentPawns)
-                        m.value += 200;
-
+                        m.value += 100;
                     // Bonus per pedoni avanzati
                     Rank r          = rank_of(to);
                     bool isAdvanced = (us == WHITE) ? (r >= RANK_5) : (r <= RANK_4);
                     if (isAdvanced)
-                        m.value += 150;
+                        m.value += 75;
                 }
             }
 
             // Gestione regola delle 50 mosse
-            if (no_progress_for(pos, 15) && preserve)
-            {
+            if (noProgress15 && preserve)
                 m.value += 300;
-            }
 
-            // Logica Shashin dinamica
-            if (MoveConfig::useMoveShashinLogic)
-            {
-                double plyFactor = std::min(pos.game_ply() / 40.0, 1.0);
-
-                if (MoveConfig::isStrategical)
-                    m.value += static_cast<int>(100 * plyFactor);
-                else if (MoveConfig::isAggressive)
-                    m.value += static_cast<int>(180 * plyFactor);
-            }
+            m.value += shashinBonus;
         }
-        //fortress end
     }
+    return it;
 }
-
 
 // Returns the next move satisfying a predicate function.
 // This never returns the TT move, as it was emitted before.
@@ -295,14 +300,16 @@ top:
 
     case CAPTURE_INIT :
     case PROBCUT_INIT :
-    case QCAPTURE_INIT :
-        cur = endBadCaptures = moves;
-        endCur = endCaptures = generate<CAPTURES>(pos, cur);
+    case QCAPTURE_INIT : {
+        MoveList<CAPTURES> ml(pos);
 
-        score<CAPTURES>();
+        cur = endBadCaptures = moves;
+        endCur = endCaptures = score<CAPTURES>(ml);
+
         partial_insertion_sort(cur, endCur, std::numeric_limits<int>::min());
         ++stage;
         goto top;
+    }
 
     case GOOD_CAPTURE :
         if (select([&]() {
@@ -319,9 +326,10 @@ top:
     case QUIET_INIT :
         if (!skipQuiets)
         {
-            endCur = endGenerated = generate<QUIETS>(pos, cur);
+            MoveList<QUIETS> ml(pos);
 
-            score<QUIETS>();
+            endCur = endGenerated = score<QUIETS>(ml);
+
             partial_insertion_sort(cur, endCur, -3560 * depth);
         }
 
@@ -356,14 +364,16 @@ top:
 
         return Move::none();
 
-    case EVASION_INIT :
-        cur    = moves;
-        endCur = endGenerated = generate<EVASIONS>(pos, cur);
+    case EVASION_INIT : {
+        MoveList<EVASIONS> ml(pos);
 
-        score<EVASIONS>();
+        cur    = moves;
+        endCur = endGenerated = score<EVASIONS>(ml);
+
         partial_insertion_sort(cur, endCur, std::numeric_limits<int>::min());
         ++stage;
         [[fallthrough]];
+    }
 
     case EVASION :
     case QCAPTURE :
@@ -378,19 +388,5 @@ top:
 }
 
 void MovePicker::skip_quiet_moves() { skipQuiets = true; }
-
-// this function must be called after all quiet moves and captures have been generated
-bool MovePicker::can_move_king_or_pawn() const {
-    // SEE negative captures shouldn't be returned in GOOD_CAPTURE stage
-    assert(stage > GOOD_CAPTURE && stage != EVASION_INIT);
-
-    for (const ExtMove* m = moves; m < endGenerated; ++m)
-    {
-        PieceType movedPieceType = type_of(pos.moved_piece(*m));
-        if ((movedPieceType == PAWN || movedPieceType == KING) && pos.legal(*m))
-            return true;
-    }
-    return false;
-}
 
 }  // namespace ShashChess
