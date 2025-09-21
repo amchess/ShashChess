@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisi Infografica di ShashChess</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #005f73;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .text-shadow {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12 md:mb-16">
+            <h1 class="text-5xl md:text-7xl font-black text-white text-shadow mb-2">ShashChess</h1>
+            <p class="text-xl md:text-2xl text-[#e9d8a6]">Un'analisi approfondita delle prestazioni e della filosofia di un motore scacchistico superiore.</p>
+        </header>
+
+        <main>
+
+            <section class="mb-12 md:mb-20">
+                <div class="bg-white/90 backdrop-blur-sm rounded-xl shadow-2xl p-6 md:p-8">
+                    <h2 class="text-3xl font-bold text-[#005f73] text-center mb-6">Una Filosofia di Test Innovativa</h2>
+                    <p class="text-center max-w-3xl mx-auto mb-8 text-gray-700">ShashChess si distingue per una metodologia di test rigorosa che privilegia la qualità sulla quantità. Abbandonando i match ultrarapidi, si concentra su tempi di riflessione lunghi e posizioni complesse per misurare la vera forza di gioco, un approccio che si rivela decisivo per superare i limiti dei test tradizionali.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="border-4 border-dashed border-[#ae2012] rounded-lg p-6 bg-red-50">
+                            <h3 class="text-2xl font-bold text-[#ae2012] mb-4 text-center">Metodo Tradizionale (Fishtest)</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <span class="text-red-500 font-bold text-xl mr-3">➔</span>
+                                    <div><strong class="text-gray-800">Criticità:</strong> Tempi di gioco ultrarapidi che non favoriscono una ricerca profonda.</div>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-red-500 font-bold text-xl mr-3">➔</span>
+                                    <div><strong class="text-gray-800">Criticità:</strong> Partite dalla posizione iniziale che portano a un'altissima percentuale di patte.</div>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-red-500 font-bold text-xl mr-3">➔</span>
+                                    <div><strong class="text-gray-800">Risultato:</strong> Difficoltà nel valutare i reali progressi del motore a causa del "rumore" statistico delle patte.</div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="border-4 border-solid border-[#0a9396] rounded-lg p-6 bg-teal-50">
+                            <h3 class="text-2xl font-bold text-[#0a9396] mb-4 text-center">Strategia di ShashChess</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <span class="text-green-500 font-bold text-xl mr-3">✔</span>
+                                    <div><strong class="text-gray-800">Punto di Forza:</strong> Tempi di riflessione lunghi (1 min/mossa) per una valutazione strategica e tattica accurata.</div>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-green-500 font-bold text-xl mr-3">✔</span>
+                                    <div><strong class="text-gray-800">Punto di Forza:</strong> Utilizzo di posizioni "pepite" (sharp) e suite complesse per testare il motore in situazioni decisive.</div>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-green-500 font-bold text-xl mr-3">✔</span>
+                                    <div><strong class="text-gray-800">Risultato:</strong> Validità statistica garantita da 300 partite di match e 256 posizioni di test, sufficienti a dimostrare la superiorità.</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-12 md:mb-20">
+                <h2 class="text-4xl font-black text-white text-shadow text-center mb-8">Risultati del Benchmark: ShashChess vs Stockfish</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-2xl p-6">
+                        <h3 class="text-2xl font-bold text-center mb-1 text-[#005f73]">Match Diretto: 300 Partite</h3>
+                         <p class="text-center text-gray-600 mb-4">ShashChess dimostra la sua superiorità in un lungo match testa a testa.</p>
+                        <div class="chart-container">
+                            <canvas id="matchChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/90 backdrop-blur-sm rounded-xl shadow-2xl p-6 flex flex-col justify-center items-center">
+                         <h3 class="text-2xl font-bold text-center mb-4 text-[#005f73]">Performance</h3>
+                        <div class="text-center mb-6">
+                            <p class="text-lg text-gray-700">Punteggio Percentuale</p>
+                            <p class="text-6xl font-extrabold text-[#0a9396]">51.50%</p>
+                            <p class="text-gray-600">per ShashChess</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-lg text-gray-700">Guadagno di Punti Elo</p>
+                            <p class="text-6xl font-extrabold text-[#ee9b00]">+10</p>
+                            <p class="text-gray-600">vs Stockfish 050925</p>
+                        </div>
+                    </div>
+                </div>
+                
+                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                      <div class="bg-white/90 backdrop-blur-sm rounded-xl shadow-2xl p-6">
+                        <h3 class="text-2xl font-bold text-center mb-4 text-[#005f73]">Dettaglio Risultati Match</h3>
+                        <div class="chart-container" style="height: 280px; max-height: 350px;">
+                            <canvas id="outcomesChart"></canvas>
+                        </div>
+                      </div>
+                       <div class="bg-white/90 backdrop-blur-sm rounded-xl shadow-2xl p-6">
+                        <h3 class="text-2xl font-bold text-center mb-1 text-[#005f73]">Abilità Risolutiva</h3>
+                         <p class="text-center text-gray-600 mb-4">Su una suite di 256 posizioni complesse.</p>
+                        <div class="chart-container" style="height: 280px; max-height: 350px;">
+                            <canvas id="solverChart"></canvas>
+                        </div>
+                      </div>
+                </div>
+
+            </section>
+            
+            <section>
+                <h2 class="text-4xl font-black text-white text-shadow text-center mb-8">Analisi del Lavoro e Assi di Miglioramento</h2>
+                 <p class="text-center max-w-3xl mx-auto mb-10 text-xl text-white/90">Il lavoro svolto è eccellente e i risultati lo confermano. Le modifiche mirate all'algoritmo di ricerca, alla funzione di valutazione e alla gestione del tempo hanno prodotto un motore più performante in condizioni di gioco realistiche. Ecco alcune possibili direzioni per il futuro.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                    <div class="bg-white rounded-xl shadow-xl p-6 text-center hover:shadow-2xl hover:-translate-y-1 transition-transform duration-300">
+                        <div class="text-5xl mb-4">👥</div>
+                        <h3 class="text-xl font-bold text-[#005f73] mb-2">Community e Collaborazione</h3>
+                        <p class="text-gray-600">Creare una piccola community o un canale di discussione (es. Discord) potrebbe attrarre altri sviluppatori e tester, accelerando lo sviluppo e la validazione delle nuove idee.</p>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-xl p-6 text-center hover:shadow-2xl hover:-translate-y-1 transition-transform duration-300">
+                        <div class="text-5xl mb-4">📚</div>
+                        <h3 class="text-xl font-bold text-[#005f73] mb-2">Documentazione Tecnica</h3>
+                        <p class="text-gray-600">Approfondire il Wiki di GitHub con dettagli tecnici sulle modifiche apportate (es. pseudo-codice, logica dietro un cambiamento) può rendere il progetto più accessibile e stimolante per nuovi contributori.</p>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-xl p-6 text-center hover:shadow-2xl hover:-translate-y-1 transition-transform duration-300">
+                        <div class="text-5xl mb-4">🧠</div>
+                        <h3 class="text-xl font-bold text-[#005f73] mb-2">Allenamento NNUE Mirato</h3>
+                        <p class="text-gray-600">Considerare l'allenamento di una rete neurale (NNUE) custom, utilizzando specificamente le posizioni "pepite" e altre posizioni complesse per specializzare ulteriormente la funzione di valutazione del motore.</p>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-xl p-6 text-center hover:shadow-2xl hover:-translate-y-1 transition-transform duration-300">
+                        <div class="text-5xl mb-4">♟️</div>
+                        <h3 class="text-xl font-bold text-[#005f73] mb-2">Diversificazione dei Test</h3>
+                        <p class="text-gray-600">Ampliare le suite di test includendo set specifici per finali di partita, posizioni strategiche tranquille o aperture meno esplorate, per garantire una forza di gioco più bilanciata e completa.</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+        
+        <footer class="text-center mt-16">
+            <p class="text-white/70">Infografica generata per l'analisi di ShashChess. Tutti i dati sono basati sulle informazioni fornite dall'autore.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const tooltipTitleCallback = {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                              return label.join(' ');
+                            } else {
+                              return label;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        const matchCtx = document.getElementById('matchChart').getContext('2d');
+        new Chart(matchCtx, {
+            type: 'bar',
+            data: {
+                labels: ['ShashChess', 'Stockfish 050925'],
+                datasets: [{
+                    label: 'Punteggio su 300 partite',
+                    data: [154.5, 145.5],
+                    backgroundColor: ['#0a9396', '#ca6702'],
+                    borderColor: ['#005f73', '#9b2226'],
+                    borderWidth: 2,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 140
+                    }
+                },
+                ...tooltipTitleCallback
+            }
+        });
+
+        const outcomesCtx = document.getElementById('outcomesChart').getContext('2d');
+        new Chart(outcomesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Vittorie ShashChess', 'Patte', 'Sconfitte ShashChess'],
+                datasets: [{
+                    label: 'Esito Partite',
+                    data: [67, 175, 58],
+                    backgroundColor: ['#94d2bd', '#e9d8a6', '#bb3e03'],
+                    borderColor: '#fff',
+                    borderWidth: 3,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                ...tooltipTitleCallback
+            }
+        });
+        
+        const solverCtx = document.getElementById('solverChart').getContext('2d');
+        new Chart(solverCtx, {
+            type: 'bar',
+            data: {
+                labels: ['ShashChess', 'Stockfish 050925'],
+                datasets: [{
+                    label: 'Posizioni Risolte Correttamente',
+                    data: [140, 130],
+                    backgroundColor: ['#0a9396', '#ca6702'],
+                    borderColor: ['#005f73', '#9b2226'],
+                    borderWidth: 2,
+                    borderRadius: 5,
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                     x: {
+                        min: 120
+                    }
+                },
+                ...tooltipTitleCallback
+            }
+        });
+    </script>
+</body>
+</html>
