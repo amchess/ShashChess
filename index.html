@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShashChess - Documentazione</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #005f73 0%, #0a9396 100%);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .btn {
+            padding: 16px 30px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .flag {
+            font-size: 1.5em;
+        }
+        .section-title {
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ShashChess</h1>
+        <p>Seleziona la documentazione nella tua lingua preferita</p>
+        
+        <div class="btn-container">
+            <a href="NovitaShashChess38.pdf" class="btn">
+                <span class="flag">🇮🇹</span> Documentazione Italiana
+            </a>
+            <a href="WhatsNewShashChess38.pdf" class="btn">
+                <span class="flag">🇬🇧</span> English Documentation
+            </a>
+        </div>
+
+        <div class="section-title">
+            <p>Analisi e contenuti aggiuntivi</p>
+        </div>
+        
+        <div class="btn-container">
+            <a href="webpages/AnalisiInfografica.html" class="btn">
+                📊 Analisi Infografica
+            </a>
+            <a href="webpages/shashchess.html" class="btn">
+                ♟️ Pagina ShashChess
+            </a>
+        </div>
+    </div>
+</body>
+</html>
