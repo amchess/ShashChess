@@ -1,5 +1,5 @@
 # Introduction
-
+ 
 ![ShashChess Logo](logo/ShashChess.bmp)
 
 ShashChess is a free UCI chess engine derived from Stockfish family chess engines.
