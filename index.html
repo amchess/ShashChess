@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShashChess - Documentazione</title>
+    <title>ShashChess - Documentazione Multilingue</title>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -23,25 +23,41 @@
             border-radius: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
+        .logo {
+            max-width: 200px;
+            margin: 0 auto 20px;
+            display: block;
+        }
         h1 {
-            font-size: 2.5em;
+            font-size: 2.8em;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
-        p {
-            font-size: 1.2em;
-            margin-bottom: 30px;
+        .subtitle {
+            font-size: 1.3em;
+            margin-bottom: 40px;
             opacity: 0.9;
         }
+        .language-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 25px 0;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        .language-card h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #e9d8a6;
+        }
         .btn-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            max-width: 500px;
-            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
         }
         .btn {
-            padding: 14px 25px;
+            padding: 16px 20px;
             background: rgba(255, 255, 255, 0.2);
             color: white;
             text-decoration: none;
@@ -52,100 +68,81 @@
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            gap: 12px;
+            gap: 15px;
             text-align: left;
         }
         .btn:hover {
             background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        .flag {
-            font-size: 1.5em;
-            min-width: 30px;
-        }
-        .section-title {
-            margin-top: 40px;
-            margin-bottom: 20px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .language-section {
-            margin-bottom: 30px;
-        }
-        .language-section h3 {
-            font-size: 1.5em;
-            margin-bottom: 15px;
-            color: #e9d8a6;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
         .btn-icon {
-            font-size: 1.2em;
-            min-width: 25px;
+            font-size: 1.4em;
+            min-width: 30px;
+        }
+        .flag {
+            font-size: 2em;
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>ShashChess</h1>
-        <p>Select your preferred language / Seleziona la tua lingua preferita</p>
+        <!-- Aggiungi il logo qui -->
+        <img src="logo/ShashChess.bmp" alt="ShashChess Logo" class="logo">
+        <h1>♛ ShashChess</h1>
+        <p class="subtitle">Select your language / Seleziona la tua lingua</p>
         
-        <div class="btn-container">
-            <a href="NovitaShashChess38.pdf" class="btn">
-                <span class="flag">🇮🇹</span> Documentazione Italiana (PDF)
-            </a>
-            <a href="WhatsNewShashChess38.pdf" class="btn">
-                <span class="flag">🇬🇧</span> English Documentation (PDF)
-            </a>
-        </div>
-
-        <div class="section-title">
-            <p>Contenuti multimediali / Multimedia content</p>
-        </div>
-        
-        <div class="language-section">
-            <h3>Italiano</h3>
+        <div class="language-card">
+            <h2><span class="flag">🇮🇹</span> Italiano</h2>
             <div class="btn-container">
                 <a href="https://youtu.be/IFTpavmNYLY" class="btn" target="_blank">
                     <span class="btn-icon">🎥</span> ShashChess l'IA ribelle (Video)
                 </a>
-                <a href="https://raw.githubusercontent.com/amchess/ShashChess/master/doc/MappaMentale.png" class="btn" target="_blank">
+                <a href="doc/MappaMentale.png" class="btn" target="_blank">
                     <span class="btn-icon">🧠</span> Mappa Mentale ShashChess
                 </a>
                 <a href="https://soundcloud.com/amchess/shashchess-la-fusione-tra" class="btn" target="_blank">
-                    <span class="btn-icon">🎧</span> ShashChess: La Fusione Tra Stockfish e la Teoria di Shashin (PodCast)
+                    <span class="btn-icon">🎧</span> Podcast: Fusione Stockfish e Teoria di Shashin
                 </a>
-                <a href="webpages/it/AnalisiInfografica.html" class="btn">
+                <a href="it/analisi.html" class="btn">
                     <span class="btn-icon">📊</span> Analisi Infografica
                 </a>
-                <a href="webpages/it/shashchess.html" class="btn">
-                    <span class="btn-icon">♟️</span> ShashChess
+                <a href="it/shashchess.html" class="btn">
+                    <span class="btn-icon">♟️</span> Pagina ShashChess
                 </a>
-                <a href="doc/it/Analisi%20Motore%20Scacchi%20ShashChess.pdf" class="btn">
-                    <span class="btn-icon">📄</span> Analisi Motore Scacchi ShashChess (PDF)
+                <a href="doc/Analisi%20Motore%20Scacchi%20ShashChess.pdf" class="btn">
+                    <span class="btn-icon">📄</span> Analisi Motore Scacchi (PDF)
+                </a>
+                <a href="it/index.html" class="btn" style="background: rgba(255,255,255,0.3);">
+                    <span class="btn-icon">🏠</span> Portale Italiano Completo
                 </a>
             </div>
         </div>
 
-        <div class="language-section">
-            <h3>English</h3>
+        <div class="language-card">
+            <h2><span class="flag">🇬🇧</span> English</h2>
             <div class="btn-container">
                 <a href="https://youtu.be/WprDDolBeEI" class="btn" target="_blank">
                     <span class="btn-icon">🎥</span> The Physicist Chess Engine (Video)
                 </a>
-                <a href="https://raw.githubusercontent.com/amchess/ShashChess/master/doc/ShashChessMap.png" class="btn" target="_blank">
+                <a href="doc/ShashChessMap.png" class="btn" target="_blank">
                     <span class="btn-icon">🧠</span> ShashChess Mind Map
                 </a>
                 <a href="https://soundcloud.com/amchess/giving-ai-a-chess-soul" class="btn" target="_blank">
-                    <span class="btn-icon">🎧</span> Giving AI a Chess Soul (PodCast)
+                    <span class="btn-icon">🎧</span> Podcast: Giving AI a Chess Soul
                 </a>
-                <a href="webpages/en/infographicen.html" class="btn">
+                <a href="en/analysis.html" class="btn">
                     <span class="btn-icon">📊</span> Infographic Analysis
                 </a>
-                <a href="webpages/en/shashchessen.html" class="btn">
-                    <span class="btn-icon">♟️</span> ShashChess
+                <a href="en/shashchess.html" class="btn">
+                    <span class="btn-icon">♟️</span> ShashChess Page
                 </a>
-                <a href="doc/en/EngineAnalysisandImprovementSuggestions.pdf" class="btn">
-                    <span class="btn-icon">📄</span> Engine Analysis and Improvement Suggestions (PDF)
+                <a href="doc/EngineAnalysisandImprovementSuggestions.pdf" class="btn">
+                    <span class="btn-icon">📄</span> Engine Analysis (PDF)
+                </a>
+                <a href="en/index.html" class="btn" style="background: rgba(255,255,255,0.3);">
+                    <span class="btn-icon">🏠</span> Complete English Portal
                 </a>
             </div>
         </div>
