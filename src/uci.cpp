@@ -194,8 +194,6 @@ void UCIEngine::loop() {
             engine.flip();
         else if (token == "mirror")
             engine.mirror();
-        else if (token == "mirror")
-            engine.mirror();
         else if (token == "bench")
             bench(is);
         else if (token == BenchmarkCommand)
