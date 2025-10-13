@@ -488,6 +488,7 @@ OptionsMap&       Engine::get_options() { return options; }
 std::string Engine::fen() const { return pos.fen(); }
 
 void Engine::flip() { pos.flip(); }
+void Engine::mirror() { pos.mirror(); }
 void Engine::show_moves_bookMan(const Position& position) {
     bookMan.show_moves(position, options);
 }  //book management
