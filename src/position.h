@@ -165,6 +165,7 @@ class Position {
     // Position consistency check, for debugging
     bool pos_is_ok() const;
     void flip();
+    void mirror();
 
     StateInfo* state() const;
 
