@@ -106,6 +106,7 @@ class Engine {
 
     std::string fen() const;
     void        flip();
+    void        mirror();
     std::string visualize() const;
     void        show_moves_bookMan(const Position& position);  //book management
     std::vector<std::pair<size_t, size_t>> get_bound_thread_count_by_numa_node() const;
