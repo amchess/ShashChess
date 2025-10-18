@@ -479,7 +479,8 @@ void Engine::trace_eval() const {
 
     verify_networks();
 
-    sync_cout << "\n" << Eval::trace(p, *networks) << sync_endl;
+    // Passa l'opzione UCI_ShowWDL alla funzione trace
+    sync_cout << "\n" << Eval::trace(p, *networks, options["UCI_ShowWDL"]) << sync_endl;
 }
 
 const OptionsMap& Engine::get_options() const { return options; }

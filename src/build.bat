@@ -5,5 +5,5 @@ REM make -j profile-build
 mingw32-make build COMP=mingw -j %Number_Of_Processors%
 strip shashchess.exe
 ren shashchess.exe ShashChessBuilt.exe
-make clean
+mingw32-make clean
 pause

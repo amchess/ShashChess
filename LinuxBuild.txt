@@ -20,3 +20,4 @@ Replace
 LDFLAGS += -lcurl -lws2_32 $(EXTRALDFLAGS)
 with
 LDFLAGS += -lcurl $(EXTRALDFLAGS)
+
