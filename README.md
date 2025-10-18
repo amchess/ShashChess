@@ -1,5 +1,5 @@
 # Introduction
- 
+
 ![ShashChess Logo](logo/ShashChess.bmp)
 
 ShashChess is a free UCI chess engine derived from Stockfish family chess engines.
@@ -378,6 +378,56 @@ Stockfish community
 
 
 Sorry If I forgot someone.
+
+# ShashChess vs Stockfish Evaluation Trace Comparison
+
+## Detailed Structure Analysis
+
+| Section | Component | ShashChess Implementation | Stockfish Implementation | Human-Player Focus |
+|---------|-----------|---------------------------|--------------------------|-------------------|
+| **1. Core Evaluation** | Basic NNUE Evaluation | Enhanced with additional analysis layers | Standard NNUE evaluation | **ShashChess adds explanatory notes about technical accuracy** |
+| | Value Conversion | Always converts to White's perspective for consistency | Converts to White's perspective | **Explicitly states perspective for clarity** |
+| **2. WDL & Probability** | Win Probability | Detailed calculation with Shashin zones | Not implemented | **Critical for human decision-making** |
+| | WDL Model | Full Win/Draw/Loss percentages | Not implemented | **Helps humans assess practical chances** |
+| | Shashin Zones | 12 distinct positional classifications | Not implemented | **Classifies position type for strategic planning** |
+| **3. Piece Analysis** | Piece Activity | Horizontal ranking (worst to best) | Not implemented | **Identifies poorly placed pieces (Makogonov Principle)** |
+| | Activity Metrics | Multiple factors: attacks, center control, king proximity | Not implemented | **Helps humans understand piece quality** |
+| | Worst Unit Identification | Explicitly marks least active pieces | Not implemented | **Direct guidance for improvement** |
+| **4. Move Analysis** | Legal Moves Ordering | By win probability + evaluation | Not implemented | **Shows best practical moves first** |
+| | Move Information | Centipawn + win percentage for each move | Not implemented | **Quantifies move quality in human terms** |
+| | Static Activity Focus | Current position analysis | Not implemented | **Immediate actionable information** |
+| **5. Output Structure** | Section Headers | Clear thematic sections ("SHASHIN STATIC ANALYSIS") | Basic evaluation output | **Organized for easy human consumption** |
+| | Explanatory Notes | Technical accuracy disclaimers | Minimal explanations | **Helps non-engineers understand output** |
+| | Visual Formatting | Horizontal lists, clear markings | Traditional vertical format | **Easier to scan and comprehend** |
+
+## Key Human-Oriented Features in ShashChess
+
+### 1. **Strategic Position Classification**
+- **Shashin Zones**: 12 distinct classifications from "High Petrosian" to "High Tal"
+- **Benefit**: Players instantly understand position type and appropriate strategic plans
+
+### 2. **Piece Improvement Guidance**
+- **Makogonov Principle**: Identifies worst-placed pieces needing activation
+- **Benefit**: Directs human attention to specific pieces that need improvement
+
+### 3. **Practical Move Selection**
+- **Win Probability Ordering**: Moves sorted by practical winning chances
+- **Benefit**: Shows which moves actually improve real-game results
+
+### 4. **Probability-Based Decision Making**
+- **WDL Model**: Converts abstract evaluations to win/draw/loss percentages
+- **Benefit**: Players understand real-game implications of positions
+
+## Technical Comparison Summary
+
+| Aspect | ShashChess | Stockfish |
+|--------|------------|-----------|
+| **Analysis Depth** | Multi-layered human-oriented analysis | Single-layer technical evaluation |
+| **Output Focus** | Educational and practical guidance | Engine diagnostic and development |
+| **Information Type** | Strategic insights + quantitative data | Pure quantitative evaluation |
+| **User Experience** | Organized, explanatory, actionable | Minimal, technical, raw data |
+
+**ShashChess Advantage**: Transforms engine analysis from technical data into actionable chess intelligence that directly supports human learning and decision-making.
 
 <h1 align="center">Stockfish NNUE</h1>
 
