@@ -344,7 +344,7 @@ Qg7 {[%eval 819,27] [%emt 0:00:09]} 74. Be6 {[%eval 992,27] [%emt 0:00:13]} 1-0
 [EventType "tourn"]
 [SourceTitle "Fritz Engine Tournament"]
 
-{Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz 3398 MHz W=39.1 plies; 8 047kN/s;
+{Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz 3398 MHz W=40 plies; 8 047kN/s;
 62 709 TBAs B=35.9 plies; 8 634kN/s; 1 461 953 TBAs} 1. d4 d5 2. c4 e6 3. Nf3
 Nf6 4. Nc3 c6 5. Bg5 h6 6. Bxf6 Qxf6 7. e3 Nd7 8. a3 {[%eval 40,33] [%emt 0:01:
 28]} g6 {[%eval -28,31] [%emt 0:01:21] (Qd8)} 9. Qc2 {[%eval 0,30] [%emt 0:01:

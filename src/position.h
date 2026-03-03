@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,10 +19,12 @@
 #ifndef POSITION_H_INCLUDED
 #define POSITION_H_INCLUDED
 
+#include <array>
 #include <cassert>
 #include <deque>
 #include <iosfwd>
 #include <memory>
+#include <new>
 #include <string>
 
 #include "bitboard.h"
@@ -30,9 +32,9 @@
 #include "movegen.h"  //shashin
 
 namespace ShashChess {
-//learning begin
 extern void setStartPoint();
 //learning end
+struct SharedHistories;
 class TranspositionTable;
 
 // StateInfo struct stores information needed to restore a Position object to
@@ -94,10 +96,11 @@ class Position {
     Bitboard pieces(PieceTypes... pts) const;
     Bitboard pieces(Color c) const;
     template<typename... PieceTypes>
-    Bitboard pieces(Color c, PieceTypes... pts) const;
-    Piece    piece_on(Square s) const;
-    Square   ep_square() const;
-    bool     empty(Square s) const;
+    Bitboard                            pieces(Color c, PieceTypes... pts) const;
+    Piece                               piece_on(Square s) const;
+    const std::array<Piece, SQUARE_NB>& piece_array() const;
+    Square                              ep_square() const;
+    bool                                empty(Square s) const;
     template<PieceType Pt>
     int count(Color c) const;
     template<PieceType Pt>
@@ -134,11 +137,17 @@ class Position {
     Piece captured_piece() const;
 
     // Doing and undoing moves
-    void       do_move(Move m, StateInfo& newSt, const TranspositionTable* tt);
-    DirtyPiece do_move(Move m, StateInfo& newSt, bool givesCheck, const TranspositionTable* tt);
-    void       undo_move(Move m);
-    void       do_null_move(StateInfo& newSt, const TranspositionTable& tt);
-    void       undo_null_move();
+    void do_move(Move m, StateInfo& newSt, const TranspositionTable* tt);
+    void do_move(Move                      m,
+                 StateInfo&                newSt,
+                 bool                      givesCheck,
+                 DirtyPiece&               dp,
+                 DirtyThreats&             dts,
+                 const TranspositionTable* tt,
+                 const SharedHistories*    worker);
+    void undo_move(Move m);
+    void do_null_move(StateInfo& newSt, const TranspositionTable& tt);
+    void undo_null_move();
 
     // Static Exchange Evaluation
     bool see_ge(Move m, int threshold = 0) const;
@@ -164,43 +173,56 @@ class Position {
 
     // Position consistency check, for debugging
     bool pos_is_ok() const;
+    bool material_key_is_ok() const;
     void flip();
 
     StateInfo* state() const;
 
-    void put_piece(Piece pc, Square s);
-    void remove_piece(Square s);
+    void put_piece(Piece pc, Square s, DirtyThreats* const dts = nullptr);
+    void remove_piece(Square s, DirtyThreats* const dts = nullptr);
+    void swap_piece(Square s, Piece pc, DirtyThreats* const dts = nullptr);
 
    private:
     // Initialization helpers (used while setting up a position)
     void set_castling_right(Color c, Square rfrom);
+    Key  compute_material_key() const;
     void set_state() const;
     void set_check_info() const;
 
     // Other helpers
-    void move_piece(Square from, Square to);
+    template<bool PutPiece, bool ComputeRay = true>
+    void update_piece_threats(Piece               pc,
+                              Square              s,
+                              DirtyThreats* const dts,
+                              Bitboard            noRaysContaining = -1ULL) const;
+    void move_piece(Square from, Square to, DirtyThreats* const dts = nullptr);
     template<bool Do>
-    void do_castling(Color             us,
-                     Square            from,
-                     Square&           to,
-                     Square&           rfrom,
-                     Square&           rto,
-                     DirtyPiece* const dp = nullptr);
+    void do_castling(Color               us,
+                     Square              from,
+                     Square&             to,
+                     Square&             rfrom,
+                     Square&             rto,
+                     DirtyThreats* const dts = nullptr,
+                     DirtyPiece* const   dp  = nullptr);
     Key  adjust_key50(Key k) const;
 
     // Data members
-    Piece      board[SQUARE_NB];
-    Bitboard   byTypeBB[PIECE_TYPE_NB];
-    Bitboard   byColorBB[COLOR_NB];
-    int        pieceCount[PIECE_NB];
-    int        castlingRightsMask[SQUARE_NB];
-    Square     castlingRookSquare[CASTLING_RIGHT_NB];
-    Bitboard   castlingPath[CASTLING_RIGHT_NB];
-    StateInfo* st;
-    int        gamePly;
-    Color      sideToMove;
-    bool       chess960;
+    std::array<Piece, SQUARE_NB>        board;
+    std::array<Bitboard, PIECE_TYPE_NB> byTypeBB;
+    std::array<Bitboard, COLOR_NB>      byColorBB;
+
+    int          pieceCount[PIECE_NB];
+    int          castlingRightsMask[SQUARE_NB];
+    Square       castlingRookSquare[CASTLING_RIGHT_NB];
+    Bitboard     castlingPath[CASTLING_RIGHT_NB];
+    StateInfo*   st;
+    int          gamePly;
+    Color        sideToMove;
+    bool         chess960;
+    DirtyPiece   scratch_dp;
+    DirtyThreats scratch_dts;
 };
+
 extern void   putQLearningTrajectoryIntoLearningTable();  //learning
 std::ostream& operator<<(std::ostream& os, const Position& pos);
 
@@ -210,6 +232,8 @@ inline Piece Position::piece_on(Square s) const {
     assert(is_ok(s));
     return board[s];
 }
+
+inline const std::array<Piece, SQUARE_NB>& Position::piece_array() const { return board; }
 
 inline bool Position::empty(Square s) const { return piece_on(s) == NO_PIECE; }
 
@@ -326,18 +350,24 @@ inline bool Position::capture_stage(Move m) const {
 
 inline Piece Position::captured_piece() const { return st->capturedPiece; }
 
-inline void Position::put_piece(Piece pc, Square s) {
+inline void Position::put_piece(Piece pc, Square s, DirtyThreats* const dts) {
 
     board[s] = pc;
     byTypeBB[ALL_PIECES] |= byTypeBB[type_of(pc)] |= s;
     byColorBB[color_of(pc)] |= s;
     pieceCount[pc]++;
     pieceCount[make_piece(color_of(pc), ALL_PIECES)]++;
+
+    if (dts)
+        update_piece_threats<true>(pc, s, dts);
 }
 
-inline void Position::remove_piece(Square s) {
-
+inline void Position::remove_piece(Square s, DirtyThreats* const dts) {
     Piece pc = board[s];
+
+    if (dts)
+        update_piece_threats<false>(pc, s, dts);
+
     byTypeBB[ALL_PIECES] ^= s;
     byTypeBB[type_of(pc)] ^= s;
     byColorBB[color_of(pc)] ^= s;
@@ -346,19 +376,41 @@ inline void Position::remove_piece(Square s) {
     pieceCount[make_piece(color_of(pc), ALL_PIECES)]--;
 }
 
-inline void Position::move_piece(Square from, Square to) {
+inline void Position::move_piece(Square from, Square to, DirtyThreats* const dts) {
 
     Piece    pc     = board[from];
     Bitboard fromTo = from | to;
+
+    if (dts)
+        update_piece_threats<false>(pc, from, dts, fromTo);
+
     byTypeBB[ALL_PIECES] ^= fromTo;
     byTypeBB[type_of(pc)] ^= fromTo;
     byColorBB[color_of(pc)] ^= fromTo;
     board[from] = NO_PIECE;
     board[to]   = pc;
+
+    if (dts)
+        update_piece_threats<true>(pc, to, dts, fromTo);
+}
+
+inline void Position::swap_piece(Square s, Piece pc, DirtyThreats* const dts) {
+    Piece old = board[s];
+
+    remove_piece(s);
+
+    if (dts)
+        update_piece_threats<false, false>(old, s, dts);
+
+    put_piece(pc, s);
+
+    if (dts)
+        update_piece_threats<true, false>(pc, s, dts);
 }
 
 inline void Position::do_move(Move m, StateInfo& newSt, const TranspositionTable* tt = nullptr) {
-    do_move(m, newSt, gives_check(m), tt);
+    new (&scratch_dts) DirtyThreats;
+    do_move(m, newSt, gives_check(m), scratch_dp, scratch_dts, tt, nullptr);
 }
 
 inline StateInfo* Position::state() const { return st; }

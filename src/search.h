@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <map>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -36,6 +37,7 @@
 #include "nnue/network.h"
 #include "nnue/nnue_accumulator.h"
 #include "numa.h"
+#include "position.h"
 #include "score.h"
 #include "syzygy/tbprobe.h"
 #include "timeman.h"
@@ -146,26 +148,29 @@ struct LimitsType {
 // This struct is used to easily forward data to the Search::Worker class.
 struct SharedState {
     //from Polyfish begin
-    SharedState(BookManager&                                    bm,
-                const OptionsMap&                               optionsMap,
-                ThreadPool&                                     threadPool,
-                TranspositionTable&                             transpositionTable,
-                const LazyNumaReplicated<Eval::NNUE::Networks>& nets,
-                const ShashChess::ShashinConfig&                shCfg) :  //Shashin
+    SharedState(BookManager&                                              bm,
+                const OptionsMap&                                         optionsMap,
+                ThreadPool&                                               threadPool,
+                TranspositionTable&                                       transpositionTable,
+                std::map<NumaIndex, SharedHistories>&                     sharedHists,
+                const LazyNumaReplicatedSystemWide<Eval::NNUE::Networks>& nets,
+                const ShashChess::ShashinConfig&                          shCfg) :  //Shashin
         bookMan(bm),
         options(optionsMap),
         threads(threadPool),
         tt(transpositionTable),
+        sharedHistories(sharedHists),
         networks(nets),
         shashinConfig(shCfg) {}  //shashin
 
     BookManager& bookMan;
     //from Polyfish end
-    const OptionsMap&                               options;
-    ThreadPool&                                     threads;
-    TranspositionTable&                             tt;
-    const LazyNumaReplicated<Eval::NNUE::Networks>& networks;
-    const ShashChess::ShashinConfig                 shashinConfig;  //Shashin
+    const OptionsMap&                                         options;
+    ThreadPool&                                               threads;
+    TranspositionTable&                                       tt;
+    std::map<NumaIndex, SharedHistories>&                     sharedHistories;
+    const LazyNumaReplicatedSystemWide<Eval::NNUE::Networks>& networks;
+    const ShashChess::ShashinConfig                           shashinConfig;  //Shashin
 };
 
 class Worker;
@@ -259,7 +264,12 @@ class NullSearchManager: public ISearchManager {
 class Worker {
    public:
     size_t threadIdx;  //mcts
-    Worker(SharedState&, std::unique_ptr<ISearchManager>, size_t, NumaReplicatedAccessToken);
+    Worker(SharedState&,
+           std::unique_ptr<ISearchManager>,
+           size_t,
+           size_t,
+           size_t,
+           NumaReplicatedAccessToken);
     ~Worker();  //shashin
     // Called at instantiation to initialize reductions tables.
     // Reset histories, usually before a new game.
@@ -281,20 +291,17 @@ class Worker {
     ButterflyHistory mainHistory;
     LowPlyHistory    lowPlyHistory;
 
-    CapturePieceToHistory captureHistory;
-    ContinuationHistory   continuationHistory[2][2];
-    PawnHistory           pawnHistory;
-
-    CorrectionHistory<Pawn>         pawnCorrectionHistory;
-    CorrectionHistory<Minor>        minorPieceCorrectionHistory;
-    CorrectionHistory<NonPawn>      nonPawnCorrectionHistory;
+    CapturePieceToHistory           captureHistory;
+    ContinuationHistory             continuationHistory[2][2];
     CorrectionHistory<Continuation> continuationCorrectionHistory;
-    TTMoveHistory                   ttMoveHistory;
-    RootMoves                       rootMoves;                          //mcts
-    Depth                           completedDepth;                     //mcts
-    bool                            nmpGuard = false, nmpSide = false;  //from Crystal-shashin
-    ShashinManager&                 getShashinManager();                //from crystal-Shashin
-    int                             lastShashinUpdatedDepth = 0;        //from shashin
+
+    TTMoveHistory    ttMoveHistory;
+    SharedHistories& sharedHistory;
+    RootMoves        rootMoves;                          //mcts
+    Depth            completedDepth;                     //mcts
+    bool             nmpGuard = false, nmpSide = false;  //from Crystal-shashin
+    ShashinManager&  getShashinManager();                //from crystal-Shashin
+    int              lastShashinUpdatedDepth = 0;        //from shashin
 
    private:
     void iterative_deepening();
@@ -302,7 +309,7 @@ class Worker {
     void do_move(Position& pos, const Move move, StateInfo& st, Stack* const ss);
     void
     do_move(Position& pos, const Move move, StateInfo& st, const bool givesCheck, Stack* const ss);
-    void do_null_move(Position& pos, StateInfo& st);
+    void do_null_move(Position& pos, StateInfo& st, Stack* const ss);
     void undo_move(Position& pos, const Move move);
     void undo_null_move(Position& pos);
 
@@ -341,7 +348,8 @@ class Worker {
     Depth rootDepth;  //mcts
     Value rootDelta;
 
-    //for mcts
+    size_t numaThreadIdx, numaTotal;  //for mcts
+
     bool                      fullSearch = false;  //full threads patch
     NumaReplicatedAccessToken numaAccessToken;
 
@@ -356,10 +364,10 @@ class Worker {
     //From PolyFish begin
     BookManager& bookMan;
     //From PolyFish end
-    const OptionsMap&                               options;
-    ThreadPool&                                     threads;
-    TranspositionTable&                             tt;
-    const LazyNumaReplicated<Eval::NNUE::Networks>& networks;
+    const OptionsMap&                                         options;
+    ThreadPool&                                               threads;
+    TranspositionTable&                                       tt;
+    const LazyNumaReplicatedSystemWide<Eval::NNUE::Networks>& networks;
 
     // Used by NNUE
     Eval::NNUE::AccumulatorStack  accumulatorStack;

@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Glaurung 2.1
-  Copyright (C) 2004-2025 The ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,59 +28,42 @@
 namespace ShashChess::Eval::NNUE::Features {
 
 // Index of a feature for a given king position and another piece on some square
-template<Color Perspective>
-inline IndexType HalfKAv2_hm::make_index(Square s, Piece pc, Square ksq) {
-    return IndexType((int(s) ^ OrientTBL[Perspective][ksq]) + PieceSquareIndex[Perspective][pc]
-                     + KingBuckets[Perspective][ksq]);
+
+IndexType HalfKAv2_hm::make_index(Color perspective, Square s, Piece pc, Square ksq) {
+    const IndexType flip = 56 * perspective;
+    return (IndexType(s) ^ OrientTBL[ksq] ^ flip) + PieceSquareIndex[perspective][pc]
+         + KingBuckets[int(ksq) ^ flip];
 }
 
 // Get a list of indices for active features
-template<Color Perspective>
-void HalfKAv2_hm::append_active_indices(const Position& pos, IndexList& active) {
-    Square   ksq = pos.square<KING>(Perspective);
+void HalfKAv2_hm::append_active_indices(Color perspective, const Position& pos, IndexList& active) {
+    Square   ksq = pos.square<KING>(perspective);
     Bitboard bb  = pos.pieces();
     while (bb)
     {
         Square s = pop_lsb(bb);
-        active.push_back(make_index<Perspective>(s, pos.piece_on(s), ksq));
+        active.push_back(make_index(perspective, s, pos.piece_on(s), ksq));
     }
 }
 
-// Explicit template instantiations
-template void HalfKAv2_hm::append_active_indices<WHITE>(const Position& pos, IndexList& active);
-template void HalfKAv2_hm::append_active_indices<BLACK>(const Position& pos, IndexList& active);
-template IndexType HalfKAv2_hm::make_index<WHITE>(Square s, Piece pc, Square ksq);
-template IndexType HalfKAv2_hm::make_index<BLACK>(Square s, Piece pc, Square ksq);
-
 // Get a list of indices for recently changed features
-template<Color Perspective>
-void HalfKAv2_hm::append_changed_indices(Square            ksq,
-                                         const DirtyPiece& dp,
-                                         IndexList&        removed,
-                                         IndexList&        added) {
-    removed.push_back(make_index<Perspective>(dp.from, dp.pc, ksq));
-    if (dp.to != SQ_NONE)
-        added.push_back(make_index<Perspective>(dp.to, dp.pc, ksq));
 
-    if (dp.remove_sq != SQ_NONE)
-        removed.push_back(make_index<Perspective>(dp.remove_sq, dp.remove_pc, ksq));
+void HalfKAv2_hm::append_changed_indices(
+  Color perspective, Square ksq, const DiffType& diff, IndexList& removed, IndexList& added) {
+    removed.push_back(make_index(perspective, diff.from, diff.pc, ksq));
+    if (diff.to != SQ_NONE)
+        added.push_back(make_index(perspective, diff.to, diff.pc, ksq));
 
-    if (dp.add_sq != SQ_NONE)
-        added.push_back(make_index<Perspective>(dp.add_sq, dp.add_pc, ksq));
+    if (diff.remove_sq != SQ_NONE)
+        removed.push_back(make_index(perspective, diff.remove_sq, diff.remove_pc, ksq));
+
+    if (diff.add_sq != SQ_NONE)
+        added.push_back(make_index(perspective, diff.add_sq, diff.add_pc, ksq));
 }
 
-// Explicit template instantiations
-template void HalfKAv2_hm::append_changed_indices<WHITE>(Square            ksq,
-                                                         const DirtyPiece& dp,
-                                                         IndexList&        removed,
-                                                         IndexList&        added);
-template void HalfKAv2_hm::append_changed_indices<BLACK>(Square            ksq,
-                                                         const DirtyPiece& dp,
-                                                         IndexList&        removed,
-                                                         IndexList&        added);
 
-bool HalfKAv2_hm::requires_refresh(const DirtyPiece& dirtyPiece, Color perspective) {
-    return dirtyPiece.pc == make_piece(perspective, KING);
+bool HalfKAv2_hm::requires_refresh(const DiffType& diff, Color perspective) {
+    return diff.pc == make_piece(perspective, KING);
 }
 
 }  // namespace ShashChess::Eval::NNUE::Features

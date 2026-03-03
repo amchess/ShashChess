@@ -355,6 +355,49 @@ Strategical algorithm (for quiescent positions)
 
 Defense position/algorithm (the "reversed colors" Tal)
 
+### GoldDigger Mode – The Ultimate Tactical Solver
+
+The **GoldDigger** variant of Alexander is a specialized compilation designed for one purpose: **maximum tactical depth**. By applying a set of aggressive modifications to the search algorithm, GoldDigger explores significantly deeper variations in critical positions, making it an ideal tool for solving complex tactical puzzles, analyzing sharp openings, or studying sacrificial combinations.
+
+#### How it works
+
+GoldDigger modifies key heuristics of the search to prioritize depth over breadth:
+
+- **Null Move Pruning** is drastically reduced or disabled in positions with even a hint of tactical potential (king danger, sacrifices, high mobility).
+- **Late Move Reductions (LMR)** are softened, allowing the engine to search deeper into quiet moves that might hide decisive tactics.
+- **Pruning heuristics** like Razoring, Futility, and ProbCut are made more permissive, ensuring that speculative moves are not discarded too early.
+- **Move ordering** is biased toward checks, captures, and moves to safe squares, helping the engine find the "gold" faster.
+
+The result is an engine that **solves 206 out of 325 tactical positions** in our benchmark suite, compared to 183 for Stockfish 18 and 200 for the standard Alexander. However, this comes at a slight cost in match play (−3 Elo vs. Stockfish 18 over 300 games). GoldDigger is therefore not recommended for pure match play, but it is the perfect companion for analysis, puzzle solving, and correspondence chess.
+
+#### When to use GoldDigger
+
+| Use Case                          | Recommendation                  |
+|-----------------------------------|---------------------------------|
+| Match play (engine vs. engine)    | Use the standard ShashChess build |
+| Analysis of sharp, tactical positions | GoldDigger shines here          |
+| Solving chess puzzles             | GoldDigger is the best choice   |
+| Correspondence chess              | GoldDigger can help find deep resources |
+| Opening preparation               | GoldDigger may uncover hidden novelties |
+
+#### Performance Summary
+
+| Metric                          | Standard ShashChess | GoldDigger ShashChess |
+|---------------------------------|-------------------|----------------------|
+| Solved positions (out of 325)   | 200               | **206**              |
+| Match result vs. Stockfish 18   | +14 Elo (52.0%)   | −3 Elo (49.5%)       |
+| Average time per position (ms)  | 3218              | 2913                 |
+| Nodes searched (millions)       | 3.49              | 2.99                 |
+| Nodes per second                | 1,084,800         | 1,027,626            |
+
+#### Compiling GoldDigger
+
+To build the GoldDigger variant, simply add the `GOLD_DIGGER` macro during compilation:
+
+```bash
+make build ARCH=x86-64-modern EXTRACXXFLAGS="-DGOLD_DIGGER"
+```
+
 ## Acknowledgments
 
 - Kozlov Sergey Aleksandrovitsch for his very interesting patch and code on Sugar engine

@@ -1022,7 +1022,7 @@ Kg3 {[%eval 808,21] [%emt 0:00:20]} Be4 {[%eval 697,19] [%emt 0:00:11] (Tb2)}
 [EventType "tourn"]
 [SourceTitle "Fritz Engine Tournament"]
 
-{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=39.1 plies; 5.018kN/s;
+{Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=40 plies; 5.018kN/s;
 583.037 TBAs B=36.7 plies; 5.071kN/s; 706.561 TBAs} 1. d4 d5 2. Nf3 Nf6 3. e3
 e6 4. Bd3 Bd6 5. O-O O-O 6. Nbd2 c6 7. Re1 Qc7 8. e4 dxe4 9. Nxe4 Be7 10. Nxf6+
 {[%eval 169,31] [%emt 0:00:43]} Bxf6 {[%eval 146,34] [%emt 0:00:40]} 11. Ng5 {

@@ -39,7 +39,7 @@ jobs:
             comp: ndk
             run_armv7_tests: true
             shell: bash
-          # Currently segfaults in the CI unrelated to a ShashChess change.
+          # Currently segfaults in the CI unrelated to a Stockfish change.
           # - name: Linux GCC riscv64
           #   os: ubuntu-22.04
           #   compiler: g++

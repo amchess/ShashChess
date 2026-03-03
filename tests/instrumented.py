@@ -141,7 +141,7 @@ class TestCLI(metaclass=OrderedClassMembers):
 
     def test_bench_128_threads_3_bench_tmp_epd_depth(self):
         self.shashchess = ShashChess(
-            f"bench 128 {get_threads()} 3 {os.path.join(PATH,'bench_tmp.epd')} depth".split(
+            f"bench 128 {get_threads()} 3 {os.path.join(PATH, 'bench_tmp.epd')} depth".split(
                 " "
             ),
             True,
@@ -167,7 +167,7 @@ class TestCLI(metaclass=OrderedClassMembers):
     def test_export_net_verify_nnue(self):
         current_path = os.path.abspath(os.getcwd())
         self.shashchess = ShashChess(
-            f"export_net {os.path.join(current_path , 'verify.nnue')}".split(" "), True
+            f"export_net {os.path.join(current_path, 'verify.nnue')}".split(" "), True
         )
         assert self.shashchess.process.returncode == 0
 
@@ -254,7 +254,7 @@ class TestInteractive(metaclass=OrderedClassMembers):
         self.shashchess.send_command("go depth 5")
 
         def callback(output):
-            regex = r"info depth \d+ seldepth \d+ multipv \d+ score cp \d+ nodes \d+ nps \d+ hashfull \d+ tbhits \d+ time \d+ pv"
+            regex = r"info depth \d+ seldepth \d+ multipv \d+ score cp -?\d+ nodes \d+ nps \d+ hashfull \d+ tbhits \d+ time \d+ pv"
             if output.startswith("info depth") and not re.match(regex, output):
                 assert False
             if output.startswith("bestmove"):
@@ -274,7 +274,7 @@ class TestInteractive(metaclass=OrderedClassMembers):
         def callback(output):
             nonlocal depth
 
-            regex = rf"info depth {depth} seldepth \d+ multipv \d+ score cp \d+ wdl \d+ \d+ \d+ nodes \d+ nps \d+ hashfull \d+ tbhits \d+ time \d+ pv"
+            regex = rf"info depth {depth} seldepth \d+ multipv \d+ score cp -?\d+ wdl \d+ \d+ \d+ nodes \d+ nps \d+ hashfull \d+ tbhits \d+ time \d+ pv"
 
             if output.startswith("info depth"):
                 if not re.match(regex, output):
@@ -390,7 +390,7 @@ class TestInteractive(metaclass=OrderedClassMembers):
     def test_verify_nnue_network(self):
         current_path = os.path.abspath(os.getcwd())
         ShashChess(
-            f"export_net {os.path.join(current_path , 'verify.nnue')}".split(" "), True
+            f"export_net {os.path.join(current_path, 'verify.nnue')}".split(" "), True
         )
 
         self.shashchess.send_command("setoption name EvalFile value verify.nnue")
@@ -469,7 +469,7 @@ class TestSyzygy(metaclass=OrderedClassMembers):
         self.shashchess.send_command("go depth 5")
 
         def check_output(output):
-            if "score cp -20000" in output or "score mate" in output:
+            if "score cp -20000" in output or "score mate -" in output:
                 return True
 
         self.shashchess.check_output(check_output)
@@ -508,7 +508,7 @@ if __name__ == "__main__":
 
     framework = MiniTestFramework()
 
-    # Each test suite will be ran inside a temporary directory
+    # Each test suite will be run inside a temporary directory
     framework.run([TestCLI, TestInteractive, TestSyzygy])
 
     EPD.delete_bench_epd()

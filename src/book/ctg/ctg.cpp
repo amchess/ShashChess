@@ -444,13 +444,19 @@ void CtgBook::decode_board(const Position& pos, CtgPositionData& positionData) c
 
     //Loop Ranks and Files from Rank 8 to Rank 1, and from File A to File H
     size_t index = 0;
-    for (Rank r = RANK_8; r >= RANK_1; --r)
+
+    // CORREZIONE: Usa un ciclo senza condizione di stop nell'intestazione
+    // e un break manuale alla fine per evitare l'underflow di unsigned Rank.
+    for (Rank r = RANK_8;; --r)
     {
         for (File f = FILE_A; f <= FILE_H; ++f)
         {
             Piece p                     = pos.piece_on(make_square(f, r));
             positionData.board[index++] = PieceToChar[p];
         }
+
+        if (r == RANK_1)
+            break;
     }
 }
 

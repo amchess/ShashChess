@@ -1,0 +1,57 @@
+{
+  "engines": [
+    {
+      "name": "Stockfish",
+      "executable": "engines/StockfishDev-native.exe",
+      "protocol": "uci",
+	  "concurrency": 4,
+      "options": {
+        "Hash": 512,
+        "Threads": 1,
+        "UCI_ShowWDL": "true"
+      },
+      "analysis_limits": {
+        "type": "movetime",
+        "value": 60000
+      },
+      "time_adjustment": {
+        "k_factor": 0.2,
+        "floor": 0.5,
+        "time_scaling": 1.0
+      }       
+    },
+    {
+      "name": "ShashChess",
+      "executable": "engines/ShashChessDev-native.exe",
+      "protocol": "uci",
+	  "concurrency": 4,
+      "options": {
+        "Hash": 512,
+        "Threads": 1,
+        "UCI_ShowWDL": "true"
+      },
+      "analysis_limits": {
+        "type": "movetime",
+        "value": 60000
+      },
+      "time_adjustment": {
+        "k_factor": 0.2,
+        "floor": 0.5,
+        "time_scaling": 1.0
+      } 
+    }   
+  ],
+  "time_controls": {
+    "opening_base_time": 5.0,
+    "middlegame_base_time": 8.0,
+    "endgame_base_time": 15.0,
+    "points_scaling_factor": 0.5
+  },
+  "classification": {
+    "reference_engine": "Stockfish",
+    "limits": {
+      "type": "movetime",
+      "value": 60000
+    }
+  }
+}

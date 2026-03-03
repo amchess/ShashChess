@@ -446,7 +446,7 @@ Bd6+ {[%eval 240,23] [%emt 0:00:07]} Kd7 {[%eval 258,20] [%emt 0:00:11]} 91. a7
 [SourceTitle "Fritz Engine Tournament"]
 
 {Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 2808 MHz W=40.5 plies; 2.608kN/s;
-157.090 TBAs B=39.1 plies; 2.749kN/s; 182.416 TBAs} 1. e4 c5 2. Nf3 d6 3. d4
+157.090 TBAs B=40 plies; 2.749kN/s; 182.416 TBAs} 1. e4 c5 2. Nf3 d6 3. d4
 cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Be3 h6 7. f3 Qc7 8. g4 e6 9. a3 {[%eval 39,44] 
 [%emt 0:02:00]} Nc6 {[%eval 35,42] [%emt 0:01:23]} 10. Qd2 {[%eval 42,38] 
 [%emt 0:00:31]} Nxd4 {[%eval 34,39] [%emt 0:01:06]} 11. Bxd4 {[%eval 36,41] 

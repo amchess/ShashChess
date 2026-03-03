@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Glaurung 2.1
-  Copyright (C) 2004-2025 The ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <iosfwd>
 
 #include "features/half_ka_v2_hm.h"
+#include "features/full_threats.h"
 #include "layers/affine_transform.h"
 #include "layers/affine_transform_sparse_input.h"
 #include "layers/clipped_relu.h"
@@ -35,10 +36,11 @@
 namespace ShashChess::Eval::NNUE {
 
 // Input features used in evaluation function
-using FeatureSet = Features::HalfKAv2_hm;
+using ThreatFeatureSet = Features::FullThreats;
+using PSQFeatureSet    = Features::HalfKAv2_hm;
 
 // Number of input feature dimensions after conversion
-constexpr IndexType TransformedFeatureDimensionsBig = 3072;
+constexpr IndexType TransformedFeatureDimensionsBig = 1024;
 constexpr int       L2Big                           = 15;
 constexpr int       L3Big                           = 32;
 
@@ -97,7 +99,7 @@ struct NetworkArchitecture {
             && fc_2.write_parameters(stream);
     }
 
-    std::int32_t propagate(const TransformedFeatureType* transformedFeatures) {
+    std::int32_t propagate(const TransformedFeatureType* transformedFeatures) const {
         struct alignas(CacheLineSize) Buffer {
             alignas(CacheLineSize) typename decltype(fc_0)::OutputBuffer fc_0_out;
             alignas(CacheLineSize) typename decltype(ac_sqr_0)::OutputType
@@ -136,8 +138,28 @@ struct NetworkArchitecture {
 
         return outputValue;
     }
+
+    std::size_t get_content_hash() const {
+        std::size_t h = 0;
+        hash_combine(h, fc_0.get_content_hash());
+        hash_combine(h, ac_sqr_0.get_content_hash());
+        hash_combine(h, ac_0.get_content_hash());
+        hash_combine(h, fc_1.get_content_hash());
+        hash_combine(h, ac_1.get_content_hash());
+        hash_combine(h, fc_2.get_content_hash());
+        hash_combine(h, get_hash_value());
+        return h;
+    }
 };
 
 }  // namespace ShashChess::Eval::NNUE
+
+template<ShashChess::Eval::NNUE::IndexType L1, int L2, int L3>
+struct std::hash<ShashChess::Eval::NNUE::NetworkArchitecture<L1, L2, L3>> {
+    std::size_t
+    operator()(const ShashChess::Eval::NNUE::NetworkArchitecture<L1, L2, L3>& arch) const noexcept {
+        return arch.get_content_hash();
+    }
+};
 
 #endif  // #ifndef NNUE_ARCHITECTURE_H_INCLUDED
