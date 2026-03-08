@@ -357,7 +357,7 @@ Defense position/algorithm (the "reversed colors" Tal)
 
 ### GoldDigger Mode – The Ultimate Tactical Solver
 
-The **GoldDigger** variant of Alexander is a specialized compilation designed for one purpose: **maximum tactical depth**. By applying a set of aggressive modifications to the search algorithm, GoldDigger explores significantly deeper variations in critical positions, making it an ideal tool for solving complex tactical puzzles, analyzing sharp openings, or studying sacrificial combinations.
+The **GoldDigger** variant is a specialized compilation designed for one purpose: **maximum tactical depth**. By applying a set of aggressive modifications to the search algorithm, GoldDigger explores significantly deeper variations in critical positions, making it an ideal tool for solving complex tactical puzzles, analyzing sharp openings, or studying sacrificial combinations.
 
 #### How it works
 

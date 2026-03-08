@@ -32,6 +32,7 @@
 #include "movegen.h"  //shashin
 
 namespace ShashChess {
+//learning begin
 extern void setStartPoint();
 //learning end
 struct SharedHistories;
