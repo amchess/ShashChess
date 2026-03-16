@@ -7,31 +7,31 @@ Title "x86-32"
 mingw32-make clean
 mingw32-make profile-build ARCH=x86-32 COMP=mingw ENV_CXXFLAGS="-DNNUE_EMBEDDING_OFF" -j %Number_Of_Processors%
 strip shashchess.exe
-ren shashchess.exe "ShashChess41-x86-32.exe"
+ren shashchess.exe "ShashChess41.1-x86-32.exe"
 mingw32-make clean
 mingw32-make profile-build ARCH=x86-32 COMP=mingw ENV_CXXFLAGS="-DGOLD_DIGGER -DNNUE_EMBEDDING_OFF" -j %Number_Of_Processors%
 strip shashchess.exe
-ren shashchess.exe "ShashChess41-x86-32-GoldDigger.exe"
+ren shashchess.exe "ShashChess41.1-x86-32-GoldDigger.exe"
 
 Title "x86-32-old"
 mingw32-make clean
 mingw32-make profile-build ARCH=x86-32-old COMP=mingw ENV_CXXFLAGS="-DNNUE_EMBEDDING_OFF" -j %Number_Of_Processors%
 strip shashchess.exe
-ren shashchess.exe "ShashChess41-x86-32-old.exe"
+ren shashchess.exe "ShashChess41.1-x86-32-old.exe"
 mingw32-make clean
 mingw32-make profile-build ARCH=x86-32-old COMP=mingw ENV_CXXFLAGS="-DGOLD_DIGGER -DNNUE_EMBEDDING_OFF" -j %Number_Of_Processors%
 strip shashchess.exe
-ren shashchess.exe "ShashChess41-x86-32-old-GoldDigger.exe"
+ren shashchess.exe "ShashChess41.1-x86-32-old-GoldDigger.exe"
 
 Title "general-32"
 mingw32-make clean
 mingw32-make profile-build ARCH=general-32 COMP=mingw ENV_CXXFLAGS="-DNNUE_EMBEDDING_OFF" -j %Number_Of_Processors%
 strip shashchess.exe
-ren shashchess.exe "ShashChess41-general-32.exe"
+ren shashchess.exe "ShashChess41.1-general-32.exe"
 mingw32-make clean
 mingw32-make profile-build ARCH=general-32 COMP=mingw ENV_CXXFLAGS="-DGOLD_DIGGER -DNNUE_EMBEDDING_OFF" -j %Number_Of_Processors%
 strip shashchess.exe
-ren shashchess.exe "ShashChess41-general-32-GoldDigger.exe"
+ren shashchess.exe "ShashChess41.1-general-32-GoldDigger.exe"
 
 mingw32-make clean
 SET "PATH=%ORIGINAL_PATH%"

@@ -13,10 +13,10 @@ if not exist shashchess.exe (
 )
 
 strip shashchess.exe
-ren shashchess.exe "ShashChess41-x86-64-bmi2-GoldDigger.exe"
+ren shashchess.exe "ShashChess41.1-x86-64-bmi2-GoldDigger.exe"
 mingw32-make clean
 
 echo.
 echo Compilazione completata con successo!
-echo Eseguibile creato: ShashChess41-x86-64-bmi2-GoldDigger.exe
+echo Eseguibile creato: ShashChess41.1-x86-64-bmi2-GoldDigger.exe
 pause

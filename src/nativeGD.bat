@@ -13,7 +13,7 @@ if not exist shashchess.exe (
 )
 
 strip shashchess.exe
-ren shashchess.exe ShashChess41-native-GoldDigger.exe
+ren shashchess.exe ShashChess41.1-native-GoldDigger.exe
 mingw32-make clean
 
 echo.

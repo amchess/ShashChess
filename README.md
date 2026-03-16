@@ -238,6 +238,15 @@ If enabled, allows the engine to store a move in the queue of ChessDb to be anal
 
 _Default 0, min 0, max 512_ The number of threads doing a full depth analysis (brute force). Useful in analysis of particular hard positions to limit the strong pruning's drawbacks. 
 
+### Anti Dancing Analysis
+_Boolean, Default: False_
+Solves one of the most annoying issues when analyzing with modern chess engines: the tendency to "dance" with pieces (repeating the position once or twice) before executing the actual winning plan. Engines normally do this to push the search horizon further or to burn the opponent's clock in practical play, resulting in unnecessarily long, confusing, and unreadable Principal Variations (PVs).
+When this option is set to True, ShashChess will strictly forbid any position repetition when it considers itself to be winning. The engine is forced to immediately discard repetitive maneuvers (scoring them as a draw) and must compute the most direct, linear, and human-readable path to convert the advantage.
+
+Usage Recommendations:
+Deep Analysis (ON): Highly recommended when analyzing games, studying openings, or trying to understand the core strategic plan of a position without useless tactical noise.
+Match Play & Tournaments (OFF): Must be disabled during actual games or engine-vs-engine matches. In some specific scenarios (like pawn endgames), triangulating to lose a tempo via repetition is mathematically the only way to win. If enabled during a game, the engine might throw away a win to avoid the repetition penalty.
+
 ### Variety  (checkbox)
 
 Default is Off: no variety. The other values are "Standard" (no elo loss: randomicity in Capablanca zone) and Psychological (randomicity in Caos zones max).
@@ -357,7 +366,7 @@ Defense position/algorithm (the "reversed colors" Tal)
 
 ### GoldDigger Mode – The Ultimate Tactical Solver
 
-The **GoldDigger** variant is a specialized compilation designed for one purpose: **maximum tactical depth**. By applying a set of aggressive modifications to the search algorithm, GoldDigger explores significantly deeper variations in critical positions, making it an ideal tool for solving complex tactical puzzles, analyzing sharp openings, or studying sacrificial combinations.
+The **GoldDigger** variant of Alexander is a specialized compilation designed for one purpose: **maximum tactical depth**. By applying a set of aggressive modifications to the search algorithm, GoldDigger explores significantly deeper variations in critical positions, making it an ideal tool for solving complex tactical puzzles, analyzing sharp openings, or studying sacrificial combinations.
 
 #### How it works
 

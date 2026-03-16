@@ -17,10 +17,10 @@ make profile-build ARCH=native COMP=gcc ENV_CXXFLAGS="-DGOLD_DIGGER -DNNUE_EMBED
 # Pulizia dei simboli per ridurre la dimensione del file
 strip shashchess
 
-# Rinominiamo l'eseguibile per distinguerlo (uniformato a ShashChess41)
-mv shashchess ShashChess41-native-GoldDigger
+# Rinominiamo l'eseguibile per distinguerlo (uniformato a ShashChess41.1)
+mv shashchess ShashChess41.1-native-GoldDigger
 
 # Pulizia dei file oggetto intermedi
 make clean
 
-echo "Compilazione completata: ShashChess41-native-GoldDigger"
+echo "Compilazione completata: ShashChess41.1-native-GoldDigger"

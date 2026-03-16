@@ -1,0 +1,234 @@
+diff --git a/src/search.cpp b/src/search.cpp
+index 50197f5..eae26de 100644
+--- a/src/search.cpp
++++ b/src/search.cpp
+@@ -2599,8 +2599,11 @@ template<NodeType nodeType>
+ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta) {
+ 
+     static_assert(nodeType != Root);
++    //by shashin definitions begin
+     const RootShashinState& rootShashinState = shashinManager->getState();
+-    constexpr bool          PvNode           = nodeType == PV;
++    const bool isFortressNode = shashinManager->isFortress(pos);
++	//by shashin definitions end
++    constexpr bool PvNode = nodeType == PV;
+ 
+     assert(alpha >= -VALUE_INFINITE && alpha < beta && beta <= VALUE_INFINITE);
+     assert(PvNode || (alpha == beta - 1));
+@@ -2659,7 +2662,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
+     // Accesso ottimizzato alle variabili di stato
+     const bool isStrategical = dynamicDerived.isStrategical;
+     const bool isAggressive  = dynamicDerived.isAggressive;
+-
++    // At non-PV nodes we check for an early TT cutoff
+     if (!PvNode && is_valid(ttData.value)
+         && (ttData.bound & (ttData.value >= beta ? BOUND_LOWER : BOUND_UPPER)))
+     {
+@@ -2713,9 +2716,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
+                     updatedLearning = true;
+                     return expTTValue;
+                 }
+-                // (Logica Learning per Quiet Kings omessa per brevità,
+-                // mantenuta identica al blocco TT se necessario, o saltare allo step successivo)
+-                // Qui mantengo il flusso originale per coerenza col tuo file
++
+                 if (staticState.legalMoveCount < 35 && std::abs(expTTValue) > 60)
+                 {
+                     const bool areQuietKings =
+@@ -2749,12 +2750,14 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
+ 
+         if (ss->ttHit)
+         {
++            // Never assume anything about values stored in TT
+             unadjustedStaticEval = ttData.eval;
+             if (!is_valid(unadjustedStaticEval))
+                 unadjustedStaticEval = evaluate(pos);
+             ss->staticEval = bestValue =
+               to_corrected_static_eval(unadjustedStaticEval, correctionValue);
+ 
++            // ttValue can be used as a better position evaluation
+             if (is_valid(ttData.value) && !is_decisive(ttData.value)
+                 && (ttData.bound & (ttData.value > bestValue ? BOUND_LOWER : BOUND_UPPER)))
+                 bestValue = ttData.value;
+@@ -2791,7 +2794,6 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
+         futilityBase = ss->staticEval + 351;
+ 
+         // --- SHASHIN OPTIMIZATION 1: FUTILITY BASE (Outside Loop) ---
+-        // Correggiamo il valore ridicolo (+3) con qualcosa di sensato.
+         if (dynamicDerived.isHighTal)
+             futilityBase += 30;
+         else if (isStrategical)
+@@ -2802,6 +2804,9 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
+     const PieceToHistory* contHist[] = {(ss - 1)->continuationHistory};
+     Square prevSq = ((ss - 1)->currentMove).is_ok() ? ((ss - 1)->currentMove).to_sq() : SQ_NONE;
+ 
++    // Initialize a MovePicker object for the current position, and prepare to search
++    // the moves. We presently use two stages of move generator in quiescence search:
++    // captures, or evasions only when in check.
+     MovePicker mp(pos, ttData.move, DEPTH_QS, &mainHistory, &lowPlyHistory, &captureHistory,
+                   contHist, &sharedHistory, ss->ply);
+ 
+@@ -2814,25 +2819,43 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
+         moveCountThreshold = 1;
+     if (staticState.kingDanger)
+         moveCountThreshold++;
+-    if (MoveConfig::isFortress)
++    // Use isFortressNode (defined at top) instead of MoveConfig
++    if (isFortressNode)
+         moveCountThreshold++;
+ 
+     // B) SEE Margin
+-    int seeMargin = -80;  // Standard Stockfish
++    // --- SHASHIN QSEARCH OPTIMIZATION ---
++    int seeMargin = -80;  // Default Stockfish
+     if (isAggressive)
+-        seeMargin -= 18;  // Tal: -98
++    {
++        // Tal: Permette sacrifici speculativi se il Re è in pericolo
++        seeMargin = staticState.kingDanger ? -150 : -105;
++    }
+     else if (isStrategical)
+-        seeMargin += 18;  // Petrosian: -62
++    {
++        // Petrosian: Richiede scambi solidi, non tollera perdite di materiale
++        seeMargin = -35;
++    }
++    // Use isFortressNode (defined at top)
++    else if (isFortressNode)
++    {
++        seeMargin = -10;
++    }
++    // ------------------------------------
+ 
+     // C) Volatility Check (Flag)
+     const bool extremelyVolatile = dynamicDerived.isHighTal && staticState.kingDanger;
+     // ----------------------------------------------------------------------
+ 
+-    // Step 5. Loop through all pseudo-legal moves
++    // Step 5. Loop through all pseudo-legal moves until no moves remain or a beta
++    // cutoff occurs.
+     while ((move = mp.next_move()) != Move::none())
+     {
+         assert(move.is_ok());
+ 
++        // FIX 2: Definiamo movedPiece qui perché serve per il controllo tattico Tal
++        Piece movedPiece = pos.moved_piece(move);
++
+         if (!pos.legal(move))
+             continue;
+ 
+@@ -2841,61 +2864,60 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
+ 
+         moveCount++;
+ 
+-        // Step 6. Pruning (Optimized)
++        // Step 6. Pruning
+         if (!is_loss(bestValue))
+         {
+             // Futility pruning and moveCount pruning
+             if (!givesCheck && move.to_sq() != prevSq && !is_loss(futilityBase)
+                 && move.type_of() != PROMOTION)
+             {
+-                // Use pre-calculated threshold
+                 if (moveCount > moveCountThreshold)
+                     continue;
+ 
+                 Value futilityValue = futilityBase + PieceValue[pos.piece_on(move.to_sq())];
++
++                // If static eval + value of piece we are going to capture is
++                // much lower than alpha, we can prune this move.
+                 if (futilityValue <= alpha)
+                 {
+                     bestValue = std::max(bestValue, futilityValue);
+                     continue;
+                 }
+ 
+-                // === PATCH SHASHIN INTELLIGENTE (LOGICA INVERTITA) ===
++                // If static exchange evaluation is low enough
++                // we can prune this move.
+                 if (!pos.see_ge(move, alpha - futilityBase))
+                 {
+-                    // Logica tattica (vecchio comportamento) per:
+-                    // 1. Stili Tal aggressivi
+-                    // 2. Posizioni tattiche reattive
+-                    // 3. Pericolo del re (tranne in posizioni strategiche)
+-                    const bool useTacticalLogic = dynamicDerived.isHighTal
+-                                               || dynamicDerived.isTacticalReactive
+-                                               || (staticState.kingDanger && !isStrategical);
+-
+-                    if (useTacticalLogic)
++                    const bool riskyTactical =
++                      dynamicDerived.isHighTal || (staticState.kingDanger && !isStrategical);
++
++                    if (riskyTactical)
+                     {
+-                        // COMPORTAMENTO TATTICO (ShashChess originale)
+-                        // Permette alla valutazione di scendere per esplorare mosse apparentemente negative
+-                        // ma potenzialmente vincenti (sacrifici, combinazioni nascoste)
+-                        bestValue = std::min(alpha, futilityBase);
++                        // Tal: Cerca comunque se non è un disastro totale (-200)
++                        if (!pos.see_ge(move, -200))
++                        {
++                            bestValue = std::max(bestValue, std::min(alpha, futilityBase));
++                            continue;
++                        }
+                     }
+                     else
+                     {
+-                        // COMPORTAMENTO STRATEGICO (patch Stockfish)
+-                        // Mantiene la valutazione stabile, evitando crolli ingiustificati
+-                        // Ottimo per posizioni strategiche e partite lunghe
++                        // Strategic/Standard: Fidati della valutazione statica
+                         bestValue = std::max(bestValue, std::min(alpha, futilityBase));
++                        continue;
+                     }
+-                    continue;
+                 }
++                // ==============================
+             }
+ 
+             // --- PHASE 4: HYBRID PRUNING OPTIMIZATION ---
++            // Skip non-captures
+             if (!capture)
+             {
+                 if (extremelyVolatile)  // Use pre-calculated flag
+                 {
+                     // Accesso costoso alla sharedHistory solo qui, nel caso critico
+-                    int historyScore =
+-                      sharedHistory.pawn_entry(pos)[pos.moved_piece(move)][move.to_sq()];
++                    int historyScore = sharedHistory.pawn_entry(pos)[movedPiece][move.to_sq()];
+ 
+                     // Soglia fissa a 4000 (valore di sicurezza per mosse buone)
+                     if (historyScore < 4000)
+@@ -2903,16 +2925,27 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
+                 }
+                 else
+                 {
+-                    // COMPORTAMENTO STANDARD STOCKFISH:
+-                    // Se non è una cattura e non siamo in 'extreme volatility', potiamo tutto.
++                    // COMPORTAMENTO STANDARD STOCKFISH
+                     continue;
+                 }
+             }
+             // --- END PHASE 4 ---
+ 
+-            // SEE pruning (Use pre-calculated margin)
+-            if (!pos.see_ge(move, seeMargin))
++            // --- SHASHIN TACTICAL EXCEPTION ---
++            bool forceCheckSearch = false;
++            // Se siamo Tal/Aggressive e diamo scacco, ignoriamo il SEE negativo
++            // (a meno che non sia un suicidio palese della Donna)
++            if (givesCheck && (isAggressive || dynamicDerived.isHighTal))
++            {
++                if (type_of(movedPiece) != QUEEN || type_of(pos.piece_on(move.to_sq())) != PAWN)
++                    forceCheckSearch = true;
++            }
++
++            // SEE pruning
++            // Do not search moves with bad enough SEE values
++            if (!forceCheckSearch && !pos.see_ge(move, seeMargin))
+                 continue;
++            // ----------------------------------
+         }
+ 
+ 

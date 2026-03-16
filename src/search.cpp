@@ -1189,11 +1189,26 @@ Value Search::Worker::search(
     depth = std::min(depth, MAX_PLY - 1);
 
     // Check if we have an upcoming move that draws by repetition
-    if (!rootNode && alpha < VALUE_DRAW && pos.upcoming_repetition(ss->ply))
+    if (!rootNode && pos.upcoming_repetition(ss->ply))
     {
-        alpha = value_draw(nodes);
-        if (alpha >= beta)
-            return alpha;
+        // --- SHASHCHESS PATCH: ANTI DANCING ANALYSIS ---
+        // Se l'opzione è attiva e stiamo vincendo (alpha >= VALUE_DRAW),
+        // forziamo un ritorno immediato di patta (0.00). Poiché stiamo cercando 
+        // una mossa migliore di alpha, 0.00 causerà un Fail-Low e la ripetizione 
+        // verrà scartata immediatamente dalla Principal Variation!
+        if (bool(options["Anti Dancing Analysis"]) && alpha >= VALUE_DRAW)
+        {
+            return value_draw(nodes);
+        }
+
+        // Comportamento Standard di Stockfish per gli altri casi (se stiamo perdendo/pareggiando o opzione disattiva)
+        if (alpha < VALUE_DRAW)
+        {
+            alpha = value_draw(nodes);
+            if (alpha >= beta)
+                return alpha;
+        }
+        // -----------------------------------------------
     }
 
     assert(-VALUE_INFINITE <= alpha && alpha < beta && beta <= VALUE_INFINITE);
@@ -2640,11 +2655,22 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     assert(PvNode || (alpha == beta - 1));
 
     // Check if we have an upcoming move that draws by repetition
-    if (alpha < VALUE_DRAW && pos.upcoming_repetition(ss->ply))
+    if (pos.upcoming_repetition(ss->ply))
     {
-        alpha = value_draw(nodes);
-        if (alpha >= beta)
-            return alpha;
+        // --- SHASHCHESS PATCH: ANTI DANCING ANALYSIS ---
+        if (bool(options["Anti Dancing Analysis"]) && alpha >= VALUE_DRAW)
+        {
+            return value_draw(nodes);
+        }
+
+        // Comportamento Standard
+        if (alpha < VALUE_DRAW)
+        {
+            alpha = value_draw(nodes);
+            if (alpha >= beta)
+                return alpha;
+        }
+        // -----------------------------------------------
     }
 
     Move      pv[MAX_PLY + 1];
