@@ -775,7 +775,8 @@ void Search::Worker::iterative_deepening() {
             mainThread->iterValue.fill(mainThread->bestPreviousScore);
     }
 
-    size_t multiPV = size_t(options["MultiPV"]);
+    size_t multiPV  = size_t(options["MultiPV"]);
+    antiDancingMode = bool(options["Anti Dancing Analysis"]);  //anti dancing patch
     //no skill
 
     multiPV                = std::min(multiPV, rootMoves.size());
@@ -1193,10 +1194,10 @@ Value Search::Worker::search(
     {
         // --- SHASHCHESS PATCH: ANTI DANCING ANALYSIS ---
         // Se l'opzione è attiva e stiamo vincendo (alpha >= VALUE_DRAW),
-        // forziamo un ritorno immediato di patta (0.00). Poiché stiamo cercando 
-        // una mossa migliore di alpha, 0.00 causerà un Fail-Low e la ripetizione 
+        // forziamo un ritorno immediato di patta (0.00). Poiché stiamo cercando
+        // una mossa migliore di alpha, 0.00 causerà un Fail-Low e la ripetizione
         // verrà scartata immediatamente dalla Principal Variation!
-        if (bool(options["Anti Dancing Analysis"]) && alpha >= VALUE_DRAW)
+        if (antiDancingMode && alpha >= VALUE_DRAW)
         {
             return value_draw(nodes);
         }
@@ -2658,7 +2659,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     if (pos.upcoming_repetition(ss->ply))
     {
         // --- SHASHCHESS PATCH: ANTI DANCING ANALYSIS ---
-        if (bool(options["Anti Dancing Analysis"]) && alpha >= VALUE_DRAW)
+        if (antiDancingMode && alpha >= VALUE_DRAW)
         {
             return value_draw(nodes);
         }

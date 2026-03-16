@@ -111,7 +111,7 @@ Engine::Engine(std::optional<std::string> path) :
     options.add("MultiPV", Option(1, 1, MAX_MOVES));
 
     options.add("Anti Dancing Analysis", Option(false));
-    
+
     options.add("Move Overhead", Option(10, 0, 5000));
 
     options.add("Minimum Thinking Time", Option(100, 0, 5000));
