@@ -1189,29 +1189,31 @@ Value Search::Worker::search(
     // Limit the depth if extensions made it too large
     depth = std::min(depth, MAX_PLY - 1);
 
+    // CACHE NEI REGISTRI: Copiamo il flag globale in una costante locale.
+    // Questo dice al compilatore di tenere il valore nel registro della CPU per tutta la funzione,
+    // garantendo lo stesso tempo di accesso di una variabile static ma in modo sicuro.
+    const bool antiDancing = antiDancingMode;
+
     // Check if we have an upcoming move that draws by repetition
-    if (!rootNode && pos.upcoming_repetition(ss->ply))
+    // Lo "&& true" forza il compilatore a rispettare lo short-circuit al 100%
+    if (!rootNode && (alpha < VALUE_DRAW || (antiDancing && true))
+        && pos.upcoming_repetition(ss->ply))
     {
-        // --- SHASHCHESS PATCH: ANTI DANCING ANALYSIS ---
-        // Se l'opzione è attiva e stiamo vincendo (alpha >= VALUE_DRAW),
-        // forziamo un ritorno immediato di patta (0.00). Poiché stiamo cercando
-        // una mossa migliore di alpha, 0.00 causerà un Fail-Low e la ripetizione
-        // verrà scartata immediatamente dalla Principal Variation!
-        if (antiDancingMode && alpha >= VALUE_DRAW)
+        // BRANCH HINTING ESTREMO: Diciamo alla CPU che questo if è statisticamente quasi sempre falso.
+        // La pipeline del processore caricherà in anticipo le istruzioni del blocco standard.
+        if (antiDancing && alpha >= VALUE_DRAW) [[unlikely]]
         {
             return value_draw(nodes);
         }
 
-        // Comportamento Standard di Stockfish per gli altri casi (se stiamo perdendo/pareggiando o opzione disattiva)
+        // Comportamento Standard di Stockfish
         if (alpha < VALUE_DRAW)
         {
             alpha = value_draw(nodes);
             if (alpha >= beta)
                 return alpha;
         }
-        // -----------------------------------------------
     }
-
     assert(-VALUE_INFINITE <= alpha && alpha < beta && beta <= VALUE_INFINITE);
     assert(PvNode || (alpha == beta - 1));
     assert(0 < depth && depth < MAX_PLY);
@@ -2655,11 +2657,15 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     assert(alpha >= -VALUE_INFINITE && alpha < beta && beta <= VALUE_INFINITE);
     assert(PvNode || (alpha == beta - 1));
 
+    // CACHE NEI REGISTRI per la qsearch (critico per gli NPS)
+    const bool antiDancing = antiDancingMode;
+
     // Check if we have an upcoming move that draws by repetition
-    if (pos.upcoming_repetition(ss->ply))
+    if ((alpha < VALUE_DRAW || (antiDancing && true)) && pos.upcoming_repetition(ss->ply))
     {
-        // --- SHASHCHESS PATCH: ANTI DANCING ANALYSIS ---
-        if (antiDancingMode && alpha >= VALUE_DRAW)
+        // BRANCH HINTING: sposta fisicamente nel codice macchina questo blocco
+        // in un'area "fredda" della memoria eseguibile.
+        if (antiDancing && alpha >= VALUE_DRAW) [[unlikely]]
         {
             return value_draw(nodes);
         }
@@ -2671,7 +2677,6 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
             if (alpha >= beta)
                 return alpha;
         }
-        // -----------------------------------------------
     }
 
     Move      pv[MAX_PLY + 1];
