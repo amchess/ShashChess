@@ -256,7 +256,7 @@ Default is Off: no variety. The other values are "Standard" (no elo loss: random
 _Boolean, Default: False_ 
 Set this option to true when running under CuteChess and you experiences problems with concurrency > 1
 When this option is true, the saved experience file name will be modified to something like experience-64a4c665c57504a4.bin
-(64a4c665c57504a4 is random). Each concurrent instance of BrainLearn will have its own experience file name, however, all the concurrent instances will read "experience.bin" at start up.
+(64a4c665c57504a4 is random). Each concurrent instance of BrainLearn will have its own experience file name, however, all the concurrent instances will read "experience.exp" at start up.
 
 ### Persisted learning (checkbox)
 
