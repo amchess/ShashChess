@@ -468,7 +468,12 @@ endif
 
 ifeq ($(KERNEL),Linux)
     # Soppressione warning ABI e impostazioni vettoriali per Linux
-    CXXFLAGS += -Wno-psabi -mprefer-vector-width=256 -mno-avx512f
+    CXXFLAGS += -Wno-psabi
+    
+    # Flag specifiche per architetture x86
+    ifeq ($(findstring x86,$(ARCH)),x86)
+        CXXFLAGS += -mprefer-vector-width=256 -mno-avx512f
+    endif
     
     # Flag specifiche per architetture AVX2
     ifeq ($(avx2),yes)
