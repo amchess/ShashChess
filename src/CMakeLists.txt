@@ -20,7 +20,8 @@ set(SRCS
         search.cpp thread.cpp timeman.cpp tt.cpp uci.cpp ucioption.cpp tune.cpp syzygy/tbprobe.cpp
         learn/learn.cpp mcts/montecarlo.cpp
         book/file_mapping.cpp book/book.cpp book/book_manager.cpp book/polyglot/polyglot.cpp book/ctg/ctg.cpp
-        nnue/nnue_misc.cpp nnue/features/half_ka_v2_hm.cpp nnue/network.cpp engine.cpp score.cpp memory.cpp
+        nnue/nnue_misc.cpp nnue/features/half_ka_v2_hm.cpp nnue/network.cpp nnue/nnue_accumulator.cpp
+        engine.cpp score.cpp memory.cpp
         wdl/win_probability.cpp
         livebook/BaseLivebook.cpp livebook/LichessOpening.cpp livebook/LichessEndgame.cpp livebook/ChessDb.cpp
         livebook/analysis/Cp.cpp livebook/analysis/Analysis.cpp livebook/analysis/Wdl.cpp livebook/analysis/Mate.cpp
