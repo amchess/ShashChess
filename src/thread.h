@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -76,6 +76,8 @@ class Thread {
     Thread(Search::SharedState&,
            std::unique_ptr<Search::ISearchManager>,
            size_t,
+           size_t,
+           size_t,
            OptionalThreadToNumaNodeBinder);
     virtual ~Thread();
 
@@ -100,7 +102,7 @@ class Thread {
    private:
     std::mutex                mutex;
     std::condition_variable   cv;
-    size_t                    idx, nthreads;
+    size_t                    idx, idxInNuma, totalNuma, nthreads;
     bool                      exit = false, searching = true;  // Set before starting std::thread
     NativeThread              stdThread;
     NumaReplicatedAccessToken numaAccessToken;

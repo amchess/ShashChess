@@ -12,6 +12,21 @@ constexpr auto to_underlying(E e) noexcept
   -> std::enable_if_t<std::is_enum_v<E>, std::underlying_type_t<E>> {
     return static_cast<std::underlying_type_t<E>>(e);
 }
+
+// =============================================
+// Helper per range con Enum Sequenziali
+// =============================================
+
+// Verifica se 'value' è compreso tra 'lower' e 'upper' (inclusi)
+inline constexpr bool isInRange(ShashinPosition value, 
+                                ShashinPosition lower, 
+                                ShashinPosition upper) {
+    auto v = to_underlying(value);
+    auto l = to_underlying(lower);
+    auto u = to_underlying(upper);
+    return v >= l && v <= u;
+}
+
 // =============================================
 // Template Metaprogramming Utilities
 // =============================================
@@ -20,41 +35,16 @@ template<typename... Ts>
 using are_all_shashin = std::conjunction<std::is_same<Ts, ShashinPosition>...>;
 
 // =============================================
-// Core Bitmask Operations (Type-Safe)
+// Core Operations (Type-Safe)
 // =============================================
 
+// Uso confronto diretto (fold expression)
 template<typename... Args>
-__attribute__((always_inline)) constexpr bool anyOf(ShashinPosition value, Args... ranges) {
+inline constexpr bool anyOf(ShashinPosition value, Args... ranges) {
     static_assert((std::is_same_v<ShashinPosition, Args> && ...),
                   "All ranges must be ShashinPosition");
 
-    return (((to_underlying(value) & to_underlying(ranges)) != 0) || ...);
-}
-
-// =============================================
-// Bitwise Operator Overloads
-// =============================================
-
-inline constexpr ShashinPosition operator|(ShashinPosition lhs, ShashinPosition rhs) noexcept {
-    return static_cast<ShashinPosition>(to_underlying(lhs) | to_underlying(rhs));
-}
-
-inline constexpr ShashinPosition operator&(ShashinPosition lhs, ShashinPosition rhs) noexcept {
-    return static_cast<ShashinPosition>(to_underlying(lhs) & to_underlying(rhs));
-}
-
-inline constexpr ShashinPosition operator~(ShashinPosition v) noexcept {
-    return static_cast<ShashinPosition>(~to_underlying(v));
-}
-
-inline constexpr ShashinPosition& operator|=(ShashinPosition& lhs, ShashinPosition rhs) noexcept {
-    lhs = lhs | rhs;
-    return lhs;
-}
-
-inline constexpr ShashinPosition& operator&=(ShashinPosition& lhs, ShashinPosition rhs) noexcept {
-    lhs = lhs & rhs;
-    return lhs;
+    return ((value == ranges) || ...);
 }
 
 }  // namespace ShashChess

@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 The ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -86,14 +86,14 @@ MovePicker::MovePicker(const Position&              p,
                        const LowPlyHistory*         lph,
                        const CapturePieceToHistory* cph,
                        const PieceToHistory**       ch,
-                       const PawnHistory*           ph,
+                       const SharedHistories*       sh,
                        int                          pl) :
     pos(p),
     mainHistory(mh),
     lowPlyHistory(lph),
     captureHistory(cph),
     continuationHistory(ch),
-    pawnHistory(ph),
+    sharedHistory(sh),
     ttMove(ttm),
     depth(d),
     ply(pl) {
@@ -125,30 +125,7 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
 
     static_assert(Type == CAPTURES || Type == QUIETS || Type == EVASIONS, "Wrong type");
 
-    Color      us       = pos.side_to_move();
-    const bool fortress = MoveConfig::isFortress;
-
-    // Precompute all fortress-related values once
-    int  breakingPenalty = 0, preservingBonus = 0, phase = 0;
-    int  shashinBonus = 0;
-    bool noProgress15 = false;
-
-    if (fortress)
-    {
-        phase           = std::clamp(pos.game_ply() / 25, 0, 3);
-        breakingPenalty = 1200 + 400 * phase;
-        preservingBonus = 600 + 200 * (3 - phase);
-        noProgress15    = no_progress_for(pos, 15);
-
-        if (MoveConfig::useMoveShashinLogic)
-        {
-            double plyFactor = std::min(pos.game_ply() / 40.0, 1.0);
-            if (MoveConfig::isStrategical)
-                shashinBonus = static_cast<int>(100 * plyFactor);
-            else if (MoveConfig::isAggressive)
-                shashinBonus = static_cast<int>(180 * plyFactor);
-        }
-    }
+    Color us = pos.side_to_move();
 
     [[maybe_unused]] Bitboard threatByLesser[KING + 1];
     if constexpr (Type == QUIETS)
@@ -176,21 +153,16 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
         if constexpr (Type == CAPTURES)
         {
             m.value = (*captureHistory)[pc][to][type_of(capturedPiece)]
-                    + 7 * int(PieceValue[capturedPiece]) + 1024 * bool(pos.check_squares(pt) & to);
+                    + 7 * int(PieceValue[capturedPiece]);
 
-            // Bonus aggiuntivi per posizioni aggressive
-            if (MoveConfig::isAggressive)
-            {
-                if (pos.gives_check(m))
-                    m.value += 5000;   // Bonus per scacco
-                if (pos.see_ge(m, 0))  // Bonus per SEE positivo
-                    m.value += 1000;
-            }
+            // *** RIMOSSO BONUS AGGRESSIVO ***
+            // Rimosso bonus scacco/SEE. Lasciamo che MVV e CaptureHistory facciano il loro lavoro.
         }
         else if constexpr (Type == QUIETS)
         {
-            m.value = 2 * (*mainHistory)[us][m.from_to()];
-            m.value += 2 * (*pawnHistory)[pawn_history_index(pos)][pc][to];
+            // histories
+            m.value = 2 * (*mainHistory)[us][m.raw()];
+            m.value += 2 * sharedHistory->pawn_entry(pos)[pc][to];
             m.value += (*continuationHistory[0])[pc][to];
             m.value += (*continuationHistory[1])[pc][to];
             m.value += (*continuationHistory[2])[pc][to];
@@ -202,68 +174,40 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
 
             // penalty for moving to a square threatened by a lesser piece
             // or bonus for escaping an attack by a lesser piece.
-            static constexpr int bonus[KING + 1] = {0, 0, 144, 144, 256, 517, 10000};
-            int v = threatByLesser[pt] & to ? -95 : 100 * bool(threatByLesser[pt] & from);
-            m.value += bonus[pt] * v;
+            int v = threatByLesser[pt] & to ? -19 : 20 * bool(threatByLesser[pt] & from);
+            m.value += PieceValue[pt] * v;
 
             if (ply < LOW_PLY_HISTORY_SIZE)
-                m.value += 8 * (*lowPlyHistory)[ply][m.from_to()] / (1 + ply);
-            // Bonus aggiuntivi per posizioni aggressive
-            if (MoveConfig::isAggressive)
+                m.value += 8 * (*lowPlyHistory)[ply][m.raw()] / (1 + ply);
+
+            // *** SHASHIN MOVEPICK TUNING ***
+            if (depth > 6)
             {
-                if (pos.gives_check(m))
-                    m.value += 5000;   // Bonus per scacco
-                if (pos.see_ge(m, 0))  // Bonus per SEE positivo
-                    m.value += 1000;
+                // 1. CAPABLANCA: Favorisce l'occupazione di avamposti sicuri.
+                if (MoveConfig::isStrategical && type_of(pc) != PAWN && !pos.attackers_to(to, ~us))
+                {
+                    m.value += 30;
+                }
+
+                // 2. FASI TATTICHE (Tal, Petrosian, Caos): Bonus Sopravvivenza/Dinamismo.
+                // Se NON siamo in fase puramente strategica (c'è tensione)
+                // e stiamo spostando un pezzo importante VIA da una minaccia verso la salvezza.
+                else if (!MoveConfig::isStrategical && type_of(pc) != PAWN)
+                {
+                    // Se la casa di partenza ERA minacciata, e la casa di arrivo è SICURA
+                    if (pos.attackers_to(from, ~us) && !pos.attackers_to(to, ~us))
+                    {
+                        m.value += 25;
+                    }
+                }
             }
         }
-        else
-        {  // Type == EVASIONS
+        else  // Type == EVASIONS
+        {
             if (pos.capture_stage(m))
                 m.value = PieceValue[capturedPiece] + (1 << 28);
             else
-            {
-                m.value = (*mainHistory)[us][m.from_to()] + (*continuationHistory[0])[pc][to];
-                if (ply < LOW_PLY_HISTORY_SIZE)
-                    m.value += (*lowPlyHistory)[ply][m.from_to()];
-            }
-        }
-
-        // Apply fortress logic if needed
-        if (fortress)
-        {
-            bool preserve  = is_fortress_preserving_move(pos, m);
-            bool breakMove = is_fortress_breaking_move(pos, m);
-
-            if (breakMove)
-            {
-                m.value -= breakingPenalty;
-                if (is_fortress_key_piece(pc))
-                    m.value -= 300;
-            }
-            else if (preserve)
-            {
-                m.value += preservingBonus;
-                if (type_of(pc) == KING && phase == 3)
-                    m.value += 150;
-                if (type_of(pc) == PAWN)
-                {
-                    Bitboard adjacentPawns = attacks_bb<PAWN>(to, us) & pos.pieces(us, PAWN);
-                    if (adjacentPawns)
-                        m.value += 100;
-                    // Bonus per pedoni avanzati
-                    Rank r          = rank_of(to);
-                    bool isAdvanced = (us == WHITE) ? (r >= RANK_5) : (r <= RANK_4);
-                    if (isAdvanced)
-                        m.value += 75;
-                }
-            }
-
-            // Gestione regola delle 50 mosse
-            if (noProgress15 && preserve)
-                m.value += 300;
-
-            m.value += shashinBonus;
+                m.value = (*mainHistory)[us][m.raw()] + (*continuationHistory[0])[pc][to];
         }
     }
     return it;

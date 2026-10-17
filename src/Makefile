@@ -1,18 +1,18 @@
 # ShashChess, a UCI chess playing engine derived from Stockfish
-# Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers
+# Copyright (C) 2004-2026 ShashChess developers
 #
-# This program is free software: you can redistribute it and/or modify it
-# under the terms of the GNU General Public License as published by
+# ShashChess is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful,
+# ShashChess is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ### ==========================================================================
 ### Section 1. General Configuration
@@ -24,6 +24,21 @@ ifeq ($(KERNEL),Linux)
 	OS := $(shell uname -o)
 endif
 
+### Command prefix to run the built executable (e.g. wine, sde, qemu)
+### Backward compatible alias: WINE_PATH (deprecated)
+ifneq ($(strip $(WINE_PATH)),)
+ifeq ($(strip $(RUN_PREFIX)),)
+RUN_PREFIX := $(WINE_PATH)
+endif
+ifeq ($(MAKELEVEL),0)
+ifneq ($(strip $(RUN_PREFIX)),$(strip $(WINE_PATH)))
+$(warning *** Both RUN_PREFIX and WINE_PATH are set; ignoring WINE_PATH. ***)
+else
+$(warning *** WINE_PATH is deprecated; use RUN_PREFIX instead. ***)
+endif
+endif
+endif
+
 ### Target Windows OS
 ifeq ($(OS),Windows_NT)
 	ifneq ($(COMP),ndk)
@@ -31,13 +46,13 @@ ifeq ($(OS),Windows_NT)
 	endif
 else ifeq ($(COMP),mingw)
 	target_windows = yes
-	ifeq ($(WINE_PATH),)
-		WINE_PATH := $(shell which wine)
+	ifeq ($(RUN_PREFIX),)
+		RUN_PREFIX := $(shell which wine)
 	endif
 endif
 
 ### Executable name
-ifeq ($(target_windows), yes)
+ifeq ($(target_windows),yes)
 	EXE = shashchess.exe
 else
 	EXE = shashchess
@@ -48,15 +63,17 @@ PREFIX = /usr/local
 BINDIR = $(PREFIX)/bin
 
 ### Built-in benchmark for pgo-builds
-PGOBENCH = $(WINE_PATH) ./$(EXE) bench
+PGOBENCH = $(RUN_PREFIX) ./$(EXE) bench
 
 ### Source and object files
 SRCS = benchmark.cpp bitboard.cpp evaluate.cpp main.cpp \
 	misc.cpp movegen.cpp movepick.cpp position.cpp \
 	search.cpp thread.cpp timeman.cpp tt.cpp uci.cpp ucioption.cpp tune.cpp syzygy/tbprobe.cpp \
-	learn/learn.cpp mcts/montecarlo.cpp  \
+	learn/learn.cpp mcts/montecarlo.cpp \
 	book/file_mapping.cpp book/book.cpp book/book_manager.cpp book/polyglot/polyglot.cpp book/ctg/ctg.cpp \
-	nnue/nnue_accumulator.cpp nnue/nnue_misc.cpp nnue/features/half_ka_v2_hm.cpp nnue/network.cpp engine.cpp score.cpp memory.cpp \
+	nnue/nnue_accumulator.cpp nnue/nnue_misc.cpp nnue/network.cpp \
+	nnue/features/half_ka_v2_hm.cpp nnue/features/full_threats.cpp \
+	engine.cpp score.cpp memory.cpp \
 	wdl/win_probability.cpp \
 	livebook/BaseLivebook.cpp livebook/LichessOpening.cpp livebook/LichessEndgame.cpp livebook/ChessDb.cpp \
 	livebook/analysis/Cp.cpp livebook/analysis/Analysis.cpp livebook/analysis/Wdl.cpp livebook/analysis/Mate.cpp \
@@ -64,11 +81,11 @@ SRCS = benchmark.cpp bitboard.cpp evaluate.cpp main.cpp \
 	livebook/LichessGames.cpp livebook/Proxy.cpp livebook/ChessDBContributor.cpp shashin/shashin_manager.cpp shashin/moveconfig.cpp
 
 HEADERS = benchmark.h bitboard.h evaluate.h misc.h movegen.h  movepick.h history.h \
-		nnue/nnue_misc.h nnue/features/half_ka_v2_hm.h nnue/layers/affine_transform.h \
-		nnue/layers/affine_transform_sparse_input.h nnue/layers/clipped_relu.h \
-		nnue/layers/sqr_clipped_relu.h nnue/nnue_accumulator.h nnue/nnue_architecture.h \
-		nnue/nnue_common.h nnue/nnue_feature_transformer.h nnue/simd.h position.h \
-		search.h syzygy/tbprobe.h thread.h thread_win32_osx.h timeman.h \
+		nnue/nnue_misc.h nnue/features/half_ka_v2_hm.h nnue/features/full_threats.h \
+		nnue/layers/affine_transform.h nnue/layers/affine_transform_sparse_input.h \
+		nnue/layers/clipped_relu.h nnue/layers/sqr_clipped_relu.h nnue/nnue_accumulator.h \
+		nnue/nnue_architecture.h nnue/nnue_common.h nnue/nnue_feature_transformer.h nnue/simd.h \
+		position.h search.h syzygy/tbprobe.h thread.h thread_win32_osx.h timeman.h \
 		tt.h tune.h types.h uci.h ucioption.h perft.h nnue/network.h engine.h score.h numa.h memory.h \
 		book/file_mapping.h book/book.h book/book_manager.h book/polyglot/polyglot.h book/ctg/ctg.h learn/learn.h mcts/montecarlo.h \
 		wdl/win_probability.h \
@@ -641,7 +658,9 @@ ifeq ($(COMP),gcc)
 	ifneq ($(gccisclang),)
 		profile_make = clang-profile-make
 		profile_use = clang-profile-use
-	endif
+	else
+		CXXFLAGS += -Wstack-usage=128000
+	endif	
 endif
 
 ### On mingw use Windows threads, otherwise POSIX
@@ -653,6 +672,19 @@ ifneq ($(comp),mingw)
 		ifneq ($(KERNEL),Haiku)
 			ifneq ($(COMP),ndk)
 				LDFLAGS += -lpthread
+
+				add_lrt = yes
+				ifeq ($(target_windows),yes)
+					add_lrt = no
+				endif
+
+				ifeq ($(KERNEL),Darwin)
+					add_lrt = no
+				endif
+
+				ifeq ($(add_lrt),yes)
+					LDFLAGS += -lrt
+				endif
 			endif
 		endif
 	endif
@@ -663,6 +695,7 @@ ifeq ($(debug),no)
 	CXXFLAGS += -DNDEBUG
 else
 	CXXFLAGS += -g
+	CXXFLAGS += -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_DEBUG
 endif
 
 ### 3.2.2 Debugging with undefined behavior sanitizers
@@ -882,7 +915,7 @@ ifeq ($(debug), no)
 # To use LTO and static linking on Windows,
 # the tool chain requires gcc version 10.1 or later.
 	else ifeq ($(comp),mingw)
-		CXXFLAGS += -flto -flto-partition=one
+		CXXFLAGS += -flto=auto -flto-partition=balanced
 		LDFLAGS += $(CXXFLAGS) -save-temps
 	endif
 endif
@@ -1128,7 +1161,7 @@ clang-profile-use:
 	$(XCRUN) $(LLVM_PROFDATA) merge -output=shashchess.profdata *.profraw
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
 	EXTRACXXFLAGS='-fprofile-use=shashchess.profdata' \
-	EXTRALDFLAGS='-fprofile-use=shashchess.profdata' \
+	EXTRALDFLAGS='-fprofile-use ' \
 	all
 
 gcc-profile-make:
@@ -1153,7 +1186,7 @@ icx-profile-make:
 	all
 
 icx-profile-use:
-	$(XCRUN) $(LLVM_PROFDATA) merge -output=stockfish.profdata *.profraw
+	$(XCRUN) $(LLVM_PROFDATA) merge -output=shashchess.profdata *.profraw
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
 	EXTRACXXFLAGS='-fprofile-instr-use=shashchess.profdata' \
 	EXTRALDFLAGS='-fprofile-use ' \

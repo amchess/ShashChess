@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -706,7 +706,8 @@ void MonteCarlo::generate_moves(mctsNodeInfo* node) {
     }
     bool       kingInDanger = Shashin::king_danger(pos, pos.side_to_move());
     MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory, &thisThread->lowPlyHistory,
-                  &thisThread->captureHistory, contHist, &thisThread->pawnHistory, stack[ply].ply);
+                  &thisThread->captureHistory, contHist, &thisThread->sharedHistory,
+                  stack[ply].ply);
     Move       move;
     int        moveCount = 0;
 

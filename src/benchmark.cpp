@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 The ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -64,6 +64,10 @@ const std::vector<std::string> Defaults = {
   "r3k2r/3nnpbp/q2pp1p1/p7/Pp1PPPP1/4BNN1/1P5P/R2Q1RK1 w kq - 0 16",
   "3Qb1k1/1r2ppb1/pN1n2q1/Pp1Pp1Pr/4P2p/4BP2/4B1R1/1R5K b - - 11 40",
   "4k3/3q1r2/1N2r1b1/3ppN2/2nPP3/1B1R2n1/2R1Q3/3K4 w - - 5 1",
+
+  // Positions with high numbers of changed threats
+  "k7/2n1n3/1nbNbn2/2NbRBn1/1nbRQR2/2NBRBN1/3N1N2/7K w - - 0 1",
+  "K7/8/8/BNQNQNB1/N5N1/R1Q1q2r/n5n1/bnqnqnbk w - - 0 1",
 
   // 5-man positions
   "8/8/8/8/5kp1/P7/8/1K1N4 w - - 0 1",     // Kc2 - mate
@@ -450,7 +454,7 @@ BenchmarkSetup setup_benchmark(std::istream& is) {
     int desiredTimeS;
 
     if (!(is >> setup.threads))
-        setup.threads = get_hardware_concurrency();
+        setup.threads = int(get_hardware_concurrency());
     else
         setup.originalInvocation += std::to_string(setup.threads);
 
@@ -479,11 +483,10 @@ BenchmarkSetup setup_benchmark(std::istream& is) {
     float totalTime = 0;
     for (const auto& game : BenchmarkPositions)
     {
-        setup.commands.emplace_back("ucinewgame");
         int ply = 1;
         for (int i = 0; i < static_cast<int>(game.size()); ++i)
         {
-            const float correctedTime = getCorrectedTime(ply);
+            const float correctedTime = float(getCorrectedTime(ply));
             totalTime += correctedTime;
             ply += 1;
         }

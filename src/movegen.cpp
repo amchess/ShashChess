@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include <cassert>
 #include <initializer_list>
 
+#include "bitboard.h"
 #include "position.h"
 
 #if defined(USE_AVX512ICL)
@@ -45,10 +46,10 @@ template<Direction offset>
 inline Move* splat_pawn_moves(Move* moveList, Bitboard to_bb) {
     alignas(64) static constexpr auto SPLAT_TABLE = [] {
         std::array<Move, 64> table{};
-        for (int8_t i = 0; i < 64; i++)
+        for (int i = 0; i < 64; i++)
         {
-            Square from{std::clamp<int8_t>(i - offset, 0, 63)};
-            table[i] = {Move(from, Square{i})};
+            Square from{uint8_t(std::clamp(i - offset, 0, 63))};
+            table[i] = {Move(from, Square{uint8_t(i)})};
         }
         return table;
     }();
@@ -66,7 +67,7 @@ inline Move* splat_pawn_moves(Move* moveList, Bitboard to_bb) {
 inline Move* splat_moves(Move* moveList, Square from, Bitboard to_bb) {
     alignas(64) static constexpr auto SPLAT_TABLE = [] {
         std::array<Move, 64> table{};
-        for (int8_t i = 0; i < 64; i++)
+        for (uint8_t i = 0; i < 64; i++)
             table[i] = {Move(SQUARE_ZERO, Square{i})};
         return table;
     }();
@@ -247,24 +248,8 @@ Move* generate_all(const Position& pos, Move* moveList) {
     }
 
     Bitboard b = attacks_bb<KING>(ksq) & (Type == EVASIONS ? ~pos.pieces(Us) : target);
-    //Shashin-Crystal begin
-    if (MoveConfig::useMoveShashinLogic && (Type != EVASIONS || !pos.checkers()))
-    {
-        constexpr int KingMoveThreshold = 3;
-        if (popcount(b) > KingMoveThreshold)
-        {
-            const Color them     = ~Us;
-            Bitboard    filtered = 0;
-            while (b)
-            {
-                Square to = pop_lsb(b);
-                if (pos.pieces(them) & to || !(pos.attackers_to(to, them)))
-                    filtered |= to;
-            }
-            b = filtered;
-        }
-    }
-    //Shashin-Crystal end
+
+
     moveList = splat_moves(moveList, ksq, b);
 
     if ((Type == QUIETS || Type == NON_EVASIONS) && pos.can_castle(Us & ANY_CASTLING))

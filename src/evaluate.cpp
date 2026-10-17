@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 The ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -42,8 +42,8 @@ namespace ShashChess {
 // an approximation of the material advantage on the board in terms of pawns.
 int Eval::simple_eval(const Position& pos) {
     Color c = pos.side_to_move();
-    return PawnValue * (pos.count<PAWN>(c) - pos.count<PAWN>(~c))
-         + (pos.non_pawn_material(c) - pos.non_pawn_material(~c));
+    return PawnValue * (pos.count<PAWN>(c) - pos.count<PAWN>(~c)) + pos.non_pawn_material(c)
+         - pos.non_pawn_material(~c);
 }
 
 bool Eval::use_smallnet(const Position& pos) { return std::abs(simple_eval(pos)) > 962; }
@@ -59,29 +59,29 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     assert(!pos.checkers());
 
     bool smallNet           = use_smallnet(pos);
-    auto [psqt, positional] = smallNet ? networks.small.evaluate(pos, accumulators, &caches.small)
-                                       : networks.big.evaluate(pos, accumulators, &caches.big);
+    auto [psqt, positional] = smallNet ? networks.small.evaluate(pos, accumulators, caches.small)
+                                       : networks.big.evaluate(pos, accumulators, caches.big);
 
     Value nnue = (125 * psqt + 131 * positional) / 128;
 
     // Re-evaluate the position when higher eval accuracy is worth the time spent
-    if (smallNet && (std::abs(nnue) < 236))
+    if (smallNet && (std::abs(nnue) < 277))
     {
-        std::tie(psqt, positional) = networks.big.evaluate(pos, accumulators, &caches.big);
+        std::tie(psqt, positional) = networks.big.evaluate(pos, accumulators, caches.big);
         nnue                       = (125 * psqt + 131 * positional) / 128;
         smallNet                   = false;
     }
 
     // Blend optimism and eval with nnue complexity
     int nnueComplexity = std::abs(psqt - positional);
-    optimism += optimism * nnueComplexity / 468;
-    nnue -= nnue * nnueComplexity / 18000;
+    optimism += optimism * nnueComplexity / 476;
+    nnue -= nnue * nnueComplexity / 18236;
 
-    int material = 535 * pos.count<PAWN>() + pos.non_pawn_material();
-    int v        = (nnue * (77777 + material) + optimism * (7777 + material)) / 77777;
+    int material = 534 * pos.count<PAWN>() + pos.non_pawn_material();
+    int v        = (nnue * (77871 + material) + optimism * (7191 + material)) / 77871;
 
     // Damp down the evaluation linearly when shuffling
-    v -= v * pos.rule50_count() / 212;
+    v -= v * pos.rule50_count() / 199;
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
@@ -304,37 +304,46 @@ std::string analyze_legal_moves(const Position& pos, const Eval::NNUE::Networks&
 
     Color side_to_move = pos.side_to_move();
 
+    // -------------------------------------------------------------------------
+    // FIX CRASH & OTTIMIZZAZIONE
+    // -------------------------------------------------------------------------
+    // 1. Allocazione su HEAP: Le strutture NNUE sono troppo grandi per lo stack
+    //    nelle nuove patch. Usiamo make_unique per allocarle nella memoria dinamica.
+    // 2. Allocazione ESTERNA: Allocchiamo una volta sola fuori dal ciclo for
+    //    e riutilizziamo i buffer per tutte le mosse per non rallentare l'analisi.
+    auto acc_stack = std::make_unique<Eval::NNUE::AccumulatorStack>();
+    auto caches    = std::make_unique<Eval::NNUE::AccumulatorCaches>(networks);
+    // -------------------------------------------------------------------------
+
     // Genera tutte le mosse legali
     for (const auto& move : MoveList<LEGAL>(pos))
     {
-        // Usa una copia della posizione invece di copiare
+        // Usa una copia della posizione
         StateListPtr states(new std::deque<StateInfo>(1));
         Position     posCopy;
         posCopy.set(pos.fen(), pos.is_chess960(), &states->back());
 
-        // Esegui la mossa
+        // Esegui la mossa sulla copia
         StateInfo st;
         posCopy.do_move(move, st);
 
-        // Crea un nuovo contesto di valutazione per questa mossa
-        Eval::NNUE::AccumulatorStack acc_stack;
-        auto caches_new = std::make_unique<Eval::NNUE::AccumulatorCaches>(networks);
+        // Valuta la posizione risultante.
+        // Passiamo i puntatori dereferenziati (*acc_stack, *caches) perché
+        // evaluate si aspetta i riferimenti agli oggetti, non i unique_ptr.
+        Value v = Eval::evaluate(networks, posCopy, *acc_stack, *caches, VALUE_ZERO);
 
-        // Valuta la posizione dopo la mossa
-        Value v = Eval::evaluate(networks, posCopy, acc_stack, *caches_new, VALUE_ZERO);
-
-        // La valutazione v è dal punto di vista del giocatore che deve muovere nella nuova posizione
-        // Dopo la mossa, il turno cambia, quindi v è dal punto di vista dell'avversario
-        // Per ottenere la valutazione dal punto di vista del giocatore che ha fatto la mossa, invertiamo
+        // La valutazione 'v' è dal punto di vista di chi deve muovere ORA (l'avversario).
+        // La invertiamo per avere il valore dal punto di vista di chi ha appena mosso.
         Value eval_for_mover = -v;
 
-        // Converti al punto di vista del bianco per calcolare la win probability
+        // Converti al punto di vista del bianco per il calcolo WDL (Win/Draw/Loss)
+        // WDLModel lavora sempre e solo dal punto di vista del bianco.
         Value v_white = posCopy.side_to_move() == WHITE ? v : -v;
 
-        // Calcola la win probability dal punto di vista del bianco
+        // Calcola la win probability (sempre prospettiva White)
         uint8_t win_prob_white = WDLModel::get_win_probability(v_white, posCopy);
 
-        // Per il giocatore che muove, convertiamo la win probability
+        // Calcola la win probability per il giocatore che sta muovendo
         uint8_t win_prob_for_mover;
         if (side_to_move == WHITE)
         {
@@ -342,22 +351,25 @@ std::string analyze_legal_moves(const Position& pos, const Eval::NNUE::Networks&
         }
         else
         {
-            // Se il nero muove, la win probability per il nero è 100 - win_prob_white
+            // Se muove il nero, la sua probabilità di vittoria è l'opposto di quella del bianco
             win_prob_for_mover = 100 - win_prob_white;
         }
 
+        // Aggiungi alla lista
         moves.emplace_back(UCIEngine::move(move, pos.is_chess960()), eval_for_mover,
                            win_prob_for_mover);
     }
 
-    // Ordina le mosse per win probability decrescente (migliori prime)
-    // A parità di win probability, ordina per valutazione in centipawn decrescente
+    // Ordina le mosse:
+    // 1. Prima per Win Probability (decrescente)
+    // 2. A parità di Win Prob, per valutazione in centipawn (decrescente)
     std::sort(moves.begin(), moves.end(), [](const auto& a, const auto& b) {
         if (std::get<2>(a) != std::get<2>(b))
-            return std::get<2>(a) > std::get<2>(b);  // win probability più alta prima
-        return std::get<1>(a) > std::get<1>(b);      // a parità, eval più alta prima
+            return std::get<2>(a) > std::get<2>(b);  // win probability più alta vince
+        return std::get<1>(a) > std::get<1>(b);      // eval più alta vince
     });
 
+    // Costruisci la stringa di output
     std::stringstream ss;
     ss << "Legal moves ordered by static activity (best first): ";
     for (size_t i = 0; i < moves.size(); ++i)
@@ -369,6 +381,7 @@ std::string analyze_legal_moves(const Position& pos, const Eval::NNUE::Networks&
         Value       eval     = std::get<1>(moves[i]);
         uint8_t     win_prob = std::get<2>(moves[i]);
 
+        // Formatta l'output: "e2e4(+0.35 cp, 52%)"
         ss << move_str << "(" << std::showpos << std::fixed << std::setprecision(1)
            << 0.01 * UCIEngine::to_cp(eval, pos) << " cp, " << static_cast<int>(win_prob) << "%)";
     }
@@ -387,8 +400,8 @@ std::string Eval::trace(Position& pos, const Eval::NNUE::Networks& networks, boo
     if (pos.checkers())
         return "Final evaluation: none (in check)";
 
-    Eval::NNUE::AccumulatorStack accumulators;
-    auto                         caches = std::make_unique<Eval::NNUE::AccumulatorCaches>(networks);
+    auto accumulators = std::make_unique<Eval::NNUE::AccumulatorStack>();
+    auto caches       = std::make_unique<Eval::NNUE::AccumulatorCaches>(networks);
 
     std::stringstream ss;
 
@@ -399,7 +412,7 @@ std::string Eval::trace(Position& pos, const Eval::NNUE::Networks& networks, boo
     }
 
     // Calcola la valutazione finale
-    Value v = evaluate(networks, pos, accumulators, *caches, VALUE_ZERO);
+    Value v = evaluate(networks, pos, *accumulators, *caches, VALUE_ZERO);
 
     // Converti SEMPRE al punto di vista del bianco
     Value v_white = pos.side_to_move() == WHITE ? v : -v;
@@ -445,7 +458,7 @@ std::string Eval::trace(Position& pos, const Eval::NNUE::Networks& networks, boo
         ss << '\n' << NNUE::trace(pos, networks, *caches) << '\n';
         ss << std::showpoint << std::showpos << std::fixed << std::setprecision(2) << std::setw(15);
 
-        auto [psqt, positional] = networks.big.evaluate(pos, accumulators, &caches->big);
+        auto [psqt, positional] = networks.big.evaluate(pos, *accumulators, caches->big);
         Value v_nnue            = psqt + positional;
         v_nnue                  = pos.side_to_move() == WHITE ? v_nnue : -v_nnue;
         ss << "NNUE evaluation        " << 0.01 * UCIEngine::to_cp(v_nnue, pos)

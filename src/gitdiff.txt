@@ -1,0 +1,161 @@
+diff --git a/PatchesBenchmark.ods b/PatchesBenchmark.ods
+index 5e57b36..aa2ebe9 100644
+--- a/PatchesBenchmark.ods
++++ b/PatchesBenchmark.ods
+@@ -1170,25 +1170,9 @@ Mix bis
+ 
+ Mix tris
+ 
+-2830,2947063,1041463
++Average Total time (ms) : 2830
+ 
+-135
+-
+-1   Stockfish    +13  +76/=159/-65 51.83%  155.5/300
+-
+-2   ShashChess   -13  +65/=159/-76 48.17%  144.5/300
+-
+-Mix 4
+-
+-2994,3030887,1013105
+-
+-139
+-
+-1   Stockfish    +15  +68/=177/-55 52.17%  156.5/300
+-
+-2   ShashChess   -15  +55/=177/-68 47.83%  143.5/300
+-
+-Mix 5 (this version)
++Average Nodes searched  : 2947063
+ 
+-2892,2959584,1023469
++Average Nodes/second    : 1041463
+ 
+diff --git a/src/benchmark_log.txt b/src/benchmark_log.txt
+index 1ffbb15..ec48fe1 100644
+--- a/src/benchmark_log.txt
++++ b/src/benchmark_log.txt
+@@ -1,11 +1,11 @@
+-=== Benchmark ShashChess 02/06/2026 06:10:43 ===
+-========================================Time: 2905 ms, Nodes: 2959584, Nodes/sec: 1018789
+-Time: 2885 ms, Nodes: 2959584, Nodes/sec: 1025852
+-Time: 2891 ms, Nodes: 2959584, Nodes/sec: 1023723
+-Time: 2911 ms, Nodes: 2959584, Nodes/sec: 1016689
+-Time: 2867 ms, Nodes: 2959584, Nodes/sec: 1032292
++=== Benchmark ShashChess 02/05/2026 13:17:53 ===
++========================================Time: 2855 ms, Nodes: 2947063, Nodes/sec: 1032246
++Time: 2833 ms, Nodes: 2947063, Nodes/sec: 1040262
++Time: 2816 ms, Nodes: 2947063, Nodes/sec: 1046542
++Time: 2822 ms, Nodes: 2947063, Nodes/sec: 1044317
++Time: 2823 ms, Nodes: 2947063, Nodes/sec: 1043947
+ ========================================
+ Media dei risultati su 5 esecuzioni:
+-Average Total time (ms) : 2892
+-Average Nodes searched  : 2959584
+-Average Nodes/second    : 1023469
+\ No newline at end of file
++Average Total time (ms) : 2830
++Average Nodes searched  : 2947063
++Average Nodes/second    : 1041463
+\ No newline at end of file
+diff --git a/src/search.cpp b/src/search.cpp
+index f631d14..d349e65 100644
+--- a/src/search.cpp
++++ b/src/search.cpp
+@@ -1294,10 +1294,10 @@ Value Search::Worker::search(
+     bool        isAggressive        = localShashinManager.isAggressive();
+     bool        isTactical          = localShashinManager.isTactical();
+     bool        isComplex           = localShashinManager.isComplexPosition();
+-
++    // Include isTacticalReactive (che ora copre Capablanca-Petrosian) e HighTal.
+     const bool nodeHot = staticState.kingDanger || staticState.pawnsNearPromotion || isSacrificial
+-                      || stmKingExposed || opponentKingExposed || dynamicDerived.isHighTal;
+-
++                      || stmKingExposed || opponentKingExposed || dynamicDerived.isHighTal
++                      || dynamicDerived.isTacticalReactive;
+     uint8_t legalMoveCount = staticState.legalMoveCount;
+     //from crystal shashin end
+     if (!rootNode)
+@@ -1674,29 +1674,44 @@ Value Search::Worker::search(
+     // Step 8. Futility pruning: child node
+     // The depth condition is important for mate finding.
+     {
+-        // --- SHASHIN ADJUSTMENTS (Agile & Efficient) ---
++        // --- SHASHIN ADJUSTMENTS (TIGHTENED - HYBRID) ---
+         // In questa formula, margine PIU' GRANDE => pruning PIU' DIFFICILE => si cerca DI PIU'.
+         int marginMultiplier = 100;  // Base Stockfish (100%)
+ 
+-        // Logica Mix v2 (Solida):
+-        // 90% per Tal/Petrosian (pulizia albero), 110% per Strategical (efficienza).
++        // Tal/Aggressive + Petrosian (difesa tattica):
++        // Vogliamo evitare pruning "ottimistici" basati sulla statica.
++        // Margine AUMENTATO (120%) => Pruning più difficile => Più profondità.
+         if (isAggressive || isPetrosian)
+-            marginMultiplier = 90;
++        {
++            marginMultiplier = 120;
++        }
+         else if (isStrategical)
+-            marginMultiplier = 110;
++        {
++            // Capablanca/Strategic:
++            // Vogliamo efficienza nelle posizioni tranquille.
++            // Margine RIDOTTO (80%) => Pruning più facile => Più velocità.
++            marginMultiplier = 80;
++        }
+ 
+-        if (staticState.kingDanger)
++        // King danger / promozioni / sacrifici:
++        // Il pruning statico è pericoloso qui. Serve un margine enorme per evitare tagli sbagliati.
++        if (!isFortressNode
++            && (staticState.kingDanger || staticState.pawnsNearPromotion || isSacrificial))
+         {
+             marginMultiplier = std::max(marginMultiplier, 130);
+         }
+ 
+-        // Fortress
++        // Fortress: qui invece vogliamo tagliare duro (linee sterili).
+         if (isFortressNode)
++        {
+             marginMultiplier = 60;
++        }
+ 
+-        // Adjustment per mobilità
++        // Mobilità: se siamo strategici ma con tanta mobilità, non stringiamo troppo la vite.
+         if (isStrategical && legalMoveCount > 30)
+-            marginMultiplier = std::min(marginMultiplier + 5, 115);
++        {
++            marginMultiplier = std::min(marginMultiplier + 5, 100);
++        }
+         // --- END SHASHIN ADJUSTMENTS ---
+ 
+         auto futility_margin = [&](Depth d) {
+@@ -2088,11 +2103,10 @@ moves_loop:  // When in check, search starts here
+             Value singularBeta  = ttData.value - (53 + 75 * (ss->ttPv && !PvNode)) * depth / 60;
+             Depth singularDepth = newDepth / 2;
+ 
+-            // --- MODIFICA SHASHIN: SNIPER EXTENSION ---
+-            // 1) Depth > 12: Catturiamo tattiche che nascono prima.
+-            // 2) Divisore / 6: Estendiamo un po' di più per risolvere le posizioni.
+-            // 3) Includiamo isSacrificial.
+-            if ((isAggressive || isSacrificial) && staticState.kingDanger && depth > 12)
++            // --- MODIFICA SHASHIN: SNIPER EXTENSION (Optimized) ---
++            // Alziamo a depth > 14. Attiviamo il costo extra solo quando
++            // siamo abbastanza profondi da fare la differenza.
++            if (isAggressive && staticState.kingDanger && depth > 14)
+             {
+                 singularDepth += std::max(1, singularDepth / 6);
+             }
+@@ -2233,9 +2247,11 @@ skipExtensionAndPruning:  // full threads search patch
+             if (depth > 5 && ss->ply > 1)
+             {
+                 // 1. Aggressive (Tal):
++                // Aumentiamo ancora la profondità (-70 invece di -60).
++                // Serve a vedere quel "ply in più" nelle pepite tattiche.
+                 if (isAggressive && (givesCheck || capture))
+                 {
+-                    r -= 60;
++                    r -= 70;
+                 }
+                 // 2. Strategical (Capablanca):
+                 else if (isStrategical && !capture && !givesCheck && depth > 8)

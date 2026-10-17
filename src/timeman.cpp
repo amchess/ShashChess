@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2025 Andrea Manzo, F. Ferraguti, K.Kiniama and ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -94,7 +94,7 @@ void TimeManagement::init(Search::LimitsType& limits,
 
     // If less than one second, gradually reduce mtg
     if (scaledTime < 1000)
-        centiMTG = scaledTime * 5.051;
+        centiMTG = int(scaledTime * 5.051);
 
     // Make sure timeLeft is > 0 since we may use it as a divisor
     TimePoint timeLeft =

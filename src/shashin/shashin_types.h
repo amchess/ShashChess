@@ -10,22 +10,26 @@ namespace ShashChess {
 constexpr Depth MIN_DEPTH_FOR_QS_CUTOFF = 6;
 constexpr Depth ADJUSTED_QS_DEPTH       = DEPTH_QS + 2;
 
-// Use uint16_t for better bitmask operations
-enum class ShashinPosition : uint16_t {
-    HIGH_PETROSIAN           = 0x0001,
-    MIDDLE_PETROSIAN         = 0x0002,
-    LOW_PETROSIAN            = 0x0004,
-    MIDDLE_HIGH_PETROSIAN    = 0x0008,
-    MIDDLE_LOW_PETROSIAN     = 0x0010,
-    CAPABLANCA               = 0x0020,
-    LOW_TAL                  = 0x0040,
-    MIDDLE_TAL               = 0x0080,
-    HIGH_TAL                 = 0x0100,
-    MIDDLE_HIGH_TAL          = 0x0200,
-    MIDDLE_LOW_TAL           = 0x0400,
-    CAPABLANCA_PETROSIAN     = 0x0800,
-    CAPABLANCA_TAL           = 0x1000,
-    TAL_CAPABLANCA_PETROSIAN = 0x2000
+// REFACTORING: Enum sequenziale ordinato logicamente (Spettro Petrosian -> Capablanca -> Tal)
+// Questo permette di usare operatori >= e <= per i range.
+enum class ShashinPosition : uint8_t {
+    HIGH_PETROSIAN           = 0,
+    MIDDLE_HIGH_PETROSIAN    = 1,
+    MIDDLE_PETROSIAN         = 2,
+    MIDDLE_LOW_PETROSIAN     = 3,
+    LOW_PETROSIAN            = 4,
+    
+    CAPABLANCA_PETROSIAN     = 5,
+    CAPABLANCA               = 6,
+    CAPABLANCA_TAL           = 7,
+    
+    LOW_TAL                  = 8,
+    MIDDLE_LOW_TAL           = 9,
+    MIDDLE_TAL               = 10,
+    MIDDLE_HIGH_TAL          = 11,
+    HIGH_TAL                 = 12,
+    
+    TAL_CAPABLANCA_PETROSIAN = 13 // Total Chaos / Undefined
 };
 
 // Win probability ranges - made constexpr
@@ -45,6 +49,7 @@ constexpr int   HIGH_TAL_MAX              = 100;
 constexpr Value PawnConversionFactor      = 356;
 constexpr Value VALUE_TB_WIN              = 51 * PawnConversionFactor;
 constexpr Value VALUE_MAX_EVAL            = VALUE_TB_WIN - 8 * PawnConversionFactor;
+
 // Packed config to save space
 struct ShashinConfig {
     uint8_t highTal: 1;
@@ -116,20 +121,45 @@ struct StaticState {
         opponentKingSafetyScore(0) {}
 };
 
-// Ensure proper alignment for performance
-struct alignas(64) RootShashinState {
-    DynamicBaseState    dynamicBase;     // 8 bytes
-    DynamicDerivedState dynamicDerived;  // 4 bytes
-    StaticState         staticState;     // 12 bytes
-    uint8_t             padding[40];     // Padding calcolato
+struct RootShashinStateBase {
+    DynamicBaseState    dynamicBase;
+    DynamicDerivedState dynamicDerived;
+    StaticState         staticState;
+};
 
+constexpr size_t BASE_SIZE = sizeof(RootShashinStateBase);
+constexpr size_t TARGET_SIZE = 64;
+constexpr size_t PADDING_SIZE = (BASE_SIZE < TARGET_SIZE) ? (TARGET_SIZE - BASE_SIZE) : 0;
+
+// Ensure proper alignment for performance
+struct RootShashinState {
+    DynamicBaseState    dynamicBase;
+    DynamicDerivedState dynamicDerived;
+    StaticState         staticState;
+    uint8_t             padding[PADDING_SIZE];
+    
     RootShashinState() :
         dynamicBase(),
         dynamicDerived(),
-        staticState() {
-        std::memset(padding, 0, sizeof(padding));
+        staticState()
+    {
+        for (size_t i = 0; i < sizeof(padding); ++i) {
+            padding[i] = 0;
+        }
+    }
+    
+    void clear() {
+        dynamicBase = DynamicBaseState();
+        dynamicDerived = DynamicDerivedState();
+        staticState = StaticState();
+        for (size_t i = 0; i < sizeof(padding); ++i) {
+            padding[i] = 0;
+        }
     }
 };
+
+static_assert(sizeof(RootShashinState) == TARGET_SIZE, "RootShashinState must be exactly 64 bytes");
+
 }  // namespace ShashChess
 
 #endif  // SHASHIN_TYPES_H

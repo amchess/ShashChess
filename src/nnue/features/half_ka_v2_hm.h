@@ -1,6 +1,6 @@
 /*
   ShashChess, a UCI chess playing engine derived from Glaurung 2.1
-  Copyright (C) 2004-2025 The ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -75,68 +75,52 @@ class HalfKAv2_hm {
 
 #define B(v) (v * PS_NB)
     // clang-format off
-    static constexpr int KingBuckets[COLOR_NB][SQUARE_NB] = {
-      { B(28), B(29), B(30), B(31), B(31), B(30), B(29), B(28),
+    static constexpr IndexType KingBuckets[SQUARE_NB] = {
+        B(28), B(29), B(30), B(31), B(31), B(30), B(29), B(28),
         B(24), B(25), B(26), B(27), B(27), B(26), B(25), B(24),
         B(20), B(21), B(22), B(23), B(23), B(22), B(21), B(20),
         B(16), B(17), B(18), B(19), B(19), B(18), B(17), B(16),
         B(12), B(13), B(14), B(15), B(15), B(14), B(13), B(12),
         B( 8), B( 9), B(10), B(11), B(11), B(10), B( 9), B( 8),
         B( 4), B( 5), B( 6), B( 7), B( 7), B( 6), B( 5), B( 4),
-        B( 0), B( 1), B( 2), B( 3), B( 3), B( 2), B( 1), B( 0) },
-      { B( 0), B( 1), B( 2), B( 3), B( 3), B( 2), B( 1), B( 0),
-        B( 4), B( 5), B( 6), B( 7), B( 7), B( 6), B( 5), B( 4),
-        B( 8), B( 9), B(10), B(11), B(11), B(10), B( 9), B( 8),
-        B(12), B(13), B(14), B(15), B(15), B(14), B(13), B(12),
-        B(16), B(17), B(18), B(19), B(19), B(18), B(17), B(16),
-        B(20), B(21), B(22), B(23), B(23), B(22), B(21), B(20),
-        B(24), B(25), B(26), B(27), B(27), B(26), B(25), B(24),
-        B(28), B(29), B(30), B(31), B(31), B(30), B(29), B(28) }
+        B( 0), B( 1), B( 2), B( 3), B( 3), B( 2), B( 1), B( 0),
     };
     // clang-format on
 #undef B
     // clang-format off
     // Orient a square according to perspective (rotates by 180 for black)
-    static constexpr int OrientTBL[COLOR_NB][SQUARE_NB] = {
-      { SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1,
+    static constexpr IndexType OrientTBL[SQUARE_NB] = {
         SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1,
         SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1,
         SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1,
         SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1,
         SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1,
         SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1,
-        SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1 },
-      { SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8,
-        SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8,
-        SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8,
-        SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8,
-        SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8,
-        SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8,
-        SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8,
-        SQ_H8, SQ_H8, SQ_H8, SQ_H8, SQ_A8, SQ_A8, SQ_A8, SQ_A8 }
+        SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1,
+        SQ_H1, SQ_H1, SQ_H1, SQ_H1, SQ_A1, SQ_A1, SQ_A1, SQ_A1 ,
     };
     // clang-format on
 
     // Maximum number of simultaneously active features.
     static constexpr IndexType MaxActiveDimensions = 32;
     using IndexList                                = ValueList<IndexType, MaxActiveDimensions>;
+    using DiffType                                 = DirtyPiece;
 
     // Index of a feature for a given king position and another piece on some square
-    template<Color Perspective>
-    static IndexType make_index(Square s, Piece pc, Square ksq);
+
+    static IndexType make_index(Color perspective, Square s, Piece pc, Square ksq);
 
     // Get a list of indices for active features
-    template<Color Perspective>
-    static void append_active_indices(const Position& pos, IndexList& active);
+
+    static void append_active_indices(Color perspective, const Position& pos, IndexList& active);
 
     // Get a list of indices for recently changed features
-    template<Color Perspective>
-    static void
-    append_changed_indices(Square ksq, const DirtyPiece& dp, IndexList& removed, IndexList& added);
+    static void append_changed_indices(
+      Color perspective, Square ksq, const DiffType& diff, IndexList& removed, IndexList& added);
 
     // Returns whether the change stored in this DirtyPiece means
     // that a full accumulator refresh is required.
-    static bool requires_refresh(const DirtyPiece& dirtyPiece, Color perspective);
+    static bool requires_refresh(const DiffType& diff, Color perspective);
 };
 
 }  // namespace ShashChess::Eval::NNUE::Features
