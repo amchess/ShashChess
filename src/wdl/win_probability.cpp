@@ -1,9 +1,34 @@
+/*
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2026 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2018-2026 The ShashChess developers (see AUTHORS file)
+
+  ShashChess is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  ShashChess is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include "win_probability.h"
 #include <cmath>
 #include <sstream>
 
 namespace ShashChess {
 namespace WDLModel {
+
+namespace {
+// Fattorizzazione dei coefficienti del modello WDL di Stockfish 19
+constexpr double as[] = {-142.72052667, 372.35176398, -340.71073572, 415.23490212};
+constexpr double bs[] = {5.93832785, 15.61267078, -30.57816876, 69.63866711};
+}
 
 // 8001 * 62 = 496062: WDL array dimension
 #define WIN_PROBABILITY_SIZE 496062
@@ -18,20 +43,17 @@ inline size_t index(const ShashChess::Value v, const int m) {
     return (v + 4000) * 62 + m - 17;
 }
 
-//for Shashin theory and learning begin
+// [SC:shashin] begin
 // Calculate the "a" and "b" parameters of the WDL model for a given material
 WinRateParams win_rate_params(int materialClamp) {
-    double           m    = materialClamp / 58.0;
-    constexpr double as[] = {-72.32565836, 185.93832038, -144.58862193, 416.44950446};
-    constexpr double bs[] = {83.86794042, -136.06112997, 69.98820887, 47.62901433};
-
+    double m = materialClamp / 58.0;
 
     double a = (((as[0] * m + as[1]) * m + as[2]) * m) + as[3];
     double b = (((bs[0] * m + bs[1]) * m + bs[2]) * m) + bs[3];
 
     return {a, b};
 }
-//for Shashin theory and learning end
+// [SC:shashin] end
 
 WinRateParams win_rate_params(const Position& pos) {
 
@@ -40,10 +62,6 @@ WinRateParams win_rate_params(const Position& pos) {
 
     // The fitted model only uses data for material counts in [17, 78], and is anchored at count 58.
     double m = std::clamp(material, 17, 78) / 58.0;
-
-    // Return a = p_a(material) and b = p_b(material), see github.com/official-stockfish/WDL_model
-    constexpr double as[] = {-37.45051876, 121.19101539, -132.78783573, 420.70576692};
-    constexpr double bs[] = {90.26261072, -137.26549898, 71.10130540, 51.35259597};
 
     double a = (((as[0] * m + as[1]) * m + as[2]) * m) + as[3];
     double b = (((bs[0] * m + bs[1]) * m + bs[2]) * m) + bs[3];

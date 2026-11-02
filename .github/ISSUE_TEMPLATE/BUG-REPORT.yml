@@ -1,6 +1,12 @@
 name: Report issue
 description: Create a report to help us fix issues with the engine
 body:
+- type: markdown
+  attributes:
+    value: |
+      > [!IMPORTANT]
+      > Please do not open bug reports regarding the engine's choice of moves, such as the engine failing to find a particular "best" move. If you have any questions or wish to discuss engine analysis, please use our community channels, such as Discord.
+
 - type: textarea
   attributes:
     label: Describe the issue
@@ -60,6 +66,6 @@ body:
     description: |
       This can be found by running the engine.
       You can also use the commit ID.
-    placeholder: ShashChess 15 / e6e324e
+    placeholder: ShashChess 42 / e6e324e
   validations:
     required: true

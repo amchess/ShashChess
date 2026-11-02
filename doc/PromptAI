@@ -1,0 +1,30 @@
+Ho realizzato un motore chiamato ShashChess derivato di Stockfish.
+Lo scopo di tale motore è di rendere Stockfish piu' flessibile a tempi non brevissimi,
+cioè renderlo un miglior solutore di posizioni tattiche e almeno tanto forte nei match.
+A tal fine, il motore sfrutta il sistema di pensiero di Alexander Shashin (da cui il nome)
+illustrata nel libro Best Play: A New Method For Discovering The Strongest Move:
+https://www.amazon.com/Best-Play-Method-Discovering-Strongest/dp/1936277468
+Fondamentalmente, a ogni root position nella search si associa uno stato costituito
+dalla classificazione della stessa in base alle zone di Shashin, a una valutazione statica (all'inizio) e 
+a quelle ottenute dalla search a profondità via via cescenti +  altri parametri dipendenti dalla posizione.
+Tale classificazione direziona i passi anche ricorsivi a profondità via via crescenti.
+La versione attuale integra anche un algoritmo di riconoscimento delle fortezze e altre patch.
+Il framework di Shashin è contenuto nell'omonimo pacchetto shashin ed è costituito da 8 file.
+Tali file impattano il movegen, il movepick e, soprattutto, chiaramente, la search.
+In allegato, i file coinvolti e vanno presi per buoni: bisogna partire da essi per implementare le patch.
+La search, per brevità, contiene solo le patch introdotte. Non c'è skill in shashchess.
+In generale, la filosofia è la seguente:
+Stockfish posizioni "tranquille"
+Crystal posizioni "tatticamente complesse".
+Piu' tagli/riduzioni => meno profondità => piu' filosofia di Stockfish
+e viceversa giusto
+e poi maggiori estensioni per posizioni che necessitano maggiore variabilità e meno profondità
+e viceversa.
+La strategia di test è la seguente:
+256 posizioni in formato epd testate a un minuto e a singolo thread.
+50 posizioni sharp per un match di 100 partite ripetuto 3 volte. Quindi, 300 partite totali a 25+10
+contro stockfish.
+Avevo allineato le patch implementate a uno stockfish e avevo ottenuto un risultato migliore sia in termini di numero di posizioni risolte sia nel match.
+Poi, la community ha rilasciato lei alcune patch e ho cercato d'adattarle sul codice di ShashChess.
+Ho ottenuto pero' un degrado complessivo delle prestazioni.
+Mi aiuti a ritornare sulle varie patch per adattarle nel modo migliore e recuperare il terreno perduto?

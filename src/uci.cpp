@@ -1,6 +1,7 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2026 ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2018-2026 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,13 +21,16 @@
 
 #include <algorithm>
 #include <cctype>
+#include <chrono>
 #include <cmath>
-#include <cstdint>
+#include <cstdlib>
 #include <iterator>
 #include <optional>
 #include <sstream>
 #include <string_view>
+#include <filesystem>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "benchmark.h"
@@ -38,16 +42,21 @@
 #include "search.h"
 #include "types.h"
 #include "ucioption.h"
-//From ShashChess begin
 
+// [SC:shashchess] begin
 #include "learn/learn.h"
 #include "book/book.h"
 #include "mcts/montecarlo.h"
-//From ShashChess end
+#include "wdl/win_probability.h"
+// [SC:shashchess] end
+
 namespace ShashChess {
+
+using Time = std::chrono::steady_clock;
+using ms   = std::chrono::milliseconds;
+
 constexpr auto BenchmarkCommand = "speedtest";
 
-constexpr auto StartFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 template<typename... Ts>
 struct overload: Ts... {
     using Ts::operator()...;
@@ -68,9 +77,11 @@ void UCIEngine::print_info_string(std::string_view str) {
     sync_cout_end();
 }
 
-UCIEngine::UCIEngine(int argc, char** argv) :
-    engine(argv[0]),
-    cli(argc, argv) {
+UCIEngine::UCIEngine(CommandLine cli_) :
+    engine(cli_.argc > 0 ? std::optional{path_from_utf8(cli_.argv[0])} : std::nullopt),
+    cli(std::move(cli_)) {
+
+    Util::init(&cli);  // [SC] Inizializzazione di Util::cli dopo lo std::move
 
     engine.get_options().add_info_listener([](const std::optional<std::string>& str) {
         if (str.has_value())
@@ -85,16 +96,20 @@ void UCIEngine::init_search_update_listeners() {
     engine.set_on_update_no_moves([](const auto& i) { on_update_no_moves(i); });
     engine.set_on_update_full(
       [this](const auto& i) { on_update_full(i, engine.get_options()["UCI_ShowWDL"]); });
+    engine.set_on_start([]() {});
     engine.set_on_bestmove([](const auto& bm, const auto& p) { on_bestmove(bm, p); });
-    engine.set_on_verify_networks([](const auto& s) { print_info_string(s); });
+    engine.set_on_verify_network([](const auto& s) { print_info_string(s); });
 }
 
 void UCIEngine::loop() {
-    //learning begin
+    set_console_utf8();
+
+    // [SC:learning] begin
     Position     pos;
     StateListPtr states(new std::deque<StateInfo>(1));
     pos.set(StartFEN, false, &states->back());
-    //learning end
+    // [SC:learning] end
+
     std::string token, cmd;
 
     for (int i = 1; i < cli.argc; ++i)
@@ -106,34 +121,31 @@ void UCIEngine::loop() {
             && !getline(std::cin, cmd))  // Wait for an input or an end-of-file (EOF) indication
             cmd = "quit";
 
+        currentCmd = cmd;
         std::istringstream is(cmd);
 
         token.clear();  // Avoid a stale if getline() returns nothing or a blank line
-        is >> std::skipws >> token;
+        is >> token;
 
         if (token == "quit" || token == "stop")
-        {  //learning
+        {
             engine.stop();
 
-            //learning begin
+            // [SC:learning] begin
             if (token == "quit" && LD.is_enabled() && !LD.is_paused())
             {
-                //Wait for the current search operation (if any) to stop
-                //before proceeding to save experience data
                 engine.wait_for_search_finished();
 
-                //Perform Q-learning if enabled
                 if (LD.learning_mode() == LearningMode::Self)
                 {
                     putQLearningTrajectoryIntoLearningTable();
                 }
                 if (!LD.is_readonly())
                 {
-                    //Save to learning file
                     LD.persist(engine.get_options());
                 }
             }
-            //learning end
+            // [SC:learning] end
         }
         // The GUI sends 'ponderhit' to tell that the user has played the expected move.
         // So, 'ponderhit' is sent if pondering was done on the same move that the user
@@ -160,16 +172,19 @@ void UCIEngine::loop() {
             go(is);
         }
         else if (token == "position")
-        {  //Experience Book
+        {
             position(is);
             pos.set(engine.fen(), engine.get_options()["UCI_Chess960"], &states->back());
-        }  //Experience Book
+        }
         else if (token == "ucinewgame")
-        //learning begin
         {
+            // [SC:learning] begin
             if (LD.is_enabled())
             {
-                //Perform Q-learning if enabled
+                // A GUI may end a game (adjudication) while we are still searching:
+                // make sure the search thread is done before flushing the trajectory
+                engine.wait_for_search_finished();
+
                 if (LD.learning_mode() == LearningMode::Self)
                 {
                     putQLearningTrajectoryIntoLearningTable();
@@ -177,21 +192,24 @@ void UCIEngine::loop() {
 
                 if (!LD.is_readonly())
                 {
-                    //Save to learning file
                     LD.persist(engine.get_options());
                 }
                 setStartPoint();
             }
+            // [SC:learning] end
             engine.search_clear();
         }
-        //learning end
         else if (token == "isready")
             sync_cout << "readyok" << sync_endl;
 
         // Add custom non-UCI commands, mainly for debugging purposes.
-        // These commands must not be used during a search!
         else if (token == "flip")
-            engine.flip();
+        {
+            if (auto err = engine.flip())
+            {
+                terminate_on_critical_error(err->what());
+            }
+        }
         else if (token == "bench")
             bench(is);
         else if (token == BenchmarkCommand)
@@ -200,27 +218,25 @@ void UCIEngine::loop() {
             sync_cout << engine.visualize() << sync_endl;
         else if (token == "eval")
             engine.trace_eval();
-        //book and exp begin
+        // [SC:learning-expbook] begin
         else if (token == "book")
             engine.show_moves_bookMan(pos);
         else if (token == "showexp")
             LD.show_exp(pos);
         else if (token == "quickresetexp")
             LD.quick_reset_exp();
-        //book and exp end
+        // [SC:learning-expbook] end
         else if (token == "compiler")
             sync_cout << compiler_info() << sync_endl;
         else if (token == "export_net")
         {
-            std::pair<std::optional<std::string>, std::string> files[2];
+            std::optional<std::filesystem::path> file;
+            std::string                          filename;
 
-            if (is >> std::skipws >> files[0].second)
-                files[0].first = files[0].second;
+            if (is >> filename)
+                file = path_from_utf8(filename);
 
-            if (is >> std::skipws >> files[1].second)
-                files[1].first = files[1].second;
-
-            engine.save_network(files);
+            engine.save_network(file);
         }
         else if (token == "--help" || token == "help" || token == "--license" || token == "license")
             sync_cout
@@ -235,19 +251,23 @@ void UCIEngine::loop() {
             sync_cout << "Unknown command: '" << cmd << "'. Type help for more information."
                       << sync_endl;
 
-    } while (token != "quit" && cli.argc == 1);  // The command-line arguments are one-shot
+    } while (token != "quit" && cli.argc <= 1);
 }
 
 Search::LimitsType UCIEngine::parse_limits(std::istream& is) {
     Search::LimitsType limits;
     std::string        token;
 
-    limits.startTime = now();  // The search starts as early as possible
+    limits.startTime = now();
 
     while (is >> token)
+    {
         if (token == "searchmoves")  // Needs to be the last command on the line
+        {
             while (is >> token)
                 limits.searchmoves.push_back(to_lower(token));
+            break;
+        }
 
         else if (token == "wtime")
             is >> limits.time[WHITE];
@@ -274,6 +294,10 @@ Search::LimitsType UCIEngine::parse_limits(std::istream& is) {
         else if (token == "ponder")
             limits.ponderMode = true;
 
+        if (is.fail())
+            terminate_on_critical_error("Invalid argument for '" + token + "'");
+    }
+
     return limits;
 }
 
@@ -289,8 +313,8 @@ void UCIEngine::go(std::istringstream& is) {
 
 void UCIEngine::bench(std::istream& args) {
     std::string token;
-    uint64_t    num, nodes = 0, cnt = 1;
-    uint64_t    nodesSearched = 0;
+    u64         num, nodes = 0, cnt = 1;
+    u64         nodesSearched = 0;
     const auto& options       = engine.get_options();
 
     engine.set_on_update_full([&](const auto& i) {
@@ -308,7 +332,7 @@ void UCIEngine::bench(std::istream& args) {
     for (const auto& cmd : list)
     {
         std::istringstream is(cmd);
-        is >> std::skipws >> token;
+        is >> token;
 
         if (token == "go" || token == "eval")
         {
@@ -338,7 +362,7 @@ void UCIEngine::bench(std::istream& args) {
             position(is);
         else if (token == "ucinewgame")
         {
-            //learning begin
+            // [SC:learning] begin
             if (LD.is_enabled())
             {
                 if (LD.learning_mode() == LearningMode::Self && !LD.is_paused())
@@ -347,7 +371,7 @@ void UCIEngine::bench(std::istream& args) {
                 }
                 setStartPoint();
             }
-            //learning end
+            // [SC:learning] end
             engine.search_clear();  // search_clear may take a while
             elapsed = now();
         }
@@ -371,22 +395,19 @@ void UCIEngine::benchmark(std::istream& args) {
     static constexpr int NUM_WARMUP_POSITIONS = 3;
 
     std::string token;
-    uint64_t    nodes = 0, cnt = 1;
-    uint64_t    nodesSearched = 0;
+    u64         cnt = 1;
 
-    engine.set_on_update_full([&](const Engine::InfoFull& i) { nodesSearched = i.nodes; });
-
+    engine.set_on_update_full([](const auto&) {});
     engine.set_on_iter([](const auto&) {});
     engine.set_on_update_no_moves([](const auto&) {});
     engine.set_on_bestmove([](const auto&, const auto&) {});
-    engine.set_on_verify_networks([](const auto&) {});
+    engine.set_on_verify_network([](const auto&) {});
 
     Benchmark::BenchmarkSetup setup = Benchmark::setup_benchmark(args);
 
     const auto numGoCommands = count_if(setup.commands.begin(), setup.commands.end(),
                                         [](const std::string& s) { return s.find("go ") == 0; });
 
-    TimePoint totalTime = 0;
 
     // Set options once at the start.
     auto ss = std::istringstream("name Threads value " + std::to_string(setup.threads));
@@ -400,7 +421,7 @@ void UCIEngine::benchmark(std::istream& args) {
     for (const auto& cmd : setup.commands)
     {
         std::istringstream is(cmd);
-        is >> std::skipws >> token;
+        is >> token;
 
         if (token == "go")
         {
@@ -426,12 +447,11 @@ void UCIEngine::benchmark(std::istream& args) {
 
     std::cerr << "\n";
 
-    cnt   = 1;
-    nodes = 0;
+    cnt = 1;
 
-    int           numHashfullReadings = 0;
-    constexpr int hashfullAges[]      = {0, 999};  // Only normal hashfull and touched hash.
-    constexpr int hashfullAgeCount    = std::size(hashfullAges);
+    int           numHashfullReadings             = 0;
+    constexpr int hashfullAges[]                  = {0, 999};
+    constexpr int hashfullAgeCount                = std::size(hashfullAges);
     int           totalHashfull[hashfullAgeCount] = {0};
     int           maxHashfull[hashfullAgeCount]   = {0};
 
@@ -448,10 +468,28 @@ void UCIEngine::benchmark(std::istream& args) {
 
     engine.search_clear();  // search_clear may take a while
 
+    Time::time_point elapsed;
+    Time::duration   totalTime(0);
+
+    u64 nodes = 0, nodesSearched = 0;
+
+    engine.set_on_update_full([&](const Engine::InfoFull& i) { nodesSearched = i.nodes; });
+
+    engine.set_on_start([&elapsed, &nodesSearched]() {
+        elapsed       = Time::now();
+        nodesSearched = 0;
+    });
+
+    engine.set_on_bestmove(
+      [&totalTime, &elapsed, &nodes, &nodesSearched](const auto&, const auto&) {
+          totalTime += Time::now() - elapsed;
+          nodes += nodesSearched;
+      });
+
     for (const auto& cmd : setup.commands)
     {
         std::istringstream is(cmd);
-        is >> std::skipws >> token;
+        is >> token;
 
         if (token == "go")
         {
@@ -460,18 +498,11 @@ void UCIEngine::benchmark(std::istream& args) {
 
             Search::LimitsType limits = parse_limits(is);
 
-            nodesSearched     = 0;
-            TimePoint elapsed = now();
-
             // Run with silenced network verification
             engine.go(limits);
             engine.wait_for_search_finished();
 
-            totalTime += now() - elapsed;
-
             updateHashfullReadings();
-
-            nodes += nodesSearched;
         }
         else if (token == "position")
             position(is);
@@ -481,7 +512,8 @@ void UCIEngine::benchmark(std::istream& args) {
         }
     }
 
-    totalTime = std::max<TimePoint>(totalTime, 1);  // Ensure positivity to avoid a 'divide by zero'
+    // Ensure positivity to avoid a 'divide by zero'
+    const auto totalTimeMs = std::max<i64>(std::chrono::duration_cast<ms>(totalTime).count(), 1LL);
 
     dbg_print();
 
@@ -516,8 +548,8 @@ void UCIEngine::benchmark(std::istream& args) {
               << "\n    single game            : " << maxHashfull[1] << ", "
               << totalHashfull[1] / numHashfullReadings
               << "\nTotal nodes searched       : " << nodes
-              << "\nTotal search time [s]      : " << totalTime / 1000.0
-              << "\nNodes/second               : " << 1000 * nodes / totalTime << std::endl;
+              << "\nTotal search time [s]      : " << totalTimeMs / 1000.0
+              << "\nNodes/second               : " << 1000 * nodes / totalTimeMs << std::endl;
 
     // clang-format on
 
@@ -529,13 +561,19 @@ void UCIEngine::setoption(std::istringstream& is) {
     engine.get_options().setoption(is);
 }
 
-std::uint64_t UCIEngine::perft(const Search::LimitsType& limits) {
-    auto nodes = engine.perft(engine.fen(), limits.perft, engine.get_options()["UCI_Chess960"]);
+u64 UCIEngine::perft(const Search::LimitsType& limits) {
+    auto result = engine.perft(engine.fen(), limits.perft, engine.get_options()["UCI_Chess960"]);
+    if (auto err = std::get_if<PositionSetError>(&result))
+        terminate_on_critical_error(err->what());
+
+    auto nodes = std::get<u64>(result);
     sync_cout << "\nNodes searched: " << nodes << "\n" << sync_endl;
     return nodes;
 }
 
 void UCIEngine::position(std::istringstream& is) {
+    const std::string fullCommand = is.str();
+
     std::string token, fen;
 
     is >> token;
@@ -558,8 +596,19 @@ void UCIEngine::position(std::istringstream& is) {
         moves.push_back(token);
     }
 
-    engine.set_position(fen, moves);
+    auto err = engine.set_position(fen, moves);
+    if (err.has_value())
+    {
+        terminate_on_critical_error(err->what());
+    }
 }
+
+// [SC:learning] begin
+int UCIEngine::getNormalizeToPawnValue(Position& pos) {
+    auto [a, b] = WDLModel::win_rate_params(pos);
+    return a;
+}
+// [SC:learning] end
 
 std::string UCIEngine::format_score(const Score& s) {
     constexpr int TB_CP = 20000;
@@ -569,8 +618,7 @@ std::string UCIEngine::format_score(const Score& s) {
                    return std::string("mate ") + std::to_string(m);
                },
                [](Score::Tablebase tb) -> std::string {
-                   return std::string("cp ")
-                        + std::to_string((tb.win ? TB_CP - tb.plies : -TB_CP - tb.plies));
+                   return std::string("cp ") + std::to_string((tb.win ? TB_CP : -TB_CP) - tb.plies);
                },
                [](Score::InternalUnits units) -> std::string {
                    return std::string("cp ") + std::to_string(units.value);
@@ -578,27 +626,24 @@ std::string UCIEngine::format_score(const Score& s) {
 
     return s.visit(format);
 }
-//from learning begin
-int UCIEngine::getNormalizeToPawnValue(Position& pos) {
-    auto [a, b] = WDLModel::win_rate_params(pos);
-    return a;
-}
-//from learning end
 
-// Turns a Value to an integer centipawn number,
-// without treatment of mate and similar special scores.
 int UCIEngine::to_cp(Value v, const Position& pos) {
-
-    // In general, the score can be defined via the WDL as
-    // (log(1/L - 1) - log(1/W - 1)) / (log(1/L - 1) + log(1/W - 1)).
-    // Based on our win_rate_model, this simply yields v / a.
-
     auto [a, b] = WDLModel::win_rate_params(pos);
-
     return int(std::round(100 * int(v) / a));
 }
 
-//in wdl package for wdl model
+std::string UCIEngine::wdl(Value v, const Position& pos) {
+    std::stringstream ss;
+
+    auto [a, b] = WDLModel::win_rate_params(pos);
+    int wdl_w   = int(0.5 + 1000 / (1 + std::exp((a - double(v)) / b)));
+    int wdl_l   = int(0.5 + 1000 / (1 + std::exp((a - double(-v)) / b)));
+    int wdl_d   = 1000 - wdl_w - wdl_l;
+    ss << wdl_w << " " << wdl_d << " " << wdl_l;
+
+    return ss.str();
+}
+
 std::string UCIEngine::square(Square s) {
     return std::string{char('a' + file_of(s)), char('1' + rank_of(s))};
 }
@@ -624,9 +669,9 @@ std::string UCIEngine::move(Move m, bool chess960) {
     return move;
 }
 
-
 std::string UCIEngine::to_lower(std::string str) {
-    std::transform(str.begin(), str.end(), str.begin(), [](auto c) { return std::tolower(c); });
+    std::transform(str.begin(), str.end(), str.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
 
     return str;
 }
@@ -686,6 +731,13 @@ void UCIEngine::on_bestmove(std::string_view bestmove, std::string_view ponder) 
     if (!ponder.empty())
         std::cout << " ponder " << ponder;
     std::cout << sync_endl;
+}
+
+void UCIEngine::terminate_on_critical_error(const std::string& message) {
+    sync_cout << "info string CRITICAL ERROR: Command `" << currentCmd
+              << "` failed. Reason: " << message << '\n'
+              << sync_endl;
+    std::exit(1);
 }
 
 }  // namespace ShashChess

@@ -1,6 +1,7 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2026 ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2018-2026 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,11 +21,11 @@
 #define MOVEPICK_H_INCLUDED
 
 #include "history.h"
-//from shashin begin
+// [SC:shashin] begin
 #include "shashin/shashin_position.h"
 #include "shashin/moveconfig.h"
 #include "bitboard.h"
-//from shashin end
+// [SC:shashin] end
 namespace ShashChess {
 static constexpr uint8_t AdjPawnCount[8] = {0, 1, 2, 2, 2, 2, 1, 0};
 class Position;
@@ -58,9 +59,7 @@ class MovePicker {
     template<typename Pred>
     Move select(Pred);
     template<GenType T>
-    ExtMove* score(MoveList<T>&);
-    ExtMove* begin() { return cur; }
-    ExtMove* end() { return endCur; }
+    ExtMove* score(const MoveList<T>&);
 
     const Position&              pos;
     const ButterflyHistory*      mainHistory;

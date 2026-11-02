@@ -1,0 +1,45 @@
+Nome patch/step,Elo,Metodo discriminante,
+Movegen.cpp generate_moves(...),-,useMoveGenCrystalLogic(),
+Depth adjustedDepth,-,"shashinManager.isStrategical();
+shashinManager.isComplexCapablancaPosition();",
+value_draw,-,shashinManager.isStrategical(),
+ExcludedMove,-,shashinManager.isStrategical();  shashinManager.isTacticalDefensive(),
+Step 4. Transposition table lookup,-,"shashinManager.isStrategical();
+shashinManager.isTactical()",
+ Step 7. Razoring,~1 Elo,"        bool applyRazoring = !(shashinManager.isTacticalAggressive() && shashinManager.getState().legalMoveCount >= 30) && 
+            (shashinManager.isTacticalInitiative() || 
+            shashinManager.isTacticalReactive() || 
+            shashinManager.isStrategical());",
+early pruning,-,shashinManager.useEarlyPruning(),
+Step 8. Futility pruning: child node ,~40 Elo,bool useCrystalFutilityPruningChild = shashinManager.useCrystalFutilityPruningChild(),
+Step 9. Null move search with verification search ,~35 Elo,"bool useNullMoveByShashin = shashinManager.useCrystalNullMoveSearch();
+        bool isAggressiveZone = shashinManager.isTacticalAggressive() || shashinManager.isTacticalAttacking();
+        bool isPassiveZone = shashinManager.isTacticalPassive();",
+Step 10. Internal iterative reductions ,~9 Elo,"shashinManager.avoidStep10();
+shashinManager.isTacticalAggressive()
+shashinManager.isTacticalReactive()",
+Step 12. A small Probcut idea,~4 Elo, bool probCutFromCrystal = shashinManager.allowCrystalProbCut(),
+Mate,-, bool useMateCrystalLogic = shashinManager.isTacticalHighMiddle(),
+Step 14. Pruning at shallow depth ,~120 Elo,"shashinManager.isTacticalAggressive()
+bool doLMP =  ss->ply > 2 && !PvNode;
+shashinManager.isTacticalAggressive();
+shashinManager.isTacticalPassive();",
+Futility pruning: parent node ,~13 Elo,bool useCrystalFutilityPruningParent = shashinManager.useCrystalFutilityPruningParent(),
+Step 15. Extensions ,~100 Elo,shashinManager.isHighTal(),
+Step 17. Late moves reduction / extension (LMR, ~117 Elo,"    bool lmrCapture = cutNode && (ss - 1)->moveCount > 1;
+
+    bool kingDangerThem = ourMove && pos.king_danger(~us);
+
+    bool allowLMR =     depth > 1
+                    && !gameCycle
+                    && (!kingDangerThem || ss->ply > 6)
+                    && (!PvNode || ss->ply > 1);
+
+    bool doLMP =  ss->ply > 2 && !PvNode;
+
+        bool isTacticalReduction = shashinManager.isTacticalReduction();
+        bool isNonTacticalIntermediate = shashinManager.isTacticalPassive() || shashinManager.isSimpleIntermediate();
+        bool isComplexPosition = shashinManager.isComplexPosition();
+shashinManager.isTacticalPassive()Step 20. Check for a new best move",
+Step 20. Check for a new best move,,"bool useCrystalReduction = shashinManager.isTacticalHighMiddle();
+bool isStrategical = shashinManager.isStrategical();",

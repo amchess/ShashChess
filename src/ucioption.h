@@ -1,6 +1,7 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2026 The ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2018-2026 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,12 +20,13 @@
 #ifndef UCIOPTION_H_INCLUDED
 #define UCIOPTION_H_INCLUDED
 
-#include <cstddef>
 #include <functional>
 #include <iosfwd>
 #include <map>
 #include <optional>
 #include <string>
+
+#include "misc.h"
 
 namespace ShashChess {
 // Define a custom comparator, because the UCI options should be case-insensitive
@@ -39,7 +41,6 @@ class Option {
    public:
     using OnChange = std::function<std::optional<std::string>(const Option&)>;
 
-    Option(const OptionsMap*);
     Option(OnChange = nullptr);
     Option(bool v, OnChange = nullptr);
     Option(const char* v, OnChange = nullptr);
@@ -63,8 +64,8 @@ class Option {
 
 
     std::string       defaultValue, currentValue, type;
-    int               min, max;
-    size_t            idx;
+    int               min = 0, max = 0;
+    usize             idx = 0;
     OnChange          on_change;
     const OptionsMap* parent = nullptr;
 };
@@ -87,7 +88,7 @@ class OptionsMap {
 
     void add(const std::string&, const Option& option);
 
-    std::size_t count(const std::string&) const;
+    usize count(const std::string&) const;
 
    private:
     friend class Engine;

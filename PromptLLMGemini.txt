@@ -1,0 +1,104 @@
+Ho realizzato un motore chiamato ShashChess derivato di Stockfish.
+Lo scopo di tale motore è di rendere Stockfish piu' flessibile a tempi non brevissimi,
+cioè renderlo un miglior solutore di posizioni tattiche e almeno tanto forte nei match.
+A tal fine, il motore sfrutta il sistema di pensiero di Alexander Shashin (da cui il nome)
+illustrata nel libro Best Play: A New Method For Discovering The Strongest Move:
+https://www.amazon.com/Best-Play-Method-Discovering-Strongest/dp/1936277468
+Fondamentalmente, a ogni root position nella search, si associa uno stato costituito
+dalla classificazione della stessa in base alle zone di Shashin, a una valutazione statica (all'inizio) e 
+a quelle ottenute dalla search a profondità via via cescenti +  altri parametri dipendenti dalla posizione.
+Tale classificazione direziona i passi anche ricorsivi a profondità via via crescenti.
+La semantica è illustrata dalla seguente tabella:
+| **WDL Range (W, D, L)**       | **Shashin Position’s Type**          | **Win Probability Range** | **Informator Symbols**| **Description**                                             |
+|-------------------------------|--------------------------------------|---------------------------|-----------------------|-------------------------------------------------------------|
+| [0, 3], [0, 4], [96, 100]    | High Petrosian                       | [0, 5]                  | -+                     | Winning: a decisive disadvantage, with the position clearly leading to victory.      |
+| [4, 6], [5, 8], [89, 95]     | High-Middle Petrosian                | [6, 10]                 | -+ \ -/+               | Decisive disadvantage: dominant position and likely winning.                      |
+| [7, 9], [9, 12], [80, 87]    | Middle Petrosian                     | [11, 15]                 | -/+                    | Clear disadvantage: a substantial positional advantage, but a win is not yet inevitable.                          |
+| [10, 12], [13, 16], [73, 79]  | Middle-Low Petrosian                 | [16, 20]                 | -/+ \ =/+              | Significant disadvantage: strong edge                   |
+| [13, 15], [17, 39], [66, 71]  | Low Petrosian                        | [21, 24]                 | =/+                    | Slight disadvantage with a positional edge, but no immediate threats.              |
+| [0, 30], [40, 99], [31, 64]  | Chaos: Capablanca-Petrosian          | [25, 49]                 | ↓                      | Opponent pressure and initiative: defensive position.        |
+| [0, 0], [100, 100], [0, 0]    | Capablanca                           | [50, 50]                 | =                      | Equal position. Both sides are evenly matched, with no evident advantage.           |
+| [30, 64], [40, 99], [0, 30]  | Chaos: Capablanca-Tal                | [51, 75]                 | ↑                      | Initiative: playing dictation with active moves and forcing ideas.                     |
+| [65, 71], [17, 39], [13, 15]   | Low Tal                              | [76, 79]                 | +/=                    | Slight advantage: a minor positional edge, but it’s not significant.                    |
+| [72, 78], [13, 16], [10, 12]  | Middle-Low Tal                       | [80, 84]                 | +/= \ +/-              |  Slightly better, tending toward a clear advantage. The advantage is growing, but the position is still not decisive.            |
+| [79, 87], [9, 12], [7, 9]    | Middle Tal                           | [85, 89]                 | +/-                    | Clear advantage: a significant edge, but still with defensive chances.                          |
+| [88, 95], [5, 8], [4, 6]      | High-Middle Tal                      | [90, 94]                 | +/- \ +-               | Dominant position, almost decisive, not quite winning yet, but trending toward victory.                           |
+| [96, 100], [0, 4], [0, 3]    | High Tal                             | [95, 100]                | +-                     | Winning: a decisive advantage, with victory nearly assured.   |
+| In particular, [33, 33], [33, 33], [33, 33]                   | Chaos: Capablanca-Petrosian-Tal | (Unclassified)                   | ∞                      | Total chaos: unclear position, dynamically balanced, with no clear advantage for either side and no clear positional trends.                       |
+
+La versione attuale integra anche un algoritmo di riconoscimento delle fortezze e altre patch.
+La versione su github ufficiale è allineata a una patch del 18 ottobre 2025:
+https://github.com/amchess/ShashChess
+Ho provato ad allinearlo alla patch corrente di Stockfish:
+https://github.com/official-stockfish/Stockfish
+
+La situazione è la seguente:
+
+Engine/patch	Benchmark (Total time (ms),Nodes searched,Nodes/second)	Solved Positions	Match result (4 ore 48 minuti 56 secondi)
+Stockfish 15 gennaio 2026	2245,2050811,913577	125	
+fix latest search patches	2831,2710345,957652	128	                       1   ShashChess    +2  +59/=184/-57 50.33%  151.0/300 2   Stockfish     -2  +57/=184/-59 49.67%  149.0/300  
+ 
+
+Lo scopo è che ShashChess sia almento tanto forte quanto Stockfish sia nella soluzione di posizioni sia nei match e che sia 
+superiore in almeno uno dei due.
+Ho già ottenuto tale risultato, ma, secondo me, puo' esserlo ancora di più nel match e/o nella suite.
+
+Ti ricordo le linee Guida per il Framework di Shashin
+Riduzione e Profondità:
+
+Maggiore riduzione → Minore profondità di ricerca → Migliore efficienza (performance nei match) ma peggiore qualità nelle posizioni critiche.
+
+Minore riduzione → Maggiore profondità di ricerca → Peggiore efficienza ma migliore qualità nelle posizioni critiche.
+
+Tipi di Posizione:
+
+Posizioni Strategiche (es. Capablanca/Petrosian): Posizioni chiuse, strutture pedonali fissate, alta mobilità ma senza tensioni tattiche immediate. Beneficiano di:
+
+Maggiore riduzione (più efficienza)
+
+Null move (già gestito in Step 9)
+
+Meno profondità richiesta
+
+Posizioni Tattiche (es. Tal, sacrificiali): Posizioni con re esposti, pedoni vicini a promozione, tensioni tattiche. Richiedono:
+
+Minore riduzione (più profondità)
+
+No null move
+
+Re-search aggressivo
+
+Posizioni Complesse: Alta mobilità + molto materiale (può essere strategico) o pericolo per i re/pedoni vicini a promozione (tattico). Devono essere distinte:
+
+Se alta mobilità senza pericolo → tendente a strategico
+
+Se pericolo per re o pedoni → tendente a tattico
+
+Metodi Crystal (derivato di stockfish migliore nelle posizioni complicate e peggiore nei match. La mia idea è stata
+d'integrarne le patch intereessanti nel framework di Shashin):
+
+Relativi a posizioni tattiche complesse (es. re esposti, molte minacce).
+
+Applicano meno riduzione e più re-search.
+
+Stili di Gioco:
+
+Tal (aggressivo): Richiede maggiore profondità e varietà di mosse (minore riduzione).
+
+Petrosian (difensivo): Richiede profondità per precisione ma meno varietà (riduzione moderata).
+
+Posizioni Sacrificiali:
+
+Richiedono maggiore profondità e minima riduzione (no null move).
+
+In allegato, i file del framework di shashin la search.cpp e la search originale di stockfish. 
+Il grosso delle modifiche è, infatti, sulla search.
+Ricordo l'impatto delle patch sulla search in ordine decrescente d'impatto sull'elo:
+Patch 	Elo
+Step 17	100
+Step 14	90
+Step 15	60
+Movepick 	30-60
+Step 9	20-30
+Poi, con pari importanza, ci sono, ovviamente, le patch sulla qsearch analoghe.
+Concentriamoci, quindi, sul cercare di migliorare tale file.

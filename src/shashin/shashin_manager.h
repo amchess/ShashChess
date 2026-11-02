@@ -1,3 +1,22 @@
+/*
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2026 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2018-2026 The ShashChess developers (see AUTHORS file)
+
+  ShashChess is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  ShashChess is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #ifndef SHASHIN_MANAGER_H
 #define SHASHIN_MANAGER_H
 
@@ -5,7 +24,7 @@
 #include "shashin_params.h"
 #include "../types.h"
 // Rimosso movegen/movepick/evaluate per pulizia header, ma li teniamo se servono al compilatore
-#include "../movegen.h" 
+#include "../movegen.h"
 #include "../movepick.h"
 #include "../evaluate.h"
 #include <array>
@@ -16,9 +35,9 @@
 namespace ShashChess {
 namespace Eval {
 namespace NNUE {
-struct Networks;
+class Network;
 struct AccumulatorCaches;
-struct AccumulatorStack; // Forward dec necessaria
+struct AccumulatorStack;  // Forward dec necessaria
 }
 }
 
@@ -53,33 +72,36 @@ class ShashinManager {
     // Position analysis
     bool isFortress(const Position& pos);
     void setStaticState(const Position& rootPos);
+    // [SC] Threads that do not analyse the root: no static analysis, only the WDL zone
+    // (as the helpers of ShashChess 41). Clears the static flags and the fortress logic.
+    void setNeutralStaticState();
     bool isSacrificialPosition(const Position& rootPos);
     bool isPawnNearPromotion(const Position& rootPos);
 
     // Evaluation - Definita in search.cpp
-    Value static_value(const Eval::NNUE::Networks&   networks,
-                       Eval::NNUE::AccumulatorStack& accumulators,
+    Value static_value(const Eval::NNUE::Network&    networks,
+                       Eval::NNUE::AccumulatorStack&  accumulators,
                        Eval::NNUE::AccumulatorCaches& refreshTable,
-                       Position&                     rootPos,
-                       Search::Stack* ss,
-                       Value                         optimism);
+                       Position&                      rootPos,
+                       Search::Stack*                 ss,
+                       Value                          optimism);
 
     // Initialization
-    void initDynamicRootShashinState(const Eval::NNUE::Networks&   networks,
-                                     Eval::NNUE::AccumulatorStack& accumulators,
+    void initDynamicRootShashinState(const Eval::NNUE::Network&    networks,
+                                     Eval::NNUE::AccumulatorStack&  accumulators,
                                      Eval::NNUE::AccumulatorCaches& refreshTable,
-                                     Position&                     rootPos,
-                                     Search::Stack* ss,
-                                     Value                         optimism,
-                                     const ShashinConfig&          config,
-                                     Depth                         rootDepth);
-    
+                                     Position&                      rootPos,
+                                     Search::Stack*                 ss,
+                                     Value                          optimism,
+                                     const ShashinConfig&           config,
+                                     Depth                          rootDepth);
+
     void setDynamicBaseState(Value score, const Position& rootPos, int depth, int rootDepth);
     void setDynamicDerivedState();
-    void initDynamicBaseState(Value                        currentValue,
-                              Position&                    rootPos,
+    void initDynamicBaseState(Value                currentValue,
+                              Position&            rootPos,
                               const ShashinConfig& config,
-                              int                          rootDepth);
+                              int                  rootDepth);
 
     // Feature flags
     bool useMoveGenCrystalLogic() const;
@@ -111,7 +133,7 @@ class ShashinManager {
     bool isOpponentKingExposed() const { return state.staticState.opponentKingSafetyScore < -30; }
 
     // Inline methods for performance
-    
+
     // REFACTORING: Aggiunto metodo non-template richiesto
     inline __attribute__((always_inline)) bool isInRange(ShashinPosition position) const {
         return state.dynamicBase.currentRange == position;
@@ -124,14 +146,14 @@ class ShashinManager {
 
     inline __attribute__((always_inline)) bool isStrategical() const {
         // È strategico solo se è Capablanca E non ci sono pericoli immediati.
-        return inRange<ShashinPosition::CAPABLANCA>() 
-            && !state.staticState.kingDanger 
-            && !state.staticState.pawnsNearPromotion;
+        // [SC] A sacrifice against the enemy king is an immediate danger too (isSacrificial
+        // is now true only for losing captures with check or on the enemy king zone).
+        return inRange<ShashinPosition::CAPABLANCA>() && !state.staticState.kingDanger
+            && !state.staticState.pawnsNearPromotion && !state.staticState.isSacrificial;
     }
 
     inline __attribute__((always_inline)) bool isPassive() const {
-        return anyOf(state.dynamicBase.currentRange, 
-                     ShashinPosition::MIDDLE_HIGH_PETROSIAN,
+        return anyOf(state.dynamicBase.currentRange, ShashinPosition::MIDDLE_HIGH_PETROSIAN,
                      ShashinPosition::HIGH_PETROSIAN);
     }
 
@@ -140,13 +162,14 @@ class ShashinManager {
     }
 
     inline __attribute__((always_inline)) bool isPetrosian() const {
-        return ShashChess::isInRange(state.dynamicBase.currentRange, 
-                                     ShashinPosition::LOW_PETROSIAN, 
-                                     ShashinPosition::HIGH_PETROSIAN);
+        // [SC] The enum grows with the win probability: HIGH_PETROSIAN = 0 ... LOW_PETROSIAN = 4.
+        // The bounds were swapped (LOW_PETROSIAN, HIGH_PETROSIAN), i.e. 4 <= v <= 0:
+        // isPetrosian() was always false and every Petrosian branch was dead code.
+        return ShashChess::isInRange(state.dynamicBase.currentRange, ShashinPosition::HIGH_PETROSIAN,
+                                     ShashinPosition::LOW_PETROSIAN);
     }
     inline __attribute__((always_inline)) bool isTal() const {
-        return ShashChess::isInRange(state.dynamicBase.currentRange, 
-                                     ShashinPosition::LOW_TAL, 
+        return ShashChess::isInRange(state.dynamicBase.currentRange, ShashinPosition::LOW_TAL,
                                      ShashinPosition::HIGH_TAL);
     }
     inline __attribute__((always_inline)) bool isHighPieceDensity() const {
@@ -154,8 +177,7 @@ class ShashinManager {
     }
 
     inline __attribute__((always_inline)) bool isAggressive() const {
-        return anyOf(state.dynamicBase.currentRange, 
-                     ShashinPosition::MIDDLE_LOW_TAL,
+        return anyOf(state.dynamicBase.currentRange, ShashinPosition::MIDDLE_LOW_TAL,
                      ShashinPosition::MIDDLE_TAL);
     }
 
@@ -163,12 +185,18 @@ class ShashinManager {
     static inline __attribute__((always_inline)) double getTalIntensity(ShashinPosition style) {
         switch (style)
         {
-        case ShashinPosition::HIGH_TAL : return 1.00;
-        case ShashinPosition::MIDDLE_HIGH_TAL : return 0.85;
-        case ShashinPosition::MIDDLE_TAL : return 0.73;
-        case ShashinPosition::MIDDLE_LOW_TAL : return 0.60;
-        case ShashinPosition::LOW_TAL : return 0.45;
-        default : return 0.0;
+        case ShashinPosition::HIGH_TAL :
+            return 1.00;
+        case ShashinPosition::MIDDLE_HIGH_TAL :
+            return 0.85;
+        case ShashinPosition::MIDDLE_TAL :
+            return 0.73;
+        case ShashinPosition::MIDDLE_LOW_TAL :
+            return 0.60;
+        case ShashinPosition::LOW_TAL :
+            return 0.45;
+        default :
+            return 0.0;
         }
     }
 
@@ -176,39 +204,45 @@ class ShashinManager {
     getPetrosianIntensity(ShashinPosition style) {
         switch (style)
         {
-        case ShashinPosition::HIGH_PETROSIAN : return 0.55;
-        case ShashinPosition::MIDDLE_HIGH_PETROSIAN : return 0.50;
-        case ShashinPosition::MIDDLE_PETROSIAN : return 0.40;
-        case ShashinPosition::MIDDLE_LOW_PETROSIAN : return 0.30;
-        case ShashinPosition::LOW_PETROSIAN : return 0.20;
-        default : return 0.0;
+        case ShashinPosition::HIGH_PETROSIAN :
+            return 0.55;
+        case ShashinPosition::MIDDLE_HIGH_PETROSIAN :
+            return 0.50;
+        case ShashinPosition::MIDDLE_PETROSIAN :
+            return 0.40;
+        case ShashinPosition::MIDDLE_LOW_PETROSIAN :
+            return 0.30;
+        case ShashinPosition::LOW_PETROSIAN :
+            return 0.20;
+        default :
+            return 0.0;
         }
     }
 
    private:
     ShashinParams params;
-    
+
     // --- FIX 1 (Parte Struct): Struttura aggiornata ---
     struct PositionCache {
         uint64_t posHash       = 0;
-        uint8_t  computedMask  = 0; // Maschera per tracciare i singoli calcoli
+        uint8_t  computedMask  = 0;  // Maschera per tracciare i singoli calcoli
         bool     fortress      = false;
         bool     pawnNearPromo = false;
         bool     sacrificial   = false;
     };
-    
+
     RootShashinState state;
     PositionCache    positionCache;
-    
+
     uint64_t computePositionHash(const Position& pos);
-    
+
     // --- FIX 2: Reset completo ---
     void invalidateCaches() {
-        positionCache.posHash = 0;
-        positionCache.computedMask = 0;
-        positionCache.fortress = false;
+        positionCache.posHash       = 0;
+        positionCache.computedMask  = 0;
+        positionCache.fortress      = false;
         positionCache.pawnNearPromo = false;
-        positionCache.sacrificial = false;
+        positionCache.sacrificial   = false;
     }
 };
 

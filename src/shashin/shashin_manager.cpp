@@ -1,3 +1,22 @@
+/*
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2026 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2018-2026 The ShashChess developers (see AUTHORS file)
+
+  ShashChess is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  ShashChess is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include "shashin_manager.h"
 #include "shashin_position.h"
 #include "moveconfig.h"
@@ -222,7 +241,7 @@ void ShashinManager::setDynamicBaseState(Value           score,
     state.dynamicBase.rootDepth    = rootDepth;
 }
 
-void ShashinManager::initDynamicRootShashinState(const Eval::NNUE::Networks&    networks,
+void ShashinManager::initDynamicRootShashinState(const Eval::NNUE::Network&     networks,
                                                  Eval::NNUE::AccumulatorStack&  accumulators,
                                                  Eval::NNUE::AccumulatorCaches& refreshTable,
                                                  Position&                      rootPos,
@@ -236,6 +255,7 @@ void ShashinManager::initDynamicRootShashinState(const Eval::NNUE::Networks&    
     MoveConfig::useMoveShashinLogic = state.dynamicDerived.useMoveGenCrystalLogic;
     MoveConfig::isStrategical       = isStrategical();
     MoveConfig::isAggressive        = state.dynamicDerived.isAggressive;
+    MoveConfig::isTactical          = isTactical();
 }
 
 void ShashinManager::updateRootShashinState(Value           score,
@@ -263,6 +283,7 @@ void ShashinManager::updateRootShashinState(Value           score,
         MoveConfig::isStrategical       = newStrategical;
         MoveConfig::isAggressive        = newAggressive;
     }
+    MoveConfig::isTactical = isTactical();
 }
 
 void ShashinManager::setDynamicDerivedState() {
@@ -308,6 +329,24 @@ void ShashinManager::setStaticState(const Position& rootPos) {
     staticState.opponentKingExposed     = isOpponentKingExposed();
 }
 
+// [SC] Threads that do not analyse the root (all but one, see Worker::start_searching()), as
+// the helpers of ShashChess 41 where setStaticState() ran on the main thread only.
+// Static flags cleared (null move, futility and ProbCut keep their non-"hot" behaviour) and
+// fortress logic disabled for this thread; the WDL zone is set afterwards by
+// initDynamicRootShashinState(), so the thread still follows the type of position.
+// It must run on the thread's own OS thread (MoveConfig flags are thread_local).
+void ShashinManager::setNeutralStaticState() {
+    state.staticState = StaticState();
+
+    positionCache.posHash       = 0;
+    positionCache.computedMask  = CACHE_FORTRESS;  // fortress "computed" and false
+    positionCache.fortress      = false;
+    positionCache.pawnNearPromo = false;
+    positionCache.sacrificial   = false;
+
+    MoveConfig::isFortress = false;
+}
+
 bool ShashinManager::isFortress(const Position& pos) {
     // Check Bitmask: se abbiamo già calcolato fortress per questo hash, ritornalo
     if (positionCache.computedMask & CACHE_FORTRESS)
@@ -334,7 +373,9 @@ bool ShashinManager::isFortress(const Position& pos) {
     const Square ourKing   = pos.square<KING>(us);
     const Square theirKing = pos.square<KING>(them);
 
-    if (distance(ourKing, theirKing) <= 4)
+    if (std::max(std::abs(file_of(ourKing) - file_of(theirKing)),
+                 std::abs(rank_of(ourKing) - rank_of(theirKing)))
+        <= 4)
         return cacheResult(false);
 
     if (pos.non_pawn_material(them) > 2 * PieceValue[KNIGHT] || pos.count<QUEEN>(them) > 0)
@@ -343,7 +384,7 @@ bool ShashinManager::isFortress(const Position& pos) {
     }
 
     Bitboard ourPawns = pos.pieces(us, PAWN);
-    if (popcount(ourPawns & (shift<NORTH>(ourPawns) | shift<SOUTH>(ourPawns))) < 3)
+    if (popcount(ourPawns & (shift(ourPawns, NORTH) | shift(ourPawns, SOUTH))) < 3)
         return cacheResult(false);
 
     int theirMobility = 0;
@@ -353,7 +394,7 @@ bool ShashinManager::isFortress(const Position& pos) {
         while (pieces)
         {
             Square   s       = pop_lsb(pieces);
-            Bitboard attacks = attacks_bb(pt, s, pos.pieces());
+            Bitboard attacks = Attacks::attacks_bb(pt, s, pos.pieces());
             theirMobility += popcount(attacks & ~pos.pieces(us, KING));
         }
     }
@@ -394,9 +435,11 @@ bool ShashinManager::isPawnNearPromotion(const Position& rootPos) {
         return positionCache.pawnNearPromo;
     }
 
-    positionCache.pawnNearPromo =
-      ((rootPos.pieces(WHITE, PAWN) & (Rank5BB | Rank6BB | Rank7BB))
-       || (rootPos.pieces(BLACK, PAWN) & (Rank2BB | Rank3BB | Rank4BB)));
+    // [SC] A pawn on its 6th or 7th rank. With the 5th rank too, the flag was true in 78%
+    // of the game positions (90% of the suite); now 18% of the game positions and 51% of
+    // the suite.
+    positionCache.pawnNearPromo = ((rootPos.pieces(WHITE, PAWN) & (Rank6BB | Rank7BB))
+                                   || (rootPos.pieces(BLACK, PAWN) & (Rank3BB | Rank2BB)));
 
     positionCache.computedMask |= CACHE_PAWN_PROMO;
     return positionCache.pawnNearPromo;
@@ -451,8 +494,9 @@ ShashinPosition ShashinManager::getShashinRange(Value value, const Position& roo
 
     if (winProbability == CAPABLANCA_MAX)
     {
-        return (wdl.draw == 100) ? ShashinPosition::CAPABLANCA
-                                 : ShashinPosition::TAL_CAPABLANCA_PETROSIAN;
+        // [SC] draw == 100 is unreachable with the Stockfish 19 WDL model (see CAPABLANCA_MIN_DRAW)
+        return (wdl.draw >= CAPABLANCA_MIN_DRAW) ? ShashinPosition::CAPABLANCA
+                                                 : ShashinPosition::TAL_CAPABLANCA_PETROSIAN;
     }
 
     if (winProbability >= 0 && winProbability <= 100)

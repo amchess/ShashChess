@@ -1,6 +1,7 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2026 ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2018-2026 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -18,12 +19,16 @@
 
 #include "misc.h"
 
+#include <algorithm>
 #include <array>
 #include <atomic>
 #include <cassert>
 #include <cctype>
+#include <cstring>
+#include <cerrno>
 #include <cmath>
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -31,20 +36,30 @@
 #include <limits>
 #include <mutex>
 #include <sstream>
-//not used string_view: improved from Stockfish
-//from ShashChess begin
-#include <algorithm>
-#include <stdarg.h>
-//from ShashChess end
+#include <string_view>
+#include <cstdarg>
+
+#if defined(_WIN32)
+    #ifndef NOMINMAX
+        #define NOMINMAX
+    #endif
+    #include <direct.h>
+    #include <windows.h>
+    #include <shellapi.h>
+#else
+    #include <unistd.h>
+#endif
 
 #include "types.h"
 
 namespace ShashChess {
 
+namespace fs = std::filesystem;
+
 namespace {
 
 // Version number or dev.
-constexpr std::string_view version = "41.2";
+constexpr std::string_view version = "42";
 
 // Our fancy logging facility. The trick here is to replace cin.rdbuf() and
 // cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
@@ -52,7 +67,7 @@ constexpr std::string_view version = "41.2";
 // usual I/O functionality, all without changing a single line of code!
 // Idea from http://groups.google.com/group/comp.lang.c++/msg/1d941c0f26ea0d81
 
-struct Tie: public std::streambuf {  // MSVC requires split streambuf for cin and cout
+struct Tie: public std::streambuf {
 
     Tie(std::streambuf* b, std::streambuf* l) :
         buf(b),
@@ -87,7 +102,7 @@ class Logger {
     Tie           in, out;
 
    public:
-    static void start(const std::string& fname) {
+    static void start(const fs::path& fname) {
 
         static Logger l;
 
@@ -127,7 +142,7 @@ class Logger {
 //      Stockfish dev-YYYYMMDD-nogit
 //
 // For releases (non-dev builds) we only include the version number:
-//      ShashChess version
+//      Stockfish version
 std::string engine_version_info() {
     std::stringstream ss;
     ss << "ShashChess " << version << std::setfill('0');
@@ -139,28 +154,25 @@ std::string engine_version_info() {
         ss << stringify(GIT_DATE);
 #else
         constexpr std::string_view months("Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec");
-        std::string                month, day, year;
-        std::stringstream          date(__DATE__);  // From compiler, format is "Sep 21 2008"
+
+        std::string       month, day, year;
+        std::stringstream date(__DATE__);
 
         date >> month >> day >> year;
         ss << year << std::setw(2) << std::setfill('0') << (1 + months.find(month) / 4)
            << std::setw(2) << std::setfill('0') << day;
 #endif
 
+#ifdef GIT_DIFFINDEX
+        ss << "-m";
+#endif
+
         ss << "-";
 
 #ifdef GIT_SHA
         ss << stringify(GIT_SHA);
-#else
-        ss << "nogit";
 #endif
     }
-
-// --- NOME PERSONALIZZATO PER GOLD DIGGER ---
-#ifdef GOLD_DIGGER
-    ss << " GoldDigger";
-#endif
-    // -------------------------------------------
 
     return ss.str();
 }
@@ -169,6 +181,7 @@ std::string engine_info(bool to_uci) {
     return engine_version_info() + (to_uci ? "\nid author " : " by ")
          + "the ShashChess developers (see AUTHORS file)";
 }
+
 
 // Returns a string trying to describe the compiler we use
 std::string compiler_info() {
@@ -272,6 +285,12 @@ std::string compiler_info() {
 #elif defined(USE_NEON)
     compiler += " NEON";
 #endif
+#if defined(USE_LASX)
+    compiler += " LASX";
+#endif
+#if defined(USE_LSX)
+    compiler += " LSX";
+#endif
     compiler += (HasPopCnt ? " POPCNT" : "");
 
 #if !defined(NDEBUG)
@@ -296,17 +315,17 @@ constexpr int MaxDebugSlots = 32;
 
 namespace {
 
-template<size_t N>
+template<usize N>
 struct DebugInfo {
-    std::array<std::atomic<int64_t>, N> data = {0};
+    std::array<std::atomic<i64>, N> data = {0};
 
-    [[nodiscard]] constexpr std::atomic<int64_t>& operator[](size_t index) {
+    [[nodiscard]] constexpr std::atomic<i64>& operator[](usize index) {
         assert(index < N);
         return data[index];
     }
 
     constexpr DebugInfo& operator=(const DebugInfo& other) {
-        for (size_t i = 0; i < N; i++)
+        for (usize i = 0; i < N; i++)
             data[i].store(other.data[i].load());
         return *this;
     }
@@ -314,8 +333,8 @@ struct DebugInfo {
 
 struct DebugExtremes: public DebugInfo<3> {
     DebugExtremes() {
-        data[1] = std::numeric_limits<int64_t>::min();
-        data[2] = std::numeric_limits<int64_t>::max();
+        data[1] = std::numeric_limits<i64>::min();
+        data[2] = std::numeric_limits<i64>::max();
     }
 };
 
@@ -334,32 +353,32 @@ void dbg_hit_on(bool cond, int slot) {
         ++hit.at(slot)[1];
 }
 
-void dbg_mean_of(int64_t value, int slot) {
+void dbg_mean_of(i64 value, int slot) {
 
     ++mean.at(slot)[0];
     mean.at(slot)[1] += value;
 }
 
-void dbg_stdev_of(int64_t value, int slot) {
+void dbg_stdev_of(i64 value, int slot) {
 
     ++stdev.at(slot)[0];
     stdev.at(slot)[1] += value;
     stdev.at(slot)[2] += value * value;
 }
 
-void dbg_extremes_of(int64_t value, int slot) {
+void dbg_extremes_of(i64 value, int slot) {
     ++extremes.at(slot)[0];
 
-    int64_t current_max = extremes.at(slot)[1].load();
+    i64 current_max = extremes.at(slot)[1].load();
     while (current_max < value && !extremes.at(slot)[1].compare_exchange_weak(current_max, value))
     {}
 
-    int64_t current_min = extremes.at(slot)[2].load();
+    i64 current_min = extremes.at(slot)[2].load();
     while (current_min > value && !extremes.at(slot)[2].compare_exchange_weak(current_min, value))
     {}
 }
 
-void dbg_correl_of(int64_t value1, int64_t value2, int slot) {
+void dbg_correl_of(i64 value1, i64 value2, int slot) {
 
     ++correl.at(slot)[0];
     correl.at(slot)[1] += value1;
@@ -371,9 +390,9 @@ void dbg_correl_of(int64_t value1, int64_t value2, int slot) {
 
 void dbg_print() {
 
-    int64_t n;
-    auto    E   = [&n](int64_t x) { return double(x) / n; };
-    auto    sqr = [](double x) { return x * x; };
+    i64  n;
+    auto E   = [&n](i64 x) { return double(x) / n; };
+    auto sqr = [](double x) { return x * x; };
 
     for (int i = 0; i < MaxDebugSlots; ++i)
         if ((n = hit[i][0]))
@@ -436,42 +455,136 @@ std::ostream& operator<<(std::ostream& os, SyncCout sc) {
 void sync_cout_start() { std::cout << IO_LOCK; }
 void sync_cout_end() { std::cout << IO_UNLOCK; }
 
+// Hash function based on public domain MurmurHash64A, by Austin Appleby.
+u64 hash_bytes(const char* data, usize size) {
+    const u64 m = 0xc6a4a7935bd1e995ull;
+    const int r = 47;
+
+    u64 h = size * m;
+
+    const char* end = data + (size & ~(usize) 7);
+
+    for (const char* p = data; p != end; p += 8)
+    {
+        u64 k;
+        std::memcpy(&k, p, sizeof(k));
+
+        k *= m;
+        k ^= k >> r;
+        k *= m;
+
+        h ^= k;
+        h *= m;
+    }
+
+    if (size & 7)
+    {
+        u64 k = 0;
+        for (int i = (size & 7) - 1; i >= 0; i--)
+            k = (k << 8) | u8(end[i]);
+
+        h ^= k;
+        h *= m;
+    }
+
+    h ^= h >> r;
+    h *= m;
+    h ^= h >> r;
+
+    return h;
+}
+
 // Trampoline helper to avoid moving Logger to misc.h
-void start_logger(const std::string& fname) { Logger::start(fname); }
+void start_logger(const fs::path& fname) { Logger::start(fname); }
 
 
-#ifdef NO_PREFETCH
-
-void prefetch(const void*) {}
-
-#else
-
-void prefetch(const void* addr) {
-
-    #if defined(_MSC_VER)
-    _mm_prefetch((char const*) addr, _MM_HINT_T0);
-    #else
-    __builtin_prefetch(addr);
-    #endif
-}
-
-#endif
-
+// Convert a wide string to an UTF8 string
+std::string utf8_from_wstring(std::wstring_view s) {
 #ifdef _WIN32
-    #include <direct.h>
-    #define GETCWD _getcwd
-#else
-    #include <unistd.h>
-    #define GETCWD getcwd
-#endif
+    if (s.empty())
+        return {};
 
-size_t str_to_size_t(const std::string& s) {
-    unsigned long long value = std::stoull(s);
-    if (value > std::numeric_limits<size_t>::max())
-        std::exit(EXIT_FAILURE);
-    return static_cast<size_t>(value);
+    int size =
+      WideCharToMultiByte(CP_UTF8, 0, s.data(), int(s.size()), nullptr, 0, nullptr, nullptr);
+    if (size <= 0)
+        return {};
+
+    std::string out(size, '\0');
+    WideCharToMultiByte(CP_UTF8, 0, s.data(), int(s.size()), out.data(), size, nullptr, nullptr);
+    return out;
+#else
+    return std::string(s.begin(), s.end());
+#endif
 }
 
+
+// This utility allows us to handle filenames and paths with UTF8 encoding
+fs::path path_from_utf8(const std::string& path) {
+#ifdef _WIN32
+    int u8len = static_cast<int>(path.size());
+
+    // First attempt UTF-8, then fall back to ANSI for old GUIs like Arena
+    constexpr int CodePages[2] = {CP_UTF8, CP_ACP};
+    for (int cp : CodePages)
+    {
+        int flags = cp == CP_UTF8 ? MB_ERR_INVALID_CHARS : 0;
+        int wlen  = MultiByteToWideChar(cp, flags, path.c_str(), u8len, NULL, 0);
+        if (wlen > 0)
+        {
+            std::wstring wstr(static_cast<usize>(wlen), L'\0');
+            MultiByteToWideChar(cp, 0, path.c_str(), u8len, wstr.data(), wlen);
+            return {wstr};
+        }
+    }
+
+    return {path};
+#else
+    return {path};
+#endif
+}
+
+
+// Constructor for the CommandLine class
+CommandLine::CommandLine(int _argc, char** _argv) :
+    argc(_argc),
+    argv(_argv) {
+#ifdef _WIN32
+    // Convert any non-ANSI characters passed on the command line to UTF-8
+    int wargc = 0;
+    if (LPWSTR* wargv = CommandLineToArgvW(GetCommandLineW(), &wargc))
+    {
+        for (int i = 0; i < wargc; ++i)
+            argv_storage.push_back(utf8_from_wstring(wargv[i]));
+        LocalFree(wargv);
+
+        for (std::string& s : argv_storage)
+            argv_utf8.push_back(s.data());
+        argv_utf8.push_back(nullptr);
+
+        argc = wargc;
+        argv = argv_utf8.data();
+    }
+#endif
+    workingDirectory = CommandLine::get_working_directory();
+    binaryDirectory  = CommandLine::get_binary_directory(argv[0], workingDirectory);
+    Util::init(this);
+}
+
+
+// Read a numerical value from the command line
+std::optional<usize> str_to_size_t(const std::string& s) {
+    if (s.empty() || s[0] == '-')
+        return std::nullopt;
+    errno                           = 0;
+    char*                    endptr = nullptr;
+    const unsigned long long value  = std::strtoull(s.c_str(), &endptr, 10);
+    if (errno == ERANGE || (*endptr != '\0' && !std::isspace(static_cast<unsigned char>(*endptr)))
+        || value > std::numeric_limits<usize>::max())
+        return std::nullopt;
+    return static_cast<usize>(value);
+}
+
+// Read the given file as bytes (returns std::nullopt if the file does not exist)
 std::optional<std::string> read_file_to_string(const std::string& path) {
     std::ifstream f(path, std::ios_base::binary);
     if (!f)
@@ -479,74 +592,59 @@ std::optional<std::string> read_file_to_string(const std::string& path) {
     return std::string(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>());
 }
 
+// Remove all spaces from a string
 void remove_whitespace(std::string& s) {
-    s.erase(std::remove_if(s.begin(), s.end(), [](char c) { return std::isspace(c); }), s.end());
+    s.erase(std::remove_if(s.begin(), s.end(), [](unsigned char c) { return std::isspace(c); }),
+            s.end());
 }
 
+// Test if a string has only spaces
 bool is_whitespace(std::string_view s) {
-    return std::all_of(s.begin(), s.end(), [](char c) { return std::isspace(c); });
+    return std::all_of(s.begin(), s.end(), [](unsigned char c) { return std::isspace(c); });
 }
 
-//from learning begin
-CommandLine::CommandLine(int _argc, char** _argv) :
-    argc(_argc),
-    argv(_argv) {
-    workingDirectory = CommandLine::get_working_directory();
-    binaryDirectory  = CommandLine::get_binary_directory(argv[0], workingDirectory);
-    Util::init(this);
-    //from learning end
-}
 
-std::string CommandLine::get_binary_directory(std::string argv0, std::string workingDirectory) {
-    std::string pathSeparator;
-
+// Return the directory where our Stockfish binary sits. This is useful,
+// because when the NNUE network is not embeded in the binary, this directory
+// is one of the locations where we look for the NNUE file.
+fs::path CommandLine::get_binary_directory(fs::path argv0) {
 #ifdef _WIN32
-    pathSeparator = "\\";
-    #ifdef _MSC_VER
-    // Under windows argv[0] may not have the extension. Also _get_pgmptr() had
-    // issues in some Windows 10 versions, so check returned values carefully.
-    char* pgmptr = nullptr;
-    if (!_get_pgmptr(&pgmptr) && pgmptr != nullptr && *pgmptr)
-        argv0 = pgmptr;
-    #endif
-#else
-    pathSeparator = "/";
-#endif
-    //from learning end
-    // Extract the binary directory path from argv0
-    auto   binaryDirectory = argv0;
-    size_t pos             = binaryDirectory.find_last_of("\\/");
-    if (pos == std::string::npos)
-        binaryDirectory = "." + pathSeparator;
-    else
-        binaryDirectory.resize(pos + 1);
+    // Prefer the executable path reported by Windows. Unlike _get_wpgmptr,
+    // this does not depend on whether the CRT used a narrow or wide entry
+    // point. Windows paths cannot exceed 32767 characters, so a fixed
+    // buffer is always sufficient. Falls back to argv0 if the API fails.
+    constexpr DWORD MaxPath = 32768;
+    wchar_t         path[MaxPath];
 
-    // Pattern replacement: "./" at the start of path is replaced by the working directory
-    //from learning begin
-    if (binaryDirectory.find("." + pathSeparator) == 0)
-    {
-        binaryDirectory.replace(0, 1, workingDirectory);
-    }
-    binaryDirectory = Util::fix_path(binaryDirectory);
-    //from learning end
+    if (const DWORD length = GetModuleFileNameW(nullptr, path, MaxPath))
+        argv0 = fs::path(path, path + length);
+#endif
+
+    auto binaryDirectory = argv0.parent_path();
+    if (binaryDirectory.empty())
+        binaryDirectory = fs::path(".");
     return binaryDirectory;
 }
 
-std::string CommandLine::get_working_directory() {
-    std::string workingDirectory = "";
-    char        buff[40000];
-    char*       cwd = GETCWD(buff, 40000);
-    //from learning begin
-    if (cwd)
-    {
-        workingDirectory = cwd;
-    }
-    workingDirectory = Util::fix_path(workingDirectory);  //learning
-    //from learning end
-    return workingDirectory;
+std::string CommandLine::get_binary_directory(std::string                  argv0,
+                                              [[maybe_unused]] std::string workingDirectory) {
+    return get_binary_directory(fs::path(argv0)).string();
 }
 
-//Book management and learning begin
+// Return the working directory
+fs::path CommandLine::get_working_directory_fs() { return std::filesystem::current_path(); }
+
+std::string CommandLine::get_working_directory() { return get_working_directory_fs().string(); }
+
+// On Windows, tell the console to use UTF8 encoding
+void set_console_utf8() {
+#ifdef _WIN32
+    SetConsoleCP(CP_UTF8);
+    SetConsoleOutputCP(CP_UTF8);
+#endif
+}
+
+// [SC:learning] begin
 CommandLine* Util::cli = nullptr;
 void         Util::init(CommandLine* _cli) { cli = _cli; }
 std::string  Util::unquote(const std::string& s) {
@@ -577,23 +675,22 @@ std::string Util::fix_path(const std::string& p) {
         return p;
 
     std::string p1 = unquote(p);
-    std::replace(p1.begin(), p1.end(), ReverseDirectorySeparator, DirectorySeparator);
+    std::replace(p1.begin(), p1.end(), '\\', '/');
 
     return p1;
 }
 
 std::string Util::combine_path(const std::string& p1, const std::string& p2) {
-    //We don't expect the first part of the path to be empty!
     assert(is_empty_filename(p1) == false);
 
     if (is_empty_filename(p2))
         return p2;
 
     std::string p;
-    if (p1.back() == DirectorySeparator || p1.back() == ReverseDirectorySeparator)
+    if (p1.back() == '/' || p1.back() == '\\')
         p = p1 + p2;
     else
-        p = p1 + DirectorySeparator + p2;
+        p = p1 + '/' + p2;
 
     return fix_path(p);
 }
@@ -604,8 +701,7 @@ std::string Util::map_path(const std::string& p) {
 
     std::string p2 = fix_path(p);
 
-    //Make sure we can map this path
-    if (p2.find(DirectorySeparator) == std::string::npos)
+    if (p2.find('/') == std::string::npos && p2.find('\\') == std::string::npos)
         p2 = combine_path(cli->binaryDirectory, p);
 
     return p2;
@@ -648,19 +744,13 @@ std::string Util::format_bytes(uint64_t bytes, int decimals) {
     return ss.str();
 }
 
-//Code is an `edited` version of: https://stackoverflow.com/a/49812018
 std::string Util::format_string(const char* const fmt, ...) {
-    //Initialize use of the variable arguments
     va_list vaArgs;
     va_start(vaArgs, fmt);
 
-    //Acquire the required string size
-    va_start(vaArgs, fmt);
     int len = vsnprintf(nullptr, 0, fmt, vaArgs);
     va_end(vaArgs);
 
-
-    //Allocate enough buffer and format
     std::vector<char> v(len + 1);
 
     va_start(vaArgs, fmt);
@@ -669,7 +759,6 @@ std::string Util::format_string(const char* const fmt, ...) {
 
     return std::string(v.data(), len);
 }
-//Book management and learning end
-
+// [SC:learning] end
 
 }  // namespace ShashChess

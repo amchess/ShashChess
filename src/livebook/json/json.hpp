@@ -20895,8 +20895,7 @@ class
 #if defined(JSON_HAS_CPP_14)
     constexpr
 #endif
-      auto
-      get() const
+      auto get() const
       noexcept(noexcept(std::declval<const basic_json_t&>().template get_impl<ValueType>(
         detail::priority_tag<4>{})))
         -> decltype(std::declval<const basic_json_t&>().template get_impl<ValueType>(
@@ -22784,10 +22783,9 @@ class
         // - any operand is discarded
         // in legacy mode, discarded values are considered ordered if
         // an operation is computed as an odd number of inverses of others
-        static bool
-        compares_unordered(const_reference lhs,
-                           const_reference rhs,
-                           bool            inverse = false) noexcept {
+        static bool compares_unordered(const_reference lhs,
+                                       const_reference rhs,
+                                       bool            inverse = false) noexcept {
         if ((lhs.is_number_float() && std::isnan(lhs.m_data.m_value.number_float)
              && rhs.is_number())
             || (rhs.is_number_float() && std::isnan(rhs.m_data.m_value.number_float)
@@ -23693,8 +23691,7 @@ class
       3.11.0,
       basic_json::json_pointer
         or nlohmann::json_pointer<basic_json::string_t>)  // NOLINT(readability/alt_tokens)
-    reference
-    operator[](const ::nlohmann::json_pointer<BasicJsonType>& ptr) {
+    reference operator[](const ::nlohmann::json_pointer<BasicJsonType>& ptr) {
         return ptr.get_unchecked(this);
     }
 
@@ -23708,8 +23705,7 @@ class
       3.11.0,
       basic_json::json_pointer
         or nlohmann::json_pointer<basic_json::string_t>)  // NOLINT(readability/alt_tokens)
-    const_reference
-    operator[](const ::nlohmann::json_pointer<BasicJsonType>& ptr) const {
+    const_reference operator[](const ::nlohmann::json_pointer<BasicJsonType>& ptr) const {
         return ptr.get_unchecked(this);
     }
 

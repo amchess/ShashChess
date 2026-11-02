@@ -1,6 +1,7 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2026 ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2018-2026 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,12 +20,13 @@
 #ifndef TUNE_H_INCLUDED
 #define TUNE_H_INCLUDED
 
-#include <cstddef>
 #include <memory>
 #include <string>
 #include <type_traits>  // IWYU pragma: keep
 #include <utility>
 #include <vector>
+
+#include "misc.h"
 
 namespace ShashChess {
 
@@ -132,9 +134,9 @@ class Tune {
     }
 
     // Template specialization for arrays: recursively handle multi-dimensional arrays
-    template<typename T, size_t N, typename... Args>
+    template<typename T, usize N, typename... Args>
     int add(const SetRange& range, std::string&& names, T (&value)[N], Args&&... args) {
-        for (size_t i = 0; i < N; i++)
+        for (usize i = 0; i < N; i++)
             add(range, next(names, i == N - 1) + "[" + std::to_string(i) + "]", value[i]);
         return add(range, std::move(names), args...);
     }

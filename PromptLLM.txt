@@ -1,0 +1,812 @@
+Ho realizzato un motore chiamato ShashChess derivato di Stockfish.
+Lo scopo di tale motore è di rendere Stockfish piu' flessibile a tempi non brevissimi,
+cioè renderlo un miglior solutore di posizioni tattiche e almeno tanto forte nei match.
+A tal fine, il motore sfrutta il sistema di pensiero di Alexander Shashin (da cui il nome)
+illustrata nel libro Best Play: A New Method For Discovering The Strongest Move:
+https://www.amazon.com/Best-Play-Method-Discovering-Strongest/dp/1936277468
+Fondamentalmente, a ogni root position nella search, si associa uno stato costituito
+dalla classificazione della stessa in base alle zone di Shashin, a una valutazione statica (all'inizio) e 
+a quelle ottenute dalla search a profondità via via cescenti +  altri parametri dipendenti dalla posizione.
+Tale classificazione direziona i passi anche ricorsivi a profondità via via crescenti.
+La semantica è illustrata dalla seguente tabella:
+| **WDL Range (W, D, L)**       | **Shashin Position’s Type**          | **Win Probability Range** | **Informator Symbols**| **Description**                                             |
+|-------------------------------|--------------------------------------|---------------------------|-----------------------|-------------------------------------------------------------|
+| [0, 3], [0, 4], [96, 100]    | High Petrosian                       | [0, 5]                  | -+                     | Winning: a decisive disadvantage, with the position clearly leading to victory.      |
+| [4, 6], [5, 8], [89, 95]     | High-Middle Petrosian                | [6, 10]                 | -+ \ -/+               | Decisive disadvantage: dominant position and likely winning.                      |
+| [7, 9], [9, 12], [80, 87]    | Middle Petrosian                     | [11, 15]                 | -/+                    | Clear disadvantage: a substantial positional advantage, but a win is not yet inevitable.                          |
+| [10, 12], [13, 16], [73, 79]  | Middle-Low Petrosian                 | [16, 20]                 | -/+ \ =/+              | Significant disadvantage: strong edge                   |
+| [13, 15], [17, 39], [66, 71]  | Low Petrosian                        | [21, 24]                 | =/+                    | Slight disadvantage with a positional edge, but no immediate threats.              |
+| [0, 30], [40, 99], [31, 64]  | Chaos: Capablanca-Petrosian          | [25, 49]                 | ↓                      | Opponent pressure and initiative: defensive position.        |
+| [0, 0], [100, 100], [0, 0]    | Capablanca                           | [50, 50]                 | =                      | Equal position. Both sides are evenly matched, with no evident advantage.           |
+| [30, 64], [40, 99], [0, 30]  | Chaos: Capablanca-Tal                | [51, 75]                 | ↑                      | Initiative: playing dictation with active moves and forcing ideas.                     |
+| [65, 71], [17, 39], [13, 15]   | Low Tal                              | [76, 79]                 | +/=                    | Slight advantage: a minor positional edge, but it’s not significant.                    |
+| [72, 78], [13, 16], [10, 12]  | Middle-Low Tal                       | [80, 84]                 | +/= \ +/-              |  Slightly better, tending toward a clear advantage. The advantage is growing, but the position is still not decisive.            |
+| [79, 87], [9, 12], [7, 9]    | Middle Tal                           | [85, 89]                 | +/-                    | Clear advantage: a significant edge, but still with defensive chances.                          |
+| [88, 95], [5, 8], [4, 6]      | High-Middle Tal                      | [90, 94]                 | +/- \ +-               | Dominant position, almost decisive, not quite winning yet, but trending toward victory.                           |
+| [96, 100], [0, 4], [0, 3]    | High Tal                             | [95, 100]                | +-                     | Winning: a decisive advantage, with victory nearly assured.   |
+| In particular, [33, 33], [33, 33], [33, 33]                   | Chaos: Capablanca-Petrosian-Tal | (Unclassified)                   | ∞                      | Total chaos: unclear position, dynamically balanced, with no clear advantage for either side and no clear positional trends.                       |
+
+La versione attuale integra anche un algoritmo di riconoscimento delle fortezze e altre patch.
+Il tutto funziona ed è allineato alla seguente patch di Stockfish:
+La situazione è la seguente:
+Engine/patch	Benchmark (Total time (ms),Nodes searched,Nodes/second)	Solved Positions	Match result (4 ore 48 minuti 56 secondi)
+Stockfish 141025	2303,2343840,1018157	113	ShashChess   +10  +66/=177/-57 51.50%  154.5/300 Stockfish    -10  +57/=177/-66 48.50%  145.5/300    
+ShashChess Dev	2985,2921411,978779	140	
+https://github.com/official-stockfish/Stockfish/commit/75edbee01e6f8cb53a2555499192ccaddb883577
+	
+Ti ricordo le linee Guida per il Framework di Shashin
+Riduzione e Profondità:
+
+Maggiore riduzione → Minore profondità di ricerca → Migliore efficienza (performance nei match) ma peggiore qualità nelle posizioni critiche.
+
+Minore riduzione → Maggiore profondità di ricerca → Peggiore efficienza ma migliore qualità nelle posizioni critiche.
+
+Tipi di Posizione:
+
+Posizioni Strategiche (es. Capablanca/Petrosian): Posizioni chiuse, strutture pedonali fissate, alta mobilità ma senza tensioni tattiche immediate. Beneficiano di:
+
+Maggiore riduzione (più efficienza)
+
+Null move (già gestito in Step 9)
+
+Meno profondità richiesta
+
+Posizioni Tattiche (es. Tal, sacrificiali): Posizioni con re esposti, pedoni vicini a promozione, tensioni tattiche. Richiedono:
+
+Minore riduzione (più profondità)
+
+No null move
+
+Re-search aggressivo
+
+Posizioni Complesse: Alta mobilità + molto materiale (può essere strategico) o pericolo per i re/pedoni vicini a promozione (tattico). Devono essere distinte:
+
+Se alta mobilità senza pericolo → tendente a strategico
+
+Se pericolo per re o pedoni → tendente a tattico
+
+Metodi Crystal (derivato di stockfish migliore nelle posizioni complicate e peggiore nei match. La mia idea è stata
+d'integrarne le patch intereessanti nel framework di Shashin):
+
+Relativi a posizioni tattiche complesse (es. re esposti, molte minacce).
+
+Applicano meno riduzione e più re-search.
+
+Stili di Gioco:
+
+Tal (aggressivo): Richiede maggiore profondità e varietà di mosse (minore riduzione).
+
+Petrosian (difensivo): Richiede profondità per precisione ma meno varietà (riduzione moderata).
+
+Posizioni Sacrificiali:
+
+Richiedono maggiore profondità e minima riduzione (no null move).
+
+Ora, sono uscite nuove patch: mi aiuti a integrarle, senza regressioni?
+Ti postero':
+Stockfish old
+Stockfish con patch applicata
+ShashChess allineato con old
+e ti chiedo la tua proposta di adeguamento per ShashChess. 
+OK?
+Le modifiche critiche sono su search.cpp. Alcune impattano pure movegen.cpp e movepick.cpp che ti posto qui appresso.
+/*
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2026 ShashChess developers (see AUTHORS file)
+
+  ShashChess is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  ShashChess is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#include "movegen.h"
+
+#include <cassert>
+#include <initializer_list>
+
+#include "position.h"
+
+#if defined(USE_AVX512ICL)
+    #include <array>
+    #include <algorithm>
+    #include <immintrin.h>
+#endif
+
+namespace ShashChess {
+namespace {
+
+#if defined(USE_AVX512ICL)
+
+inline Move* write_moves(Move* moveList, uint32_t mask, __m512i vector) {
+    // Avoid _mm512_mask_compressstoreu_epi16() as it's 256 uOps on Zen4
+    _mm512_storeu_si512(reinterpret_cast<__m512i*>(moveList),
+                        _mm512_maskz_compress_epi16(mask, vector));
+    return moveList + popcount(mask);
+}
+
+template<Direction offset>
+inline Move* splat_pawn_moves(Move* moveList, Bitboard to_bb) {
+    alignas(64) static constexpr auto SPLAT_TABLE = [] {
+        std::array<Move, 64> table{};
+        for (int8_t i = 0; i < 64; i++)
+        {
+            Square from{std::clamp<int8_t>(i - offset, 0, 63)};
+            table[i] = {Move(from, Square{i})};
+        }
+        return table;
+    }();
+
+    auto table = reinterpret_cast<const __m512i*>(SPLAT_TABLE.data());
+
+    moveList =
+      write_moves(moveList, static_cast<uint32_t>(to_bb >> 0), _mm512_load_si512(table + 0));
+    moveList =
+      write_moves(moveList, static_cast<uint32_t>(to_bb >> 32), _mm512_load_si512(table + 1));
+
+    return moveList;
+}
+
+inline Move* splat_moves(Move* moveList, Square from, Bitboard to_bb) {
+    alignas(64) static constexpr auto SPLAT_TABLE = [] {
+        std::array<Move, 64> table{};
+        for (int8_t i = 0; i < 64; i++)
+            table[i] = {Move(SQUARE_ZERO, Square{i})};
+        return table;
+    }();
+
+    __m512i fromVec = _mm512_set1_epi16(Move(from, SQUARE_ZERO).raw());
+
+    auto table = reinterpret_cast<const __m512i*>(SPLAT_TABLE.data());
+
+    moveList = write_moves(moveList, static_cast<uint32_t>(to_bb >> 0),
+                           _mm512_or_si512(_mm512_load_si512(table + 0), fromVec));
+    moveList = write_moves(moveList, static_cast<uint32_t>(to_bb >> 32),
+                           _mm512_or_si512(_mm512_load_si512(table + 1), fromVec));
+
+    return moveList;
+}
+
+#else
+
+template<Direction offset>
+inline Move* splat_pawn_moves(Move* moveList, Bitboard to_bb) {
+    while (to_bb)
+    {
+        Square to   = pop_lsb(to_bb);
+        *moveList++ = Move(to - offset, to);
+    }
+    return moveList;
+}
+
+inline Move* splat_moves(Move* moveList, Square from, Bitboard to_bb) {
+    while (to_bb)
+        *moveList++ = Move(from, pop_lsb(to_bb));
+    return moveList;
+}
+
+#endif
+
+template<GenType Type, Direction D, bool Enemy>
+Move* make_promotions(Move* moveList, [[maybe_unused]] Square to) {
+
+    constexpr bool all = Type == EVASIONS || Type == NON_EVASIONS;
+
+    if constexpr (Type == CAPTURES || all)
+        *moveList++ = Move::make<PROMOTION>(to - D, to, QUEEN);
+
+    if constexpr ((Type == CAPTURES && Enemy) || (Type == QUIETS && !Enemy) || all)
+    {
+        *moveList++ = Move::make<PROMOTION>(to - D, to, ROOK);
+        *moveList++ = Move::make<PROMOTION>(to - D, to, BISHOP);
+        *moveList++ = Move::make<PROMOTION>(to - D, to, KNIGHT);
+    }
+
+    return moveList;
+}
+
+
+template<Color Us, GenType Type>
+Move* generate_pawn_moves(const Position& pos, Move* moveList, Bitboard target) {
+
+    constexpr Color     Them     = ~Us;
+    constexpr Bitboard  TRank7BB = (Us == WHITE ? Rank7BB : Rank2BB);
+    constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
+    constexpr Direction Up       = pawn_push(Us);
+    constexpr Direction UpRight  = (Us == WHITE ? NORTH_EAST : SOUTH_WEST);
+    constexpr Direction UpLeft   = (Us == WHITE ? NORTH_WEST : SOUTH_EAST);
+
+    const Bitboard emptySquares = ~pos.pieces();
+    const Bitboard enemies      = Type == EVASIONS ? pos.checkers() : pos.pieces(Them);
+
+    Bitboard pawnsOn7    = pos.pieces(Us, PAWN) & TRank7BB;
+    Bitboard pawnsNotOn7 = pos.pieces(Us, PAWN) & ~TRank7BB;
+
+    // Single and double pawn pushes, no promotions
+    if constexpr (Type != CAPTURES)
+    {
+        Bitboard b1 = shift<Up>(pawnsNotOn7) & emptySquares;
+        Bitboard b2 = shift<Up>(b1 & TRank3BB) & emptySquares;
+
+        if constexpr (Type == EVASIONS)  // Consider only blocking squares
+        {
+            b1 &= target;
+            b2 &= target;
+        }
+
+        moveList = splat_pawn_moves<Up>(moveList, b1);
+        moveList = splat_pawn_moves<Up + Up>(moveList, b2);
+    }
+
+    // Promotions and underpromotions
+    if (pawnsOn7)
+    {
+        Bitboard b1 = shift<UpRight>(pawnsOn7) & enemies;
+        Bitboard b2 = shift<UpLeft>(pawnsOn7) & enemies;
+        Bitboard b3 = shift<Up>(pawnsOn7) & emptySquares;
+
+        if constexpr (Type == EVASIONS)
+            b3 &= target;
+
+        while (b1)
+            moveList = make_promotions<Type, UpRight, true>(moveList, pop_lsb(b1));
+
+        while (b2)
+            moveList = make_promotions<Type, UpLeft, true>(moveList, pop_lsb(b2));
+
+        while (b3)
+            moveList = make_promotions<Type, Up, false>(moveList, pop_lsb(b3));
+    }
+
+    // Standard and en passant captures
+    if constexpr (Type == CAPTURES || Type == EVASIONS || Type == NON_EVASIONS)
+    {
+        Bitboard b1 = shift<UpRight>(pawnsNotOn7) & enemies;
+        Bitboard b2 = shift<UpLeft>(pawnsNotOn7) & enemies;
+
+        moveList = splat_pawn_moves<UpRight>(moveList, b1);
+        moveList = splat_pawn_moves<UpLeft>(moveList, b2);
+
+        if (pos.ep_square() != SQ_NONE)
+        {
+            assert(rank_of(pos.ep_square()) == relative_rank(Us, RANK_6));
+
+            // An en passant capture cannot resolve a discovered check
+            if (Type == EVASIONS && (target & (pos.ep_square() + Up)))
+                return moveList;
+
+            b1 = pawnsNotOn7 & attacks_bb<PAWN>(pos.ep_square(), Them);
+
+            assert(b1);
+
+            while (b1)
+                *moveList++ = Move::make<EN_PASSANT>(pop_lsb(b1), pos.ep_square());
+        }
+    }
+
+    return moveList;
+}
+
+
+template<Color Us, PieceType Pt>
+Move* generate_moves(const Position& pos, Move* moveList, Bitboard target) {
+
+    static_assert(Pt != KING && Pt != PAWN, "Unsupported piece type in generate_moves()");
+
+    Bitboard bb = pos.pieces(Us, Pt);
+
+    while (bb)
+    {
+        Square   from = pop_lsb(bb);
+        Bitboard b    = attacks_bb<Pt>(from, pos.pieces()) & target;
+
+        moveList = splat_moves(moveList, from, b);
+    }
+
+    return moveList;
+}
+
+
+template<Color Us, GenType Type>
+Move* generate_all(const Position& pos, Move* moveList) {
+
+    static_assert(Type != LEGAL, "Unsupported type in generate_all()");
+
+    const Square ksq = pos.square<KING>(Us);
+    Bitboard     target;
+
+    // Skip generating non-king moves when in double check
+    if (Type != EVASIONS || !more_than_one(pos.checkers()))
+    {
+        target = Type == EVASIONS     ? between_bb(ksq, lsb(pos.checkers()))
+               : Type == NON_EVASIONS ? ~pos.pieces(Us)
+               : Type == CAPTURES     ? pos.pieces(~Us)
+                                      : ~pos.pieces();  // QUIETS
+
+        moveList = generate_pawn_moves<Us, Type>(pos, moveList, target);
+        moveList = generate_moves<Us, KNIGHT>(pos, moveList, target);
+        moveList = generate_moves<Us, BISHOP>(pos, moveList, target);
+        moveList = generate_moves<Us, ROOK>(pos, moveList, target);
+        moveList = generate_moves<Us, QUEEN>(pos, moveList, target);
+    }
+
+    Bitboard b = attacks_bb<KING>(ksq) & (Type == EVASIONS ? ~pos.pieces(Us) : target);
+    //Shashin-Crystal begin
+    if (MoveConfig::useMoveShashinLogic && (Type != EVASIONS || !pos.checkers()))
+    {
+        constexpr int KingMoveThreshold = 3;
+        if (popcount(b) > KingMoveThreshold)
+        {
+            const Color them     = ~Us;
+            Bitboard    filtered = 0;
+            while (b)
+            {
+                Square to = pop_lsb(b);
+                if (pos.pieces(them) & to || !(pos.attackers_to(to, them)))
+                    filtered |= to;
+            }
+            b = filtered;
+        }
+    }
+    //Shashin-Crystal end
+    moveList = splat_moves(moveList, ksq, b);
+
+    if ((Type == QUIETS || Type == NON_EVASIONS) && pos.can_castle(Us & ANY_CASTLING))
+        for (CastlingRights cr : {Us & KING_SIDE, Us & QUEEN_SIDE})
+            if (!pos.castling_impeded(cr) && pos.can_castle(cr))
+                *moveList++ = Move::make<CASTLING>(ksq, pos.castling_rook_square(cr));
+
+    return moveList;
+}
+
+}  // namespace
+
+
+// <CAPTURES>     Generates all pseudo-legal captures plus queen promotions
+// <QUIETS>       Generates all pseudo-legal non-captures and underpromotions
+// <EVASIONS>     Generates all pseudo-legal check evasions
+// <NON_EVASIONS> Generates all pseudo-legal captures and non-captures
+//
+// Returns a pointer to the end of the move list.
+template<GenType Type>
+Move* generate(const Position& pos, Move* moveList) {
+
+    static_assert(Type != LEGAL, "Unsupported type in generate()");
+    assert((Type == EVASIONS) == bool(pos.checkers()));
+
+    Color us = pos.side_to_move();
+
+    return us == WHITE ? generate_all<WHITE, Type>(pos, moveList)
+                       : generate_all<BLACK, Type>(pos, moveList);
+}
+
+// Explicit template instantiations
+template Move* generate<CAPTURES>(const Position&, Move*);
+template Move* generate<QUIETS>(const Position&, Move*);
+template Move* generate<EVASIONS>(const Position&, Move*);
+template Move* generate<NON_EVASIONS>(const Position&, Move*);
+
+// generate<LEGAL> generates all the legal moves in the given position
+
+template<>
+Move* generate<LEGAL>(const Position& pos, Move* moveList) {
+
+    Color    us     = pos.side_to_move();
+    Bitboard pinned = pos.blockers_for_king(us) & pos.pieces(us);
+    Square   ksq    = pos.square<KING>(us);
+    Move*    cur    = moveList;
+
+    moveList =
+      pos.checkers() ? generate<EVASIONS>(pos, moveList) : generate<NON_EVASIONS>(pos, moveList);
+    while (cur != moveList)
+        if (((pinned & cur->from_sq()) || cur->from_sq() == ksq || cur->type_of() == EN_PASSANT)
+            && !pos.legal(*cur))
+            *cur = *(--moveList);
+        else
+            ++cur;
+
+    return moveList;
+}
+
+}  // namespace ShashChess
+
+/*
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2026 The ShashChess developers (see AUTHORS file)
+
+  ShashChess is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  ShashChess is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#include "movepick.h"
+
+#include <cassert>
+#include <limits>
+#include <utility>
+#include <cmath>  //for ShashChess
+#include "misc.h"
+//for ShashChess
+
+namespace ShashChess {
+using namespace ShashChess::Shashin;  //shashin
+namespace {
+
+enum Stages {
+    // generate main search moves
+    MAIN_TT,
+    CAPTURE_INIT,
+    GOOD_CAPTURE,
+    QUIET_INIT,
+    GOOD_QUIET,
+    BAD_CAPTURE,
+    BAD_QUIET,
+
+    // generate evasion moves
+    EVASION_TT,
+    EVASION_INIT,
+    EVASION,
+
+    // generate probcut moves
+    PROBCUT_TT,
+    PROBCUT_INIT,
+    PROBCUT,
+
+    // generate qsearch moves
+    QSEARCH_TT,
+    QCAPTURE_INIT,
+    QCAPTURE
+};
+
+
+// Sort moves in descending order up to and including a given limit.
+// The order of moves smaller than the limit is left unspecified.
+void partial_insertion_sort(ExtMove* begin, ExtMove* end, int limit) {
+
+    for (ExtMove *sortedEnd = begin, *p = begin + 1; p < end; ++p)
+        if (p->value >= limit)
+        {
+            ExtMove tmp = *p, *q;
+            *p          = *++sortedEnd;
+            for (q = sortedEnd; q != begin && *(q - 1) < tmp; --q)
+                *q = *(q - 1);
+            *q = tmp;
+        }
+}
+
+}  // namespace
+
+
+// Constructors of the MovePicker class. As arguments, we pass information
+// to decide which class of moves to emit, to help sorting the (presumably)
+// good moves first, and how important move ordering is at the current node.
+
+// MovePicker constructor for the main search and for the quiescence search
+MovePicker::MovePicker(const Position&              p,
+                       Move                         ttm,
+                       Depth                        d,
+                       const ButterflyHistory*      mh,
+                       const LowPlyHistory*         lph,
+                       const CapturePieceToHistory* cph,
+                       const PieceToHistory**       ch,
+                       const PawnHistory*           ph,
+                       int                          pl) :
+    pos(p),
+    mainHistory(mh),
+    lowPlyHistory(lph),
+    captureHistory(cph),
+    continuationHistory(ch),
+    pawnHistory(ph),
+    ttMove(ttm),
+    depth(d),
+    ply(pl) {
+
+    if (pos.checkers())
+        stage = EVASION_TT + !(ttm && pos.pseudo_legal(ttm));
+
+    else
+        stage = (depth > 0 ? MAIN_TT : QSEARCH_TT) + !(ttm && pos.pseudo_legal(ttm));
+}
+
+// MovePicker constructor for ProbCut: we generate captures with Static Exchange
+// Evaluation (SEE) greater than or equal to the given threshold.
+MovePicker::MovePicker(const Position& p, Move ttm, int th, const CapturePieceToHistory* cph) :
+    pos(p),
+    captureHistory(cph),
+    ttMove(ttm),
+    threshold(th) {
+    assert(!pos.checkers());
+
+    stage = PROBCUT_TT + !(ttm && pos.capture_stage(ttm) && pos.pseudo_legal(ttm));
+}
+
+// Assigns a numerical value to each move in a list, used for sorting.
+// Captures are ordered by Most Valuable Victim (MVV), preferring captures
+// with a good history. Quiets moves are ordered using the history tables.
+template<GenType Type>
+ExtMove* MovePicker::score(MoveList<Type>& ml) {
+
+    static_assert(Type == CAPTURES || Type == QUIETS || Type == EVASIONS, "Wrong type");
+
+    Color      us       = pos.side_to_move();
+    const bool fortress = MoveConfig::isFortress;
+
+    // Precompute all fortress-related values once
+    int  breakingPenalty = 0, preservingBonus = 0, phase = 0;
+    int  shashinBonus = 0;
+    bool noProgress15 = false;
+
+    if (fortress)
+    {
+        phase           = std::clamp(pos.game_ply() / 25, 0, 3);
+        breakingPenalty = 1200 + 400 * phase;
+        preservingBonus = 600 + 200 * (3 - phase);
+        noProgress15    = no_progress_for(pos, 15);
+
+        if (MoveConfig::useMoveShashinLogic)
+        {
+            double plyFactor = std::min(pos.game_ply() / 40.0, 1.0);
+            if (MoveConfig::isStrategical)
+                shashinBonus = static_cast<int>(100 * plyFactor);
+            else if (MoveConfig::isAggressive)
+                shashinBonus = static_cast<int>(180 * plyFactor);
+        }
+    }
+
+    [[maybe_unused]] Bitboard threatByLesser[KING + 1];
+    if constexpr (Type == QUIETS)
+    {
+        threatByLesser[PAWN]   = 0;
+        threatByLesser[KNIGHT] = threatByLesser[BISHOP] = pos.attacks_by<PAWN>(~us);
+        threatByLesser[ROOK] =
+          pos.attacks_by<KNIGHT>(~us) | pos.attacks_by<BISHOP>(~us) | threatByLesser[KNIGHT];
+        threatByLesser[QUEEN] = pos.attacks_by<ROOK>(~us) | threatByLesser[ROOK];
+        threatByLesser[KING]  = pos.attacks_by<QUEEN>(~us) | threatByLesser[QUEEN];
+    }
+
+    ExtMove* it = cur;
+    for (auto move : ml)
+    {
+        ExtMove& m = *it++;
+        m          = move;
+
+        const Square    from          = m.from_sq();
+        const Square    to            = m.to_sq();
+        const Piece     pc            = pos.moved_piece(m);
+        const PieceType pt            = type_of(pc);
+        const Piece     capturedPiece = pos.piece_on(to);
+
+        if constexpr (Type == CAPTURES)
+        {
+            m.value = (*captureHistory)[pc][to][type_of(capturedPiece)]
+                    + 7 * int(PieceValue[capturedPiece]) + 1024 * bool(pos.check_squares(pt) & to);
+
+            // Bonus aggiuntivi per posizioni aggressive
+            if (MoveConfig::isAggressive)
+            {
+                if (pos.gives_check(m))
+                    m.value += 5000;   // Bonus per scacco
+                if (pos.see_ge(m, 0))  // Bonus per SEE positivo
+                    m.value += 1000;
+            }
+        }
+        else if constexpr (Type == QUIETS)
+        {
+            m.value = 2 * (*mainHistory)[us][m.from_to()];
+            m.value += 2 * (*pawnHistory)[pawn_history_index(pos)][pc][to];
+            m.value += (*continuationHistory[0])[pc][to];
+            m.value += (*continuationHistory[1])[pc][to];
+            m.value += (*continuationHistory[2])[pc][to];
+            m.value += (*continuationHistory[3])[pc][to];
+            m.value += (*continuationHistory[5])[pc][to];
+
+            // bonus for checks
+            m.value += (bool(pos.check_squares(pt) & to) && pos.see_ge(m, -75)) * 16384;
+
+            // penalty for moving to a square threatened by a lesser piece
+            // or bonus for escaping an attack by a lesser piece.
+            static constexpr int bonus[KING + 1] = {0, 0, 144, 144, 256, 517, 10000};
+            int v = threatByLesser[pt] & to ? -95 : 100 * bool(threatByLesser[pt] & from);
+            m.value += bonus[pt] * v;
+
+            if (ply < LOW_PLY_HISTORY_SIZE)
+                m.value += 8 * (*lowPlyHistory)[ply][m.from_to()] / (1 + ply);
+            // Bonus aggiuntivi per posizioni aggressive
+            if (MoveConfig::isAggressive)
+            {
+                if (pos.gives_check(m))
+                    m.value += 5000;   // Bonus per scacco
+                if (pos.see_ge(m, 0))  // Bonus per SEE positivo
+                    m.value += 1000;
+            }
+        }
+        else
+        {  // Type == EVASIONS
+            if (pos.capture_stage(m))
+                m.value = PieceValue[capturedPiece] + (1 << 28);
+            else
+            {
+                m.value = (*mainHistory)[us][m.from_to()] + (*continuationHistory[0])[pc][to];
+                if (ply < LOW_PLY_HISTORY_SIZE)
+                    m.value += (*lowPlyHistory)[ply][m.from_to()];
+            }
+        }
+
+        // Apply fortress logic if needed
+        if (fortress)
+        {
+            bool preserve  = is_fortress_preserving_move(pos, m);
+            bool breakMove = is_fortress_breaking_move(pos, m);
+
+            if (breakMove)
+            {
+                m.value -= breakingPenalty;
+                if (is_fortress_key_piece(pc))
+                    m.value -= 300;
+            }
+            else if (preserve)
+            {
+                m.value += preservingBonus;
+                if (type_of(pc) == KING && phase == 3)
+                    m.value += 150;
+                if (type_of(pc) == PAWN)
+                {
+                    Bitboard adjacentPawns = attacks_bb<PAWN>(to, us) & pos.pieces(us, PAWN);
+                    if (adjacentPawns)
+                        m.value += 100;
+                    // Bonus per pedoni avanzati
+                    Rank r          = rank_of(to);
+                    bool isAdvanced = (us == WHITE) ? (r >= RANK_5) : (r <= RANK_4);
+                    if (isAdvanced)
+                        m.value += 75;
+                }
+            }
+
+            // Gestione regola delle 50 mosse
+            if (noProgress15 && preserve)
+                m.value += 300;
+
+            m.value += shashinBonus;
+        }
+    }
+    return it;
+}
+
+// Returns the next move satisfying a predicate function.
+// This never returns the TT move, as it was emitted before.
+template<typename Pred>
+Move MovePicker::select(Pred filter) {
+
+    for (; cur < endCur; ++cur)
+        if (*cur != ttMove && filter())
+            return *cur++;
+
+    return Move::none();
+}
+
+// This is the most important method of the MovePicker class. We emit one
+// new pseudo-legal move on every call until there are no more moves left,
+// picking the move with the highest score from a list of generated moves.
+Move MovePicker::next_move() {
+
+    constexpr int goodQuietThreshold = -14000;
+top:
+    switch (stage)
+    {
+
+    case MAIN_TT :
+    case EVASION_TT :
+    case QSEARCH_TT :
+    case PROBCUT_TT :
+        ++stage;
+        return ttMove;
+
+    case CAPTURE_INIT :
+    case PROBCUT_INIT :
+    case QCAPTURE_INIT : {
+        MoveList<CAPTURES> ml(pos);
+
+        cur = endBadCaptures = moves;
+        endCur = endCaptures = score<CAPTURES>(ml);
+
+        partial_insertion_sort(cur, endCur, std::numeric_limits<int>::min());
+        ++stage;
+        goto top;
+    }
+
+    case GOOD_CAPTURE :
+        if (select([&]() {
+                if (pos.see_ge(*cur, -cur->value / 18))
+                    return true;
+                std::swap(*endBadCaptures++, *cur);
+                return false;
+            }))
+            return *(cur - 1);
+
+        ++stage;
+        [[fallthrough]];
+
+    case QUIET_INIT :
+        if (!skipQuiets)
+        {
+            MoveList<QUIETS> ml(pos);
+
+            endCur = endGenerated = score<QUIETS>(ml);
+
+            partial_insertion_sort(cur, endCur, -3560 * depth);
+        }
+
+        ++stage;
+        [[fallthrough]];
+
+    case GOOD_QUIET :
+        if (!skipQuiets && select([&]() { return cur->value > goodQuietThreshold; }))
+            return *(cur - 1);
+
+        // Prepare the pointers to loop over the bad captures
+        cur    = moves;
+        endCur = endBadCaptures;
+
+        ++stage;
+        [[fallthrough]];
+
+    case BAD_CAPTURE :
+        if (select([]() { return true; }))
+            return *(cur - 1);
+
+        // Prepare the pointers to loop over quiets again
+        cur    = endCaptures;
+        endCur = endGenerated;
+
+        ++stage;
+        [[fallthrough]];
+
+    case BAD_QUIET :
+        if (!skipQuiets)
+            return select([&]() { return cur->value <= goodQuietThreshold; });
+
+        return Move::none();
+
+    case EVASION_INIT : {
+        MoveList<EVASIONS> ml(pos);
+
+        cur    = moves;
+        endCur = endGenerated = score<EVASIONS>(ml);
+
+        partial_insertion_sort(cur, endCur, std::numeric_limits<int>::min());
+        ++stage;
+        [[fallthrough]];
+    }
+
+    case EVASION :
+    case QCAPTURE :
+        return select([]() { return true; });
+
+    case PROBCUT :
+        return select([&]() { return pos.see_ge(*cur, threshold); });
+    }
+
+    assert(false);
+    return Move::none();  // Silence warning
+}
+
+void MovePicker::skip_quiet_moves() { skipQuiets = true; }
+
+}  // namespace ShashChess

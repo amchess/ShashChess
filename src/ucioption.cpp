@@ -1,6 +1,7 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2026 ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2018-2026 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,13 +22,14 @@
 #include <algorithm>
 #include <cassert>
 #include <cctype>
+#include <cerrno>
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <utility>
 
 #include "misc.h"
-#include <set>  //combo management
+#include <set>  // combo management
 
 namespace ShashChess {
 
@@ -35,7 +37,7 @@ bool CaseInsensitiveLess::operator()(const std::string& s1, const std::string& s
 
     return std::lexicographical_compare(
       s1.begin(), s1.end(), s2.begin(), s2.end(),
-      [](char c1, char c2) { return std::tolower(c1) < std::tolower(c2); });
+      [](unsigned char c1, unsigned char c2) { return std::tolower(c1) < std::tolower(c2); });
 }
 
 void OptionsMap::add_info_listener(InfoListener&& message_func) { info = std::move(message_func); }
@@ -67,15 +69,17 @@ const Option& OptionsMap::operator[](const std::string& name) const {
 
 // Inits options and assigns idx in the correct printing order
 void OptionsMap::add(const std::string& name, const Option& option) {
-    //combo management begin
+    // [SC:uci-combo] begin
     auto it = options_map.find(name);
 
     if (it == options_map.end())  // Se l'opzione NON esiste ancora, la aggiungiamo
     {
-        static size_t insert_order = 0;
-        options_map[name]          = option;
-        options_map[name].parent   = this;
-        options_map[name].idx      = insert_order++;
+        static usize insert_order = 0;
+
+        options_map[name] = option;
+
+        options_map[name].parent = this;
+        options_map[name].idx    = insert_order++;
     }
     else
     {
@@ -96,35 +100,26 @@ void OptionsMap::add(const std::string& name, const Option& option) {
         std::cerr << "Option \"" << name << "\" was already added!" << std::endl;
         std::exit(EXIT_FAILURE);
     }
-    //combo management end
+    // [SC:uci-combo] end
 }
 
 
-std::size_t OptionsMap::count(const std::string& name) const { return options_map.count(name); }
-
-Option::Option(const OptionsMap* map) :
-    parent(map) {}
+usize OptionsMap::count(const std::string& name) const { return options_map.count(name); }
 
 Option::Option(const char* v, OnChange f) :
     type("string"),
-    min(0),
-    max(0),
     on_change(std::move(f)) {
     defaultValue = currentValue = v;
 }
 
 Option::Option(bool v, OnChange f) :
     type("check"),
-    min(0),
-    max(0),
     on_change(std::move(f)) {
     defaultValue = currentValue = (v ? "true" : "false");
 }
 
 Option::Option(OnChange f) :
     type("button"),
-    min(0),
-    max(0),
     on_change(std::move(f)) {}
 
 Option::Option(int v, int minv, int maxv, OnChange f) :
@@ -137,8 +132,6 @@ Option::Option(int v, int minv, int maxv, OnChange f) :
 
 Option::Option(const char* v, const char* cur, OnChange f) :
     type("combo"),
-    min(0),
-    max(0),
     on_change(std::move(f)) {
     defaultValue = v;
     currentValue = cur;
@@ -150,7 +143,7 @@ Option::operator int() const {
 }
 
 Option::operator std::string() const {
-    assert(type == "string" || type == "combo");  //combo
+    assert(type == "string" || type == "combo");  // combo
     return currentValue;
 }
 
@@ -161,6 +154,16 @@ bool Option::operator==(const char* s) const {
 
 bool Option::operator!=(const char* s) const { return !(*this == s); }
 
+static bool value_in_range(const std::string& v, int min, int max) {
+    if (v.empty())
+        return false;
+    errno                  = 0;
+    char*           end    = nullptr;
+    const long long result = std::strtoll(v.c_str(), &end, 10);
+    if (errno == ERANGE || *end != '\0')
+        return false;
+    return result >= min && result <= max;
+}
 
 // Updates currentValue and triggers on_change() action. It's up to
 // the GUI to check for option's limits, but we could receive the new value
@@ -168,10 +171,10 @@ bool Option::operator!=(const char* s) const { return !(*this == s); }
 Option& Option::operator=(const std::string& v) {
 
     assert(!type.empty());
-    //combo management begin
+    // [SC:uci-combo] begin
     if ((type != "button" && type != "string" && v.empty())
         || (type == "check" && v != "true" && v != "false")
-        || (type == "spin" && (std::stoi(v) < min || std::stoi(v) > max)))
+        || (type == "spin" && !value_in_range(v, min, max)))
     {
         return *this;
     }
@@ -187,11 +190,11 @@ Option& Option::operator=(const std::string& v) {
                 comboSet.insert(token);
         if (!comboSet.count(v))
             return *this;
-        //combo management end
+        // [SC:uci-combo] end
     }
 
     if (type == "string")
-        currentValue = v == "<empty>" ? "" : v;
+        currentValue = v == "" ? "" : v;
     else if (type != "button")
         currentValue = v;
 
@@ -207,7 +210,7 @@ Option& Option::operator=(const std::string& v) {
 }
 
 std::ostream& operator<<(std::ostream& os, const OptionsMap& om) {
-    for (size_t idx = 0; idx < om.options_map.size(); ++idx)
+    for (usize idx = 0; idx < om.options_map.size(); ++idx)
         for (const auto& it : om.options_map)
             if (it.second.idx == idx)
             {
@@ -219,7 +222,7 @@ std::ostream& operator<<(std::ostream& os, const OptionsMap& om) {
 
                 else if (o.type == "string")
                 {
-                    std::string defaultValue = o.defaultValue.empty() ? "<empty>" : o.defaultValue;
+                    std::string defaultValue = o.defaultValue.empty() ? "" : o.defaultValue;
                     os << " default " << defaultValue;
                 }
 

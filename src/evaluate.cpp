@@ -1,6 +1,7 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2026 The ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2018-2026 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,35 +23,28 @@
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
+#include <deque>
 #include <iomanip>
 #include <iostream>
 #include <memory>
 #include <sstream>
 #include <tuple>
+#include <vector>
 
+#include "misc.h"
 #include "nnue/network.h"
 #include "nnue/nnue_misc.h"
 #include "position.h"
 #include "types.h"
 #include "uci.h"
 #include "nnue/nnue_accumulator.h"
+#include "wdl/win_probability.h"
 
 namespace ShashChess {
 
-// Returns a static, purely materialistic evaluation of the position from
-// the point of view of the side to move. It can be divided by PawnValue to get
-// an approximation of the material advantage on the board in terms of pawns.
-int Eval::simple_eval(const Position& pos) {
-    Color c = pos.side_to_move();
-    return PawnValue * (pos.count<PAWN>(c) - pos.count<PAWN>(~c)) + pos.non_pawn_material(c)
-         - pos.non_pawn_material(~c);
-}
-
-bool Eval::use_smallnet(const Position& pos) { return std::abs(simple_eval(pos)) > 962; }
-
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
 // of the position from the point of view of the side to move.
-Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
+Value Eval::evaluate(const Eval::NNUE::Network&     network,
                      const Position&                pos,
                      Eval::NNUE::AccumulatorStack&  accumulators,
                      Eval::NNUE::AccumulatorCaches& caches,
@@ -58,27 +52,17 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     assert(!pos.checkers());
 
-    bool smallNet           = use_smallnet(pos);
-    auto [psqt, positional] = smallNet ? networks.small.evaluate(pos, accumulators, caches.small)
-                                       : networks.big.evaluate(pos, accumulators, caches.big);
+    auto [psqt, positional] = network.evaluate(pos, accumulators, caches);
 
-    Value nnue = (125 * psqt + 131 * positional) / 128;
-
-    // Re-evaluate the position when higher eval accuracy is worth the time spent
-    if (smallNet && (std::abs(nnue) < 277))
-    {
-        std::tie(psqt, positional) = networks.big.evaluate(pos, accumulators, caches.big);
-        nnue                       = (125 * psqt + 131 * positional) / 128;
-        smallNet                   = false;
-    }
+    Value nnue = psqt + positional;
 
     // Blend optimism and eval with nnue complexity
     int nnueComplexity = std::abs(psqt - positional);
-    optimism += optimism * nnueComplexity / 476;
-    nnue -= nnue * nnueComplexity / 18236;
+    optimism += optimism * i64(nnueComplexity) / 476;
+    nnue -= nnue * i64(nnueComplexity) / 18236;
 
     int material = 534 * pos.count<PAWN>() + pos.non_pawn_material();
-    int v        = (nnue * (77871 + material) + optimism * (7191 + material)) / 77871;
+    int v        = nnue + (nnue * i64(material) + optimism * i64(7675)) / 91000;
 
     // Damp down the evaluation linearly when shuffling
     v -= v * pos.rule50_count() / 199;
@@ -124,7 +108,6 @@ std::string get_shashin_zone(uint8_t winProb, Color sideToMove) {
     }
     else
     {
-        // Per il nero, invertiamo le probabilità
         uint8_t blackWinProb = 100 - winProb;
         if (blackWinProb <= 5)
             return "High Petrosian (Losing position)";
@@ -159,7 +142,6 @@ std::string get_shashin_zone(uint8_t winProb, Color sideToMove) {
 std::string analyze_piece_activity_horizontal(const Position& pos) {
     std::vector<std::pair<std::string, int>> whitePieces, blackPieces;
 
-    // Analizza i pezzi bianchi
     Bitboard whiteBB = pos.pieces(WHITE);
     while (whiteBB)
     {
@@ -191,8 +173,8 @@ std::string analyze_piece_activity_horizontal(const Position& pos) {
             continue;
         }
 
-        // Calcola attività
-        Bitboard attacks  = attacks_bb(pt, sq, pos.pieces());
+        // Overload corretto con Piece per evitare il crash su PAWN
+        Bitboard attacks  = Attacks::attacks_bb(pc, sq, pos.pieces());
         int      activity = popcount(attacks) * 2;
 
         constexpr Bitboard Center = (FileDBB | FileEBB) & (Rank4BB | Rank5BB);
@@ -200,7 +182,7 @@ std::string analyze_piece_activity_horizontal(const Position& pos) {
             activity += 5;
 
         Square   enemyKingSq = pos.square<KING>(BLACK);
-        Bitboard kingZone    = attacks_bb<KING>(enemyKingSq) | enemyKingSq;
+        Bitboard kingZone    = Attacks::attacks_bb<KING>(enemyKingSq) | enemyKingSq;
         if (attacks & kingZone)
             activity += 8;
 
@@ -213,7 +195,6 @@ std::string analyze_piece_activity_horizontal(const Position& pos) {
         whitePieces.emplace_back(pieceName + UCIEngine::square(sq), activity);
     }
 
-    // Analizza i pezzi neri
     Bitboard blackBB = pos.pieces(BLACK);
     while (blackBB)
     {
@@ -245,7 +226,8 @@ std::string analyze_piece_activity_horizontal(const Position& pos) {
             continue;
         }
 
-        Bitboard attacks  = attacks_bb(pt, sq, pos.pieces());
+        // Overload corretto con Piece per evitare il crash su PAWN
+        Bitboard attacks  = Attacks::attacks_bb(pc, sq, pos.pieces());
         int      activity = popcount(attacks) * 2;
 
         constexpr Bitboard Center = (FileDBB | FileEBB) & (Rank4BB | Rank5BB);
@@ -253,7 +235,7 @@ std::string analyze_piece_activity_horizontal(const Position& pos) {
             activity += 5;
 
         Square   enemyKingSq = pos.square<KING>(WHITE);
-        Bitboard kingZone    = attacks_bb<KING>(enemyKingSq) | enemyKingSq;
+        Bitboard kingZone    = Attacks::attacks_bb<KING>(enemyKingSq) | enemyKingSq;
         if (attacks & kingZone)
             activity += 8;
 
@@ -266,7 +248,6 @@ std::string analyze_piece_activity_horizontal(const Position& pos) {
         blackPieces.emplace_back(pieceName + UCIEngine::square(sq), activity);
     }
 
-    // Ordina per attività (dalla meno attiva alla più attiva)
     std::sort(whitePieces.begin(), whitePieces.end(),
               [](const auto& a, const auto& b) { return a.second < b.second; });
     std::sort(blackPieces.begin(), blackPieces.end(),
@@ -298,78 +279,53 @@ std::string analyze_piece_activity_horizontal(const Position& pos) {
     return ss.str();
 }
 
-// Funzione per analizzare le mosse legali ordinate per attività
-std::string analyze_legal_moves(const Position& pos, const Eval::NNUE::Networks& networks) {
-    std::vector<std::tuple<std::string, Value, uint8_t>> moves;  // (move, eval, win_prob)
+std::string analyze_legal_moves(const Position& pos, const Eval::NNUE::Network& network) {
+    std::vector<std::tuple<std::string, Value, uint8_t>> moves;
 
     Color side_to_move = pos.side_to_move();
 
-    // -------------------------------------------------------------------------
-    // FIX CRASH & OTTIMIZZAZIONE
-    // -------------------------------------------------------------------------
-    // 1. Allocazione su HEAP: Le strutture NNUE sono troppo grandi per lo stack
-    //    nelle nuove patch. Usiamo make_unique per allocarle nella memoria dinamica.
-    // 2. Allocazione ESTERNA: Allocchiamo una volta sola fuori dal ciclo for
-    //    e riutilizziamo i buffer per tutte le mosse per non rallentare l'analisi.
+    // Allocati una sola volta: AccumulatorCaches non va riusata tra posizioni
+    // diverse, ma va resettata. AccumulatorStack invece supporta reset().
     auto acc_stack = std::make_unique<Eval::NNUE::AccumulatorStack>();
-    auto caches    = std::make_unique<Eval::NNUE::AccumulatorCaches>(networks);
-    // -------------------------------------------------------------------------
+    auto caches    = std::make_unique<Eval::NNUE::AccumulatorCaches>(network);
 
-    // Genera tutte le mosse legali
     for (const auto& move : MoveList<LEGAL>(pos))
     {
-        // Usa una copia della posizione
         StateListPtr states(new std::deque<StateInfo>(1));
         Position     posCopy;
         posCopy.set(pos.fen(), pos.is_chess960(), &states->back());
 
-        // Esegui la mossa sulla copia
         StateInfo st;
         posCopy.do_move(move, st);
 
-        // Valuta la posizione risultante.
-        // Passiamo i puntatori dereferenziati (*acc_stack, *caches) perché
-        // evaluate si aspetta i riferimenti agli oggetti, non i unique_ptr.
-        Value v = Eval::evaluate(networks, posCopy, *acc_stack, *caches, VALUE_ZERO);
-
-        // La valutazione 'v' è dal punto di vista di chi deve muovere ORA (l'avversario).
-        // La invertiamo per avere il valore dal punto di vista di chi ha appena mosso.
-        Value eval_for_mover = -v;
-
-        // Converti al punto di vista del bianco per il calcolo WDL (Win/Draw/Loss)
-        // WDLModel lavora sempre e solo dal punto di vista del bianco.
-        Value v_white = posCopy.side_to_move() == WHITE ? v : -v;
-
-        // Calcola la win probability (sempre prospettiva White)
-        uint8_t win_prob_white = WDLModel::get_win_probability(v_white, posCopy);
-
-        // Calcola la win probability per il giocatore che sta muovendo
-        uint8_t win_prob_for_mover;
-        if (side_to_move == WHITE)
+        // Reset dello stack e delle cache per ciascuna mossa
+        acc_stack->reset();
+        caches->clear(network);
+        Value v;
+        if (posCopy.checkers())  // Eval::evaluate() non ammette posizioni sotto scacco
         {
-            win_prob_for_mover = win_prob_white;
+            auto [psqt, positional] = network.evaluate(posCopy, *acc_stack, *caches);
+            v                       = psqt + positional;
         }
         else
-        {
-            // Se muove il nero, la sua probabilità di vittoria è l'opposto di quella del bianco
-            win_prob_for_mover = 100 - win_prob_white;
-        }
+            v = Eval::evaluate(network, posCopy, *acc_stack, *caches, VALUE_ZERO);
+        Value eval_for_mover = -v;
+        Value v_white        = posCopy.side_to_move() == WHITE ? v : -v;
 
-        // Aggiungi alla lista
+        uint8_t win_prob_white = WDLModel::get_win_probability(v_white, posCopy);
+        uint8_t win_prob_for_mover =
+          (side_to_move == WHITE) ? win_prob_white : (100 - win_prob_white);
+
         moves.emplace_back(UCIEngine::move(move, pos.is_chess960()), eval_for_mover,
                            win_prob_for_mover);
     }
 
-    // Ordina le mosse:
-    // 1. Prima per Win Probability (decrescente)
-    // 2. A parità di Win Prob, per valutazione in centipawn (decrescente)
     std::sort(moves.begin(), moves.end(), [](const auto& a, const auto& b) {
         if (std::get<2>(a) != std::get<2>(b))
-            return std::get<2>(a) > std::get<2>(b);  // win probability più alta vince
-        return std::get<1>(a) > std::get<1>(b);      // eval più alta vince
+            return std::get<2>(a) > std::get<2>(b);
+        return std::get<1>(a) > std::get<1>(b);
     });
 
-    // Costruisci la stringa di output
     std::stringstream ss;
     ss << "Legal moves ordered by static activity (best first): ";
     for (size_t i = 0; i < moves.size(); ++i)
@@ -381,7 +337,6 @@ std::string analyze_legal_moves(const Position& pos, const Eval::NNUE::Networks&
         Value       eval     = std::get<1>(moves[i]);
         uint8_t     win_prob = std::get<2>(moves[i]);
 
-        // Formatta l'output: "e2e4(+0.35 cp, 52%)"
         ss << move_str << "(" << std::showpos << std::fixed << std::setprecision(1)
            << 0.01 * UCIEngine::to_cp(eval, pos) << " cp, " << static_cast<int>(win_prob) << "%)";
     }
@@ -389,63 +344,144 @@ std::string analyze_legal_moves(const Position& pos, const Eval::NNUE::Networks&
     return ss.str();
 }
 
+std::string generate_strategic_synthesis(uint8_t              winProbWhite,
+                                         const WDLModel::WDL& wdl,
+                                         const std::string&   shashinZone,
+                                         Value                v_white,
+                                         const Position&      pos,
+                                         int                  pos_delta_act) {
+    std::stringstream ss;
+    const int         wp = static_cast<int>(winProbWhite);
+    const int         cp = UCIEngine::to_cp(v_white, pos);
+    const int         dw = static_cast<int>(wdl.win);
+    const int         dd = static_cast<int>(wdl.draw);
+    const int         dl = static_cast<int>(wdl.loss);
+
+    ss << "=======================================================================\n";
+    ss << "STRATEGIC SYNTHESIS — ShashHermes Ground Truth Format\n";
+    ss << "=======================================================================\n";
+    ss << "Evaluation  : " << (cp >= 0 ? "+" : "") << std::fixed << std::setprecision(2)
+       << 0.01 * cp << " cp | WP White=" << wp << "% | WDL=" << dw << "/" << dd << "/" << dl
+       << "%\n";
+    ss << "Shashin Zone: " << shashinZone << "\n\n";
+
+    ss << "Position Character:\n";
+    ss << "  Drawability   : "
+       << (dd > 60   ? "VERY HIGH. Fortress risk."
+           : dd > 40 ? "MODERATE. Balanced."
+                     : "LOW. Decisive.")
+       << "\n";
+    ss << "  Volatility    : "
+       << (std::abs(dw - dl) > 50 ? "LOW stability."
+                                  : "HIGH variance. Critical tactical calculations.")
+       << "\n";
+
+    ss << "\nStrategic Directives:\n";
+    if (wp >= 65)
+        ss << "  [PRESS] Improve the worst piece. Target vulnerabilities. Open active channels.\n";
+    else if (wp >= 45)
+        ss << "  [BALANCE] Keep piece coordination tight. Prevent tactical outposts.\n";
+    else
+        ss << "  [COUNTERPLAY] Imbalance the game. Complicate variations. Avoid massive trades.\n";
+
+    ss << "\n--- SHASHHERMES TRAINING SNIPPET ---\n";
+    ss << "TRACCIA SHASHCHESS: [" << wp << "% | Zone=" << shashinZone << " | WDL=" << dw << "/"
+       << dd << "/" << dl << "]\n";
+
+    ss << "\nFor Elo 1400-1999 (Beginner):\n";
+    if (wp >= 60)
+        ss
+          << "  \"White holds the initiative. Focus on pushing piece activity and avoiding unnecessary pawn weaknesses.\"\n";
+    else if (wp >= 40)
+        ss
+          << "  \"The board is statically balanced. Maintain proper piece protection and secure the king.\"\n";
+    else
+        ss
+          << "  \"Black is exerting pressure. Search for dynamic counterplay and active defensive resources.\"\n";
+
+    ss << "\nFor Elo 2000-2199 (Intermediate):\n";
+    if (wp >= 60)
+        ss
+          << "  \"" << shashinZone << " (" << wp
+          << "% WP). Active bucket detects structural advantage beyond material. Prioritize fixing the worst unit.\"\n";
+    else if (wp >= 40)
+        ss << "  \"" << shashinZone << " (" << wp << "% WP). High draw probability (" << dd
+           << "%). Strategic play revolves around center control and outpost denial.\"\n";
+    else
+        ss
+          << "  \"" << shashinZone << " (" << wp
+          << "% WP). Structural compression detected. Complicate the topology before spatial paralysis sets in.\"\n";
+
+    ss << "\nFor Elo 2200+ (Advanced/Expert):\n";
+    ss
+      << "  \"NNUE WP=" << wp << "% | " << shashinZone << " | WDL=" << dw << "/" << dd << "/" << dl
+      << "%. "
+      << "Neural structural correction: " << std::showpos << pos_delta_act << std::noshowpos
+      << "% WP deviation from PSQT material. "
+      << "Consult the NNUE Mechanistic Trace layer output for precise Shapley attributions, filter channel activations, and defensive fixation blindspots.\"\n";
+
+    ss << "--- END SHASHHERMES TRAINING SNIPPET ---\n";
+    ss << "=======================================================================\n";
+
+    return ss.str();
+}
+
 }  // namespace
 
-// Like evaluate(), but instead of returning a value, it returns
-// a string (suitable for outputting to stdout) that contains the detailed
-// descriptions and values of each evaluation term. Useful for debugging.
-// Trace scores are from white's point of view
-std::string Eval::trace(Position& pos, const Eval::NNUE::Networks& networks, bool showWDL) {
+std::string Eval::trace(Position& pos, const Eval::NNUE::Network& network, bool showWDL) {
 
     if (pos.checkers())
         return "Final evaluation: none (in check)";
 
     auto accumulators = std::make_unique<Eval::NNUE::AccumulatorStack>();
-    auto caches       = std::make_unique<Eval::NNUE::AccumulatorCaches>(networks);
+    auto caches       = std::make_unique<Eval::NNUE::AccumulatorCaches>(network);
 
     std::stringstream ss;
 
-    // Inizializza il modello WDL se necessario
     if (!WDLModel::is_initialized())
-    {
         WDLModel::init();
-    }
 
-    // Calcola la valutazione finale
-    Value v = evaluate(networks, pos, *accumulators, *caches, VALUE_ZERO);
-
-    // Converti SEMPRE al punto di vista del bianco
+    Value v       = evaluate(network, pos, *accumulators, *caches, VALUE_ZERO);
     Value v_white = pos.side_to_move() == WHITE ? v : -v;
 
     if (showWDL)
     {
-        // Calcola win probability e WDL DAL PUNTO DI VISTA DEL BIANCO
         uint8_t       winProbWhite = WDLModel::get_win_probability(v_white, pos);
         WDLModel::WDL wdl          = WDLModel::get_wdl(v_white, pos);
+        std::string   shashinZone  = get_shashin_zone(winProbWhite, WHITE);
 
-        // Determina la zona di Shashin per il bianco
-        std::string shashinZone = get_shashin_zone(winProbWhite, WHITE);
-
-        // Mostra la trace NNUE in centipawn
         ss << std::showpoint << std::noshowpos << std::fixed << std::setprecision(2);
-        ss << '\n' << NNUE::trace(pos, networks, *caches) << '\n';
+        ss << '\n' << NNUE::trace(pos, network, *caches) << '\n';
 
         ss << "=== SHASHIN STATIC ANALYSIS ===\n";
         ss << "*** Static activity evaluation based on NNUE network ***\n";
         ss << "*** All NNUE values shown in centipawn for technical accuracy ***\n";
         ss << "*** Win probability and Shashin zone always from White's perspective ***\n\n";
 
-        // Analisi dell'attività dei pezzi in orizzontale
         ss << "--- PIECE ACTIVITY ANALYSIS (Makogonov Principle) ---\n";
         ss << analyze_piece_activity_horizontal(pos) << "\n";
 
-        // Analisi delle mosse legali
         ss << "--- LEGAL MOVES ANALYSIS ---\n";
-        ss << analyze_legal_moves(pos, networks) << "\n";
+        ss << analyze_legal_moves(pos, network) << "\n";
+
+        // FIX DEFINITIVO SF 19: Evitiamo trace_evaluate (che causa crash a causa dell'assenza
+        // del bucket structure). Estraiamo i punteggi nudi e crudi in totale sicurezza.
+        auto [psqt_syn, positional_syn] = network.evaluate(pos, *accumulators, *caches);
+
+        const int persp_syn  = pos.side_to_move() == WHITE ? 1 : -1;
+        int       wp_mat_syn = WDLModel::get_win_probability(Value(persp_syn * psqt_syn), pos);
+        int       wp_tot_syn =
+          WDLModel::get_win_probability(Value(persp_syn * (psqt_syn + positional_syn)), pos);
+        int structural_delta = wp_tot_syn - wp_mat_syn;
+
+        ss << "--- STRATEGIC SYNTHESIS ---\n";
+        ss << generate_strategic_synthesis(winProbWhite, wdl, shashinZone, v_white, pos,
+                                           structural_delta)
+           << "\n";
 
         ss << "================================\n";
         ss << "Final Static Activity Evaluation: " << 0.01 * UCIEngine::to_cp(v_white, pos)
-           << " cp | " << static_cast<int>(winProbWhite) << "% win probability (White)\n";
+           << " pawns (White perspective)\n";
         ss << "WDL (Win/Draw/Loss): " << static_cast<int>(wdl.win) << "%/"
            << static_cast<int>(wdl.draw) << "%/" << static_cast<int>(wdl.loss) << "%\n";
         ss << "Shashin Zone: " << shashinZone << "\n";
@@ -453,20 +489,20 @@ std::string Eval::trace(Position& pos, const Eval::NNUE::Networks& networks, boo
     }
     else
     {
-        // Comportamento tradizionale
         ss << std::showpoint << std::noshowpos << std::fixed << std::setprecision(2);
-        ss << '\n' << NNUE::trace(pos, networks, *caches) << '\n';
+        ss << '\n' << NNUE::trace(pos, network, *caches) << '\n';
         ss << std::showpoint << std::showpos << std::fixed << std::setprecision(2) << std::setw(15);
 
-        auto [psqt, positional] = networks.big.evaluate(pos, *accumulators, caches->big);
+        auto [psqt, positional] = network.evaluate(pos, *accumulators, *caches);
         Value v_nnue            = psqt + positional;
-        v_nnue                  = pos.side_to_move() == WHITE ? v_nnue : -v_nnue;
+        ss << "NNUE evaluation          " << v_nnue << " (side to move, internal units)\n";
+        v_nnue = pos.side_to_move() == WHITE ? v_nnue : -v_nnue;
         ss << "NNUE evaluation        " << 0.01 * UCIEngine::to_cp(v_nnue, pos)
            << " (white side)\n";
 
-        ss << "Final evaluation       " << 0.01 * UCIEngine::to_cp(v_white, pos) << " (white side)";
-        ss << " [with scaled NNUE, ...]";
-        ss << "\n";
+        ss << "Final evaluation      ";
+        ss << 0.01 * UCIEngine::to_cp(v_white, pos) << " (white side)";
+        ss << " [with scaled NNUE, ...]\n";
     }
 
     return ss.str();

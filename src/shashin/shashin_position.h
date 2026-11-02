@@ -1,3 +1,22 @@
+/*
+  ShashChess, a UCI chess playing engine derived from Stockfish
+  Copyright (C) 2004-2026 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2018-2026 The ShashChess developers (see AUTHORS file)
+
+  ShashChess is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  ShashChess is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #ifndef SHASHIN_POSITION_H
 #define SHASHIN_POSITION_H
 
@@ -9,7 +28,7 @@ namespace Shashin {
 inline uint64_t shashin_position_hash(const Position& pos) noexcept {
     return pos.key() ^ pos.material_key();
 }
-//from shashin begin
+// [SC:shashin] begin
 [[nodiscard]]
 // shashin_position.h
 [[nodiscard]]
@@ -29,7 +48,8 @@ inline int count_safe_waiting_moves(const Position& pos) {
             if (m.type_of() == PROMOTION)
                 movedValue = PieceValue[m.promotion_type()];  // Sovrascrive il valore del pedone
 
-            Bitboard attackers           = pos.attackers_to(to, ~pos.side_to_move());
+            Bitboard attackers           = pos.attackers_to(to, pos.pieces() ^ m.from_sq())
+                                         & pos.pieces(~pos.side_to_move());  // [SC fix]
             Value    minOpponentAttacker = VALUE_INFINITE;
 
             // Trova il pezzo attaccante avversario di valore minimo
@@ -55,8 +75,17 @@ inline int count_safe_waiting_moves(const Position& pos) {
 
 [[nodiscard]]
 inline bool king_danger(const Position& pos, Color c) noexcept {
-    const Square   ksq       = pos.square<KING>(c);
-    const Bitboard attackers = pos.attackers_to(ksq) & pos.pieces(~c);
+    // [SC] Enemy pieces attacking the king zone (king square and adjacent squares).
+    // Counting only the attackers of the king square meant counting the checkers: the
+    // weighted sum could exceed the threshold only with a double check by two heavy
+    // pieces, so kingDanger was never true (0% of suite and game positions). With the
+    // king zone it is true in about 13% of the suite positions and 6% of game positions.
+    const Square ksq  = pos.square<KING>(c);
+    Bitboard     zone = Attacks::attacks_bb<KING>(ksq) | ksq;
+    Bitboard     attackers = 0;
+    while (zone)
+        attackers |= pos.attackers_to(pop_lsb(zone));
+    attackers &= pos.pieces(~c) & ~pos.pieces(KING);
     if (!attackers)
         return false;
     constexpr int STRONG_WEIGHT    = 3;
@@ -88,7 +117,7 @@ inline int king_safety_score(const Position& pos, Color c) noexcept {
     {
         const Bitboard ourPawns = pos.pieces(c, PAWN);
         const Bitboard pawnShield0 =
-          ((c == WHITE ? pawn_attacks_bb<WHITE>(ourPawns) : pawn_attacks_bb<BLACK>(ourPawns))
+          ((c == WHITE ? (shift(ourPawns, NORTH_WEST) | shift(ourPawns, NORTH_EAST)) : (shift(ourPawns, SOUTH_WEST) | shift(ourPawns, SOUTH_EAST)))
            & ksq);
         if (popcount(pawnShield0) >= 3)
             return 100;
@@ -96,7 +125,7 @@ inline int king_safety_score(const Position& pos, Color c) noexcept {
 
     // Calcolo del pawn shield sui file adiacenti
     const File     kf            = file_of(ksq);
-    const Bitboard adjacentFiles = shift<EAST>(file_bb(kf)) | shift<WEST>(file_bb(kf));
+    const Bitboard adjacentFiles = shift(file_bb(kf), EAST) | shift(file_bb(kf), WEST);
     const Bitboard pawnShield    = pos.pieces(c, PAWN) & (adjacentFiles | file_bb(kf));
 
     // Early-exit su shield pedonale
@@ -108,9 +137,9 @@ inline int king_safety_score(const Position& pos, Color c) noexcept {
         ++shieldCount;
     }
 
-    // Centralizzazione
+    // Centralizzazione calcolata in modo puro e universale
     const Square centerSq       = make_square(FILE_E, c == WHITE ? RANK_4 : RANK_5);
-    const int    centralization = 14 - distance(ksq, centerSq) * 2;
+    const int    centralization = 14 - std::max(std::abs(file_of(ksq) - file_of(centerSq)), std::abs(rank_of(ksq) - rank_of(centerSq))) * 2;
 
     // Costanti per il punteggio
     constexpr int ATTACKER_PENALTY = 12;
@@ -150,21 +179,32 @@ inline bool is_sacrifice(const Position& pos, Move m) noexcept {
         return false;
     Value moveValue = PieceValue[type_of(moved)];
     if (m.type_of() == PROMOTION)
-    {  // Usa type_of() invece di type()
+    {
         moveValue += PieceValue[m.promotion_type()] - PieceValue[PAWN];
     }
 
-    return moveValue > PieceValue[type_of(captured)];
+    if (moveValue <= PieceValue[type_of(captured)])
+        return false;
+
+    // [SC] A real sacrifice against the enemy king: the exchange loses material (SEE < 0)
+    // and the capture gives check or lands in the enemy king zone. Any capture by a more
+    // valuable piece, even of an undefended pawn, made 79% of the game positions
+    // "sacrificial" (85% of the suite); now 27% of the game positions and 45% of the suite.
+    if (pos.see_ge(m, 0))
+        return false;
+
+    const Square theirKing = pos.square<KING>(~pos.side_to_move());
+    return pos.gives_check(m) || ((Attacks::attacks_bb<KING>(theirKing) | theirKing) & to);
 }
 
-//For fortresses by Shashin begin
+// [SC:shashin] begin
 [[nodiscard]]
 inline Bitboard pawn_attacks(Color c, Square s) {
-    return attacks_bb<PAWN>(s, c);
+    return Attacks::attacks_bb<PAWN>(s, c);
 }
 [[nodiscard]]
 inline Bitboard king_ring(Square ksq) {
-    return attacks_bb<KING>(ksq) | ksq;
+    return Attacks::attacks_bb<KING>(ksq) | ksq;
 }
 [[nodiscard]]
 inline bool has_pawn_breaks(const Position& pos) noexcept {
@@ -172,7 +212,7 @@ inline bool has_pawn_breaks(const Position& pos) noexcept {
     const Bitboard pawns         = pos.pieces(us, PAWN);
     const Bitboard eligiblePawns = pawns & ~(us == WHITE ? Rank7BB : Rank2BB);
     const Bitboard pushSquares =
-      us == WHITE ? shift<NORTH>(eligiblePawns) : shift<SOUTH>(eligiblePawns);
+      us == WHITE ? shift(eligiblePawns, NORTH) : shift(eligiblePawns, SOUTH);
     return (pushSquares & ~pos.pieces()) != 0;
 }
 [[nodiscard]]
@@ -195,9 +235,10 @@ inline bool has_safe_waiting_moves(const Position& pos) {
 
             // Gestione promozioni
             if (m.type_of() == PROMOTION)
-                movedValue = PieceValue[m.promotion_type()];  // Sovrascrive il valore del pedone
+                movedValue = PieceValue[m.promotion_type()]; 
 
-            Bitboard attackers           = pos.attackers_to(to, ~pos.side_to_move());
+            Bitboard attackers           = pos.attackers_to(to, pos.pieces() ^ m.from_sq())
+                                         & pos.pieces(~pos.side_to_move());  // [SC fix]
             Value    minOpponentAttacker = VALUE_INFINITE;
 
             // Trova il pezzo attaccante avversario di valore minimo
@@ -209,11 +250,11 @@ inline bool has_safe_waiting_moves(const Position& pos) {
             }
 
             // Condizioni di sicurezza aggiornate:
-            const bool isSafe = (minOpponentAttacker > movedValue) ||  // Nessun attacco redditizio
+            const bool isSafe = (minOpponentAttacker > movedValue) ||  
                                 (!attackers && m.type_of() != PROMOTION)
-                             ||  // Mossa normale non attaccata
+                             || 
                                 (m.type_of() == PROMOTION
-                                 && !attackers);  // Promozione non attaccata (qualsiasi tipo)
+                                 && !attackers); 
 
             if (isSafe)
                 return true;
@@ -225,7 +266,7 @@ inline bool has_safe_waiting_moves(const Position& pos) {
 [[nodiscard]]
 inline bool is_king_nearby(const Position& pos, Square sq) {
     Square kingSq = pos.square<KING>(pos.side_to_move());
-    return distance(kingSq, sq) <= 2;
+    return std::max(std::abs(file_of(kingSq) - file_of(sq)), std::abs(rank_of(kingSq) - rank_of(sq))) <= 2;
 }
 [[nodiscard]]
 inline bool is_pawn_weakening_move(const Position& pos, Square from, Square to) {
@@ -253,16 +294,16 @@ inline bool is_fortress_breaking_move(const Position& pos, const Move& m) {
 inline bool is_inside_fortress(const Position& pos, Square sq) noexcept {
     const Color  us           = pos.side_to_move();
     const Square ksq          = pos.square<KING>(us);
-    Bitboard     kingArea     = attacks_bb<KING>(ksq) | ksq;
-    Bitboard     fortressZone = kingArea | shift<NORTH>(kingArea) | shift<SOUTH>(kingArea);
+    Bitboard     kingArea     = Attacks::attacks_bb<KING>(ksq) | ksq;
+    Bitboard     fortressZone = kingArea | shift(kingArea, NORTH) | shift(kingArea, SOUTH);
     Bitboard     ourPawns     = pos.pieces(us, PAWN);
     Bitboard     pawnAttacks =
-      (us == WHITE) ? pawn_attacks_bb<WHITE>(ourPawns) : pawn_attacks_bb<BLACK>(ourPawns);
+      (us == WHITE) ? (shift(ourPawns, NORTH_WEST) | shift(ourPawns, NORTH_EAST)) : (shift(ourPawns, SOUTH_WEST) | shift(ourPawns, SOUTH_EAST));
     Bitboard pawnShield      = ourPawns & (pawnAttacks | kingArea);
     Bitboard pawnStorm       = pos.pieces(~us, PAWN) & fortressZone;
     bool     hasPawnShield   = popcount(pawnShield & fortressZone) >= 3;
     bool     noEnemyPawns    = !pawnStorm;
-    bool     kingProximity   = distance(sq, ksq) <= 2;
+    bool     kingProximity   = std::max(std::abs(file_of(sq) - file_of(ksq)), std::abs(rank_of(sq) - rank_of(ksq))) <= 2;
     Bitboard keyDefenders    = pos.pieces(us, ROOK, BISHOP) & fortressZone;
     bool     hasKeyDefenders = popcount(keyDefenders) >= 1;
 
@@ -278,13 +319,7 @@ inline bool is_fortress_preserving_move(const Position& pos, const Move& m) {
 inline bool no_progress_for(const Position& pos, int moves) {
     return pos.rule50_count() >= moves;
 }
-//For fortresses by Shashin end
-//perhaps to do begin
-//is_isolated(), is_doubled() â†’ Struttura pedonale (Capablanca/Petrosian).
-//pawn_structure_score() â†’ Se vogliamo migliorare la valutazione posizionale.
-//leads_to_attack() â†’ Se la selezione delle mosse tattiche non Ã¨ ancora ottimale.
-//perhaps to do end
-//from Shashin end
+// [SC:shashin] end
 
 }  // namespace Shashin
 }  // namespace ShashChess

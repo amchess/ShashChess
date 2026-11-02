@@ -1,6 +1,7 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2026 ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2018-2026 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -18,31 +19,51 @@
 
 #include <iostream>
 #include <memory>
+#include <utility>
 
-#include "bitboard.h"
+#include "attacks.h"
 #include "misc.h"
 #include "position.h"
 #include "tune.h"
-//wdl model
+// wdl model
 #include "uci.h"
 #include "wdl/win_probability.h"
-#include "learn/learn.h"  //learning
+#include "learn/learn.h"  // learning
+
 using namespace ShashChess;
+
+#ifdef UNIVERSAL_BINARY
+namespace ShashChess {
+
+int main(int argc, char* argv[]);  // silence 'no previous declaration'
+
+__attribute__((used))  // keep main alive
+#endif
 
 int main(int argc, char* argv[]) {
 
     std::cout << engine_info() << std::endl;
 
-    WDLModel::init();  //wdl model
+    WDLModel::init();  // wdl model
 
-    Bitboards::init();
+    Attacks::init();
     Position::init();
 
-    auto uci = std::make_unique<UCIEngine>(argc, argv);
-    LD.init(uci->engine_options());  //learning
+    auto cli = CommandLine(argc, argv);
+    auto uci = std::make_unique<UCIEngine>(std::move(cli));
+    LD.init(uci->engine_options());  // learning
+
     Tune::init(uci->engine_options());
 
     uci->loop();
 
     return 0;
 }
+
+#ifdef UNIVERSAL_BINARY
+}  // namespace ShashChess
+
+    #ifdef UNIVERSAL_NEEDS_MAIN_SHIM
+int main(int argc, char* argv[]) { return ShashChess::main(argc, argv); }
+    #endif
+#endif

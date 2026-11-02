@@ -1,6 +1,7 @@
 /*
   ShashChess, a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2004-2026 ShashChess developers (see AUTHORS file)
+  Copyright (C) 2004-2026 The Stockfish developers (see AUTHORS file)
+  Copyright (C) 2018-2026 The ShashChess developers (see AUTHORS file)
 
   ShashChess is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,7 +20,6 @@
 #ifndef UCI_H_INCLUDED
 #define UCI_H_INCLUDED
 
-#include <cstdint>
 #include <iostream>
 #include <string>
 #include <string_view>
@@ -29,17 +29,20 @@
 #include "search.h"
 #include "book/book_manager.h"    //book management
 #include "wdl/win_probability.h"  //shashin
+
 namespace ShashChess {
 
 class Position;
 class Move;
 class Score;
-enum Square : uint8_t;
+enum Square : u8;
 using Value = int;
+
+constexpr auto StartFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 class UCIEngine {
    public:
-    UCIEngine(int argc, char** argv);
+    UCIEngine(CommandLine cli);
 
     void loop();
 
@@ -47,27 +50,28 @@ class UCIEngine {
     static int         getNormalizeToPawnValue(Position& pos);  //learning
     static std::string format_score(const Score& s);
     static std::string square(Square s);
-    static std::string move(Move m, bool chess960);
-    //from shashin and learning
+    static std::string move(Move m, bool chess960 = false);
+    static std::string wdl(Value v, const Position& pos);
     static std::string to_lower(std::string str);
     static Move        to_move(const Position& pos, std::string str);
 
-    static Search::LimitsType parse_limits(std::istream& is);
+    Search::LimitsType parse_limits(std::istream& is);
 
     auto& engine_options() { return engine.get_options(); }
 
    private:
     Engine      engine;
     CommandLine cli;
+    std::string currentCmd;
 
     static void print_info_string(std::string_view str);
 
-    void          go(std::istringstream& is);
-    void          bench(std::istream& args);
-    void          benchmark(std::istream& args);
-    void          position(std::istringstream& is);
-    void          setoption(std::istringstream& is);
-    std::uint64_t perft(const Search::LimitsType&);
+    void go(std::istringstream& is);
+    void bench(std::istream& args);
+    void benchmark(std::istream& args);
+    void position(std::istringstream& is);
+    void setoption(std::istringstream& is);
+    u64  perft(const Search::LimitsType&);
 
     static void on_update_no_moves(const Engine::InfoShort& info);
     static void on_update_full(const Engine::InfoFull& info, bool showWDL);
@@ -75,6 +79,8 @@ class UCIEngine {
     static void on_bestmove(std::string_view bestmove, std::string_view ponder);
 
     void init_search_update_listeners();
+
+    [[noreturn]] void terminate_on_critical_error(const std::string& message);
 };
 
 }  // namespace ShashChess
