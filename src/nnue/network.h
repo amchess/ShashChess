@@ -46,6 +46,12 @@ struct AccumulatorCaches;
 
 using NetworkOutput = std::tuple<Value, Value>;
 
+// [SC:explain] Accumulator built by the NNUE explanation of the trace (see nnue_explain.h)
+struct ExplainAccumulator {
+    alignas(CacheLineSize) std::array<std::array<i16, L1>, COLOR_NB> accumulation;
+    alignas(CacheLineSize) std::array<std::array<i32, PSQTBuckets>, COLOR_NB> psqtAccumulation;
+};
+
 // The network must be a trivial type, i.e. the memory must be in-line.
 // This is required to allow sharing the network via shared memory, as
 // there is no way to run destructors.
@@ -78,6 +84,11 @@ class Network {
     NnueEvalTrace trace_evaluate(const Position&    pos,
                                  AccumulatorStack&  accumulatorStack,
                                  AccumulatorCaches& cache) const;
+
+    // [SC:explain] Evaluates an explanation accumulator with the given layer stack: returns
+    // (psqt, positional) from the point of view of 'stm', as evaluate() does.
+    NetworkOutput evaluate_explain(const ExplainAccumulator& acc, Color stm, int bucket) const;
+    const FeatureTransformer& feature_transformer() const { return featureTransformer; }
 
     void load_external(const std::filesystem::path&, const std::filesystem::path&, EvalFile&);
     void load_internal(EvalFile&);

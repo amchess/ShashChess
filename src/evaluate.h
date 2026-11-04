@@ -50,6 +50,13 @@ Value evaluate(const NNUE::Network&           network,
                Eval::NNUE::AccumulatorStack&  accumulators,
                Eval::NNUE::AccumulatorCaches& caches,
                int                            optimism);
+
+// [SC:trace] evaluate() without the "not in check" assertion (trace probes only)
+Value evaluate_unchecked(const NNUE::Network&           network,
+                         const Position&                pos,
+                         Eval::NNUE::AccumulatorStack&  accumulators,
+                         Eval::NNUE::AccumulatorCaches& caches,
+                         int                            optimism);
 }  // namespace Eval
 
 }  // namespace ShashChess

@@ -17,17 +17,24 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// [SC:explain] NNUE mechanistic trace of ShashChess 42.
+//
+// The previous version worked in the win probability domain: removing any minor piece moved the
+// expected score to 0% or 100%, so almost every piece showed the same saturated "impact" (+46%,
+// +54%, ...), and the ghost-piece probes were disabled with 32 pieces on the board. This version
+// works in centipawns, keeps the layer stack of the position fixed during the ablations
+// (otherwise removing a piece also switches sub-network) and, thanks to the Explainer, opens the
+// input layer of the network: piece placement, piece relations (threats/defences) and pawn
+// pairs can be measured separately, relation by relation.
+
 #include "nnue_misc.h"
 
 #include <algorithm>
 #include <cassert>
-#include <cctype>
-#include <climits>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <iomanip>
-#include <iosfwd>
 #include <iostream>
 #include <memory>
 #include <sstream>
@@ -35,6 +42,7 @@
 #include <tuple>
 #include <vector>
 
+#include "../attacks.h"
 #include "../misc.h"
 #include "../position.h"
 #include "../types.h"
@@ -42,6 +50,7 @@
 #include "../wdl/win_probability.h"
 #include "network.h"
 #include "nnue_accumulator.h"
+#include "nnue_explain.h"
 
 namespace ShashChess::Eval::NNUE {
 
@@ -49,689 +58,746 @@ constexpr std::string_view PieceToChar(" PNBRQK  pnbrqk");
 
 namespace {
 
-[[maybe_unused]] void format_cp_compact(Value v, char* buffer, const Position& pos) {
-    buffer[0] = (v < 0 ? '-' : v > 0 ? '+' : ' ');
-    int cp    = std::abs(UCIEngine::to_cp(v, pos));
-    if (cp >= 10000)
+using namespace Explain;
+
+constexpr int ClassicalPawns[PIECE_TYPE_NB] = {0, 1, 3, 3, 5, 9, 0, 0};
+
+std::string piece_str(Piece pc, Square s) {
+    return std::string(1, PieceToChar[pc]) + UCIEngine::square(s);
+}
+
+// Pawns (cp / 100) with sign, 2 decimals
+std::string pawns(Value v, const Position& pos) {
+    std::stringstream ss;
+    ss << std::showpos << std::fixed << std::setprecision(2) << 0.01 * UCIEngine::to_cp(v, pos)
+       << std::noshowpos;
+    return ss.str();
+}
+
+const char* color_name(Color c) { return c == WHITE ? "White" : "Black"; }
+
+const char* phase_name(int bucket) {
+    switch (bucket)
     {
-        buffer[1] = '0' + cp / 10000;
-        cp %= 10000;
-        buffer[2] = '0' + cp / 1000;
-        cp %= 1000;
-        buffer[3] = '0' + cp / 100;
-        buffer[4] = ' ';
-    }
-    else if (cp >= 1000)
-    {
-        buffer[1] = '0' + cp / 1000;
-        cp %= 1000;
-        buffer[2] = '0' + cp / 100;
-        cp %= 100;
-        buffer[3] = '.';
-        buffer[4] = '0' + cp / 10;
-    }
-    else
-    {
-        buffer[1] = '0' + cp / 100;
-        cp %= 100;
-        buffer[2] = '.';
-        buffer[3] = '0' + cp / 10;
-        cp %= 10;
-        buffer[4] = '0' + cp / 1;
+    case 7 :
+        return "Opening (29-32 pieces): maximum structural complexity";
+    case 6 :
+        return "Early middlegame (25-28 pieces): plans still fluid";
+    case 5 :
+        return "Middlegame (21-24 pieces): central strategic phase";
+    case 4 :
+        return "Late middlegame (17-20 pieces): simplifications under way";
+    case 3 :
+        return "Endgame transition (13-16 pieces)";
+    case 2 :
+        return "Endgame (9-12 pieces): active king, pawns decisive";
+    case 1 :
+        return "Late endgame (5-8 pieces)";
+    default :
+        return "Pawn/King endgame (2-4 pieces)";
     }
 }
 
-[[maybe_unused]] void
-format_cp_aligned_dot(Value v, std::stringstream& stream, const Position& pos) {
-    const double pawns = std::abs(0.01 * UCIEngine::to_cp(v, pos));
-    stream << (v < 0   ? '-'
-               : v > 0 ? '+'
-                       : ' ')
-           << std::setiosflags(std::ios::fixed) << std::setw(6) << std::setprecision(2) << pawns;
+const char* role_name(int efficiency, Value value) {
+    if (value < 0)
+        return "BLINDSPOT";
+    if (efficiency >= 125)
+        return "Keystone";
+    if (efficiency >= 110)
+        return "Active";
+    if (efficiency >= 90)
+        return "Standard";
+    if (efficiency >= 70)
+        return "Passive";
+    return "Liability";
 }
 
 }  // namespace
 
+// Short label of a relation
+std::string relation_label(const Relation& r) {
+    std::stringstream ss;
+    if (r.kind == REL_THREAT)
+    {
+        const bool same = color_of(r.pcA) == color_of(r.pcB);
+        ss << piece_str(r.pcA, r.sqA) << (same ? "=" : ">") << piece_str(r.pcB, r.sqB)
+           << (same ? " defence" : " attack");
+        return ss.str();
+    }
+    const int df = std::abs(int(file_of(r.sqA)) - int(file_of(r.sqB)));
+    const int dr = std::abs(int(rank_of(r.sqA)) - int(rank_of(r.sqB)));
+    ss << piece_str(r.pcA, r.sqA) << "/" << piece_str(r.pcB, r.sqB) << " ";
+    if (color_of(r.pcA) == color_of(r.pcB))
+        ss << (df == 0           ? "doubled"
+               : dr == 0         ? "phalanx"
+               : dr == 1         ? "chain"
+                                 : "same-wing group");
+    else
+    {
+        const Square w = color_of(r.pcA) == WHITE ? r.sqA : r.sqB;
+        const Square b = color_of(r.pcA) == WHITE ? r.sqB : r.sqA;
+        const int    ahead = int(rank_of(b)) - int(rank_of(w));  // > 0: black pawn in front
+        if (df == 0)
+            ss << (ahead == 1 ? "ram (blocked)" : ahead > 1 ? "opposed" : "passed by each other");
+        else if (ahead == 1)
+            ss << "lever (tension)";
+        else if (ahead > 1)
+            ss << "sentry (controls the path)";
+        else
+            ss << "passed by each other";
+    }
+    return ss.str();
+}
+
+NnueInsight analyze(const Position& pos, const Network& network, AccumulatorCaches& caches) {
+    NnueInsight in;
+    Explainer   ex(network);
+    const Board board = pos.piece_array();
+    const Color stm   = pos.side_to_move();
+    const int   b     = natural_bucket(board);
+    in.bucket         = b;
+
+    FeatureSet fs   = Explainer::collect(board);
+    auto       full = std::make_unique<WideAccumulator>(ex.accumulate(fs));
+    in.base         = ex.evaluate_white(*full, stm, b);
+
+    // Consistency check against the engine's own incremental accumulators
+    {
+        auto accumulators       = std::make_unique<AccumulatorStack>();
+        auto [psqt, positional] = network.evaluate(pos, *accumulators, caches);
+        Output o                = ex.evaluate(*full, stm, b);
+        in.consistent           = psqt == o.psqt && positional == o.positional;
+    }
+
+    const Value baseW = in.base.total();
+
+    // Feature families: Shapley values of the threat and pawn-pair families, the piece placement
+    // (PSQ) family being the baseline that is always present
+    {
+        const Value onlyPsq = ex.evaluate_white(ex.accumulate(fs, false, false), stm, b).total();
+        const Value psqThr  = ex.evaluate_white(ex.accumulate(fs, true, false), stm, b).total();
+        const Value psqPair = ex.evaluate_white(ex.accumulate(fs, false, true), stm, b).total();
+        in.familyPsq        = onlyPsq;
+        in.familyThreat     = ((psqThr - onlyPsq) + (baseW - psqPair)) / 2;
+        in.familyPair       = ((psqPair - onlyPsq) + (baseW - psqThr)) / 2;
+    }
+
+    // Piece-level measures (virtual insertion, ablation, activity, synergy) use the convention
+    // "the owner of the piece is to move": with the actual side to move, every piece of the
+    // other side would look vulnerable (the opponent could take it at once), and the comparison
+    // between the two sides would be biased by the tempo. Real threats are analyzed elsewhere.
+    Value ownerBase[COLOR_NB];
+    for (Color c : {WHITE, BLACK})
+        ownerBase[c] = ex.evaluate_white(*full, c, b).total();
+
+    // Virtual insertion of a knight, a bishop or a rook on every empty square, for both sides.
+    // The median value of each piece type over all the squares is the "reference" value of that
+    // piece type in this position: a piece (real or virtual) is judged against it.
+    Bitboard occupied = 0;
+    for (Square s = SQ_A1; s <= SQ_H8; ++s)
+        if (board[s] != NO_PIECE)
+            occupied |= s;
+    for (Color c : {WHITE, BLACK})
+    {
+        const Square       enemyKing = pos.square<KING>(~c);
+        std::vector<Value> samples[3];
+        for (Square s = SQ_A1; s <= SQ_H8; ++s)
+        {
+            if (board[s] != NO_PIECE)
+                continue;
+            ProbeInsight pr;
+            pr.sq   = s;
+            pr.pt   = NO_PIECE_TYPE;
+            pr.gain = pr.relative = 0;
+            bool valid            = false;
+            for (PieceType pt : {KNIGHT, BISHOP, ROOK})
+            {
+                pr.byType[pt - KNIGHT] = VALUE_NONE;
+                if (Attacks::attacks_bb(pt, s, occupied) & enemyKing)
+                    continue;  // the virtual piece would give check: not a quiet square
+                Board b2 = board;
+                b2[s]    = make_piece(c, pt);
+                Output o = ex.evaluate_board_white(b2, c, b);
+                Value  g = c == WHITE ? o.total() - ownerBase[c] : ownerBase[c] - o.total();
+                pr.byType[pt - KNIGHT] = g;
+                samples[pt - KNIGHT].push_back(g);
+                valid = true;
+            }
+            if (valid)
+                in.outposts[c].push_back(pr);
+        }
+        for (PieceType pt : {KNIGHT, BISHOP, ROOK})
+        {
+            auto& v = samples[pt - KNIGHT];
+            if (v.empty())
+                continue;
+            std::nth_element(v.begin(), v.begin() + v.size() / 2, v.end());
+            in.reference[c][pt] = v[v.size() / 2];
+        }
+        for (auto& pr : in.outposts[c])
+        {
+            pr.relative = -VALUE_INFINITE;
+            for (PieceType pt : {KNIGHT, BISHOP, ROOK})
+                if (pr.byType[pt - KNIGHT] != VALUE_NONE
+                    && pr.byType[pt - KNIGHT] - in.reference[c][pt] > pr.relative)
+                {
+                    pr.relative = pr.byType[pt - KNIGHT] - in.reference[c][pt];
+                    pr.pt       = pt;
+                    pr.gain     = pr.byType[pt - KNIGHT];
+                }
+        }
+        std::sort(in.outposts[c].begin(), in.outposts[c].end(),
+                  [](const ProbeInsight& x, const ProbeInsight& y) {
+                      return x.relative > y.relative;
+                  });
+    }
+
+    // Piece ablations with the layer stack of the position
+    for (Square s = SQ_A1; s <= SQ_H8; ++s)
+    {
+        const Piece pc = board[s];
+        if (pc == NO_PIECE || type_of(pc) == KING)
+            continue;
+        const Color  owner = color_of(pc);
+        const Output ob    = ex.evaluate_white(*full, owner, b);
+        Board        b2    = board;
+        b2[s]              = NO_PIECE;
+        Output o           = ex.evaluate_board_white(b2, owner, b);
+        const int    sign  = owner == WHITE ? 1 : -1;
+        PieceInsight pi;
+        pi.sq         = s;
+        pi.pc         = pc;
+        pi.value      = sign * (ob.total() - o.total());
+        pi.psqt       = sign * (ob.psqt - o.psqt);
+        pi.positional = sign * (ob.positional - o.positional);
+        pi.activity   = 0;
+        pi.efficiency = 100;
+        in.pieces.push_back(pi);
+    }
+
+    // References of pawns and queens (no virtual insertion for them): the average value of the
+    // pawns / queens on the board, both colors
+    for (PieceType pt : {PAWN, QUEEN})
+    {
+        i64 sum = 0;
+        int n   = 0;
+        for (const auto& p : in.pieces)
+            if (type_of(p.pc) == pt)
+            {
+                sum += p.value;
+                ++n;
+            }
+        for (Color c : {WHITE, BLACK})
+            in.reference[c][pt] = n ? Value(sum / n) : 0;
+    }
+    for (auto& p : in.pieces)
+    {
+        const Value ref = in.reference[color_of(p.pc)][type_of(p.pc)];
+        p.efficiency    = ref > 0 ? int(std::lround(100.0 * p.value / ref)) : 100;
+    }
+
+    // Occlusion of the single relations (threats and pawn pairs)
+    for (const auto& r : fs.relations)
+    {
+        ex.add_relation(*full, r, -1);
+        const Value v = baseW - ex.evaluate_white(*full, stm, b).total();
+        ex.add_relation(*full, r, +1);
+        if (r.kind == REL_THREAT)
+        {
+            in.threats.push_back({r, v});
+            in.pressure[r.sqB] += v;
+        }
+        else
+        {
+            in.pairs.push_back({r, v});
+            in.pawnStructure[r.sqA] += v / 2;
+            in.pawnStructure[r.sqB] += v - v / 2;
+        }
+    }
+    auto byAbs = [](const RelationInsight& x, const RelationInsight& y) {
+        return std::abs(x.value) > std::abs(y.value);
+    };
+    std::sort(in.threats.begin(), in.threats.end(), byAbs);
+    std::sort(in.pairs.begin(), in.pairs.end(), byAbs);
+
+    // Activity of a set of pieces: value (White's view) of all the threat relations that involve
+    // them, measured by occluding those relations together
+    auto activity_white = [&](Bitboard squares, Color owner) {
+        std::vector<const Relation*> rs;
+        for (const auto& r : fs.relations)
+            if (r.kind == REL_THREAT && ((square_bb(r.sqA) | square_bb(r.sqB)) & squares))
+                rs.push_back(&r);
+        for (auto* r : rs)
+            ex.add_relation(*full, *r, -1);
+        const Value v = ownerBase[owner] - ex.evaluate_white(*full, owner, b).total();
+        for (auto* r : rs)
+            ex.add_relation(*full, *r, +1);
+        return v;
+    };
+    for (auto& p : in.pieces)
+        p.activity =
+          (color_of(p.pc) == WHITE ? 1 : -1) * activity_white(square_bb(p.sq), color_of(p.pc));
+
+    // Synergy of two pieces of the same side (no pawns): activity of the pair minus the two
+    // single activities. Positive: their activity reinforces each other (battery, mutual
+    // protection, converging attack); negative: redundancy.
+    for (Color c : {WHITE, BLACK})
+    {
+        std::vector<const PieceInsight*> ps;
+        for (const auto& p : in.pieces)
+            if (color_of(p.pc) == c && type_of(p.pc) != PAWN)
+                ps.push_back(&p);
+        for (size_t i = 0; i < ps.size(); ++i)
+            for (size_t j = i + 1; j < ps.size(); ++j)
+            {
+                const Value both =
+                  (c == WHITE ? 1 : -1)
+                  * activity_white(square_bb(ps[i]->sq) | square_bb(ps[j]->sq), c);
+                in.synergies[c].push_back(
+                  {ps[i]->sq, ps[j]->sq, both - ps[i]->activity - ps[j]->activity});
+            }
+        std::sort(in.synergies[c].begin(), in.synergies[c].end(),
+                  [](const SynergyInsight& x, const SynergyInsight& y) {
+                      return std::abs(x.synergy) > std::abs(y.synergy);
+                  });
+    }
+    return in;
+}
+
 std::string
 trace(Position& pos, const Eval::NNUE::Network& network, Eval::NNUE::AccumulatorCaches& caches) {
 
-    std::stringstream ss;
-    char              board[3 * 8 + 1][8 * 8 + 2];
-    std::memset(board, ' ', sizeof(board));
-
-    for (int row = 0; row < 3 * 8 + 1; ++row)
-        board[row][8 * 8 + 1] = '\0';
-
     if (!WDLModel::is_initialized())
-    {
         WDLModel::init();
-    }
 
-    auto writeSquareWP = [&board](File file, Rank rank, Piece pc, int wp_delta) {
-        const int x = int(file) * 8;
-        const int y = (7 - int(rank)) * 3;
-        for (int i = 1; i < 8; ++i)
-            board[y][x + i] = board[y + 3][x + i] = '-';
-        for (int i = 1; i < 3; ++i)
-            board[y + i][x] = board[y + i][x + 8] = '|';
-        board[y][x] = board[y][x + 8] = board[y + 3][x + 8] = board[y + 3][x] = '+';
-        if (pc != NO_PIECE)
-            board[y + 1][x + 4] = PieceToChar[pc];
-        if (wp_delta != -999)
-        {
-            char buf[6] = "     ";
-            buf[0]      = (wp_delta < 0 ? '-' : wp_delta > 0 ? '+' : ' ');
-            int val     = std::abs(wp_delta);
-            if (val >= 100)
-            {
-                buf[1] = '1';
-                buf[2] = '0';
-                buf[3] = '0';
-                buf[4] = '%';
-            }
-            else if (val >= 10)
-            {
-                buf[1] = ' ';
-                buf[2] = '0' + (val / 10);
-                buf[3] = '0' + (val % 10);
-                buf[4] = '%';
-            }
-            else
-            {
-                buf[1] = ' ';
-                buf[2] = ' ';
-                buf[3] = '0' + val;
-                buf[4] = '%';
-            }
-            std::memcpy(&board[y + 2][x + 2], buf, 5);
-        }
-    };
+    std::stringstream ss;
+    const NnueInsight in   = analyze(pos, network, caches);
+    const Color       stm  = pos.side_to_move();
+    const Value       base = in.base.total();
+    const int         wp   = WDLModel::get_win_probability(base, pos);
+    auto              P    = [&](Value v) { return pawns(v, pos); };
+    auto              cp   = [&](Value v) { return UCIEngine::to_cp(v, pos); };
 
-    auto                                     accumulators = std::make_unique<AccumulatorStack>();
-    std::vector<std::pair<std::string, int>> white_impacts;
-    std::vector<std::pair<std::string, int>> black_impacts;
+    ss << "=== NNUE MECHANISTIC TRACE (centipawn domain, layer stack held fixed) ===\n";
+    ss << "Network: HalfKAv2_hm (piece placement) + FullThreats (piece relations) + PP_3Wide "
+          "(pawn pairs)\n"
+       << "         -> 2 x " << L1 << " accumulator -> " << LayerStacks
+       << " layer stacks (32-32-1), one per piece-count bucket\n";
+    ss << "Explanation engine: "
+       << (in.consistent ? "rebuilt accumulators reproduce the engine output exactly [OK]"
+                         : "WARNING: rebuilt accumulators differ from the engine output")
+       << "\n";
+    ss << "Raw NNUE output (White): " << P(base) << " = PSQT " << P(in.base.psqt)
+       << " + positional " << P(in.base.positional) << " | expected score White " << wp
+       << "%\n";
+    ss << "*** Base Win Probability (White): " << wp << "% ***\n";
+    ss << "Units: pawns (cp/100, UCI scale), White point of view unless stated otherwise.\n\n";
 
-    int single_ablation[SQUARE_NB];
-    for (int i = 0; i < SQUARE_NB; ++i)
-        single_ablation[i] = -999;
-
-    auto [psqt, positional] = network.evaluate(pos, *accumulators, caches);
-    Value base              = psqt + positional;
-    base                    = pos.side_to_move() == WHITE ? base : -base;
-    int wp_base             = WDLModel::get_win_probability(base, pos);
-
-    // Sezione 1 & 2: Ablazione Spaziale e Classifica SHAP
-    for (File f = FILE_A; f <= FILE_H; ++f)
+    // ---------------------------------------------------------------------------------------
+    ss << "1. NNUE DERIVED PIECE VALUES (evaluation lost by the owner if the piece is removed)\n";
     {
-        for (Rank r = RANK_1; r <= RANK_8; ++r)
-        {
-            Square sq       = make_square(f, r);
-            Piece  pc       = pos.piece_on(sq);
-            int    wp_delta = -999;
-
-            if (pc != NO_PIECE && type_of(pc) != KING)
+        char board[3 * 8 + 1][8 * 8 + 2];
+        std::memset(board, ' ', sizeof(board));
+        for (int row = 0; row < 3 * 8 + 1; ++row)
+            board[row][8 * 8 + 1] = '\0';
+        for (int f = 0; f < 8; ++f)
+            for (int r = 0; r < 8; ++r)
             {
-                pos.remove_piece(sq);
-                accumulators->reset();
-                auto [psqt_abl, pos_abl] = network.evaluate(pos, *accumulators, caches);
-                Value eval               = psqt_abl + pos_abl;
-                eval                     = pos.side_to_move() == WHITE ? eval : -eval;
-
-                int wp_abl = WDLModel::get_win_probability(eval, pos);
-                if (color_of(pc) == WHITE)
-                    wp_delta = wp_base - wp_abl;
-                else
-                    wp_delta = wp_abl - wp_base;
-                single_ablation[sq] = wp_delta;
-                pos.put_piece(pc, sq);
-
-                std::string pieceName = std::string(1, PieceToChar[pc]) + UCIEngine::square(sq);
-                if (color_of(pc) == WHITE)
-                    white_impacts.emplace_back(pieceName, wp_delta);
-                else
-                    black_impacts.emplace_back(pieceName, wp_delta);
-            }
-            writeSquareWP(f, r, pc, wp_delta);
-        }
-    }
-
-    // Sezione 5: Inserimento Virtuale (Avamposti Latenti)
-    // Il bucket NNUE vale (pezzi - 1) / 4 e deve restare < LayerStacks: con 32 pezzi
-    // un pezzo fantasma porterebbe il bucket a 8, fuori dagli array della rete
-    // (psqtAccumulation e layer stack) -> lettura fuori dai limiti / crash di 'eval'.
-    // La sezione 7 prova solo le case trovate qui, quindi eredita la protezione.
-    std::vector<std::pair<std::string, int>> outpost_impacts;
-    Piece                                    ghost_knight = make_piece(pos.side_to_move(), KNIGHT);
-    Color                                    stm          = pos.side_to_move();
-    const bool ghostAllowed = pos.count<ALL_PIECES>() < int(LayerStacks) * 4;
-
-    for (Square sq = SQ_A1; ghostAllowed && sq <= SQ_H8; ++sq)
-    {
-        if (pos.piece_on(sq) == NO_PIECE)
-        {
-            pos.put_piece(ghost_knight, sq);
-            accumulators->reset();
-            auto [psqt_ghost, pos_ghost] = network.evaluate(pos, *accumulators, caches);
-            Value eval_ghost             = psqt_ghost + pos_ghost;
-            eval_ghost                   = stm == WHITE ? eval_ghost : -eval_ghost;
-
-            int wp_ghost    = WDLModel::get_win_probability(eval_ghost, pos);
-            int improvement = (stm == WHITE) ? (wp_ghost - wp_base) : (wp_base - wp_ghost);
-            if (improvement > 0)
-            {
-                outpost_impacts.emplace_back(UCIEngine::square(sq), improvement);
-            }
-            pos.remove_piece(sq);
-        }
-    }
-
-    // Sezione 6: Ablazione a Coppie (Sinergia Filtrata)
-    std::vector<std::tuple<std::string, std::string, int>> synergy_impacts;
-    Bitboard                                               my_pieces = pos.pieces(stm);
-    std::vector<Square>                                    my_squares;
-    while (my_pieces)
-        my_squares.push_back(pop_lsb(my_pieces));
-
-    for (size_t i = 0; i < my_squares.size(); ++i)
-    {
-        for (size_t j = i + 1; j < my_squares.size(); ++j)
-        {
-            Square sqA = my_squares[i];
-            Square sqB = my_squares[j];
-            Piece  pcA = pos.piece_on(sqA);
-            Piece  pcB = pos.piece_on(sqB);
-
-            if (type_of(pcA) == KING || type_of(pcB) == KING)
-                continue;
-
-            int deltaA = single_ablation[sqA];
-            int deltaB = single_ablation[sqB];
-
-            if (deltaA != -999 && deltaB != -999)
-            {
-                int wp_abl_A = (stm == WHITE) ? (wp_base - deltaA) : (wp_base + deltaA);
-                int wp_abl_B = (stm == WHITE) ? (wp_base - deltaB) : (wp_base + deltaB);
-
-                if (wp_abl_A > 5 && wp_abl_A < 95 && wp_abl_B > 5 && wp_abl_B < 95)
+                const int x = f * 8, y = (7 - r) * 3;
+                for (int i = 1; i < 8; ++i)
+                    board[y][x + i] = board[y + 3][x + i] = '-';
+                for (int i = 1; i < 3; ++i)
+                    board[y + i][x] = board[y + i][x + 8] = '|';
+                board[y][x] = board[y][x + 8] = board[y + 3][x + 8] = board[y + 3][x] = '+';
+                const Square s  = make_square(File(f), Rank(r));
+                const Piece  pc = pos.piece_on(s);
+                if (pc != NO_PIECE)
+                    board[y + 1][x + 4] = PieceToChar[pc];
+                if (const auto* pi = in.piece_on(s))
                 {
-                    pos.remove_piece(sqA);
-                    pos.remove_piece(sqB);
-                    accumulators->reset();
-                    auto [psqt_both, pos_both] = network.evaluate(pos, *accumulators, caches);
-                    Value eval_both            = psqt_both + pos_both;
-                    eval_both                  = stm == WHITE ? eval_both : -eval_both;
-
-                    int wp_both   = WDLModel::get_win_probability(eval_both, pos);
-                    int deltaBoth = (stm == WHITE) ? (wp_base - wp_both) : (wp_both - wp_base);
-                    pos.put_piece(pcA, sqA);
-                    pos.put_piece(pcB, sqB);
-
-                    int synergy = deltaBoth - (deltaA + deltaB);
-                    if (std::abs(synergy) > 1)
-                    {
-                        std::string nameA =
-                          std::string(1, PieceToChar[pcA]) + UCIEngine::square(sqA);
-                        std::string nameB =
-                          std::string(1, PieceToChar[pcB]) + UCIEngine::square(sqB);
-                        synergy_impacts.emplace_back(nameA, nameB, synergy);
-                    }
+                    char buf[16];
+                    std::snprintf(buf, sizeof(buf), "%+6.2f", 0.01 * cp(pi->value));
+                    std::memcpy(&board[y + 2][x + 1], buf, std::min<size_t>(6, std::strlen(buf)));
                 }
             }
+        for (int row = 0; row < 3 * 8 + 1; ++row)
+            ss << board[row] << '\n';
+        ss << '\n';
+    }
+
+    // ---------------------------------------------------------------------------------------
+    ss << "2. PIECE ROLES\n"
+          "   value      = evaluation lost by the owner without the piece (= PSQT part + "
+          "positional part)\n"
+          "   activity   = value of the piece's attacks/defences only (the piece stays on the "
+          "board)\n"
+          "   efficiency = value / typical value of that piece type here (median over all "
+          "squares)\n"
+          "   (piece-level measures are taken with the owner of the piece to move, so that the "
+          "two\n    sides are compared without the tempo bias; real threats: see the plans)\n";
+    ss << "   Keystone >= 125% | Active 110-124% | Standard 90-109% | Passive 70-89% | "
+          "Liability < 70% | BLINDSPOT: value < 0\n";
+    for (Color c : {WHITE, BLACK})
+    {
+        std::vector<const PieceInsight*> v;
+        for (const auto& p : in.pieces)
+            if (color_of(p.pc) == c && type_of(p.pc) != PAWN)
+                v.push_back(&p);
+        std::sort(v.begin(), v.end(),
+                  [](auto a, auto b2) { return a->efficiency > b2->efficiency; });
+        ss << "   " << color_name(c) << ":            value   (PSQT / positional)   activity  "
+           << "efficiency\n";
+        for (const auto* p : v)
+            ss << "     " << std::left << std::setw(4) << piece_str(p->pc, p->sq) << std::right
+               << std::setw(13) << P(p->value) << "   (" << std::setw(6) << P(p->psqt) << " / "
+               << std::setw(6) << P(p->positional) << ")   " << std::setw(6) << P(p->activity)
+               << "   " << std::setw(4) << p->efficiency << "%  "
+               << role_name(p->efficiency, p->value) << "\n";
+        if (v.empty())
+            ss << "     (no pieces)\n";
+        std::vector<const PieceInsight*> pw;
+        for (const auto& p : in.pieces)
+            if (color_of(p.pc) == c && type_of(p.pc) == PAWN)
+                pw.push_back(&p);
+        std::sort(pw.begin(), pw.end(), [](auto a, auto b2) { return a->value > b2->value; });
+        if (!pw.empty())
+        {
+            ss << "     Pawns (most to least valuable): ";
+            for (size_t i = 0; i < pw.size(); ++i)
+                ss << (i ? ", " : "") << UCIEngine::square(pw[i]->sq) << " " << P(pw[i]->value);
+            ss << "\n";
         }
     }
-
-    // Stampe base Sezioni 1-6
-    ss << "=== NNUE MECHANISTIC TRACE (WIN PROBABILITY DOMAIN) ===\n";
-    ss << "*** Base Win Probability (White): " << wp_base << "% ***\n\n";
-    ss << "1. SPATIAL ABLATION GRID (Delta WP % if piece is removed):\n";
-    for (int row = 0; row < 3 * 8 + 1; ++row)
-        ss << board[row] << '\n';
-    ss << '\n';
-
-    auto sort_impacts = [](const auto& a, const auto& b) {
-        return std::abs(a.second) > std::abs(b.second);
-    };
-    std::sort(white_impacts.begin(), white_impacts.end(), sort_impacts);
-    std::sort(black_impacts.begin(), black_impacts.end(), sort_impacts);
-
-    ss << "2. CRITICAL FEATURES RANKING (SHAP-Proxy in WP%)\n";
-    ss << "   White's Most Influential Pieces:\n";
-    for (size_t i = 0; i < std::min(white_impacts.size(), size_t(10)); ++i)
-    {
-        ss << "    - " << std::setw(3) << white_impacts[i].first << " : " << std::showpos
-           << white_impacts[i].second << std::noshowpos << "% WP impact\n";
-    }
-    ss << "\n   Black's Most Influential Pieces:\n";
-    for (size_t i = 0; i < std::min(black_impacts.size(), size_t(10)); ++i)
-    {
-        ss << "    - " << std::setw(3) << black_impacts[i].first << " : " << std::showpos
-           << black_impacts[i].second << std::noshowpos << "% WP impact\n";
-    }
-    ss << '\n';
-
-    auto sort_outposts = [](const auto& a, const auto& b) { return a.second > b.second; };
-    std::sort(outpost_impacts.begin(), outpost_impacts.end(), sort_outposts);
-
-    ss << "5. VIRTUAL PIECE INSERTION (Latent Outposts / Weaknesses)\n";
-    ss << "   Highest WP impact on empty squares if a friendly Knight were placed there:\n";
-    if (!ghostAllowed)
-        ss << "    (n/a: " << pos.count<ALL_PIECES>()
-           << " pieces on the board, the network cannot evaluate an extra piece)\n";
-    for (size_t i = 0; i < std::min(outpost_impacts.size(), size_t(5)); ++i)
-    {
-        ss << "    - Square " << outpost_impacts[i].first << " : " << std::showpos
-           << outpost_impacts[i].second << std::noshowpos << "% WP improvement\n";
-    }
-    ss << '\n';
-
-    auto sort_synergy = [](const auto& a, const auto& b) {
-        return std::abs(std::get<2>(a)) > std::abs(std::get<2>(b));
-    };
-    std::sort(synergy_impacts.begin(), synergy_impacts.end(), sort_synergy);
-
-    ss << "6. PAIRWISE ABLATION (Non-linear Synergy & Coordination)\n";
-    ss << "   Coordination in WP % (Positive = Battery/Defense, Negative = Redundancy):\n";
-    for (size_t i = 0; i < std::min(synergy_impacts.size(), size_t(5)); ++i)
-    {
-        ss << "    - " << std::get<0>(synergy_impacts[i]) << " + "
-           << std::get<1>(synergy_impacts[i]) << " : " << std::showpos
-           << std::get<2>(synergy_impacts[i]) << std::noshowpos << "% WP synergy\n";
-    }
-    ss << '\n';
-
-    accumulators->reset();
-    auto        t            = network.trace_evaluate(pos, *accumulators, caches);
-    int         total_pieces = pos.count<ALL_PIECES>();
-    std::string phase_desc;
-    if (t.correctBucket >= 6)
-        phase_desc = "Opening / Early Middlegame (High Complexity)";
-    else if (t.correctBucket >= 3)
-        phase_desc = "Late Middlegame (Strategic Phase)";
-    else
-        phase_desc = "Endgame (Simplified Topology)";
+    ss << "   Reference values (White/Black): N " << P(in.reference[WHITE][KNIGHT]) << "/"
+       << P(in.reference[BLACK][KNIGHT]) << ", B " << P(in.reference[WHITE][BISHOP]) << "/"
+       << P(in.reference[BLACK][BISHOP]) << ", R " << P(in.reference[WHITE][ROOK]) << "/"
+       << P(in.reference[BLACK][ROOK]) << ", Q " << P(in.reference[WHITE][QUEEN]) << ", P "
+       << P(in.reference[WHITE][PAWN]) << "\n";
+    ss << "   (Removing a whole piece pushes the network into its saturated regime, so heavy "
+          "pieces\n    look cheaper than their material: compare pieces of the same type, and "
+          "use 'activity'.)\n\n";
 
     ss << "3. NEURAL NETWORK INTERNAL ROUTING\n";
-    ss << "   Active Sub-Network (Bucket) : " << t.correctBucket << " out of 7\n";
-    ss << "   Piece Count Detected        : " << total_pieces << "\n";
-    ss << "   Deduced Game Phase          : " << phase_desc << "\n\n";
+    ss << "   Active Sub-Network (Bucket) : " << in.bucket << " out of " << LayerStacks - 1
+       << "\n";
+    ss << "   Piece Count Detected        : " << pos.count<ALL_PIECES>() << "\n";
+    ss << "   Deduced Game Phase          : " << phase_name(in.bucket) << "\n\n";
 
-    ss << "4. EVALUATION COMPOSITION\n";
-    ss << "+--------+-------------------+-----------------------+----------+\n"
-       << "| Bucket | Material/PSQT(WP) | Deep Positional Delta | Total WP |\n"
-       << "+--------+-------------------+-----------------------+----------+\n";
-
-    for (std::size_t bucket = 0; bucket < LayerStacks; ++bucket)
+    // ---------------------------------------------------------------------------------------
+    ss << "4. EVALUATION COMPOSITION (what every sub-network thinks of this position)\n";
+    ss << "+--------+--------------+------------------+------------+----------+\n"
+       << "| Bucket | PSQT (pawns) | Positional (pwn) | Total      | Total WP |\n"
+       << "+--------+--------------+------------------+------------+----------+\n";
     {
-        int wp_mat    = WDLModel::get_win_probability(t.psqt[bucket], pos);
-        int wp_tot    = WDLModel::get_win_probability(t.psqt[bucket] + t.positional[bucket], pos);
-        int pos_delta = wp_tot - wp_mat;
-        ss << "| " << (bucket == t.correctBucket ? "->" : "  ") << " " << bucket << "  | "
-           << std::setw(15) << wp_mat << "% | " << std::setw(19) << std::showpos << pos_delta
-           << std::noshowpos << "% | " << std::setw(7) << wp_tot << "% |\n";
-    }
-    ss << "+--------+-------------------+-----------------------+----------+\n";
-
-    int wp_mat_act = WDLModel::get_win_probability(t.psqt[t.correctBucket], pos);
-    int wp_tot_act =
-      WDLModel::get_win_probability(t.psqt[t.correctBucket] + t.positional[t.correctBucket], pos);
-    int pos_delta_act = wp_tot_act - wp_mat_act;
-
-    ss << "\n   Abstract Understanding vs Material (Active Bucket):\n";
-    ss << "   - Material perception (PSQT)   : " << wp_mat_act << "% WP\n";
-    ss << "   - Structural abstraction       : " << std::showpos << pos_delta_act << std::noshowpos
-       << "% WP added\n";
-    ss
-      << "   (Note: High structural abstraction WP shift indicates complex patterns overriding raw material)\n\n";
-
-    // 7. MULTI-PIECE FILTER PROBE
-    struct FilterProbe {
-        std::string sq_name;
-        int         knight_imp = 0;
-        int         bishop_imp = 0;
-        int         rook_imp   = 0;
-        int         best_imp   = 0;
-        char        best_char  = 'N';
-    };
-    std::vector<FilterProbe> filter_probes;
-
-    {
-        auto probe_piece_type = [&](Square probe_sq, PieceType pt) -> int {
-            if (!ghostAllowed)
-                return 0;
-            Piece ghost = make_piece(stm, pt);
-            pos.put_piece(ghost, probe_sq);
-            accumulators->reset();
-            auto [p_g, q_g] = network.evaluate(pos, *accumulators, caches);
-            Value e_g       = p_g + q_g;
-            e_g             = stm == WHITE ? e_g : -e_g;
-            int wp_g        = WDLModel::get_win_probability(e_g, pos);
-            pos.remove_piece(probe_sq);
-            int raw = wp_g - wp_base;
-            return (stm == WHITE) ? raw : -raw;
-        };
-
-        size_t probe_limit = std::min(outpost_impacts.size(), size_t(6));
-        for (size_t pi = 0; pi < probe_limit; ++pi)
+        Explainer  ex(network);
+        const auto full = std::make_unique<WideAccumulator>(
+          ex.accumulate(Explainer::collect(pos.piece_array())));
+        for (int bk = 0; bk < int(LayerStacks); ++bk)
         {
-            const auto& [sq_name, kn_imp] = outpost_impacts[pi];
-            if (sq_name.size() < 2)
-                continue;
-            Square probe_sq = make_square(File(sq_name[0] - 'a'), Rank(sq_name[1] - '1'));
-            if (probe_sq < SQ_A1 || probe_sq > SQ_H8)
-                continue;
-            if (pos.piece_on(probe_sq) != NO_PIECE)
-                continue;
-
-            FilterProbe fp;
-            fp.sq_name    = sq_name;
-            fp.knight_imp = kn_imp;
-            fp.best_imp   = kn_imp;
-            fp.best_char  = 'N';
-
-            fp.bishop_imp = probe_piece_type(probe_sq, BISHOP);
-            fp.rook_imp   = probe_piece_type(probe_sq, ROOK);
-
-            if (fp.bishop_imp > fp.best_imp)
-            {
-                fp.best_imp  = fp.bishop_imp;
-                fp.best_char = 'B';
-            }
-            if (fp.rook_imp > fp.best_imp)
-            {
-                fp.best_imp  = fp.rook_imp;
-                fp.best_char = 'R';
-            }
-
-            if (fp.best_imp > 0)
-                filter_probes.push_back(fp);
+            Output o = ex.evaluate_white(*full, stm, bk);
+            ss << "| " << (bk == in.bucket ? "->" : "  ") << " " << bk << "  | " << std::setw(12)
+               << P(o.psqt) << " | " << std::setw(16) << P(o.positional) << " | "
+               << std::setw(10) << P(o.total()) << " | " << std::setw(7)
+               << int(WDLModel::get_win_probability(o.total(), pos)) << "% |\n";
         }
-        std::sort(filter_probes.begin(), filter_probes.end(),
-                  [](const auto& a, const auto& b) { return a.best_imp > b.best_imp; });
     }
+    ss << "+--------+--------------+------------------+------------+----------+\n";
+    const int wpPsqt     = WDLModel::get_win_probability(in.base.psqt, pos);
+    const int neuralDelta = wp - wpPsqt;
+    ss << "   Material perception (PSQT)  : " << P(in.base.psqt) << " (" << wpPsqt << "% WP)\n";
+    ss << "   Structural abstraction      : " << P(in.base.positional) << " ("
+       << std::showpos << neuralDelta << std::noshowpos << "% WP)\n";
+    ss << "   (Lower buckets show how the endgame sub-networks would judge the same position:\n"
+          "    a trend, not a forecast.)\n\n";
 
-    ss << "7. MULTI-PIECE FILTER PROBE (Transcoder Channel Activation)\n";
-    ss << "   Delta WP% se un pezzo viene inserito sulla casa vuota:\n";
-    ss << "   Sq   | Knight | Bishop | Rook  | Winner (filtro NNUE attivato)\n";
-    ss << "   " << std::string(58, '-') << "\n";
-    for (const auto& fp : filter_probes)
+    // ---------------------------------------------------------------------------------------
+    const Value famTotal = std::abs(in.familyThreat) + std::abs(in.familyPair);
+    ss << "5. INPUT FEATURE FAMILIES (Shapley attribution, White point of view)\n";
+    ss << "   Piece relations (FullThreats: attacks and defences) : " << std::setw(6)
+       << P(in.familyThreat) << "\n";
+    ss << "   Pawn structure (PP_3Wide: pawn pairs)              : " << std::setw(6)
+       << P(in.familyPair) << "\n";
+    ss << "   Piece placement only (HalfKAv2_hm, baseline)       : " << std::setw(6)
+       << P(in.familyPsq) << "\n";
+    ss << "   Share of the dynamic component (relations)         : "
+       << (famTotal ? 100 * std::abs(in.familyThreat) / famTotal : 0) << "%\n";
+    ss << "   (The baseline evaluates the pieces without any relation, a situation the network\n"
+          "    never saw in training: read it as a reference point, not as an evaluation.)\n\n";
+
+    // ---------------------------------------------------------------------------------------
+    ss << "6. KEY PIECE RELATIONS (value of a single attack/defence feature, by occlusion)\n";
+    ss << "   ('>' = attacks an enemy piece, '=' = defends an own piece; a relation of a side "
+          "can\n    also be a liability for it, e.g. a piece tied to a passive defensive "
+          "duty.\n    Single-feature occlusion: very common relations of the initial setup can "
+          "be over-weighted.)\n";
+    for (Color c : {WHITE, BLACK})
     {
-        const char* winner_desc = "N (mobility/outpost filter)";
-        if (fp.best_char == 'B')
-            winner_desc = "B (diagonal filter)";
-        if (fp.best_char == 'R')
-            winner_desc = "R (column/file filter)";
-
-        ss << "   " << std::left << std::setw(5) << fp.sq_name << std::right << std::showpos
-           << std::setw(6) << fp.knight_imp << "%" << std::setw(7) << fp.bishop_imp << "%"
-           << std::setw(6) << fp.rook_imp << "%" << std::noshowpos << "  => " << winner_desc
-           << "\n";
+        const int sign = c == WHITE ? 1 : -1;
+        for (bool assets : {true, false})
+        {
+            ss << "   " << color_name(c) << (assets ? " assets     : " : " liabilities: ");
+            int n = 0;
+            for (const auto& t : in.threats)
+                if (color_of(t.rel.pcA) == c && (assets ? sign * t.value > 0 : sign * t.value < 0)
+                    && n < 5 && std::abs(cp(t.value)) >= 2)
+                    ss << (n++ ? " | " : "") << relation_label(t.rel) << " "
+                       << pawns(sign * t.value, pos);
+            ss << (n ? "\n" : "none\n");
+        }
     }
-    if (filter_probes.empty())
-        ss << "   (Nessun miglioramento significativo trovato)\n";
     ss << '\n';
 
-    // 8. PIECE CONTRIBUTION SPECTRUM
-    std::pair<std::string, int>              white_best_piece  = {"", -999};
-    std::pair<std::string, int>              black_best_piece  = {"", -999};
-    std::pair<std::string, int>              white_worst_piece = {"", 999};
-    std::pair<std::string, int>              black_worst_piece = {"", 999};
-    std::vector<std::pair<std::string, int>> white_blindspots, black_blindspots;
-
-    auto classify_impact = [](int d) -> const char* {
-        if (d < -1)
-            return "BLINDSPOT";
-        if (d < 2)
-            return "Passive  ";
-        if (d < 5)
-            return "Standard ";
-        if (d < 10)
-            return "Active   ";
-        return "Keystone ";
-    };
-
-    ss << "8. PIECE CONTRIBUTION SPECTRUM\n";
-    ss << "   Keystone(>=10%) | Active(5-9%) | Standard(2-4%) | Passive(<2%) | BLINDSPOT(neg)\n";
-    ss << "   White:\n   ";
-    for (const auto& [nm, d] : white_impacts)
+    ss << "7. PAWN STRUCTURE AS SEEN BY THE NETWORK (pawn-pair features, by occlusion)\n";
+    ss << "   Most important pawn relations: ";
+    for (size_t i = 0; i < in.pairs.size() && i < 6; ++i)
+        ss << (i ? " | " : "") << relation_label(in.pairs[i].rel) << " "
+           << P(in.pairs[i].value);
+    ss << (in.pairs.empty() ? "none\n" : "\n");
+    for (Color c : {WHITE, BLACK})
     {
-        ss << nm << "[" << classify_impact(d) << " " << std::showpos << d << std::noshowpos
-           << "%] ";
-        if (d > white_best_piece.second)
-            white_best_piece = {nm, d};
-        if (d >= 0 && d < white_worst_piece.second)
-            white_worst_piece = {nm, d};
-        if (d < -1)
-            white_blindspots.emplace_back(nm, d);
+        std::vector<std::pair<Value, Square>> v;
+        for (Square s = SQ_A1; s <= SQ_H8; ++s)
+            if (pos.piece_on(s) == make_piece(c, PAWN))
+                v.emplace_back((c == WHITE ? 1 : -1) * in.pawnStructure[s], s);
+        if (v.empty())
+            continue;
+        std::sort(v.begin(), v.end(), [](auto& a, auto& b2) { return a.first > b2.first; });
+        ss << "   " << color_name(c) << " structural pawns: strongest "
+           << UCIEngine::square(v.front().second) << " " << P(v.front().first) << ", weakest "
+           << UCIEngine::square(v.back().second) << " " << P(v.back().first) << "\n";
     }
-    ss << "\n   Black:\n   ";
-    for (const auto& [nm, d] : black_impacts)
-    {
-        ss << nm << "[" << classify_impact(d) << " " << std::showpos << d << std::noshowpos
-           << "%] ";
-        if (d > black_best_piece.second)
-            black_best_piece = {nm, d};
-        if (d >= 0 && d < black_worst_piece.second)
-            black_worst_piece = {nm, d};
-        if (d < -1)
-            black_blindspots.emplace_back(nm, d);
-    }
-    ss << "\n\n";
+    ss << '\n';
 
-    // 9. NATURAL LANGUAGE NNUE INTERPRETATION (SCAP Framework)
-    ss << "9. NATURAL LANGUAGE NNUE INTERPRETATION (SCAP Framework)\n";
-    ss << "   " << std::string(66, '~') << "\n";
-
-    // 9A: Assessment
+    // ---------------------------------------------------------------------------------------
+    ss << "8. PRESSURE MAP (relation values summed on the attacked/defended square; + = White)\n";
     {
-        const int   wp_active = (stm == WHITE) ? wp_base : (100 - wp_base);
-        const char* side      = (stm == WHITE) ? "White" : "Black";
-        ss << "   [ASSESSMENT] ";
-        if (wp_active >= 90)
-            ss << side << " is winning decisively (" << wp_active
-               << "% WP). Technical conversion required.\n";
-        else if (wp_active >= 75)
-            ss << side << " has a clear, substantial advantage (" << wp_active << "% WP).\n";
-        else if (wp_active >= 62)
-            ss << side << " is clearly better (" << wp_active << "% WP). Press the advantage.\n";
-        else if (wp_active >= 52)
-            ss << side << " holds a slight edge (" << wp_active << "% WP).\n";
-        else if (wp_active >= 48)
-            ss << "The position is dynamically balanced (White WP=" << wp_base << "%).\n";
-        else if (wp_active >= 38)
-            ss << side << " is slightly worse. Seek counterplay.\n";
-        else if (wp_active >= 25)
-            ss << side << " is clearly worse. Find practical resources.\n";
-        else
-            ss << side << " faces a decisive deficit. Extreme defensive measures required.\n";
-    }
-
-    // 9B: Phase & Routing
-    {
-        const char* precise_phase = "Unknown";
-        switch (t.correctBucket)
+        std::vector<std::pair<Value, Square>> hot;
+        for (int r = 7; r >= 0; --r)
         {
-        case 7 :
-            precise_phase = "Opening (32 pcs) - massima complessita' strutturale";
-            break;
-        case 6 :
-            precise_phase = "Early Middlegame (25-28 pcs) - piano ancora fluido";
-            break;
-        case 5 :
-            precise_phase = "Middlegame (21-24 pcs) - fase strategica centrale";
-            break;
-        case 4 :
-            precise_phase = "Late Middlegame (17-20 pcs) - semplificazioni iniziate";
-            break;
-        case 3 :
-            precise_phase = "Endgame Transition (13-16 pcs)";
-            break;
-        case 2 :
-            precise_phase = "Endgame (9-12 pcs) - re attivo, pedonale decisivo";
-            break;
-        case 1 :
-            precise_phase = "Late Endgame (5-8 pcs)";
-            break;
-        default :
-            precise_phase = "Pawn/King Endgame (1-4 pcs)";
-            break;
-        }
-        ss << "   [PHASE] Sub-network #" << t.correctBucket << " -> " << precise_phase << ".\n";
-    }
-
-    // 9C: Neural Signal
-    {
-        if (std::abs(pos_delta_act) >= 3)
-        {
-            ss << "   [NEURAL SIGNAL] PSQT=" << wp_mat_act << "% -> Total=" << wp_tot_act << "% WP";
-            if (pos_delta_act > 0)
-                ss << " (+" << pos_delta_act << "% da pattern recognition). ";
-            else
-                ss << " (" << pos_delta_act << "% penalita' strutturale). ";
-            if (pos_delta_act >= 10)
-                ss
-                  << "FORTE segnale neurale: la rete vede pattern complessi non riducibili al materiale.\n";
-            else if (pos_delta_act <= -10)
-                ss << "FORTE segnale negativo: debolezze erodono il vantaggio materiale.\n";
-            else
-                ss << "Correzione strutturale moderata.\n";
-        }
-        else
-        {
-            ss << "   [NEURAL SIGNAL] La valutazione e' prevalentemente materiale.\n";
-        }
-    }
-
-    // 9D: Keystones
-    if (!white_best_piece.first.empty() && white_best_piece.second > 0)
-    {
-        ss << "   [WHITE KEYSTONE] " << white_best_piece.first
-           << " (impatto: " << white_best_piece.second << "% WP).\n";
-    }
-    if (!black_best_piece.first.empty() && black_best_piece.second > 0)
-    {
-        ss << "   [BLACK KEYSTONE] " << black_best_piece.first
-           << " (impatto: " << black_best_piece.second << "% WP).\n";
-    }
-
-    // 9E: Worst Pieces (Makogonov)
-    if (!white_worst_piece.first.empty() && white_worst_piece.second < 5)
-    {
-        ss << "   [WHITE MAKOGONOV] " << white_worst_piece.first << " contribuisce solo "
-           << white_worst_piece.second << "% WP - pezzo peggiore.\n";
-    }
-    if (!black_worst_piece.first.empty() && black_worst_piece.second < 5)
-    {
-        ss << "   [BLACK MAKOGONOV] " << black_worst_piece.first << " contribuisce solo "
-           << black_worst_piece.second << "% WP - pezzo peggiore.\n";
-    }
-
-    // 9F: Blindspots
-    for (const auto& [nm, d] : white_blindspots)
-    {
-        ss << "   [*** BLINDSPOT/WHITE ***] " << nm
-           << " riduce paradossalmente la WP del Bianco di " << (-d)
-           << "%! (Defensive Fixation).\n";
-    }
-    for (const auto& [nm, d] : black_blindspots)
-    {
-        ss << "   [*** BLINDSPOT/BLACK ***] " << nm << " riduce paradossalmente la WP del Nero di "
-           << (-d) << "%! (Defensive Fixation).\n";
-    }
-
-    // 9G: Outpost
-    if (!outpost_impacts.empty())
-    {
-        const auto& [best_sq, best_kn_imp] = outpost_impacts[0];
-        ss << "   [OUTPOST] Casa " << best_sq << " e' il miglior avamposto latente";
-        bool found_better = false;
-        for (const auto& fp : filter_probes)
-        {
-            if (fp.sq_name == best_sq)
+            ss << "   " << (r + 1) << " ";
+            for (int f = 0; f < 8; ++f)
             {
-                if (fp.best_char == 'B')
-                    ss << " (Alfiere domina: +" << fp.bishop_imp
-                       << "% -> filtro diagonale attivo).\n";
-                else if (fp.best_char == 'R')
-                    ss << " (Torre domina: +" << fp.rook_imp << "% -> colonna/filtro attivo).\n";
+                const Square s = make_square(File(f), Rank(r));
+                const int    v = cp(in.pressure[s]);
+                if (std::abs(v) < 5)
+                    ss << "    . ";
                 else
-                    ss << " (Cavallo ottimale: +" << best_kn_imp << "% WP -> avamposto attivo).\n";
-                found_better = true;
-                break;
+                    ss << std::setw(5) << std::showpos << v << std::noshowpos << " ";
+                if (in.pressure[s])
+                    hot.emplace_back(in.pressure[s], s);
             }
+            ss << "\n";
         }
-        if (!found_better)
-            ss << " (Cavallo: +" << best_kn_imp << "% WP).\n";
+        ss << "        a     b     c     d     e     f     g     h   (cp)\n";
+        std::sort(hot.begin(), hot.end(),
+                  [](auto& a, auto& b2) { return std::abs(a.first) > std::abs(b2.first); });
+        ss << "   Hottest squares: ";
+        for (size_t i = 0; i < hot.size() && i < 5; ++i)
+            ss << (i ? ", " : "") << UCIEngine::square(hot[i].second) << " (" << P(hot[i].first)
+               << ")";
+        if (hot.empty())
+            ss << "none (no piece relations)";
+        ss << "\n\n";
     }
 
-    // 9H: Battery
-    if (!synergy_impacts.empty())
+    // ---------------------------------------------------------------------------------------
+    ss << "9. VIRTUAL PIECE INSERTION (latent outposts: squares where a piece would be worth "
+          "most\n   above the typical value of its type; layer stack fixed, no 32-pieces limit)\n";
+    for (Color c : {WHITE, BLACK})
     {
-        const auto& [na, nb, syn] = synergy_impacts[0];
-        if (syn > 1)
-            ss << "   [BATTERY] " << na << "+" << nb << " formano una batteria coordinata (+" << syn
-               << "% WP).\n";
+        ss << "   " << color_name(c) << ":\n";
+        for (size_t i = 0; i < in.outposts[c].size() && i < 5; ++i)
+        {
+            const auto& o = in.outposts[c][i];
+            ss << "    - " << UCIEngine::square(o.sq) << ": " << "NBR"[o.pt - KNIGHT] << " "
+               << P(o.relative) << " above typical (value " << P(o.gain) << ")";
+            ss << "  [N " << (o.byType[0] == VALUE_NONE ? std::string("  -  ") : P(o.byType[0]))
+               << ", B " << (o.byType[1] == VALUE_NONE ? std::string("  -  ") : P(o.byType[1]))
+               << ", R " << (o.byType[2] == VALUE_NONE ? std::string("  -  ") : P(o.byType[2]))
+               << "]\n";
+        }
     }
+    ss << '\n';
 
-    // 9I: Strategic Plan
-    ss << "   [PIANO STRATEGICO] ";
-    if (wp_base >= 70)
-        ss << "Conversione tecnica: semplificare e prendere di mira i punti deboli.";
-    else if (wp_base >= 55)
-        ss
-          << "Spingere l'attivita': migliorare il pezzo peggiore, contestare i filtri neurali attivi.";
-    else if (wp_base >= 45)
-        ss
-          << "Mantenere l'equilibrio dinamico: preservare la coordinazione, difendere le case outpost.";
-    else
-        ss << "Ricercare risorse tattiche e contrattacco per rompere la stabilita' avversaria.";
+    ss << "10. PAIRWISE SYNERGY (activity of the pair minus the two single activities, owner's "
+          "view)\n";
+    for (Color c : {WHITE, BLACK})
+    {
+        ss << "   " << color_name(c) << ": ";
+        int n = 0;
+        for (const auto& sy : in.synergies[c])
+            if (n < 4 && std::abs(cp(sy.synergy)) >= 3)
+                ss << (n++ ? " | " : "") << piece_str(pos.piece_on(sy.a), sy.a) << "+"
+                   << piece_str(pos.piece_on(sy.b), sy.b) << " " << P(sy.synergy)
+                   << (sy.synergy > 0 ? " (coordination)" : " (redundancy)");
+        ss << (n ? "\n" : "no significant interaction\n");
+    }
     ss << "\n";
 
-    // 9J: SHASHHERMES COMPACT TRACE FORMAT
-    ss << "\n   [SHASHHERMES COMPACT TRACE FORMAT]\n";
-    ss << "   WP_White=" << wp_base << "% | ";
-    if (wp_base >= 95)
-        ss << "Zone=HighTal | ";
-    else if (wp_base >= 90)
-        ss << "Zone=HighMidTal | ";
-    else if (wp_base >= 85)
-        ss << "Zone=MidTal | ";
-    else if (wp_base >= 80)
-        ss << "Zone=MidLowTal | ";
-    else if (wp_base >= 76)
-        ss << "Zone=LowTal | ";
-    else if (wp_base > 50)
-        ss << "Zone=Capablanca-Tal | ";
-    else if (wp_base == 50)
-        ss << "Zone=Capablanca | ";
-    else if (wp_base >= 25)
-        ss << "Zone=Capablanca-Petrosian | ";
-    else if (wp_base >= 21)
-        ss << "Zone=LowPetrosian | ";
-    else if (wp_base >= 16)
-        ss << "Zone=MidLowPetrosian | ";
-    else if (wp_base >= 11)
-        ss << "Zone=MidPetrosian | ";
-    else if (wp_base >= 6)
-        ss << "Zone=HighMidPetrosian | ";
-    else
-        ss << "Zone=HighPetrosian | ";
+    // ---------------------------------------------------------------------------------------
+    // Natural language interpretation
+    const PieceInsight* best[COLOR_NB]  = {nullptr, nullptr};
+    const PieceInsight* worst[COLOR_NB] = {nullptr, nullptr};
+    std::vector<const PieceInsight*> blind[COLOR_NB];
+    // Keystone: highest efficiency; Makogonov's worst piece: lowest activity (the relations of
+    // the piece are what the network values, its material is the same wherever it stands)
+    for (const auto& p : in.pieces)
+    {
+        const Color c = color_of(p.pc);
+        if (p.value < 0 && type_of(p.pc) != PAWN)
+            blind[c].push_back(&p);
+        if (type_of(p.pc) == PAWN)
+            continue;
+        if (!best[c] || p.efficiency > best[c]->efficiency)
+            best[c] = &p;
+        if (!worst[c] || p.activity < worst[c]->activity)
+            worst[c] = &p;
+    }
 
-    if (!white_worst_piece.first.empty())
-        ss << "WorstWhite=" << white_worst_piece.first << "(" << white_worst_piece.second
-           << "%) | ";
-    if (!black_worst_piece.first.empty())
-        ss << "WorstBlack=" << black_worst_piece.first << "(" << black_worst_piece.second
-           << "%) | ";
-    if (!outpost_impacts.empty())
-        ss << "BestOutpost=" << outpost_impacts[0].first << "(+" << outpost_impacts[0].second
-           << "%) | ";
-    if (!white_blindspots.empty())
-        ss << "BLINDSPOT_W=" << white_blindspots[0].first << " | ";
-    if (!black_blindspots.empty())
-        ss << "BLINDSPOT_B=" << black_blindspots[0].first << " | ";
-    ss << "Bucket=" << t.correctBucket << " | NeuralDelta=" << std::showpos << pos_delta_act
+    ss << "11. NATURAL LANGUAGE NNUE INTERPRETATION (SCAP Framework)\n";
+    ss << "   " << std::string(66, '~') << "\n";
+    {
+        const int   wpUs = stm == WHITE ? wp : 100 - wp;
+        const char* side = color_name(stm);
+        ss << "   [ASSESSMENT] ";
+        if (wpUs >= 90)
+            ss << side << " is winning (" << wpUs << "% expected score): technical conversion.\n";
+        else if (wpUs >= 75)
+            ss << side << " has a clear advantage (" << wpUs << "%).\n";
+        else if (wpUs >= 62)
+            ss << side << " is clearly better (" << wpUs << "%): press the advantage.\n";
+        else if (wpUs >= 52)
+            ss << side << " holds a slight edge (" << wpUs << "%).\n";
+        else if (wpUs >= 48)
+            ss << "Dynamically balanced position (White " << wp << "%).\n";
+        else if (wpUs >= 38)
+            ss << side << " is slightly worse (" << wpUs << "%): seek counterplay.\n";
+        else if (wpUs >= 25)
+            ss << side << " is clearly worse (" << wpUs << "%): find practical resources.\n";
+        else
+            ss << side << " is losing (" << wpUs << "%): extreme defensive measures.\n";
+    }
+    ss << "   [PHASE] Sub-network #" << in.bucket << " -> " << phase_name(in.bucket) << ".\n";
+    ss << "   [NEURAL SIGNAL] PSQT " << P(in.base.psqt) << " -> total " << P(base) << ": ";
+    if (std::abs(cp(in.base.positional)) >= 50)
+        ss << "STRONG positional judgment (" << P(in.base.positional)
+           << "): the network sees patterns that the material/placement does not explain.\n";
+    else if (std::abs(cp(in.base.positional)) >= 15)
+        ss << "moderate positional correction (" << P(in.base.positional) << ").\n";
+    else
+        ss << "the evaluation is mostly material and placement.\n";
+    ss << "   [DYNAMICS] Relations " << P(in.familyThreat) << ", pawn structure "
+       << P(in.familyPair) << ": "
+       << (std::abs(cp(in.familyThreat)) > std::abs(cp(in.familyPair))
+             ? "the evaluation is driven by piece activity and tactics (keep the tension).\n"
+             : "the evaluation is driven by the pawn structure (long-term factors).\n");
+    for (Color c : {WHITE, BLACK})
+    {
+        if (best[c])
+            ss << "   [" << (c == WHITE ? "WHITE" : "BLACK") << " KEYSTONE] "
+               << piece_str(best[c]->pc, best[c]->sq) << " " << P(best[c]->value) << " ("
+               << best[c]->efficiency << "%): keep it, avoid trading it.\n";
+        if (worst[c])
+            ss << "   [" << (c == WHITE ? "WHITE" : "BLACK") << " MAKOGONOV] "
+               << piece_str(worst[c]->pc, worst[c]->sq) << " (activity " << P(worst[c]->activity)
+               << ", efficiency " << worst[c]->efficiency
+               << "%): the piece to improve or to trade.\n";
+        for (const auto* p : blind[c])
+            ss << "   [*** BLINDSPOT/" << (c == WHITE ? "WHITE" : "BLACK") << " ***] "
+               << piece_str(p->pc, p->sq) << " has a negative value (" << P(p->value)
+               << "): the network judges " << color_name(c)
+               << " better without it (bad piece, overloaded, or in the way).\n";
+    }
+    // Key relation: the most valuable ATTACK (pressure on an enemy unit). Defences of the
+    // initial position (e.g. a rook in the corner defending its pawn) are very common features
+    // whose occlusion is less reliable, so they are listed in section 6 but not chosen here.
+    auto keyAttack = std::find_if(in.threats.begin(), in.threats.end(), [](const auto& t) {
+        return color_of(t.rel.pcA) != color_of(t.rel.pcB);
+    });
+    if (keyAttack != in.threats.end())
+        ss << "   [KEY RELATION] " << relation_label(keyAttack->rel) << " ("
+           << P(keyAttack->value) << " for White: "
+           << ((keyAttack->value > 0) == (color_of(keyAttack->rel.pcA) == WHITE)
+                 ? "pressure that works for its owner"
+                 : "an attack that backfires on its owner")
+           << ").\n";
+    if (!in.pairs.empty())
+        ss << "   [KEY PAWN RELATION] " << relation_label(in.pairs.front().rel) << " ("
+           << P(in.pairs.front().value) << " for White).\n";
+    if (!in.outposts[stm].empty())
+    {
+        const auto& o = in.outposts[stm].front();
+        ss << "   [OUTPOST] " << UCIEngine::square(o.sq) << " is the best square for a "
+           << (o.pt == KNIGHT ? "knight" : o.pt == BISHOP ? "bishop" : "rook") << " of "
+           << color_name(stm) << " (" << P(o.relative) << " above a typical square).\n";
+    }
+    for (Color c : {WHITE, BLACK})
+        if (!in.synergies[c].empty() && cp(in.synergies[c].front().synergy) >= 10)
+        {
+            const auto& sy = in.synergies[c].front();
+            ss << "   [BATTERY/" << (c == WHITE ? "WHITE" : "BLACK") << "] "
+               << piece_str(pos.piece_on(sy.a), sy.a) << "+" << piece_str(pos.piece_on(sy.b), sy.b)
+               << " work together (" << P(sy.synergy) << ").\n";
+        }
+    ss << "   [STRATEGIC PLAN] ";
+    if (wp >= 70 || wp <= 30)
+        ss << "Technical phase: the side ahead should simplify and target weaknesses.";
+    else if (std::abs(cp(in.familyThreat)) > std::abs(cp(in.familyPair)))
+        ss << "Dynamic balance: improve the worst piece, keep the key relations, contest the "
+              "hottest squares of the pressure map.";
+    else
+        ss << "Structural balance: play around the key pawn relations (breaks, blockades).";
+    ss << "\n";
+
+    // ---------------------------------------------------------------------------------------
+    // ShashHermes compact trace (format unchanged) + extended line with the new information
+    auto zone = [](int w) {
+        return w >= 95   ? "HighTal"
+             : w >= 90   ? "HighMidTal"
+             : w >= 85   ? "MidTal"
+             : w >= 80   ? "MidLowTal"
+             : w >= 76   ? "LowTal"
+             : w > 50    ? "Capablanca-Tal"
+             : w == 50   ? "Capablanca"
+             : w >= 25   ? "Capablanca-Petrosian"
+             : w >= 21   ? "LowPetrosian"
+             : w >= 16   ? "MidLowPetrosian"
+             : w >= 11   ? "MidPetrosian"
+             : w >= 6    ? "HighMidPetrosian"
+                         : "HighPetrosian";
+    };
+    ss << "\n   [SHASHHERMES COMPACT TRACE FORMAT]\n";
+    ss << "   WP_White=" << wp << "% | Zone=" << zone(wp) << " | ";
+    if (worst[WHITE])
+        ss << "WorstWhite=" << piece_str(worst[WHITE]->pc, worst[WHITE]->sq) << "("
+           << P(worst[WHITE]->activity) << ") | ";
+    if (worst[BLACK])
+        ss << "WorstBlack=" << piece_str(worst[BLACK]->pc, worst[BLACK]->sq) << "("
+           << P(worst[BLACK]->activity) << ") | ";
+    if (!in.outposts[stm].empty())
+        ss << "BestOutpost=" << UCIEngine::square(in.outposts[stm].front().sq) << "("
+           << P(in.outposts[stm].front().relative) << ") | ";
+    if (!blind[WHITE].empty())
+        ss << "BLINDSPOT_W=" << piece_str(blind[WHITE].front()->pc, blind[WHITE].front()->sq)
+           << " | ";
+    if (!blind[BLACK].empty())
+        ss << "BLINDSPOT_B=" << piece_str(blind[BLACK].front()->pc, blind[BLACK].front()->sq)
+           << " | ";
+    ss << "Bucket=" << in.bucket << " | NeuralDelta=" << std::showpos << neuralDelta
        << std::noshowpos << "%\n";
-    ss << "   " << std::string(66, '~') << "\n\n";
+    ss << "   [SHASHHERMES EXTENDED TRACE]\n   ";
+    ss << "Eval=" << P(base) << " | PSQT=" << P(in.base.psqt) << " | Positional="
+       << P(in.base.positional) << " | Threats=" << P(in.familyThreat) << " | PawnPairs="
+       << P(in.familyPair);
+    if (best[WHITE])
+        ss << " | KeyWhite=" << piece_str(best[WHITE]->pc, best[WHITE]->sq);
+    if (best[BLACK])
+        ss << " | KeyBlack=" << piece_str(best[BLACK]->pc, best[BLACK]->sq);
+    if (keyAttack != in.threats.end())
+        ss << " | KeyRelation=" << relation_label(keyAttack->rel);
+    if (!in.pairs.empty())
+        ss << " | KeyPawnPair=" << relation_label(in.pairs.front().rel);
+    ss << "\n   " << std::string(66, '~') << "\n\n";
 
     return ss.str();
 }

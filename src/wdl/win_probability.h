@@ -25,13 +25,13 @@
 
 namespace ShashChess {
 namespace WDLModel {
-struct WDL {       // Structure to represent Win-Draw-Loss in centipawns
+struct WDL {       // Win-Draw-Loss probabilities, in percent
     uint8_t win;   // Win percentage (0-100)
     uint8_t draw;  // Draw percentage (0-100)
     uint8_t loss;  // Loss percentage (0-100)
 };
 
-void    init();  //inizializes the wdls array
+void    init();  // initializes the precomputed WDL array
 bool    is_initialized();
 WDL     get_wdl_by_material(const Value value,
                             const int   materialClamp);     // Returns the wdl, given the material
@@ -55,7 +55,7 @@ struct WinRateParams {
 WinRateParams win_rate_params(const Position& pos);
 WinRateParams win_rate_params(int materialClamp);
 int           win_rate_model(Value           v,
-                             const Position& pos);  //usato in  std::string wdl(Value v, const Position& pos);
+                             const Position& pos);  // used by std::string wdl(Value v, const Position& pos)
 }
 }
 #endif  //WIN_PROBABILITY_H

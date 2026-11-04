@@ -236,4 +236,11 @@ void PP_3Wide::append_changed_indices_both(Square                  white_ksq,
 #endif
 }
 
+// [SC:explain] begin
+IndexType PP_3Wide::make_index_ext(
+  Color perspective, Color color, Square from, Square to, Color pairedColor, Square ksq) {
+    return make_index(perspective, color, from, to, pairedColor, ksq);
+}
+// [SC:explain] end
+
 }  // namespace ShashChess::Eval::NNUE::Features

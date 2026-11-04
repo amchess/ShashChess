@@ -244,6 +244,26 @@ class FeatureTransformer {
         return psqt;
     }
 
+    // [SC:explain] begin
+    // Same as transform(), but from accumulators built outside the incremental machinery (in
+    // the same permuted layout). Used only by the NNUE explanation of the trace: it lets the
+    // trace evaluate arbitrary subsets of input features and any layer stack.
+    i32 transform_explain(const std::array<std::array<i16, HalfDimensions>, COLOR_NB>& accumulation,
+                          const std::array<std::array<i32, PSQTBuckets>, COLOR_NB>& psqtAccumulation,
+                          Color                                                     stm,
+                          OutputType*                                               output,
+                          int                                                       bucket,
+                          NNZInfo<OutputDimensions>&                                nnzInfo) const {
+        const Color perspectives[2] = {stm, ~stm};
+        const auto  psqt =
+          (psqtAccumulation[perspectives[0]][bucket] - psqtAccumulation[perspectives[1]][bucket])
+          / 2;
+        for (IndexType p = 0; p < 2; ++p)
+            transform_perspective(accumulation[perspectives[p]], output, p, nnzInfo);
+        return psqt;
+    }
+    // [SC:explain] end
+
    private:
     static void transform_perspective(const std::array<i16, HalfDimensions>&      accumulation,
                                       OutputType*                                 output,

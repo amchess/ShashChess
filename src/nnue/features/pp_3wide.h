@@ -45,6 +45,9 @@ class PP_3Wide {
 
     static IndexType make_index(
       Color perspective, Color color, Square from, Square to, Color pairedColor, Square ksq);
+    // [SC:explain] Out-of-line version of make_index(), for the NNUE explanation of the trace
+    static IndexType make_index_ext(
+      Color perspective, Color color, Square from, Square to, Color pairedColor, Square ksq);
 
     static void append_active_indices(Color perspective, const Position& pos, IndexList& active);
 

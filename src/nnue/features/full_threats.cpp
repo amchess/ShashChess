@@ -322,4 +322,11 @@ void FullThreats::append_changed_indices_both(Square                  white_ksq,
     }
 }
 
+// [SC:explain] begin
+IndexType
+FullThreats::make_index_ext(Color perspective, Piece attkr, Square from, Square to, Piece attkd, Square ksq) {
+    return make_index(perspective, attkr, from, to, attkd, ksq);
+}
+// [SC:explain] end
+
 }  // namespace ShashChess::Eval::NNUE::Features

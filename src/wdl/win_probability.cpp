@@ -25,7 +25,7 @@ namespace ShashChess {
 namespace WDLModel {
 
 namespace {
-// Fattorizzazione dei coefficienti del modello WDL di Stockfish 19
+// Coefficients of the Stockfish 19 WDL model
 constexpr double as[] = {-142.72052667, 372.35176398, -340.71073572, 415.23490212};
 constexpr double bs[] = {5.93832785, 15.61267078, -30.57816876, 69.63866711};
 }
@@ -36,7 +36,7 @@ constexpr double bs[] = {5.93832785, 15.61267078, -30.57816876, 69.63866711};
 // WDL array definition
 WDL wdl_data[WIN_PROBABILITY_SIZE];
 
-//Function to calculate the index in the array
+// Index of a (value, material) pair in the precomputed WDL array
 inline size_t index(const ShashChess::Value v, const int m) {
     assert(m >= 17 && m <= 78);
 
@@ -69,21 +69,21 @@ WinRateParams win_rate_params(const Position& pos) {
     return {a, b};
 }
 
-// Calcola the win rate by using the WDL model
+// Computes the win rate with the WDL model
 // The win rate model is 1 / (1 + exp((a - eval) / b)), where a = p_a(material) and b = p_b(material).
 // It fits the LTC fishtest statistics rather accurately.
-int win_rate_model(Value v, const Position& pos) {  //resta invariao
+int win_rate_model(Value v, const Position& pos) {  // unchanged from Stockfish
 
     auto [a, b] = win_rate_params(pos);
 
     // Return the win rate in per mille units, rounded to the nearest integer.
     return int(0.5 + 1000 / (1 + std::exp((a - double(v)) / b)));
 }
-static bool initialized = false;  // Inizialization flag
-// Function to inizialize the WDL array
+static bool initialized = false;  // Initialization flag
+// Initializes the precomputed WDL array
 void init() {
     if (initialized)
-        return;  // Evita di ricaricare se già inizializzato
+        return;  // Already initialized
     initialized = true;
     for (int valueClamp = -4000; valueClamp <= 4000; ++valueClamp)
     {

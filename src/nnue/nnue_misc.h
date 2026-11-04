@@ -29,6 +29,10 @@
 #include "../types.h"
 #include "nnue_architecture.h"
 #include "../evaluate.h"
+#include "nnue_explain.h"
+
+#include <array>
+#include <vector>
 
 namespace ShashChess {
 
@@ -58,6 +62,67 @@ struct NnueEvalTrace {
 
 class Network;
 struct AccumulatorCaches;
+
+// [SC:explain] begin
+// Structured result of the NNUE explanation (see nnue_explain.h). Values are internal units,
+// White point of view, computed with the layer stack of the position ('bucket').
+struct PieceInsight {
+    Square sq;
+    Piece  pc;
+    Value  value;       // evaluation lost by the owner if the piece is removed (owner's view)
+    Value  psqt;        // part of 'value' due to the linear PSQT output
+    Value  positional;  // part of 'value' due to the layer stack
+    Value  activity;    // value of the piece's relations only (its attacks/defences and the
+                        // attacks/defences it receives), owner's view: the piece stays on the
+                        // board, so the network is not pushed into its saturated regime
+    int    efficiency;  // value / reference value of the same piece type in this position, %
+};
+
+struct RelationInsight {
+    Explain::Relation rel;
+    Value             value;  // what the relation is worth for White (occlusion)
+};
+
+struct ProbeInsight {
+    Square    sq;
+    PieceType pt;         // best piece type for the square (largest value above its reference)
+    Value     gain;       // value of the virtual piece for its owner
+    Value     relative;   // gain minus the reference (median) value of that piece type
+    Value     byType[3];  // KNIGHT, BISHOP, ROOK (index pt - KNIGHT)
+};
+
+struct SynergyInsight {
+    Square a, b;
+    Value  synergy;  // activity of the pair minus the two single activities (owner's view)
+};
+
+struct NnueInsight {
+    bool                         consistent = false;  // explanation reproduces the engine
+    int                          bucket     = 0;
+    Explain::Output              base;  // raw network output, White point of view
+    Value                        familyPsq = 0, familyThreat = 0, familyPair = 0;
+    std::vector<PieceInsight>    pieces;
+    std::vector<RelationInsight> threats;  // sorted by |value|
+    std::vector<RelationInsight> pairs;    // sorted by |value|
+    std::array<Value, SQUARE_NB> pressure{};  // threat relations summed on the target square
+    std::array<Value, SQUARE_NB> pawnStructure{};  // pawn-pair relations summed on each pawn
+    std::vector<ProbeInsight>    outposts[COLOR_NB];  // sorted by relative value
+    Value                        reference[COLOR_NB][PIECE_TYPE_NB]{};  // typical piece values
+    std::vector<SynergyInsight>  synergies[COLOR_NB];
+
+    const PieceInsight* piece_on(Square s) const {
+        for (const auto& p : pieces)
+            if (p.sq == s)
+                return &p;
+        return nullptr;
+    }
+};
+
+NnueInsight analyze(const Position& pos, const Network& network, AccumulatorCaches& caches);
+
+// Short human-readable label of a relation, e.g. "Bg5>nf6 pin/attack" or "c4/d5 lever"
+std::string relation_label(const Explain::Relation& r);
+// [SC:explain] end
 
 std::string trace(Position& pos, const Network& network, AccumulatorCaches& caches);
 

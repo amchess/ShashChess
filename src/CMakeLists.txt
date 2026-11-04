@@ -20,7 +20,7 @@ set(SRCS
         search.cpp thread.cpp timeman.cpp tt.cpp uci.cpp ucioption.cpp tune.cpp syzygy/tbprobe.cpp
         learn/learn.cpp mcts/montecarlo.cpp
         book/file_mapping.cpp book/book.cpp book/book_manager.cpp book/polyglot/polyglot.cpp book/ctg/ctg.cpp
-        nnue/nnue_misc.cpp nnue/features/half_ka_v2_hm.cpp nnue/network.cpp engine.cpp score.cpp memory.cpp
+        nnue/nnue_misc.cpp nnue/nnue_explain.cpp nnue/features/half_ka_v2_hm.cpp nnue/network.cpp engine.cpp score.cpp memory.cpp
         wdl/win_probability.cpp
         livebook/BaseLivebook.cpp livebook/LichessOpening.cpp livebook/LichessEndgame.cpp livebook/ChessDb.cpp
         livebook/analysis/Cp.cpp livebook/analysis/Analysis.cpp livebook/analysis/Wdl.cpp livebook/analysis/Mate.cpp
@@ -30,7 +30,7 @@ set(SRCS
 
 set(HEADERS
         benchmark.h bitboard.h evaluate.h misc.h movegen.h movepick.h history.h
-        nnue/nnue_misc.h nnue/features/half_ka_v2_hm.h nnue/layers/affine_transform.h
+        nnue/nnue_misc.h nnue/nnue_explain.h nnue/features/half_ka_v2_hm.h nnue/layers/affine_transform.h
         nnue/layers/affine_transform_sparse_input.h nnue/layers/clipped_relu.h
         nnue/layers/sqr_clipped_relu.h nnue/nnue_accumulator.h nnue/nnue_architecture.h
         nnue/nnue_common.h nnue/nnue_feature_transformer.h position.h

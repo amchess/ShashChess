@@ -202,6 +202,22 @@ void Network::verify(const std::function<void(std::string_view)>& f,
 }
 
 
+// [SC:explain] begin
+NetworkOutput
+Network::evaluate_explain(const ExplainAccumulator& acc, Color stm, int bucket) const {
+
+    constexpr u64 alignment = CacheLineSize;
+
+    alignas(alignment) TransformedFeatureType transformedFeatures[FeatureTransformer::BufferSize];
+
+    NNZInfo<L1> nnzInfo;
+    const auto  psqt = featureTransformer.transform_explain(
+      acc.accumulation, acc.psqtAccumulation, stm, transformedFeatures, bucket, nnzInfo);
+    const auto positional = network[bucket].propagate(transformedFeatures, nnzInfo);
+    return {static_cast<Value>(psqt / OutputScale), static_cast<Value>(positional / OutputScale)};
+}
+// [SC:explain] end
+
 NnueEvalTrace Network::trace_evaluate(const Position&    pos,
                                       AccumulatorStack&  accumulatorStack,
                                       AccumulatorCaches& cache) const {
