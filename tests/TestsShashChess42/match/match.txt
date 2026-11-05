@@ -1,0 +1,16 @@
+Score of Stockfish19 vs ShashChess42: 58 - 61 - 181  [0.495] 300
+...      Stockfish19 playing White: 58 - 0 - 92  [0.693] 150
+...      Stockfish19 playing Black: 0 - 61 - 89  [0.297] 150
+...      White vs Black: 119 - 0 - 181  [0.698] 300
+Elo difference: -3.5 +/- 24.8, LOS: 39.2 %, DrawRatio: 60.3 %
+
+Motore: ShashChess42  coppie complete: 150  incomplete: 0
+Ptnml(0-2): [0, 27, 93, 30, 0]  (0 = perde entrambe ... 4 = vince entrambe)
+Punteggio: 50.50 %
+Elo: +3.5  IC 95%: [-13.7, +20.6]  LOS: 65.5 %
+
+Motore: Stockfish19  coppie complete: 150  incomplete: 0
+Ptnml(0-2): [0, 30, 93, 27, 0]  (0 = perde entrambe ... 4 = vince entrambe)
+Punteggio: 49.50 %
+Elo: -3.5  IC 95%: [-20.6, +13.7]  LOS: 34.5 %
+(venv) sdp@igk-smg-svr011:~$
