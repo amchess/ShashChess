@@ -388,26 +388,118 @@ Stockfish community
 
 Sorry If I forgot someone.
 
+# Trace (eval command) infos
+
+The UCI command `eval` prints the static analysis of the current position. Its content depends on
+the option `UCI_ShowWDL`:
+
+- `UCI_ShowWDL` **false**: the short trace, i.e. the NNUE mechanistic trace and three evaluation lines.
+  In check the output is the single line `Final evaluation: none (in check)`.
+- `UCI_ShowWDL` **true**: the full analysis, in this order:
+  1. a reading guide;
+  2. **the Master's Verdict**: the position explained in plain language, for the player
+     (see [The Master's Verdict](#the-masters-verdict));
+  3. the separator
+
+     ```
+     ################################################################
+     ####            TECHNICAL PARAMETERS AND DETAILS            ####
+     ####   (data behind the verdict above, for deeper study)    ####
+     ################################################################
+     ```
+
+  4. **the technical parameters** the verdict is built from: NNUE mechanistic trace, Shashin static
+     analysis, strategic synthesis, advanced Shashin modules
+     (see [Technical parameters and details](#technical-parameters-and-details)).
+
+**It is a static analysis.** `eval` does not search. Every value comes from the NNUE static
+evaluation; every move and every "what if" (a trade, a pass) is resolved only by a small quiescence
+search (depth 8, captures with SEE >= 0, all evasions when in check, at most 20000 nodes). Tactical
+blows beyond the captures on the board are not seen: the plan of the verdict can differ from the
+best move found by a search (`go`). The trace never changes the search.
+
+**In check** (with `UCI_ShowWDL` true) the analysis is printed too: the verdict focuses on the
+answer to the check, and the technical part opens with
+`*** <side> is in check: static values below are indicative only. ***`. Up to ShashChess 41.2 the
+output in check was always `Final evaluation: none (in check)`.
+
+**Units and point of view.** The NNUE mechanistic trace, the strategic synthesis and the final
+evaluation are in pawns (cp/100, UCI scale), the legal moves and the advanced modules in centipawns
+(`cp`, UCI scale). The NNUE mechanistic trace is from White's point of view unless a line says
+otherwise (piece values: the owner's view; legal moves: the mover's). The advanced modules and the
+verdict are addressed to the side to move ("you", "your").
+
+## The Master's Verdict
+
+It opens with `>>> COMPLETE HUMAN EVALUATION (The Master's Verdict) <<<` and
+`Seen from <side>'s side: <side> is to move.`, then:
+
+| Section | What it says | How to use it |
+|---------|--------------|---------------|
+| **OVERALL EVALUATION** | Evaluation (White's point of view) and expected score; material; quiet or sharp position; what the network's judgement rests on (piece relations or pawn structure); game phase; most likely result; Shashin's advice. | Choose the character of your play: maneuvering, concrete calculation, defence. |
+| **URGENT MATTERS** | Check, the opponent's threat (with its cost), a winning tactic, a sacrifice; otherwise "Nothing urgent". | Deal with it before anything else. |
+| **PIECE EVALUATION** | Your most and least active piece, the opponent's problem piece and best unit, bishops of opposite colours. | Makogonov's principle: improve your worst piece. |
+| **TRADES AND SIMPLIFICATION** | Whether a queen trade or trading all the rooks helps; the most useful exchange; the exchanges to avoid. | Choose your trades. |
+| **GEOMETRY AND STRUCTURE** | Pawns (weaknesses, passed pawns, tension, breaks), space and files, key squares and color complexes. | Targets, outposts, the files for the rooks. |
+| **KING SAFETY** | Your king and the enemy king (missing shield pawns, attacks on the squares around them). | Attack or defend first. |
+| **THE PLAN** | The move to play, with the evaluation after it and why; the alternatives; the next steps; prophylaxis (the opponent's most useful idea). | The concrete plan of the next moves. |
+| **IN A NUTSHELL** | The position and the plan in one sentence. | The summary to remember. |
+
+With a forced mate (for or against the side to move) the verdict is short: the evaluation, the plan
+and the summary. With no legal move it says CHECKMATE or STALEMATE.
+
+## Technical parameters and details
+
+| Block | Content |
+|-------|---------|
+| **NNUE MECHANISTIC TRACE** | The network (HalfKAv2_hm + FullThreats + PP_3Wide, 8 layer stacks) explained on this position, with the accumulators rebuilt to reproduce the engine output exactly: raw output = PSQT + positional. 1. piece values (evaluation lost if the piece is removed); 2. piece roles (value, activity, efficiency: Keystone, Active, Standard, Passive, Liability, Blindspot); 3. the layer stack used (piece count, phase); 4. what every layer stack thinks of the position; 5. input feature families (Shapley attribution: piece relations, pawn structure, placement); 6. key piece relations (attacks and defences that help or hurt); 7. pawn structure as seen by the network (pawn pairs); 8. pressure map; 9. virtual piece insertion (latent outposts); 10. pairwise synergy; 11. the same in natural language (SCAP framework) and in compact form. |
+| **SHASHIN STATIC ANALYSIS** | Piece activity (Makogonov principle, worst unit marked); legal moves ordered by static activity (quiet evaluation: captures resolved). |
+| **STRATEGIC SYNTHESIS** | Evaluation, win probability, WDL and Shashin zone; drawability and volatility; strategic directives; a training snippet for each level of player. |
+| **Final static activity evaluation** | Evaluation (pawns, White), WDL, Shashin zone. |
+| **ADVANCED SHASHIN MODULES** | Shashin strategic directive; structural and dynamic flags; threats and prophylaxis (what if the side to move passed, the opponent's ideas); space and zone of action; knight outposts; color complexes; piece importance and trade advisory; files; structure and pawn breaks; tension management; king safety and prophylaxis; game plans and piece maneuvers (candidates with their quiet value, gain against passing and the NNUE explanation). |
+
+The formal syntax (EBNF) and the semantics of every section are in
+[doc/ShashChessTraceSpecification.docx](doc/ShashChessTraceSpecification.docx).
+
+## Reading the output of eval from a program
+
+- Read the output up to the `readyok` that answers an `isready` sent right after `eval`: the last
+  line depends on the version and on `UCI_ShowWDL` (from ShashChess 42 the advanced modules follow
+  `*** Note: Static activity analysis based on current piece placement ***`).
+- The verdict is everything before the `TECHNICAL PARAMETERS AND DETAILS` separator: it starts after
+  `>>> COMPLETE HUMAN EVALUATION (The Master's Verdict) <<<` and ends with a line of 64 `=`.
+- The Shashin static analysis keeps the titles and the beginning of the lines of ShashChess 41.2
+  (`White pieces (worst to best static activity):` with the `<-- Worst unit (Makogonov)` mark,
+  `Legal moves ordered by static activity (best first):`, the final note); the legal moves are now
+  valued with the quiet evaluation, in cp, and the final evaluation line is in pawns. The strategic
+  synthesis comes between the legal moves and the final evaluation; the advanced modules start with
+  a line of 64 `=` and the title `=== ADVANCED SHASHIN MODULES ===` and run to the end. The NNUE
+  mechanistic trace replaces the NNUE trace of the previous versions.
+- In check the technical part opens with `*** <side> is in check: static values below are indicative only. ***`.
+
 # ShashChess vs Stockfish Evaluation Trace Comparison
 
 ## Detailed Structure Analysis
 
 | Section | Component | ShashChess Implementation | Stockfish Implementation | Human-Player Focus |
 |---------|-----------|---------------------------|--------------------------|-------------------|
+| **0. Master's Verdict** | Plain-language verdict | Printed first: overall evaluation, urgent matters, pieces, trades, structure, king safety, plan, in a nutshell (with `UCI_ShowWDL`) | Not implemented | **The position explained as a master would, before the numbers** |
 | **1. Core Evaluation** | Basic NNUE Evaluation | Enhanced with additional analysis layers | Standard NNUE evaluation | **ShashChess adds explanatory notes about technical accuracy** |
 | | Value Conversion | Always converts to White's perspective for consistency | Converts to White's perspective | **Explicitly states perspective for clarity** |
+| | NNUE Explainability | Mechanistic trace: piece values and roles, feature families (Shapley attribution), key piece relations, pawn pairs, pressure map, latent outposts, synergy | Piece values and the table of the layer stacks | **Shows why the network likes or dislikes the position** |
 | **2. WDL & Probability** | Win Probability | Detailed calculation with Shashin zones | Not implemented | **Critical for human decision-making** |
 | | WDL Model | Full Win/Draw/Loss percentages | Not implemented | **Helps humans assess practical chances** |
 | | Shashin Zones | 12 distinct positional classifications | Not implemented | **Classifies position type for strategic planning** |
 | **3. Piece Analysis** | Piece Activity | Horizontal ranking (worst to best) | Not implemented | **Identifies poorly placed pieces (Makogonov Principle)** |
 | | Activity Metrics | Multiple factors: attacks, center control, king proximity | Not implemented | **Helps humans understand piece quality** |
 | | Worst Unit Identification | Explicitly marks least active pieces | Not implemented | **Direct guidance for improvement** |
-| **4. Move Analysis** | Legal Moves Ordering | By win probability + evaluation | Not implemented | **Shows best practical moves first** |
+| **4. Move Analysis** | Legal Moves Ordering | By win probability + quiet evaluation (captures resolved by a small quiescence search) | Not implemented | **Shows best practical moves first** |
 | | Move Information | Centipawn + win percentage for each move | Not implemented | **Quantifies move quality in human terms** |
 | | Static Activity Focus | Current position analysis | Not implemented | **Immediate actionable information** |
 | **5. Output Structure** | Section Headers | Clear thematic sections ("SHASHIN STATIC ANALYSIS") | Basic evaluation output | **Organized for easy human consumption** |
 | | Explanatory Notes | Technical accuracy disclaimers | Minimal explanations | **Helps non-engineers understand output** |
 | | Visual Formatting | Horizontal lists, clear markings | Traditional vertical format | **Easier to scan and comprehend** |
+| **6. Advanced Modules** | Counterfactual Analysis | Threats (what if the side to move passed), outposts, color complexes, trade advisory, pawn breaks and tension, king safety, game plans | Not implemented | **Concrete plans and prophylaxis** |
 
 ## Key Human-Oriented Features in ShashChess
 
@@ -426,6 +518,10 @@ Sorry If I forgot someone.
 ### 4. **Probability-Based Decision Making**
 - **WDL Model**: Converts abstract evaluations to win/draw/loss percentages
 - **Benefit**: Players understand real-game implications of positions
+
+### 5. **The Master's Verdict**
+- **Plain-language verdict**: the evaluation, the urgent matters, the pieces, the trades, the structure, the kings and the plan, before the technical parameters
+- **Benefit**: Players read the position as a master would explain it; the technical parameters show where each sentence comes from
 
 ## Technical Comparison Summary
 
@@ -516,6 +612,9 @@ Currently, Stockfish has the following UCI options:
     If enabled, show approximate WDL statistics as part of the engine output.
     These WDL numbers model expected game outcomes for a given evaluation and
     game ply for engine self-play at fishtest LTC conditions (60+0.6s per game).
+    In ShashChess it also chooses the output of `eval`: with it, the full analysis (the Master's
+    Verdict and the technical parameters, see [Trace (eval command) infos](#trace-eval-command-infos));
+    without it, the short NNUE trace.
 
   * #### UCI_LimitStrength
     Enable weaker play aiming for an Elo rating as set by UCI_Elo. This option overrides Skill Level.
