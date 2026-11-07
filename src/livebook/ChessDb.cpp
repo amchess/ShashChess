@@ -21,7 +21,10 @@
     #include "ChessDb.h"
 
     #include <algorithm>
+    #include <cerrno>
+    #include <climits>
     #include <cmath>
+    #include <cstdlib>
     #include <iostream>
     #include <sstream>
     #include "../uci.h"
@@ -30,6 +33,40 @@ using namespace ShashChess::Livebook;
 
     #define CHESS_DB_ENDPOINT "https://www.chessdb.cn/cdb.php"
     #define DEFAULT_ACTION Action::QUERY_ALL
+
+namespace {
+
+// The values sent by ChessDB may be unknown ("score:??"): parse them without exceptions
+bool to_int(const std::string& value_, int& result_) {
+    char* end = nullptr;
+    errno     = 0;
+
+    const long value = std::strtol(value_.c_str(), &end, 10);
+
+    if (end == value_.c_str() || errno == ERANGE || value < INT_MIN || value > INT_MAX)
+    {
+        return false;
+    }
+
+    result_ = static_cast<int>(value);
+    return true;
+}
+
+bool to_double(const std::string& value_, double& result_) {
+    char* end = nullptr;
+
+    const double value = std::strtod(value_.c_str(), &end);
+
+    if (end == value_.c_str() || !std::isfinite(value))
+    {
+        return false;
+    }
+
+    result_ = value;
+    return true;
+}
+
+}
 
 ChessDb::ChessDb() :
     action(DEFAULT_ACTION),
@@ -48,71 +85,74 @@ ChessDb::ChessDb(std::string endpoint_, const Action action_) :
     endpoint(std::move(endpoint_)) {}
 
 
+// An item is "key:value,key:value,...", e.g. "move:e2e4,score:35,rank:2,note:! (12-05),
+// winrate:52.65" for queryall, "move:e2e4" or "egtb:e2e4" (tablebase move) for querybest
+// and query. An empty move is returned if the item has to be discarded.
 std::pair<std::string, Analysis>
 ChessDb::parse_move(const Position& position_, std::string& item_, bool check_rank_) const {
-    std::string move_type = item_.substr(0, item_.find(':'));
-    std::string move      = item_.substr(item_.find(':') + 1);
+    const std::pair<std::string, Analysis> discarded{"", Analysis()};
 
     std::stringstream stream(item_);
     std::string       token;
-    std::string       key, value;
 
-    int         rank = 0;
     std::string uci;
-    auto        analysis = new Analysis();
+    Analysis    analysis;
 
     while (std::getline(stream, token, ','))
     {
-        key = token.substr(0, token.find(':'));
+        const size_t      colon = token.find(':');
+        const std::string key   = token.substr(0, colon);
+        const std::string value = colon == std::string::npos ? "" : token.substr(colon + 1);
 
-        if (key == "rank")
+        if (key == "move" || key == "egtb")
         {
-            value = token.substr(token.find(':') + 1);
-            rank  = std::stoi(value);
-
-            if (check_rank_ && rank < this->min_rank)
+            if (!UCIEngine::to_move(position_, value))
             {
-                break;
-            }
-        }
-
-        value = token.substr(token.find(':') + 1);
-
-        if (key == "move")
-        {
-            if (auto uci_move = UCIEngine::to_move(position_, value); !uci_move)
-            {
-                uci = "";
-                break;
+                return discarded;
             }
 
             uci = value;
         }
+        else if (key == "rank")
+        {
+            // "move" comes before "rank": discard the move
+            if (int rank = 0; check_rank_ && (!to_int(value, rank) || rank < this->min_rank))
+            {
+                return discarded;
+            }
+        }
         else if (key == "score")
         {
-            auto score_value = std::stoi(value);
-            auto score       = new Cp(score_value);
-            analysis->set_centi_pawns(score);
+            // Unknown score ("??"): the move cannot be compared with the others
+            int score = 0;
+
+            if (!to_int(value, score))
+            {
+                return discarded;
+            }
+
+            analysis.set_centi_pawns(new Cp(score));
         }
         else if (key == "mate")
         {
-            auto mate_value = std::stoi(value);
-            auto mate       = new Mate(mate_value);
-            analysis->set_mate(mate);
+            if (int mate = 0; to_int(value, mate))
+            {
+                analysis.set_mate(new Mate(mate));
+            }
         }
         else if (key == "winrate")
         {
-            auto     wdl_value = std::stof(value);
-            auto     wins      = static_cast<uint32_t>(std::round(wdl_value * 10));
-            uint32_t losses    = 1000 - wins;
-            auto     wdl       = new Wdl(wins, 0, losses);
-            analysis->set_wdl(wdl);
+            // Percentage with two decimals: per mille
+            if (double winrate = 0; to_double(value, winrate))
+            {
+                const auto wins =
+                  static_cast<uint32_t>(std::lround(std::clamp(winrate, 0.0, 100.0) * 10));
+                analysis.set_wdl(new Wdl(wins, 0, 1000 - wins));
+            }
         }
     }
 
-    auto element = std::pair(uci, *analysis);
-
-    return element;
+    return {uci, analysis};
 }
 
 std::vector<std::pair<std::string, Analysis>> ChessDb::parse_query_all(const Position& position_) {
@@ -176,7 +216,7 @@ std::vector<std::pair<std::string, Analysis>> ChessDb::lookup(const Position& po
 
     auto ret = std::vector<std::pair<std::string, Analysis>>();
 
-    if (const CURLcode res = do_request(full_uri); res != CURLE_OK)
+    if (!fetch(full_uri))
     {
         return ret;
     }
@@ -246,10 +286,15 @@ std::string ChessDb::format_uri(const Position& position_) const {
         action_str = "queryall";
     }
 
-    const std::string full_uri =
-      this->endpoint + "?action=" + action_str + +"&board=" + fen_encoded;
+    const std::string full_uri = this->endpoint + "?action=" + action_str + "&board=" + fen_encoded;
 
     return full_uri;
+}
+
+bool ChessDb::is_equivalent([[maybe_unused]] const Analysis& best_,
+                            [[maybe_unused]] const Analysis& other_,
+                            [[maybe_unused]] const Moves&    moves_) const {
+    return true;
 }
 
     #undef DEFAULT_ACTION

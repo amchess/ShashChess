@@ -507,6 +507,22 @@ ShashinPosition ShashinManager::getShashinRange(Value value, const Position& roo
     return ShashinPosition::TAL_CAPABLANCA_PETROSIAN;
 }
 
+// [SC:livebook] Same zones of getShashinRange
+ShashinPosition shashin_range_by_probability(int winProbability, int drawProbability) {
+    if (winProbability == CAPABLANCA_MAX)
+    {
+        return (drawProbability >= CAPABLANCA_MIN_DRAW) ? ShashinPosition::CAPABLANCA
+                                                        : ShashinPosition::TAL_CAPABLANCA_PETROSIAN;
+    }
+
+    if (winProbability >= 0 && winProbability <= 100)
+    {
+        return getLookupTable()[winProbability];
+    }
+
+    return ShashinPosition::TAL_CAPABLANCA_PETROSIAN;
+}
+
 ShashinPosition ShashinManager::getInitialShashinRange(Position&            rootPos,
                                                        Value                staticValue,
                                                        const ShashinConfig& config) {

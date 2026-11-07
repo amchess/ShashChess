@@ -26,7 +26,7 @@
 namespace ShashChess::Livebook {
 class LichessMaster final: public LichessOpening {
    public:
-    LichessMaster();
+    explicit LichessMaster(std::string token_);
 };
 }
 

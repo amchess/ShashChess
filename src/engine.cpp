@@ -219,6 +219,19 @@ Engine::Engine(std::optional<std::filesystem::path> path) :
                     return std::optional<std::string>{};
                 }));
 
+    options.add("LiveBook Proxy Diversity", Option(false, [](const Option& o) {
+                    Search::set_proxy_diversity(o);
+                    return std::nullopt;
+                }));
+
+    options.add("LiveBook Lichess Token",
+                Option("", [](const Option& o) -> std::optional<std::string> {
+                    if (!Search::set_lichess_token(o))
+                        return "LiveBook Lichess Token ignored: a Lichess token contains only "
+                               "letters, digits and '_'";
+                    return std::optional<std::string>{};
+                }));
+
     options.add("LiveBook Lichess Games", Option(false, [](const Option& o) {
                     Search::set_use_lichess_games(o);
                     return std::nullopt;
@@ -252,6 +265,16 @@ Engine::Engine(std::optional<std::filesystem::path> path) :
 
     options.add("LiveBook Depth", Option(255, 1, 255, [](const Option& o) {
                     Search::set_livebook_depth(o);
+                    return std::nullopt;
+                }));
+
+    options.add("LiveBook Width", Option(1, 1, 20, [](const Option& o) {
+                    Search::set_livebook_width(o);
+                    return std::nullopt;
+                }));
+
+    options.add("LiveBook Timeout", Option(5000, 100, 60000, [](const Option& o) {
+                    Search::set_livebook_timeout(o);
                     return std::nullopt;
                 }));
 

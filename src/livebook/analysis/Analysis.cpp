@@ -20,6 +20,26 @@
 #ifdef USE_LIVEBOOK
     #include "Analysis.h"
 
+    #include <utility>
+
+namespace {
+
+template<typename T>
+T* clone(const T* value_) {
+    return value_ != nullptr ? new T(*value_) : nullptr;
+}
+
+template<typename T>
+void assign_owned(T*& member_, T* value_) {
+    if (member_ != value_)
+    {
+        delete member_;
+        member_ = value_;
+    }
+}
+
+}
+
 Analysis::Analysis() :
     depth(0) {
     this->centi_pawns = nullptr;
@@ -83,25 +103,72 @@ Analysis::Analysis(Cp* centi_pawns_, Wdl* wdl_, Mate* mate_, const uint32_t dept
     this->wdl         = wdl_;
 }
 
+Analysis::Analysis(const Analysis& other_) :
+    depth(other_.depth),
+    centi_pawns(clone(other_.centi_pawns)),
+    wdl(clone(other_.wdl)),
+    mate(clone(other_.mate)) {}
+
+Analysis::Analysis(Analysis&& other_) noexcept :
+    depth(other_.depth),
+    centi_pawns(other_.centi_pawns),
+    wdl(other_.wdl),
+    mate(other_.mate) {
+    other_.centi_pawns = nullptr;
+    other_.wdl         = nullptr;
+    other_.mate        = nullptr;
+}
+
+Analysis& Analysis::operator=(const Analysis& other_) {
+    if (this != &other_)
+    {
+        Analysis copy(other_);
+        *this = std::move(copy);
+    }
+
+    return *this;
+}
+
+Analysis& Analysis::operator=(Analysis&& other_) noexcept {
+    if (this != &other_)
+    {
+        depth = other_.depth;
+        assign_owned(centi_pawns, other_.centi_pawns);
+        assign_owned(wdl, other_.wdl);
+        assign_owned(mate, other_.mate);
+        other_.centi_pawns = nullptr;
+        other_.wdl         = nullptr;
+        other_.mate        = nullptr;
+    }
+
+    return *this;
+}
+
+Analysis::~Analysis() {
+    delete centi_pawns;
+    delete wdl;
+    delete mate;
+}
+
 uint32_t Analysis::get_depth() const { return depth; }
 
 bool Analysis::has_centi_pawns() const { return centi_pawns != nullptr; }
 
 Cp* Analysis::get_centi_pawns() const { return centi_pawns; }
 
-void Analysis::set_centi_pawns(Cp* value_) { this->centi_pawns = value_; }
+void Analysis::set_centi_pawns(Cp* value_) { assign_owned(this->centi_pawns, value_); }
 
 bool Analysis::has_wdl() const { return wdl != nullptr; }
 
 Wdl* Analysis::get_wdl() const { return wdl; }
 
-void Analysis::set_wdl(Wdl* value_) { this->wdl = value_; }
+void Analysis::set_wdl(Wdl* value_) { assign_owned(this->wdl, value_); }
 
 bool Analysis::has_mate() const { return mate != nullptr; }
 
 Mate* Analysis::get_mate() const { return mate; }
 
-void Analysis::set_mate(Mate* value_) { this->mate = value_; }
+void Analysis::set_mate(Mate* value_) { assign_owned(this->mate, value_); }
 
 Analysis* Analysis::flip() const {
     auto ret = new Analysis();

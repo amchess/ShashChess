@@ -26,15 +26,28 @@
 namespace ShashChess::Livebook {
 class LichessOpening: public LichessLivebook {
    public:
-    explicit LichessOpening(std::string endpoint_);
+    // endpoint_ must end with '?' or '&': the position is appended as "fen=..."
+    // token_ is the Lichess API token (required by the explorer since March 2026)
+    LichessOpening(std::string endpoint_, std::string token_);
     ~LichessOpening() override = default;
 
    protected:
     std::string endpoint;
+    std::string token;
 
     std::string parse_uci(const nlohmann::json& move_) override;
-    Analysis*   parse_analysis(const nlohmann::json& move_) override;
+    Analysis*   parse_analysis(const nlohmann::json& move_, const Position& position_) override;
     std::string format_url(const Position& position_) override;
+
+    [[nodiscard]] std::vector<std::string> request_headers() const override;
+    [[nodiscard]] std::string              auth_hint() const override;
+
+    // Statistics of games: a move is equivalent to the best one if its success rate (wins +
+    // draws / 2, the win probability of the Shashin zones) is in the same Shashin zone and,
+    // as for the BIN books, it has been played in at least 0.5% of the games
+    [[nodiscard]] bool is_equivalent(const Analysis& best_,
+                                     const Analysis& other_,
+                                     const Moves&    moves_) const override;
 };
 }
 

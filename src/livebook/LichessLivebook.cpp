@@ -20,67 +20,124 @@
 #ifdef USE_LIVEBOOK
     #include "LichessLivebook.h"
 
+    #include <memory>
+
+    #include "../movegen.h"
     #include "../uci.h"
 
 using namespace ShashChess::Livebook;
+
+namespace ShashChess::Livebook {
+namespace {
+
+// The opening explorer encodes castling as "king takes rook" (e1h1, e8a8, ...) also in
+// standard chess, while UCIEngine::to_move() only accepts e1g1 there.
+Move to_engine_move(const Position& position, const std::string& uci_move) {
+    if (const Move move = UCIEngine::to_move(position, uci_move))
+    {
+        return move;
+    }
+
+    const std::string lower = UCIEngine::to_lower(uci_move);
+
+    for (const auto& move : MoveList<LEGAL>(position))
+    {
+        if (move.type_of() == CASTLING && UCIEngine::move(move, true) == lower)
+        {
+            return move;
+        }
+    }
+
+    return Move::none();
+}
+
+// Newline delimited JSON: every line is a newer and complete snapshot. Return the last
+// valid one (the last line may be truncated if the stream has been cut by the timeout).
+std::string last_json_line(const std::string& buffer) {
+    size_t end = buffer.size();
+
+    while (end > 0)
+    {
+        const size_t newline = buffer.rfind('\n', end - 1);
+        const size_t begin   = newline == std::string::npos ? 0 : newline + 1;
+        std::string  line    = buffer.substr(begin, end - begin);
+
+        if (line.find_first_not_of(" \t\r\n") != std::string::npos && nlohmann::json::accept(line))
+        {
+            return line;
+        }
+
+        if (newline == std::string::npos)
+        {
+            break;
+        }
+
+        end = newline;
+    }
+
+    return "";
+}
+
+}
+}
 
 std::vector<std::pair<std::string, Analysis>> LichessLivebook::lookup(const Position& position) {
     const std::string full_uri = format_url(position);
     auto              ret      = std::vector<std::pair<std::string, Analysis>>();
 
-    if (const CURLcode res = do_request(full_uri); res != CURLE_OK)
+    if (!fetch(full_uri, request_headers(), is_nd_json(), auth_hint()))
+    {
+        return ret;
+    }
+
+    const std::string payload = is_nd_json() ? last_json_line(readBuffer) : readBuffer;
+
+    if (payload.empty())
     {
         return ret;
     }
 
     try
     {
-        auto data = nlohmann::json::parse(readBuffer);
+        const auto data = nlohmann::json::parse(payload);
 
         if (!data.contains("moves") || !data["moves"].is_array())
         {
-            std::cerr << "Error parsing JSON: \"moves\" not found" << std::endl
-                      << readBuffer << std::endl;
+            report(full_uri, "unexpected answer, \"moves\" not found");
             return ret;
         }
 
-        auto moves = data["moves"];
-
-        for (auto move : moves)
+        for (const auto& move : data["moves"])
         {
-            if (!move.contains("uci") || !move["uci"].is_string())
+            const std::string uci_move = parse_uci(move);
+
+            if (uci_move.empty())
             {
-                std::cerr << "Error parsing JSON: \"uci\" not found" << std::endl
-                          << readBuffer << std::endl;
+                report(full_uri, "unexpected answer, \"uci\" not found");
                 continue;
             }
 
-            auto uci_move = move["uci"].get<std::string>();
+            const Move engine_move = to_engine_move(position, uci_move);
 
-            if (const auto uci = UCIEngine::to_move(position, uci_move); !uci)
+            if (!engine_move)
             {
                 continue;
             }
 
-            auto analysis = parse_analysis(move);
+            const std::unique_ptr<Analysis> analysis(parse_analysis(move, position));
 
             if (analysis == nullptr)
             {
                 continue;
             }
 
-            if (position.side_to_move() == BLACK)
-            {
-                analysis = analysis->flip();
-            }
-
-            auto element = std::pair(uci_move, *analysis);
-            ret.push_back(element);
+            // Store the move in the engine notation (e1g1, not e1h1, in standard chess)
+            ret.emplace_back(UCIEngine::move(engine_move, position.is_chess960()), *analysis);
         }
     } catch (const nlohmann::json::exception& e)
     {
-        std::cerr << "Error parsing JSON: " << e.what() << std::endl << readBuffer << std::endl;
-        return ret;
+        report(full_uri, std::string("unexpected answer, ") + e.what());
+        ret.clear();
     }
 
     return ret;

@@ -25,6 +25,8 @@
     #include "Wdl.h"
 
 
+// An Analysis owns its Cp, Wdl and Mate: the pointers given to the constructors and to
+// the setters must be allocated with new and are deleted by the Analysis. Copies are deep.
 class Analysis {
    public:
     Analysis();
@@ -37,7 +39,12 @@ class Analysis {
     Analysis(Cp* centi_pawns_, Wdl* wdl_, Mate* mate_);
     Analysis(Cp* centi_pawns_, Wdl* wdl_, Mate* mate_, uint32_t depth_);
 
-    ~Analysis() = default;
+    Analysis(const Analysis& other_);
+    Analysis(Analysis&& other_) noexcept;
+    Analysis& operator=(const Analysis& other_);
+    Analysis& operator=(Analysis&& other_) noexcept;
+
+    ~Analysis();
 
     [[nodiscard]] uint32_t get_depth() const;
 
@@ -53,6 +60,7 @@ class Analysis {
     [[nodiscard]] Mate* get_mate() const;
     void                set_mate(Mate* value_);
 
+    // The caller owns the returned Analysis
     [[nodiscard]] Analysis* flip() const;
 
     bool operator==(const Analysis& other_) const;

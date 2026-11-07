@@ -28,7 +28,7 @@
 namespace ShashChess::Livebook {
 class LichessPlayer final: public LichessOpening {
    public:
-    LichessPlayer(const std::string& player_, std::string color_);
+    LichessPlayer(const std::string& player_, std::string color_, std::string token_);
     ~LichessPlayer() override = default;
 
    protected:
@@ -36,6 +36,9 @@ class LichessPlayer final: public LichessOpening {
     std::string color;
 
     std::string format_url(const Position& position_) override;
+
+    // The player endpoint streams newline delimited JSON
+    [[nodiscard]] bool is_nd_json() const override { return true; }
 };
 }
 

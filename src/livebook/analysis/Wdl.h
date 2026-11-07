@@ -33,6 +33,8 @@ class Wdl {
     [[nodiscard]] uint32_t get_wins() const;
     [[nodiscard]] uint32_t get_draws() const;
     [[nodiscard]] uint32_t get_losses() const;
+    // wins + draws + losses
+    [[nodiscard]] uint64_t get_games() const;
 
     [[nodiscard]] double get_win_probability() const;
     [[nodiscard]] double get_draw_probability() const;
@@ -59,7 +61,7 @@ class Wdl {
     uint32_t draws;
     uint32_t losses;
 
-    [[nodiscard]] uint32_t get_sum() const;
+    [[nodiscard]] uint64_t get_sum() const;
 };
 
 #endif  //USE_LIVEBOOK

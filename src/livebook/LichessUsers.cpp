@@ -22,6 +22,7 @@
 
 using namespace ShashChess::Livebook;
 
-LichessUsers::LichessUsers() :
-    LichessOpening("https://explorer.lichess.ovh/lichess?") {}
+LichessUsers::LichessUsers(std::string token_) :
+    LichessOpening(std::string(LICHESS_EXPLORER_URL) + "/lichess?topGames=0&recentGames=0&",
+                   std::move(token_)) {}
 #endif

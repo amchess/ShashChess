@@ -22,8 +22,27 @@
 
 using namespace ShashChess::Livebook;
 
-LichessPlayer::LichessPlayer(const std::string& player_, std::string color_) :
-    LichessOpening("https://explorer.lichess.ovh/player?player=" + player_ + "&"),
+namespace {
+
+std::string url_encode(const std::string& value_) {
+    std::string encoded;
+
+    if (char* escaped = curl_easy_escape(nullptr, value_.c_str(), static_cast<int>(value_.size())))
+    {
+        encoded = escaped;
+        curl_free(escaped);
+    }
+
+    return encoded;
+}
+
+}
+
+// recentGames=0: only the statistics are needed, not the game references
+LichessPlayer::LichessPlayer(const std::string& player_, std::string color_, std::string token_) :
+    LichessOpening(std::string(LICHESS_EXPLORER_URL) + "/player?player=" + url_encode(player_)
+                     + "&recentGames=0&",
+                   std::move(token_)),
     player(player_),
     color(std::move(color_)) {}
 

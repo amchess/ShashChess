@@ -187,6 +187,11 @@ struct RootShashinState {
 
 static_assert(sizeof(RootShashinState) == TARGET_SIZE, "RootShashinState must be exactly 64 bytes");
 
+// [SC:livebook] Shashin zone of a win probability (win + draw / 2) and of a draw probability,
+// both in percent. The zones of ShashinManager::getShashinRange, for probabilities that do not
+// come from an evaluation (e.g. the results of the games of a live book).
+ShashinPosition shashin_range_by_probability(int winProbability, int drawProbability);
+
 }  // namespace ShashChess
 
 #endif  // SHASHIN_TYPES_H

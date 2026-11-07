@@ -20,6 +20,7 @@
 #ifdef USE_LIVEBOOK
     #include "ChessDBContributor.h"
 
+    #include "BaseLivebook.h"
     #include "../uci.h"
 
 using namespace ShashChess::Livebook;
@@ -65,6 +66,10 @@ CURLcode ChessDBContributor::do_request(const std::string& uri) {
     curl_easy_setopt(local_curl, CURLOPT_WRITEFUNCTION, curl_write);
     curl_easy_setopt(local_curl, CURLOPT_WRITEDATA, &readBuffer);
     curl_easy_setopt(local_curl, CURLOPT_SSL_VERIFYHOST, 2L);
+    // The next search waits for us: never hang (same timeout as the live books)
+    curl_easy_setopt(local_curl, CURLOPT_NOSIGNAL, 1L);
+    curl_easy_setopt(local_curl, CURLOPT_CONNECTTIMEOUT_MS, BaseLivebook::get_timeout());
+    curl_easy_setopt(local_curl, CURLOPT_TIMEOUT_MS, BaseLivebook::get_timeout());
 
     const CURLcode res = curl_easy_perform(local_curl);
     if (res != CURLE_OK)

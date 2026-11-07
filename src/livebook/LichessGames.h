@@ -20,13 +20,28 @@
 #ifndef LICHESS_GAMES_H
 #define LICHESS_GAMES_H
 #ifdef USE_LIVEBOOK
+    #include <atomic>
+
     #include "LichessOpening.h"
 
 
 namespace ShashChess::Livebook {
 class LichessGames final: public LichessOpening {
    public:
-    LichessGames();
+    explicit LichessGames(std::string token_);
+
+    // Strength of the engine: UCI_Elo when UCI_LimitStrength is enabled, otherwise the
+    // maximum (set by the search before probing the live books)
+    static void set_engine_elo(int elo_);
+
+   protected:
+    // Only the games of the Lichess players in the rating band of the engine
+    std::string format_url(const Position& position_) override;
+
+   private:
+    static inline std::atomic<int> engineElo{3190};
+
+    std::string lastBand;  // To report the band only when it changes
 };
 }
 

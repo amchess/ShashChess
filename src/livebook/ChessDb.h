@@ -57,6 +57,13 @@ class ChessDb: public BaseLivebook {
     std::vector<std::pair<std::string, Analysis>> parse_query_best(const Position& position_);
 
     [[nodiscard]] std::string format_uri(const Position& position_) const;
+
+    // The moves kept by lookup are the ones ranked at least min_rank by ChessDB: with the
+    // default (2, "!") the moves equivalent to the best one according to ChessDB, a few
+    // centipawns at most (query and querybest answer a single move)
+    [[nodiscard]] bool is_equivalent(const Analysis& best_,
+                                     const Analysis& other_,
+                                     const Moves&    moves_) const override;
 };
 }
 
