@@ -24,6 +24,9 @@
 #include "learn.h"
 #include <algorithm>
 #include <cstdint>
+#include <cstring>
+#include "../movegen.h"
+#include "../score.h"
 #include "../uci.h"
 
 using namespace std;
@@ -61,6 +64,11 @@ bool LearningData::load(const string& filename) {
              << "> is not a valid experience file" << endl;
         return false;
     }
+
+    //An empty file is a valid experience file without moves (persist() writes it when no move
+    //was searched): nothing to read. The loop below would otherwise read past the buffer
+    if (fileSize == 0)
+        return true;
 
     //Allocate buffer to read the entire file
     void* fileData = malloc(fileSize);
@@ -121,7 +129,9 @@ inline bool should_update(const LearningMove existing_move, const LearningMove l
     return learning_move.performance != existing_move.performance;
 }
 
-void LearningData::insert_or_update(PersistedLearningMove* plm, bool qLearning) {
+// Returns true if the hash table keeps a pointer to plm->learningMove, false if plm was only
+// used to update a move already in the table (and then the caller may free plm)
+bool LearningData::insert_or_update(PersistedLearningMove* plm, bool qLearning) {
     // We search in the range of all the hash table entries with plm key
     const auto [first, second] = HT.equal_range(plm->key);
 
@@ -136,7 +146,7 @@ void LearningData::insert_or_update(PersistedLearningMove* plm, bool qLearning) 
         needPersisting = true;
 
         //Nothing else to do
-        return;
+        return true;
     }
 
     //The plm key belongs to a position already existing in the LHT
@@ -146,10 +156,12 @@ void LearningData::insert_or_update(PersistedLearningMove* plm, bool qLearning) 
 
     //If the move does not exist then insert it
     LearningMove* bestNewMoveCandidate = nullptr;
+    bool          inserted             = false;
     if (itr == second)
     {
         HT.insert({plm->key, &plm->learningMove});
         bestNewMoveCandidate = &plm->learningMove;
+        inserted             = true;
 
         //Flag for persisting
         needPersisting = true;
@@ -209,6 +221,8 @@ void LearningData::insert_or_update(PersistedLearningMove* plm, bool qLearning) 
             needPersisting = true;
         }
     }
+
+    return inserted;
 }
 
 LearningData::LearningData() :
@@ -236,10 +250,19 @@ void LearningData::clear() {
 
     //Clear internal new moves data buffers
     newMovesDataBuffers.clear();
+
+    //Nothing left to persist
+    needPersisting = false;
 }
 
 void LearningData::init(ShashChess::OptionsMap& o) {
     OptionsMap& options = o;
+
+    //init() is also called when Persisted learning or Experience Book change: save what was
+    //learned since the last save, otherwise clear() would discard it
+    if (needPersisting && !isReadOnly)
+        persist(options);
+
     clear();
 
     learningMode = identify_learning_mode(options["Persisted learning"]);
@@ -252,8 +275,9 @@ void LearningData::init(ShashChess::OptionsMap& o) {
 
     //Just in case, check and load for "experience_new.exp" which will be present if
     //previous saving operation failed (engine crashed or terminated)
+    //The same path that persist() writes: the engine folder, not the working directory
     string slaveFile = Util::map_path("experience_new.exp");
-    if (load("experience_new.exp"))
+    if (load(slaveFile))
         slaveFiles.push_back(slaveFile);
 
     //Load slave experience files (if any)
@@ -286,9 +310,10 @@ void LearningData::init(ShashChess::OptionsMap& o) {
 }
 
 void LearningData::quick_reset_exp() {
-    std::cout << "Loading experience file: experience.exp" << std::endl;
+    const std::string experienceFilename = Util::map_path("experience.exp");
+    std::cout << "Loading experience file: " << experienceFilename << std::endl;
 
-    std::ifstream file("experience.exp", std::ifstream::binary | std::ifstream::ate);
+    std::ifstream file(experienceFilename, std::ifstream::binary | std::ifstream::ate);
     if (!file)
     {
         std::cerr << "Failed to load experience file" << std::endl;
@@ -303,7 +328,7 @@ void LearningData::quick_reset_exp() {
 
     std::cout << "Total entries in the file: " << total_entries << std::endl;
 
-    if (const auto check = load("experience.exp"); !check)
+    if (const auto check = load(experienceFilename); !check)
     {
         std::cerr << "Failed to load experience file" << std::endl;
         return;
@@ -395,22 +420,50 @@ void LearningData::persist(const ShashChess::OptionsMap& o) {
         tempExperienceFilename = Util::map_path("experience_new.exp");
     }
 
-    ofstream              outputFile(tempExperienceFilename, ofstream::trunc | ofstream::binary);
+    ofstream outputFile(tempExperienceFilename, ofstream::trunc | ofstream::binary);
+    if (!outputFile.is_open())
+    {
+        sync_cout << "info string Cannot create <" << tempExperienceFilename
+                  << ">: the experience is not saved" << sync_endl;
+        return;
+    }
+
+    //Zeroed once and then filled field by field: the padding bytes written to the file are
+    //always 0 (before, they were whatever was in memory)
     PersistedLearningMove persistedLearningMove;
+    std::memset(static_cast<void*>(&persistedLearningMove), 0, sizeof(persistedLearningMove));
     for (auto& kvp : HT)
     {
-        persistedLearningMove.key          = kvp.first;
-        persistedLearningMove.learningMove = *kvp.second;
-        if (persistedLearningMove.learningMove.depth != 0)
+        const LearningMove& learningMove = *kvp.second;
+        if (learningMove.depth != 0)
         {
+            persistedLearningMove.key                      = kvp.first;
+            persistedLearningMove.learningMove.depth       = learningMove.depth;
+            persistedLearningMove.learningMove.score       = learningMove.score;
+            persistedLearningMove.learningMove.move        = learningMove.move;
+            persistedLearningMove.learningMove.performance = learningMove.performance;
             outputFile.write(reinterpret_cast<char*>(&persistedLearningMove),
                              sizeof(persistedLearningMove));
         }
     }
     outputFile.close();
 
+    //Replace the experience file only with a complete new one: if a write failed (disk full,
+    //I/O error) the old file must stay where it is
+    if (outputFile.fail())
+    {
+        remove(tempExperienceFilename.c_str());
+        sync_cout << "info string Cannot write <" << tempExperienceFilename
+                  << ">: the experience is not saved, <" << experienceFilename << "> is unchanged"
+                  << sync_endl;
+        return;
+    }
+
     remove(experienceFilename.c_str());
-    rename(tempExperienceFilename.c_str(), experienceFilename.c_str());
+    if (rename(tempExperienceFilename.c_str(), experienceFilename.c_str()) != 0)
+        sync_cout << "info string Cannot rename <" << tempExperienceFilename << "> to <"
+                  << experienceFilename << ">: the experience is saved in <"
+                  << tempExperienceFilename << ">" << sync_endl;
 
     //Prevent persisting again without modifications
     needPersisting = false;
@@ -437,8 +490,14 @@ void LearningData::add_new_learning(Key key, const LearningMove& lm) {
     newPlm->key          = key;
     newPlm->learningMove = lm;
 
-    //Add to HT
-    insert_or_update(newPlm, learningMode == LearningMode::Self);
+    //Add to HT. If the move was already there, it has only been updated with newPlm: free the
+    //buffer at once, otherwise each 'position ... moves' of a game would allocate again all
+    //its moves until the engine is closed
+    if (!insert_or_update(newPlm, learningMode == LearningMode::Self))
+    {
+        newMovesDataBuffers.pop_back();
+        free(newPlm);
+    }
 }
 
 int LearningData::probeByMaxDepthAndScore(Key key, const LearningMove*& learningMove) {
@@ -523,6 +582,68 @@ vector<LearningMove*> LearningData::probe(ShashChess::Key key) {
 
     return result;
 }
+// [SC:learning] "Show Experience" button (proposed by ALF): the same data as show_exp(), but
+// as "info string" lines, so that a GUI shows it (Arena, Shredder; the ChessBase GUIs only
+// write them in the Debug Log File). Moves are listed in the order the Experience Book picks by:
+// depth, then win probability, then score
+void LearningData::show_exp_info(const Position& pos, bool experienceBook) {
+    const string experienceFilename = Util::map_path("experience.exp");
+    const bool   found              = ifstream(experienceFilename, ios::in | ios::binary).is_open();
+    sync_cout << "info string Experience file: " << experienceFilename
+              << (found ? "" : " (not found)") << ", " << LD.HT.size() << " entries in memory"
+              << sync_endl;
+    sync_cout << "info string Experience for the current position: " << pos.fen() << sync_endl;
+
+    if (!LD.is_enabled())
+    {
+        if (!experienceBook)
+        {
+            sync_cout << "info string Persisted learning and Experience Book are Off: the "
+                         "experience file is not loaded"
+                      << sync_endl;
+            return;
+        }
+
+        sync_cout << "info string Persisted learning is Off: the table is only used by the "
+                     "Experience Book (nothing is learned or written)"
+                  << sync_endl;
+    }
+
+    // A different position may have the same key: only the moves legal here
+    vector<LearningMove*> learningMoves = LD.probe(pos.key());
+    const MoveList<LEGAL> legalMoves(pos);
+    learningMoves.erase(std::remove_if(learningMoves.begin(), learningMoves.end(),
+                                       [&legalMoves](const LearningMove* lm) {
+                                           return !legalMoves.contains(lm->move);
+                                       }),
+                        learningMoves.end());
+
+    if (learningMoves.empty())
+    {
+        sync_cout << "info string   no experience data for this position" << sync_endl;
+        return;
+    }
+
+    sortLearningMoves(learningMoves);
+    for (const LearningMove* lm : learningMoves)
+    {
+        sync_cout << "info string   " << UCIEngine::move(lm->move, pos.is_chess960());
+
+        // A move of the game in progress, stored without a search: it is never saved
+        if (lm->depth <= 0)
+            cout << " played, not searched";
+        else
+        {
+            // The value is in internal units, as in the file; in brackets as in the analysis
+            cout << " depth " << lm->depth << " value " << lm->score;
+            if (lm->score > -VALUE_INFINITE && lm->score < VALUE_INFINITE)
+                cout << " (" << UCIEngine::format_score(Score(lm->score, pos)) << ")";
+            cout << " win probability " << lm->performance << "%";
+        }
+        cout << sync_endl;
+    }
+}
+
 void LearningData::show_exp(const Position& pos) {
     sync_cout << pos << endl;
     cout << "Experience: ";

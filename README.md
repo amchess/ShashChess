@@ -293,6 +293,7 @@ The persisted learning is based on a collection of one or more positions stored 
 - _best move performance_ , a new parameter you can calculate with any learning application supporting this specification. An example is the private one, kernel of SaaS part of [Alpha-Chess](http://www.alpha-chess.com) AI portal. The idea is to update it based on pattern recognition concept. In the portal, you can also exploit the reports of another NLG (virtual trainer) application and buy the products in the digishop based on all this. This open-source part has the performance default, based on score and depth. You can align the performance by uci token quickresetexp. Clearly, even if already strong, this private learning algorithm is a lot stronger as demostrate here: [Graphical result](https://github.com/amchess/BrainLearn/tree/master/tests/6-5.jpg) The perfomance, in this case, is updated based on the latest Stockfish wdl model (score and material).
 
 This file is loaded in an hashtable at the engine load and updated each time the engine receive quit or stop uci command.
+Persisted learning (Off included) and Experience Book can be changed without restarting the engine: when the experience file has to be reloaded, what was learned so far is saved first (unless Read only learning is on). Leaving Self in the middle of a game, what was learned in that game is saved as at the end of the game.
 When BrainLearn starts a new game or when we have max 8 pieces on the chessboard, the learning is activated and the hash table updated each time the engine has a best score
 at a depth >= 4 PLIES, according to Stockfish aspiration window.
 
@@ -331,7 +332,7 @@ If activated, the learning file is only read.
 ### Experience Book
 
 _Boolean, Default: False_ 
-If activated, the engine will use the experience file as the book. In choosing the move to play, the engine will be based first on maximum win probability, then, on the engine's internal score, and finally, on depth. The UCI token “showexp” allows the book to display moves on a given position.
+If activated, the engine will use the experience file as the book. In choosing the move to play, the engine will be based first on maximum depth, then on win probability and finally on the engine's internal score; the move is played only if its depth is at least Experience Book Min Depth and its win probability at least 50%. The UCI token “showexp” allows the book to display moves on a given position, the Show Experience button shows them in the GUI.
 
 ### Experience Book Max Moves
 
@@ -342,6 +343,12 @@ The maximum number of moves the engine chooses from the experience book
 
 _Integer, Default: 4, Min: 1, Max: 255_
 The min depth for the experience book
+
+### Show Experience
+
+_Button_
+Shows the experience of the current position (the one of the last `position` command) as `info string` lines: the experience file and the number of entries in memory, then the moves in the order of the Experience Book (depth, then win probability, then score), each with its depth, its value (internal units, as in the experience file; in brackets the score in centipawns or mate, as in the analysis) and its win probability. A move of the game in progress that was never searched is shown as "played, not searched": it is not saved. The experience is in memory only if Persisted learning is not Off or Experience Book is enabled.
+Arena and Shredder show the info strings in their engine window. The ChessBase GUIs do not show them: set **Debug Log File** and read them in the log. The console command `showexp` shows the same data.
 
 ### Shashin section
 
