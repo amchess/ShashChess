@@ -327,6 +327,11 @@ void UCIEngine::bench(std::istream& args) {
     num = count_if(list.begin(), list.end(),
                    [](const std::string& s) { return s.find("go ") == 0 || s.find("eval") == 0; });
 
+    // [SC:learning] The bench positions are not a game: with Persisted learning on they were
+    // learned and saved, and the first decided one paused learning until 'ucinewgame'.
+    // Now the bench runs as with learning Off, and then learning is as before
+    LD.set_suspended(true);
+
     TimePoint elapsed = now();
 
     for (const auto& cmd : list)
@@ -362,20 +367,13 @@ void UCIEngine::bench(std::istream& args) {
             position(is);
         else if (token == "ucinewgame")
         {
-            // [SC:learning] begin
-            if (LD.is_enabled())
-            {
-                if (LD.learning_mode() == LearningMode::Self && !LD.is_paused())
-                {
-                    putQLearningTrajectoryIntoLearningTable();
-                }
-                setStartPoint();
-            }
-            // [SC:learning] end
+            // [SC:learning] No learning here: the bench does not end the game in progress
             engine.search_clear();  // search_clear may take a while
             elapsed = now();
         }
     }
+
+    LD.set_suspended(false);  // [SC:learning]
 
     elapsed = now() - elapsed + 1;  // Ensure positivity to avoid a 'divide by zero'
 
@@ -408,6 +406,8 @@ void UCIEngine::benchmark(std::istream& args) {
     const auto numGoCommands = count_if(setup.commands.begin(), setup.commands.end(),
                                         [](const std::string& s) { return s.find("go ") == 0; });
 
+    // [SC:learning] As in bench: the speedtest games are neither learned nor saved
+    LD.set_suspended(true);
 
     // Set options once at the start.
     auto ss = std::istringstream("name Threads value " + std::to_string(setup.threads));
@@ -511,6 +511,8 @@ void UCIEngine::benchmark(std::istream& args) {
             engine.search_clear();  // search_clear may take a while
         }
     }
+
+    LD.set_suspended(false);  // [SC:learning]
 
     // Ensure positivity to avoid a 'divide by zero'
     const auto totalTimeMs = std::max<i64>(std::chrono::duration_cast<ms>(totalTime).count(), 1LL);

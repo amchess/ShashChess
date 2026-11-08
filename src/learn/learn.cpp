@@ -35,14 +35,20 @@ using namespace ShashChess;
 LearningData LD;
 
 namespace {
-LearningMode identify_learning_mode(const string& lm) {
-    if (lm == "Off")
-        return LearningMode::Off;
+// [SC:learning] Case insensitive, as the check of the combo values (Option::operator=): before,
+// "setoption name Persisted learning value standard" was accepted and then taken for Self
+bool is_mode(const string& lm, const char* mode) {
+    return !CaseInsensitiveLess()(lm, mode) && !CaseInsensitiveLess()(mode, lm);
+}
 
-    if (lm == "Standard")
+LearningMode identify_learning_mode(const string& lm) {
+    if (is_mode(lm, "Standard"))
         return LearningMode::Standard;
 
-    return LearningMode::Self;
+    if (is_mode(lm, "Self"))
+        return LearningMode::Self;
+
+    return LearningMode::Off;
 }
 }
 
@@ -229,7 +235,9 @@ LearningData::LearningData() :
     isPaused(false),
     isReadOnly(false),
     needPersisting(false),
-    learningMode(LearningMode::Off) {}
+    isSuspended(false),
+    learningMode(LearningMode::Off),
+    pausedKey(0) {}
 
 LearningData::~LearningData() { clear(); }
 
@@ -265,6 +273,10 @@ void LearningData::init(ShashChess::OptionsMap& o) {
 
     clear();
 
+    // [SC:learning] A new learning mode (or the experience reloaded) starts afresh: before, a
+    // pause stayed even switching Persisted learning Off and on again
+    resume();
+
     learningMode = identify_learning_mode(options["Persisted learning"]);
     if ((learningMode == LearningMode::Off) && !((bool) options["Experience Book"]))
         return;
@@ -294,15 +306,15 @@ void LearningData::init(ShashChess::OptionsMap& o) {
     }
 
     //We need to write all consolidated experience to disk
-    if (!slaveFiles.empty())
+    //[SC:learning] and only then remove the slave files: before, they were removed also when
+    //the save failed (for instance the rename, on Windows when an antivirus holds the new
+    //file): experience_new.exp, then the only copy of the experience, was deleted. And not in
+    //read-only mode, where nothing is written (before, there the slave files were just deleted)
+    if (!slaveFiles.empty() && !isReadOnly && persist(options))
     {
-        persist(options);
-    }
-
-    //Remove slave files
-    for (const string& fn : slaveFiles)
-    {
-        remove(fn.c_str());
+        //Remove slave files
+        for (const string& fn : slaveFiles)
+            remove(fn.c_str());
     }
 
     // Clear the 'needPersisting' flag
@@ -369,17 +381,17 @@ void LearningData::set_learning_mode(ShashChess::OptionsMap& options, const stri
 
 LearningMode LearningData::learning_mode() const { return learningMode; }
 
-void LearningData::persist(const ShashChess::OptionsMap& o) {
+bool LearningData::persist(const ShashChess::OptionsMap& o) {
     const OptionsMap& options = o;
     //Quick exit if we have nothing to persist
     if (HT.empty() || !needPersisting)
-        return;
+        return true;
 
     if (isReadOnly)
     {
         //We should not be here if we are running in ReadOnly mode
         assert(false);
-        return;
+        return false;
     }
 
     /*
@@ -425,7 +437,7 @@ void LearningData::persist(const ShashChess::OptionsMap& o) {
     {
         sync_cout << "info string Cannot create <" << tempExperienceFilename
                   << ">: the experience is not saved" << sync_endl;
-        return;
+        return false;
     }
 
     //Zeroed once and then filled field by field: the padding bytes written to the file are
@@ -456,20 +468,27 @@ void LearningData::persist(const ShashChess::OptionsMap& o) {
         sync_cout << "info string Cannot write <" << tempExperienceFilename
                   << ">: the experience is not saved, <" << experienceFilename << "> is unchanged"
                   << sync_endl;
-        return;
+        return false;
     }
 
     remove(experienceFilename.c_str());
-    if (rename(tempExperienceFilename.c_str(), experienceFilename.c_str()) != 0)
+    const bool renamed = rename(tempExperienceFilename.c_str(), experienceFilename.c_str()) == 0;
+    if (!renamed)
         sync_cout << "info string Cannot rename <" << tempExperienceFilename << "> to <"
                   << experienceFilename << ">: the experience is saved in <"
                   << tempExperienceFilename << ">" << sync_endl;
 
-    //Prevent persisting again without modifications
+    //Prevent persisting again without modifications (if the rename failed, the next start
+    //loads the temporary file as a slave file)
     needPersisting = false;
+
+    return renamed;
 }
 
-void LearningData::pause() { isPaused = true; }
+void LearningData::pause(Key decidedKey) {
+    isPaused  = true;
+    pausedKey = decidedKey;
+}
 
 void LearningData::resume() { isPaused = false; }
 
@@ -608,6 +627,11 @@ void LearningData::show_exp_info(const Position& pos, bool experienceBook) {
                      "Experience Book (nothing is learned or written)"
                   << sync_endl;
     }
+    else if (LD.is_paused())
+        sync_cout << "info string Learning is paused: the game was found decided and its "
+                     "experience saved. It resumes with ucinewgame or a position that does "
+                     "not continue that game"
+                  << sync_endl;
 
     // A different position may have the same key: only the moves legal here
     vector<LearningMove*> learningMoves = LD.probe(pos.key());

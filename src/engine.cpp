@@ -419,6 +419,16 @@ std::optional<PositionSetError> Engine::set_position(const std::string&         
     if (err.has_value())
         return err;
 
+    // [SC:learning] begin
+    // Learning paused because the game was found decided: it stays paused only if this
+    // position continues that game, that is the decided position is in its history (with a
+    // fen and no moves only the position itself is known). Otherwise it is a new game or another
+    // position to analyse, and learning resumes. The moves are learned (depth 0) after that
+    bool continuesDecidedGame = LD.is_enabled() && LD.is_decided_position(pos.key());
+
+    std::vector<PersistedLearningMove> playedMoves;
+    // [SC:learning] end
+
     for (const auto& move : moves)
     {
         auto m = UCIEngine::to_move(pos, move);
@@ -426,8 +436,8 @@ std::optional<PositionSetError> Engine::set_position(const std::string&         
         if (m == Move::none())
             return PositionSetError("Illegal move: " + move);
 
-        //learning begin
-        if (LD.is_enabled() && LD.learning_mode() != LearningMode::Self && !LD.is_paused())
+        // [SC:learning] begin
+        if (LD.is_enabled() && LD.learning_mode() != LearningMode::Self)
         {
             PersistedLearningMove persistedLearningMove;
 
@@ -436,12 +446,25 @@ std::optional<PositionSetError> Engine::set_position(const std::string&         
             persistedLearningMove.learningMove.move        = m;
             persistedLearningMove.learningMove.score       = VALUE_NONE;
             persistedLearningMove.learningMove.performance = WDLModel::get_win_probability(0, pos);
-            LD.add_new_learning(persistedLearningMove.key, persistedLearningMove.learningMove);
+            playedMoves.push_back(persistedLearningMove);
         }
-        //learning end
+        // [SC:learning] end
+
         states->emplace_back();
         pos.do_move(m, states->back());
+
+        if (LD.is_enabled() && LD.is_decided_position(pos.key()))  // [SC:learning]
+            continuesDecidedGame = true;
     }
+
+    // [SC:learning] begin
+    if (LD.is_enabled() && LD.is_paused() && !continuesDecidedGame)
+        LD.resume();
+
+    if (!LD.is_paused())
+        for (const auto& plm : playedMoves)
+            LD.add_new_learning(plm.key, plm.learningMove);
+    // [SC:learning] end
 
     return std::nullopt;
 }
