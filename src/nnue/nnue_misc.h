@@ -69,13 +69,23 @@ struct AccumulatorCaches;
 struct PieceInsight {
     Square sq;
     Piece  pc;
-    Value  value;       // evaluation lost by the owner if the piece is removed (owner's view)
+    Value  value;       // paired ablation (owner's view): evaluation lost by the owner when the
+                        // piece AND an equivalent enemy piece are removed together (pawn-pawn,
+                        // minor-minor with knight and bishop interchangeable, rook-rook,
+                        // queen-queen), averaged over all the equivalent enemy pieces: > 0 the
+                        // piece is worth more than its counterparts. Material stays balanced, so
+                        // the value measures the quality of the piece, not its material.
+                        // Without counterparts: the single ablation ('counterparts' == 0)
     Value  psqt;        // part of 'value' due to the linear PSQT output
     Value  positional;  // part of 'value' due to the layer stack
+    Value  single;      // single ablation: evaluation lost by the owner if only this piece is
+                        // removed (< 0: BLINDSPOT, the owner is better off without the piece)
+    int    counterparts;  // number of equivalent enemy pieces averaged in 'value' (0: single)
     Value  activity;    // value of the piece's relations only (its attacks/defences and the
                         // attacks/defences it receives), owner's view: the piece stays on the
                         // board, so the network is not pushed into its saturated regime
-    int    efficiency;  // value / reference value of the same piece type in this position, %
+    int    efficiency;  // paired: 100% + value / reference value of the piece type in this
+                        // position (100% = as good as its counterparts); single: value / reference
 };
 
 struct RelationInsight {
