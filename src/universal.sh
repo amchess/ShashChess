@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==========================================================================
-#  universal.sh  -  ShashChess 42.1  -  binario UNIVERSAL x86-64 (Linux / GCC)
+#  universal.sh  -  ShashChess 42.2  -  binario UNIVERSAL x86-64 (Linux / GCC)
 #  Da lanciare DENTRO la cartella "src" del sorgente.
 #
 #  ARCH=x86-64-universal compila 8 slice
@@ -61,7 +61,7 @@ fi
 [ -f shashchess ] || fallita "eseguibile non generato"
 
 strip shashchess
-mv shashchess ShashChess42.1-universal
+mv shashchess ShashChess42.2-universal
 
 # --- nome della rete di default, letto da evaluate.h ----------------------
 NETFILE=$(grep -E '^[[:space:]]*#[[:space:]]*define[[:space:]]+EvalFileDefaultName[[:space:]]' evaluate.h \
@@ -71,10 +71,10 @@ NETFILE=$(grep -E '^[[:space:]]*#[[:space:]]*define[[:space:]]+EvalFileDefaultNa
 
 # --- verifiche in una cartella temporanea, senza toccare src ---------------
 CHECKDIR=$(mktemp -d)
-cp ShashChess42.1-universal "$CHECKDIR/"
+cp ShashChess42.2-universal "$CHECKDIR/"
 
 # verifica 1: senza rete accanto all'eseguibile il motore deve fermarsi
-if (cd "$CHECKDIR" && ./ShashChess42.1-universal bench 16 1 1 >/dev/null 2>&1); then
+if (cd "$CHECKDIR" && ./ShashChess42.2-universal bench 16 1 1 >/dev/null 2>&1); then
     rm -rf "$CHECKDIR"
     fallita "il bench gira anche senza $NETFILE, la rete e' ancora incorporata"
 fi
@@ -82,7 +82,7 @@ echo "[universal] OK: senza $NETFILE il motore si ferma, la rete non e' incorpor
 
 # verifica 2: con la rete accanto all'eseguibile il bench deve funzionare
 cp "$NETFILE" "$CHECKDIR/"
-if ! (cd "$CHECKDIR" && ./ShashChess42.1-universal bench 16 1 1 >/dev/null 2>&1); then
+if ! (cd "$CHECKDIR" && ./ShashChess42.2-universal bench 16 1 1 >/dev/null 2>&1); then
     rm -rf "$CHECKDIR"
     fallita "il motore non carica $NETFILE messo accanto all'eseguibile"
 fi
@@ -92,11 +92,11 @@ echo "[universal] OK: rete caricata da file esterno"
 # --- Verifica: stampa la slice selezionata sulla CPU corrente -------------
 echo ""
 echo "[universal] Test di esecuzione (compiler info):"
-./ShashChess42.1-universal compiler
+./ShashChess42.2-universal compiler
 
 make clean
 
 echo ""
-echo "[universal] OK: ShashChess42.1-universal"
-echo "[universal] Da distribuire insieme: ShashChess42.1-universal + $NETFILE"
+echo "[universal] OK: ShashChess42.2-universal"
+echo "[universal] Da distribuire insieme: ShashChess42.2-universal + $NETFILE"
 exit 0
