@@ -1090,13 +1090,16 @@ std::string analyze_color_complexes(Context& ctx, MasterReportData& mr) {
     bool us_light_b = false, us_dark_b = false;
     for (Bitboard b = pos.pieces(us, BISHOP); b;)
         (light(pop_lsb(b)) ? us_light_b : us_dark_b) = true;
-    // Domination of a color complex: we have a bishop of that color, the opponent has none
+    // Domination of a color complex: we have a bishop of that color, the opponent has none,
+    // and our pieces on that color are worth more than their counterparts (paired ablation
+    // values: material is balanced, so 1 pawn of difference is already significant) or our
+    // relations press on it
     const bool light_dom =
-      us_light_b && !them_light_b && (us_light - them_light > 3.5 || pressLight > 0.3);
-    const bool dark_dom = us_dark_b && !them_dark_b && (us_dark - them_dark > 3.5 || pressDark > 0.3);
+      us_light_b && !them_light_b && (us_light - them_light > 1.0 || pressLight > 0.3);
+    const bool dark_dom = us_dark_b && !them_dark_b && (us_dark - them_dark > 1.0 || pressDark > 0.3);
 
     ss << "--- COLOR COMPLEXES (Geometric Dominance and Weaknesses) ---\n";
-    ss << std::fixed << std::setprecision(2) << "    NNUE piece value on light/dark squares: "
+    ss << std::fixed << std::setprecision(2) << "    NNUE piece value (paired ablation) on light/dark squares: "
        << color_name(us) << " " << us_light << "/" << us_dark << ", " << color_name(them) << " "
        << them_light << "/" << them_dark << "\n";
     ss << "    NNUE relation pressure (" << color_name(us) << " view): light " << std::showpos
@@ -1136,7 +1139,7 @@ std::string analyze_piece_importance(Context& ctx, MasterReportData& mr) {
                 v.push_back(&p);
         std::sort(v.begin(), v.end(),
                   [](auto a, auto b) { return a->efficiency > b->efficiency; });
-        ss << (c == us ? "[+] " : "[-] ") << color_name(c) << " FORCES (NNUE efficiency, activity):\n";
+        ss << (c == us ? "[+] " : "[-] ") << color_name(c) << " FORCES (NNUE efficiency from the paired ablation, '*' = no counterpart; activity):\n";
         if (v.empty())
             ss << "    (no pieces besides king and pawns)\n";
         for (const auto* p : v)
@@ -1168,9 +1171,10 @@ std::string analyze_piece_importance(Context& ctx, MasterReportData& mr) {
             ss << "    " << std::left << std::setw(4) << piece_label(p->pc, p->sq) << std::right
                << " efficiency " << std::setw(4) << p->efficiency << "%, activity "
                << std::showpos << std::setw(4) << ctx.cp(p->activity) << std::noshowpos << " cp"
-               << (p->efficiency >= 115 && ctx.cp(p->activity) > -5
+               << (p->counterparts ? "" : "*")
+               << (p->efficiency >= (p->counterparts ? 110 : 115) && ctx.cp(p->activity) > -5
                      ? " -> [DOMINANT: Structural Pillar]"
-                   : p->efficiency < 80 || ctx.cp(p->activity) <= -15
+                   : p->efficiency < (p->counterparts ? 90 : 80) || ctx.cp(p->activity) <= -15
                      ? " -> [PASSIVE: Positional Liability]"
                      : " -> [ACTIVE]")
                << (pattern.empty() ? "" : " [" + pattern + "]") << "\n";
@@ -2184,7 +2188,7 @@ std::string compose_verdict(Context&                ctx,
                 b = &p;
             if (!w || p.activity < w->activity)
                 w = &p;
-            if (p.value < 0)
+            if (p.single < 0)
                 (mine ? blindUs : blindThem).push_back(&p);
         }
         if (noPieces)

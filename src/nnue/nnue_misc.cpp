@@ -98,16 +98,20 @@ const char* phase_name(int bucket) {
     }
 }
 
-const char* role_name(int efficiency, Value value) {
-    if (value < 0)
+// Role of a piece. Paired efficiency (100% = as good as the equivalent enemy pieces): bands of
+// 5% / 15% of the nominal value; single efficiency (no counterpart): the original bands
+const char* role_name(int efficiency, Value single, bool paired) {
+    if (single < 0)
         return "BLINDSPOT";
-    if (efficiency >= 125)
+    const int k = paired ? 115 : 125, a = paired ? 105 : 110, st = paired ? 95 : 90,
+              ps = paired ? 85 : 70;
+    if (efficiency >= k)
         return "Keystone";
-    if (efficiency >= 110)
+    if (efficiency >= a)
         return "Active";
-    if (efficiency >= 90)
+    if (efficiency >= st)
         return "Standard";
-    if (efficiency >= 70)
+    if (efficiency >= ps)
         return "Passive";
     return "Liability";
 }
@@ -252,31 +256,38 @@ NnueInsight analyze(const Position& pos, const Network& network, AccumulatorCach
                   });
     }
 
-    // Piece ablations with the layer stack of the position
+    // Single ablations with the layer stack of the position: kept for the BLINDSPOT test (is the
+    // owner better off without the piece?), for the typical values of pawns and queens and as
+    // the fallback of the pieces without an equivalent enemy piece
+    Output ownerOut[COLOR_NB];
+    for (Color c : {WHITE, BLACK})
+        ownerOut[c] = ex.evaluate_white(*full, c, b);
     for (Square s = SQ_A1; s <= SQ_H8; ++s)
     {
         const Piece pc = board[s];
         if (pc == NO_PIECE || type_of(pc) == KING)
             continue;
-        const Color  owner = color_of(pc);
-        const Output ob    = ex.evaluate_white(*full, owner, b);
-        Board        b2    = board;
-        b2[s]              = NO_PIECE;
-        Output o           = ex.evaluate_board_white(b2, owner, b);
-        const int    sign  = owner == WHITE ? 1 : -1;
+        const Color   owner = color_of(pc);
+        const Output& ob    = ownerOut[owner];
+        Board         b2    = board;
+        b2[s]               = NO_PIECE;
+        Output o            = ex.evaluate_board_white(b2, owner, b);
+        const int    sign   = owner == WHITE ? 1 : -1;
         PieceInsight pi;
-        pi.sq         = s;
-        pi.pc         = pc;
-        pi.value      = sign * (ob.total() - o.total());
-        pi.psqt       = sign * (ob.psqt - o.psqt);
-        pi.positional = sign * (ob.positional - o.positional);
-        pi.activity   = 0;
-        pi.efficiency = 100;
+        pi.sq           = s;
+        pi.pc           = pc;
+        pi.single       = sign * (ob.total() - o.total());
+        pi.value        = pi.single;
+        pi.psqt         = sign * (ob.psqt - o.psqt);
+        pi.positional   = sign * (ob.positional - o.positional);
+        pi.counterparts = 0;
+        pi.activity     = 0;
+        pi.efficiency   = 100;
         in.pieces.push_back(pi);
     }
 
-    // References of pawns and queens (no virtual insertion for them): the average value of the
-    // pawns / queens on the board, both colors
+    // References of pawns and queens (no virtual insertion for them): the average single value
+    // of the pawns / queens on the board, both colors
     for (PieceType pt : {PAWN, QUEEN})
     {
         i64 sum = 0;
@@ -284,16 +295,58 @@ NnueInsight analyze(const Position& pos, const Network& network, AccumulatorCach
         for (const auto& p : in.pieces)
             if (type_of(p.pc) == pt)
             {
-                sum += p.value;
+                sum += p.single;
                 ++n;
             }
         for (Color c : {WHITE, BLACK})
             in.reference[c][pt] = n ? Value(sum / n) : 0;
     }
+
+    // Paired ablations: the piece and an equivalent enemy piece are removed together, so that
+    // the material stays balanced and the network is not pushed into the regime of a material
+    // imbalance: the change measures how much better (or worse) the piece is than its
+    // counterpart. The value is the average over all the equivalent enemy pieces.
+    auto pairClass = [](PieceType pt) { return pt == BISHOP ? KNIGHT : pt; };
     for (auto& p : in.pieces)
     {
-        const Value ref = in.reference[color_of(p.pc)][type_of(p.pc)];
-        p.efficiency    = ref > 0 ? int(std::lround(100.0 * p.value / ref)) : 100;
+        const Color owner = color_of(p.pc);
+        const int   sign  = owner == WHITE ? 1 : -1;
+        i64         tot = 0, psq = 0, pos2 = 0;
+        int         n   = 0;
+        for (const auto& q : in.pieces)
+        {
+            if (color_of(q.pc) == owner || pairClass(type_of(q.pc)) != pairClass(type_of(p.pc)))
+                continue;
+            Board b2  = board;
+            b2[p.sq]  = NO_PIECE;
+            b2[q.sq]  = NO_PIECE;
+            Output o  = ex.evaluate_board_white(b2, owner, b);
+            tot      += sign * (ownerOut[owner].total() - o.total());
+            psq      += sign * (ownerOut[owner].psqt - o.psqt);
+            pos2     += sign * (ownerOut[owner].positional - o.positional);
+            ++n;
+        }
+        if (n)
+        {
+            p.value        = Value(tot / n);
+            p.psqt         = Value(psq / n);
+            p.positional   = Value(pos2 / n);
+            p.counterparts = n;
+        }
+    }
+    // Efficiency. Paired: 100% + the advantage over the counterparts in % of the nominal value
+    // of the piece (1, 3, 3, 5, 9 pawns): the same scale is used by Alexander, so that the two
+    // engines can be compared. Single (no counterpart): value / typical value of the type here
+    // (the typical value already includes the saturation of the network).
+    for (auto& p : in.pieces)
+    {
+        static constexpr int Nominal[] = {0, 1, 3, 3, 5, 9, 0};
+        const Value          ref       = in.reference[color_of(p.pc)][type_of(p.pc)];
+        if (p.counterparts)
+            p.efficiency =
+              100 + int(std::lround(double(UCIEngine::to_cp(p.value, pos)) / Nominal[type_of(p.pc)]));
+        else
+            p.efficiency = ref > 0 ? int(std::lround(100.0 * p.value / ref)) : 100;
     }
 
     // Occlusion of the single relations (threats and pawn pairs)
@@ -394,7 +447,9 @@ trace(Position& pos, const Eval::NNUE::Network& network, Eval::NNUE::Accumulator
     ss << "Units: pawns (cp/100, UCI scale), White point of view unless stated otherwise.\n\n";
 
     // ---------------------------------------------------------------------------------------
-    ss << "1. NNUE DERIVED PIECE VALUES (evaluation lost by the owner if the piece is removed)\n";
+    ss << "1. NNUE DERIVED PIECE VALUES (paired ablation: evaluation lost by the owner if the "
+          "piece and an\n   equivalent enemy piece are removed together, average over all the "
+          "equivalent enemy pieces;\n   '*' = no counterpart: the piece alone is removed)\n";
     {
         char board[3 * 8 + 1][8 * 8 + 2];
         std::memset(board, ' ', sizeof(board));
@@ -418,6 +473,8 @@ trace(Position& pos, const Eval::NNUE::Network& network, Eval::NNUE::Accumulator
                     char buf[16];
                     std::snprintf(buf, sizeof(buf), "%+6.2f", 0.01 * cp(pi->value));
                     std::memcpy(&board[y + 2][x + 1], buf, std::min<size_t>(6, std::strlen(buf)));
+                    if (!pi->counterparts)
+                        board[y + 2][x + 7] = '*';
                 }
             }
         for (int row = 0; row < 3 * 8 + 1; ++row)
@@ -427,16 +484,30 @@ trace(Position& pos, const Eval::NNUE::Network& network, Eval::NNUE::Accumulator
 
     // ---------------------------------------------------------------------------------------
     ss << "2. PIECE ROLES\n"
-          "   value      = evaluation lost by the owner without the piece (= PSQT part + "
-          "positional part)\n"
+          "   value      = PAIRED ABLATION: evaluation lost by the owner when the piece and an "
+          "equivalent\n"
+          "                enemy piece are removed together (pawn-pawn, minor-minor with knight "
+          "and bishop\n"
+          "                interchangeable, rook-rook, queen-queen), averaged over all the "
+          "equivalent enemy\n"
+          "                pieces (= PSQT part + positional part). Material stays balanced: > 0 "
+          "means the\n"
+          "                piece is worth more than its counterparts. '*' = no counterpart: "
+          "single ablation\n"
+          "   single     = evaluation lost by the owner removing only the piece (BLINDSPOT if < "
+          "0)\n"
           "   activity   = value of the piece's attacks/defences only (the piece stays on the "
           "board)\n"
-          "   efficiency = value / typical value of that piece type here (median over all "
-          "squares)\n"
+          "   efficiency = 100% + value in % of the nominal value of the piece (1/3/3/5/9 "
+          "pawns): 100% = as\n"
+          "                good as its counterparts; '*': value / typical value of that piece "
+          "type here\n"
           "   (piece-level measures are taken with the owner of the piece to move, so that the "
           "two\n    sides are compared without the tempo bias; real threats: see the plans)\n";
-    ss << "   Keystone >= 125% | Active 110-124% | Standard 90-109% | Passive 70-89% | "
-          "Liability < 70% | BLINDSPOT: value < 0\n";
+    ss << "   Keystone >= 115% | Active 105-114% | Standard 95-104% | Passive 85-94% | "
+          "Liability < 85%\n"
+          "   ('*': Keystone >= 125% | Active 110-124% | Standard 90-109% | Passive 70-89% | "
+          "Liability < 70%) | BLINDSPOT: single < 0\n";
     for (Color c : {WHITE, BLACK})
     {
         std::vector<const PieceInsight*> v;
@@ -445,14 +516,16 @@ trace(Position& pos, const Eval::NNUE::Network& network, Eval::NNUE::Accumulator
                 v.push_back(&p);
         std::sort(v.begin(), v.end(),
                   [](auto a, auto b2) { return a->efficiency > b2->efficiency; });
-        ss << "   " << color_name(c) << ":            value   (PSQT / positional)   activity  "
-           << "efficiency\n";
+        ss << "   " << color_name(c) << ":            value   (PSQT / positional)    single  "
+           << "activity  efficiency\n";
         for (const auto* p : v)
             ss << "     " << std::left << std::setw(4) << piece_str(p->pc, p->sq) << std::right
-               << std::setw(13) << P(p->value) << "   (" << std::setw(6) << P(p->psqt) << " / "
-               << std::setw(6) << P(p->positional) << ")   " << std::setw(6) << P(p->activity)
-               << "   " << std::setw(4) << p->efficiency << "%  "
-               << role_name(p->efficiency, p->value) << "\n";
+               << std::setw(13) << P(p->value) << (p->counterparts ? " " : "*") << "  ("
+               << std::setw(6) << P(p->psqt) << " / " << std::setw(6) << P(p->positional)
+               << ")   " << std::setw(6) << P(p->single) << "   " << std::setw(6)
+               << P(p->activity) << "   " << std::setw(4) << p->efficiency << "%  "
+               << role_name(p->efficiency, p->single, p->counterparts > 0)
+               << "\n";
         if (v.empty())
             ss << "     (no pieces)\n";
         std::vector<const PieceInsight*> pw;
@@ -462,9 +535,10 @@ trace(Position& pos, const Eval::NNUE::Network& network, Eval::NNUE::Accumulator
         std::sort(pw.begin(), pw.end(), [](auto a, auto b2) { return a->value > b2->value; });
         if (!pw.empty())
         {
-            ss << "     Pawns (most to least valuable): ";
+            ss << "     Pawns (most to least valuable, paired): ";
             for (size_t i = 0; i < pw.size(); ++i)
-                ss << (i ? ", " : "") << UCIEngine::square(pw[i]->sq) << " " << P(pw[i]->value);
+                ss << (i ? ", " : "") << UCIEngine::square(pw[i]->sq) << " " << P(pw[i]->value)
+                   << (pw[i]->counterparts ? "" : "*");
             ss << "\n";
         }
     }
@@ -473,9 +547,10 @@ trace(Position& pos, const Eval::NNUE::Network& network, Eval::NNUE::Accumulator
        << P(in.reference[BLACK][BISHOP]) << ", R " << P(in.reference[WHITE][ROOK]) << "/"
        << P(in.reference[BLACK][ROOK]) << ", Q " << P(in.reference[WHITE][QUEEN]) << ", P "
        << P(in.reference[WHITE][PAWN]) << "\n";
-    ss << "   (Removing a whole piece pushes the network into its saturated regime, so heavy "
-          "pieces\n    look cheaper than their material: compare pieces of the same type, and "
-          "use 'activity'.)\n\n";
+    ss << "   (Removing a single piece pushes the network into its saturated regime, so in "
+          "'single' and in\n    the reference values heavy pieces look cheaper than their "
+          "material; the paired 'value'\n    keeps the material balanced and does not suffer "
+          "from it.)\n\n";
 
     ss << "3. NEURAL NETWORK INTERNAL ROUTING\n";
     ss << "   Active Sub-Network (Bucket) : " << in.bucket << " out of " << LayerStacks - 1
@@ -644,7 +719,7 @@ trace(Position& pos, const Eval::NNUE::Network& network, Eval::NNUE::Accumulator
     for (const auto& p : in.pieces)
     {
         const Color c = color_of(p.pc);
-        if (p.value < 0 && type_of(p.pc) != PAWN)
+        if (p.single < 0 && type_of(p.pc) != PAWN)
             blind[c].push_back(&p);
         if (type_of(p.pc) == PAWN)
             continue;
@@ -704,7 +779,7 @@ trace(Position& pos, const Eval::NNUE::Network& network, Eval::NNUE::Accumulator
                << "%): the piece to improve or to trade.\n";
         for (const auto* p : blind[c])
             ss << "   [*** BLINDSPOT/" << (c == WHITE ? "WHITE" : "BLACK") << " ***] "
-               << piece_str(p->pc, p->sq) << " has a negative value (" << P(p->value)
+               << piece_str(p->pc, p->sq) << " has a negative single value (" << P(p->single)
                << "): the network judges " << color_name(c)
                << " better without it (bad piece, overloaded, or in the way).\n";
     }
@@ -750,7 +825,7 @@ trace(Position& pos, const Eval::NNUE::Network& network, Eval::NNUE::Accumulator
     ss << "\n";
 
     // ---------------------------------------------------------------------------------------
-    // ShashHermes compact trace (format unchanged) + extended line with the new information
+    // Compact trace (format unchanged) + extended line with the new information
     auto zone = [](int w) {
         return w >= 95   ? "HighTal"
              : w >= 90   ? "HighMidTal"
@@ -766,7 +841,7 @@ trace(Position& pos, const Eval::NNUE::Network& network, Eval::NNUE::Accumulator
              : w >= 6    ? "HighMidPetrosian"
                          : "HighPetrosian";
     };
-    ss << "\n   [SHASHHERMES COMPACT TRACE FORMAT]\n";
+    ss << "\n   [COMPACT TRACE FORMAT]\n";
     ss << "   WP_White=" << wp << "% | Zone=" << zone(wp) << " | ";
     if (worst[WHITE])
         ss << "WorstWhite=" << piece_str(worst[WHITE]->pc, worst[WHITE]->sq) << "("
@@ -785,7 +860,7 @@ trace(Position& pos, const Eval::NNUE::Network& network, Eval::NNUE::Accumulator
            << " | ";
     ss << "Bucket=" << in.bucket << " | NeuralDelta=" << std::showpos << neuralDelta
        << std::noshowpos << "%\n";
-    ss << "   [SHASHHERMES EXTENDED TRACE]\n   ";
+    ss << "   [EXTENDED TRACE]\n   ";
     ss << "Eval=" << P(base) << " | PSQT=" << P(in.base.psqt) << " | Positional="
        << P(in.base.positional) << " | Threats=" << P(in.familyThreat) << " | PawnPairs="
        << P(in.familyPair);

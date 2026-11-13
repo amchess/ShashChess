@@ -519,9 +519,6 @@ LDFLAGS = $(ENV_LDFLAGS) $(EXTRALDFLAGS)
 
 ifneq ($(OS),Android)
 	CXXFLAGS += -DUSE_LIVEBOOK
-	# The live book headers are included under USE_LIVEBOOK: without it .depend misses them
-	# and an incremental build mixes objects of different versions of a class (ODR)
-	DEPENDFLAGS += -DUSE_LIVEBOOK
 	ifeq ($(target_windows),yes)
 		CURL_LDFLAGS := --static $(shell pkg-config --static --libs libcurl)
 	else
