@@ -164,8 +164,8 @@ If the number is greater than threads number, all threads are for full depth bru
 ShashChess can search with a Monte-Carlo Tree Search whose leaves are evaluated by its own alpha-beta search, so the tree and the alpha-beta threads share transposition table, histories and network.
 Two modes are available, both under the Shashin conditions described below:
 
-- **hybrid** (MCTSThreads < Threads): the main thread searches with alpha-beta and plays its move; the first MCTSThreads helper threads search the tree and cooperate through the shared transposition table and histories;
-- **pure MCTS** (MCTSThreads >= Threads): every thread, the main one included, searches the same tree and the move played is the one chosen by the tree.
+- **pure MCTS** (MCTSThreads >= Threads): every thread, the main one included, searches the same tree and the move played is the one chosen by the tree;
+- **hybrid** (MCTSThreads < Threads): the main thread searches with alpha-beta and plays its move; the first MCTSThreads helper threads search the tree and cooperate through the shared transposition table and histories.
 
 When the conditions do not hold, every thread searches with alpha-beta as usual. With "MCTS by Shashin" off, nothing of this section is used and the search is the standard one.
 
@@ -187,9 +187,10 @@ MCTS is never used with MultiPV greater than 1 or a strength handicap, with 7 pi
 #### MCTSThreads
 
 _Integer, Default: 1, Min: 1, Max: 512_
-The number of helper threads (the threads after the first, main one) that search with MCTS when the Shashin conditions hold.
-If the number is lower than the threads number, the main thread always searches with alpha-beta (hybrid search).
-If the number is equal to or greater than the threads number, the main thread searches with MCTS too: a pure MCTS search, where the move played is the one chosen by the tree. For example, Threads = 1 and MCTSThreads = 1 is a single thread pure MCTS search.
+How many threads search with MCTS when the Shashin conditions hold. The main thread can be one of them: it depends on this number compared with Threads.
+
+- **MCTSThreads >= Threads: pure MCTS.** Every thread, the main one included, searches with MCTS and the move played is the one chosen by the tree. For example, Threads = 1 and MCTSThreads = 1 (the defaults) is a single thread pure MCTS search; Threads = 8 and MCTSThreads = 8 is a pure MCTS search with eight threads.
+- **MCTSThreads < Threads: hybrid.** The main thread searches with alpha-beta and plays its move; the helper threads from 1 to MCTSThreads search with MCTS, the remaining helpers with alpha-beta. For example, Threads = 8 and MCTSThreads = 3: the main thread and four helpers in alpha-beta, three helpers in MCTS.
 
 #### MCTS Multi Strategy 
 
