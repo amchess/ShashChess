@@ -161,9 +161,28 @@ If the number is greater than threads number, all threads are for full depth bru
 
 ### MonteCarlo Tree Search section (experimental: thanks to original Stephan Nicolet work)
 
+ShashChess can search with a Monte-Carlo Tree Search whose leaves are evaluated by its own alpha-beta search, so the tree and the alpha-beta threads share transposition table, histories and network.
+Two modes are available, both under the Shashin conditions described below:
+
+- **hybrid** (MCTSThreads < Threads): the main thread searches with alpha-beta and plays its move; the first MCTSThreads helper threads search the tree and cooperate through the shared transposition table and histories;
+- **pure MCTS** (MCTSThreads >= Threads): every thread, the main one included, searches the same tree and the move played is the one chosen by the tree.
+
+When the conditions do not hold, every thread searches with alpha-beta as usual. With "MCTS by Shashin" off, nothing of this section is used and the search is the standard one.
+
+How the tree works:
+
+- a move of a node starts as a leaf, valued by a shallow alpha-beta search; the values of the moves of a node also give its policy (softmax);
+- a visited leaf is first searched deeper by alpha-beta, one ply per visit, then expanded (see "MCTS Multi Strategy");
+- the moves are selected with the PUCT formula; the value of a move mixes the minimax value of its subtree with the mean of the values backed up through it;
+- mates, tablebase results and stalemates are proven and propagated up the tree (MCTS-Solver);
+- the tree is kept from one move to the next and cleared with a new game. It may take as much memory as the Hash option (64 MB at least), in addition to the hash table. When it is full, the leaves are only searched deeper.
+
+In pure MCTS mode the "depth" sent to the GUI is the mean, over the visits, of the plies in the tree plus the depth of the leaf search, and "seldepth" is the deepest ply reached. After "go infinite" and "stop", the statistics of the root moves (win percentage, policy, visits) are printed as "info string" lines.
+
 #### MCTS by Shashin
 
-_Boolean, Default: False_ If activated, thanks to Shashin theory, the engine will use the MonteCarlo Tree Search for Petrosian high, high middle and middle positions, in the manner specified by the following parameters. The idea is to exploit Lc0 best results in those positions types, because Lc0 uses mcts in the search.
+_Boolean, Default: False_ If activated, thanks to Shashin theory, the engine will use the MonteCarlo Tree Search for Petrosian high, high middle and middle positions (win probability of the side to move up to 15%), in the manner specified by the following parameters. The idea is to exploit Lc0 best results in those positions types, because Lc0 uses mcts in the search.
+MCTS is never used with MultiPV greater than 1 or a strength handicap, with 7 pieces or less, when a draw by repetition or by the fifty moves rule is near, or when the game is decided (an evaluation over five pawns, or after move 75).
 
 #### MCTSThreads
 
@@ -180,7 +199,7 @@ The percentage of expansions among the visits of a leaf of the tree: a leaf is f
 #### MCTS Multi MinVisits
 
 _Integer, Default: 5, Min: 0, Max: 1000_
-The minimum number of visits given to every move of the root, whatever its prior.
+The minimum number of visits given to every move of the root, whatever its prior, with any number of threads.
 
 #### MCTS Explore
 
