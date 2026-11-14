@@ -508,8 +508,9 @@ void Search::Worker::start_searching() {
     // the helpers of ShashChess 41 (initDynamicRootShashinState in iterative_deepening).
     // With the static flags on every thread, null move and futility of the whole pool
     // were driven by the "hot" root flags, true in most game positions.
-    // With "MCTS by Shashin" the helpers 1..MCTSThreads may run MCTS instead of alpha-beta:
-    // if the last helper is one of them, the main thread analyses the root.
+    // With "MCTS by Shashin" the helpers 1..MCTSThreads may run MCTS instead of alpha-beta
+    // (and the main thread too, when MCTSThreads >= Threads): if the last helper is one
+    // of them, the main thread analyses the root.
     usize rootAnalyst = threads.size() - 1;
     if (bool(options["MCTS by Shashin"]) && rootAnalyst <= usize(int(options["MCTSThreads"])))
         rootAnalyst = 0;
@@ -637,6 +638,11 @@ void Search::Worker::start_searching() {
             mctsMultiStrategy  = size_t(int(options["MCTS Multi Strategy"]));
             mctsMultiMinVisits = double(int(options["MCTS Multi MinVisits"]));
 
+            // [SC:mcts] The tree is kept from move to move and may take as much memory
+            // as the hash table: here, with no thread in it, the unreachable part goes
+            if (bool(options["MCTS by Shashin"]))
+                MCTS.new_search(rootPos, size_t(int(options["Hash"])));
+
             threads.start_searching();
             uciPvSent = iterative_deepening();
         }
@@ -654,7 +660,8 @@ void Search::Worker::start_searching() {
         Skill   skill =
           Skill(options["Skill Level"], options["UCI_LimitStrength"] ? int(options["UCI_Elo"]) : 0);
 
-        if (!limits.depth && !skill.enabled() && !bookMove)
+        // [SC:mcts] When the main thread searched with MCTS the move comes from the tree
+        if (!limits.depth && !skill.enabled() && !bookMove && !mctsRoot)
             bestThread = threads.get_best_thread()->worker.get();
 
         main_manager()->bestPreviousScore        = bestThread->rootMoves[0].score;
@@ -764,6 +771,7 @@ bool Search::Worker::iterative_deepening() {
 
     // New searcha: the output_pv() guard restarts from zero.
     lastShashinUpdatedDepth = 0;
+    mctsRoot                = false;
 
     localShashinManager.initDynamicRootShashinState(network[numaAccessToken], accumulatorStack,
                                                     refreshTable, rootPos, ss, VALUE_ZERO, shConfig,
@@ -817,19 +825,29 @@ bool Search::Worker::iterative_deepening() {
                             || localShashinManager.isHighPieceDensityCapablancaPosition());
 
         bool possibleMCTSByValue = localShashinManager.isMCTSApplicableByValue();
-        if (!mainThread && multiPV == 1 && !maybeDraw && (possibleMCTSByValue || mctsExplore)
-            && (rootPos.count<ALL_PIECES>() > 7) && (this->threadIdx) <= (usize) (mctsThreads)
-            && !is_game_decided(rootPos, rootPosValue))
+        // [SC:mcts] The helpers 1..MCTSThreads search with MCTS; the main thread too
+        // when every thread is asked to (MCTSThreads >= Threads): a pure MCTS search.
+        const bool mctsWorker =
+          mainThread ? mctsThreads >= threads.size() : threadIdx <= usize(mctsThreads);
+
+        if (mctsWorker && multiPV == 1 && !maybeDraw && (possibleMCTSByValue || mctsExplore)
+            && (rootPos.count<ALL_PIECES>() > 7) && !is_game_decided(rootPos, rootPosValue))
         {
-            MonteCarlo* monteCarlo = new MonteCarlo(rootPos, this, tt);
-            if (monteCarlo)
+            auto monteCarlo = std::make_unique<MonteCarlo>(rootPos, this, threads);
+
+            // False: stopped before the root was built, nothing searched
+            if (monteCarlo->search(limits, mainThread != nullptr))
             {
-                monteCarlo->search(threads, limits, is_mainthread(), this);
-                if ((this->threadIdx) == 1 && limits.infinite
+                mctsRoot = mainThread != nullptr;
+
+                if ((mainThread || threadIdx == 1) && limits.infinite
                     && threads.stop.load(std::memory_order_relaxed))
                     monteCarlo->print_children();
-                delete monteCarlo;
-                return uciPvSent;
+
+                if (mainThread)
+                    mainThread->previousTimeReduction = 1.0;
+
+                return mainThread != nullptr;
             }
         }
     }
@@ -3422,57 +3440,22 @@ Value ShashinManager::static_value(const Eval::NNUE::Network&     network,
     return bestValue;
 }
 
-Value Worker::minimax_value(Position& pos, Search::Stack* ss, Depth depth) {
-    Value   alpha = -VALUE_INFINITE;
-    Value   beta  = VALUE_INFINITE;
-    PVMoves pv;
-    ss->pv = &pv;
+// [SC:mcts] One search of a position of the Monte-Carlo tree. MCTS plays its moves
+// with Worker::do_move(), so the accumulators follow the position as in the search,
+// and the position is never the root (ss->ply > 0).
+Value Worker::mcts_value(Position& pos, Search::Stack* ss, Depth depth, Value alpha, Value beta) {
 
-    // MCTS avanza la posizione con Position::do_move() senza push sullo stack degli
-    // accumulatori: senza reset si valuterebbe con l'accumulatore di un'altra posizione.
-    accumulatorStack.reset();
-
-    Value value = search<PV>(pos, ss, alpha, beta, depth, false);
-
-    if (limits.mate && value >= VALUE_MATE_IN_MAX_PLY && VALUE_MATE - value <= 2 * limits.mate)
-        threads.stop = true;
-
-    return value;
-}
-
-Value Worker::minimax_value(
-  Position& pos, Search::Stack* ss, Depth depth, Value alpha, Value beta) {
+    assert(ss->ply > 0);
+    assert(-VALUE_INFINITE <= alpha && alpha < beta && beta <= VALUE_INFINITE);
 
     PVMoves pv;
     ss->pv = &pv;
 
-    Value value = VALUE_ZERO;
-    Value delta = Value(18);
+    // The window of this search is the "root" window of the reductions
+    rootDelta = beta - alpha;
 
-    accumulatorStack.reset();  // vedi l'overload precedente
-
-    while (!threads.stop.load(std::memory_order_relaxed))
-    {
-        value = search<PV>(pos, ss, alpha, beta, depth, false);
-        if (value <= alpha)
-        {
-            beta  = (alpha + beta) / 2;
-            alpha = std::max(value - delta, -VALUE_INFINITE);
-        }
-        else if (value >= beta)
-        {
-            beta = std::min(value + delta, VALUE_INFINITE);
-        }
-        else
-        {
-            break;
-        }
-    }
-
-    if (limits.mate && value >= VALUE_MATE_IN_MAX_PLY && VALUE_MATE - value <= 2 * limits.mate)
-        threads.stop = true;
-
-    return value;
+    return depth > 0 ? search<PV>(pos, ss, alpha, beta, depth, false)
+                     : qsearch<PV>(pos, ss, alpha, beta);
 }
 // [SC:shashin] end
 

@@ -62,6 +62,7 @@ enum NodeType {
 
 class TranspositionTable;
 class ThreadPool;
+class MonteCarlo;
 class OptionsMap;
 
 namespace Eval::NNUE {
@@ -360,8 +361,8 @@ class Worker {
 
     void ensure_network_replicated();
 
-    Value minimax_value(Position& pos, Search::Stack* ss, Depth depth);
-    Value minimax_value(Position& pos, Search::Stack* ss, Depth depth, Value alpha, Value beta);
+    // [SC:mcts] One search of a position of the Monte-Carlo tree (a leaf evaluation)
+    Value mcts_value(Position& pos, Search::Stack* ss, Depth depth, Value alpha, Value beta);
 
     // Public because they need to be updatable by the stats
     ButterflyHistory mainHistory;
@@ -382,6 +383,8 @@ class Worker {
     // [SC] True for the thread that runs the Shashin analysis of the root in the current
     // search (static state + WDL zone of its own search), see start_searching()
     bool shashinRootAnalysis = false;
+    // [SC:mcts] True when this thread searched the root with MCTS in the current search
+    bool mctsRoot = false;
 
    private:
     bool iterative_deepening();
@@ -458,6 +461,7 @@ class Worker {
     const ShashChess::ShashinConfig shConfig;
 
     friend class ShashChess::ThreadPool;
+    friend class ShashChess::MonteCarlo;
     friend class SearchManager;
 };
 

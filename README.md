@@ -167,19 +167,20 @@ _Boolean, Default: False_ If activated, thanks to Shashin theory, the engine wil
 
 #### MCTSThreads
 
-_Integer, Default: 0, Min: 0, Max: 512_
-The number of settled threads to use for MCTS search except the first (main) one always for alpha-beta search. 
-In particular, if the number is greater than threads number, they will all do a montecarlo tree search, always except the first (main) for alpha-beta search.
+_Integer, Default: 1, Min: 1, Max: 512_
+The number of helper threads (the threads after the first, main one) that search with MCTS when the Shashin conditions hold.
+If the number is lower than the threads number, the main thread always searches with alpha-beta (hybrid search).
+If the number is equal to or greater than the threads number, the main thread searches with MCTS too: a pure MCTS search, where the move played is the one chosen by the tree. For example, Threads = 1 and MCTSThreads = 1 is a single thread pure MCTS search.
 
 #### MCTS Multi Strategy 
 
 _Integer, Default: 20, Min: 0, Max: 100_ 
-Only in multi mcts mode, for tree policy.
+The percentage of expansions among the visits of a leaf of the tree: a leaf is first searched deeper by alpha-beta, one ply per visit, and then expanded. With 100 every visit expands the tree (many nodes with shallow evaluations), with 0 only the root is expanded (few nodes with deep evaluations).
 
 #### MCTS Multi MinVisits
 
 _Integer, Default: 5, Min: 0, Max: 1000_
-Only in multi mcts mode, for Upper Confidence Bound.
+The minimum number of visits given to every move of the root, whatever its prior.
 
 #### MCTS Explore
 

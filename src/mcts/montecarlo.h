@@ -20,259 +20,243 @@
 #ifndef MONTECARLO_H_INCLUDED
 #define MONTECARLO_H_INCLUDED
 
-#include <cmath>
+#include <atomic>
+#include <cstddef>
+#include <cstdint>
+#include <thread>
 #include <unordered_map>
+#include <vector>
 
-#include "../movepick.h"
+#include "../misc.h"
 #include "../position.h"
-#include "../thread.h"
+#include "../search.h"
+#include "../types.h"
 
 namespace ShashChess {
-// The data structures for the Monte Carlo algorithm
-typedef double Reward;
 
-constexpr Reward REWARD_NONE  = 0.0;
+class ThreadPool;
+class TranspositionTable;
+
+// A reward is the expected result of the game for the side to move, in [0, 1]
+using Reward = double;
+
 constexpr Reward REWARD_MATED = 0.0;
 constexpr Reward REWARD_DRAW  = 0.5;
 constexpr Reward REWARD_MATE  = 1.0;
 
-enum EdgeStatistic {
-    STAT_UCB,
-    STAT_VISITS,
-    STAT_MEAN,
-    STAT_PRIOR
-};
+// Set by the main thread from the UCI options before every search
+extern size_t mctsThreads;
+extern size_t mctsMultiStrategy;
+extern double mctsMultiMinVisits;
 
 ///////////////////////////////////////////////////////////////////////////////////////
-/// Edge struct stores the statistics of one edge between nodes in the Monte-Carlo tree
+/// MctsSpinLock: a small non-recursive lock. A node is locked only for the few
+/// instructions that read or write its statistics, never during a search.
 ///////////////////////////////////////////////////////////////////////////////////////
-struct Edge {
-    //Default constructor
-    Edge() :
-        move(Move::none()),
-        visits(0),
-        prior(REWARD_NONE),
-        actionValue(REWARD_NONE),
-        meanActionValue(REWARD_NONE) {}
-
-    //Prevent copying of this struct type
-    Edge(const Edge&)            = delete;
-    Edge& operator=(const Edge&) = delete;
-
-    std::atomic<Move>   move;
-    std::atomic<double> visits;
-    std::atomic<Reward> prior;
-    std::atomic<Reward> actionValue;
-    std::atomic<Reward> meanActionValue;
-};
-
-extern size_t                           mctsThreads;
-extern size_t                           mctsMultiStrategy;
-extern double                           mctsMultiMinVisits;
-constexpr int                           MAX_CHILDREN = MAX_MOVES;
-typedef std::array<Edge*, MAX_CHILDREN> EdgeArray;
-
-///////////////////////////////////////////////////////////////////////////////////////
-/// Spinlock class: A yielding spin-lock that allows the same thread to lock the
-///                 resource more than once. The resource is released only when the
-///                 owner thread releases all the locks it has placed on the resource
-///////////////////////////////////////////////////////////////////////////////////////
-class Spinlock {
-
-    static const size_t NO_THREAD = 0;
-
-    std::atomic<size_t> owner;
-    int                 lockCount;
+class MctsSpinLock {
+    std::atomic<bool> locked{false};
 
    public:
-    Spinlock() :
-        owner(0),
-        lockCount(0) {}
-
-    //Prevent copying of this class type
-    Spinlock(const Spinlock&)            = delete;
-    Spinlock& operator=(const Spinlock&) = delete;
-
-    void acquire(size_t threadId) {
-        if (mctsThreads > 1)
+    void lock() {
+        for (int spins = 0;; ++spins)
         {
-            size_t currentOwner = NO_THREAD;
+            if (!locked.load(std::memory_order_relaxed)
+                && !locked.exchange(true, std::memory_order_acquire))
+                return;
 
-            while (!owner.compare_exchange_weak(currentOwner, threadId, std::memory_order_acquire,
-                                                std::memory_order_relaxed)
-                   && currentOwner != threadId)
-            {
-                currentOwner = NO_THREAD;
-                std::this_thread::yield();  //Be nice
-            }
-
-            lockCount++;
+            if (spins > 64)
+                std::this_thread::yield();
         }
     }
 
-    void release([[maybe_unused]] size_t threadId) {
-        if (mctsThreads > 1)
-        {
-            assert(owner.load(std::memory_order_relaxed) == threadId);
+    void unlock() { locked.store(false, std::memory_order_release); }
+};
 
-            if (--lockCount == 0)
-                owner.store(0);
-        }
-    }
+struct MctsNode;
+
+///////////////////////////////////////////////////////////////////////////////////////
+/// MctsEdge: a move of a node. Until the position after the move is expanded
+/// (child == nullptr) the edge is a leaf of the tree, valued by an alpha-beta search.
+/// All the fields are protected by the lock of the node that owns the edge.
+///////////////////////////////////////////////////////////////////////////////////////
+struct MctsEdge {
+    enum : uint8_t {
+        BUSY   = 1,  // a thread is searching or expanding this leaf
+        PROVEN = 2   // score is a proven mate, tablebase result or stalemate
+    };
+
+    Move      move     = Move::none();
+    uint8_t   depth    = 0;  // depth of the search that gave score
+    uint8_t   flags    = 0;
+    uint8_t   rolls    = 0;  // deepening searches made on this leaf
+    uint16_t  inflight = 0;  // virtual losses: threads below this edge right now
+    uint32_t  visits   = 0;
+    float     policy   = 0;           // prior probability of the move
+    float     value    = 0.5f;        // reward of score
+    Value     score    = VALUE_ZERO;  // for the side to move in the node, mates from the node
+    double    sum      = 0;           // sum of the rewards backed up through the edge
+    MctsNode* child    = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////
-/// NodeInfo struct stores information in a node of the Monte-Carlo tree
+/// MctsNode: an expanded position. The edges follow the node in the same block of
+/// memory, so a node takes what its legal moves need and nothing more.
 ///////////////////////////////////////////////////////////////////////////////////////
-struct mctsNodeInfo {
+struct MctsNode {
+    Key                key     = 0;
+    Key                pawnKey = 0;
+    std::atomic<float> best{0.5f};               // reward of the best move
+    std::atomic<Value> provenScore{VALUE_NONE};  // mates from the node, or VALUE_NONE
+    uint32_t           visits = 0;
+    uint32_t           mark   = 0;  // generation of the last garbage collection
+    uint16_t           sons   = 0;
+    MctsSpinLock       lock;
 
-    //Default constructor
-    mctsNodeInfo() {
-        for (size_t i = 0; i < children.size(); ++i)
-            children[i] = new Edge();
-    }
+    MctsEdge*       edges() { return reinterpret_cast<MctsEdge*>(this + 1); }
+    const MctsEdge* edges() const { return reinterpret_cast<const MctsEdge*>(this + 1); }
 
-    ~mctsNodeInfo() {
-        for (size_t i = 0; i < children.size(); ++i)
-            delete children[i];
-    }
-
-    //Prevent copying of this struct type
-    mctsNodeInfo(const mctsNodeInfo&)            = delete;
-    mctsNodeInfo& operator=(const mctsNodeInfo&) = delete;
-
-    Spinlock lock;
-
-    // Data members
-    Key                key1           = 0;  // Zobrist hash of all pieces, including pawns
-    Key                key2           = 0;  // Zobrist hash of pawns
-    std::atomic<long>  node_visits    = 0;  // number of visits by the Monte-Carlo algorithm
-    std::atomic<int>   number_of_sons = 0;  // total number of legal moves
-    std::atomic<Move>  lastMove       = Move::none();  // the move between the parent and this node
-    std::atomic<Value> ttValue        = VALUE_NONE;
-    std::atomic<bool>  AB             = false;
-    EdgeArray          children;
+    static size_t    bytes(int sons) { return sizeof(MctsNode) + sons * sizeof(MctsEdge); }
+    static MctsNode* create(Key key, Key pawnKey, int sons);
+    static void      destroy(MctsNode* node);
 };
 
-class MonteCarlo;
-mctsNodeInfo* get_node(const MonteCarlo* mcts, const Position& pos);
-
 ///////////////////////////////////////////////////////////////////////////////////////
-// The Monte-Carlo tree is stored implicitly in one big hash table
+/// MctsTree: the Monte-Carlo tree, shared by the threads and kept from one move to
+/// the next. The nodes are found by the key of the position (transpositions join),
+/// in a table split in shards so that the threads do not queue on a single lock.
 ///////////////////////////////////////////////////////////////////////////////////////
-typedef std::unordered_multimap<Key, mctsNodeInfo*> MCTS_MAP_BASE;
-extern std::atomic<size_t>                          MCTSNodeCount;
-class MCTSHashTable: public MCTS_MAP_BASE {
+class MctsTree {
    public:
-    ~MCTSHashTable() { clear(); }
+    ~MctsTree() { clear(); }
 
-    void clear() {
-        for (unsigned i = 0; i < bucket_count(); ++i)
-        {
-            for (auto it = begin(i); it != end(i); ++it)
-                delete it->second;
-        }
+    void      clear();
+    MctsNode* find(Key key, Key pawnKey);
+    MctsNode* insert(MctsNode* node);  // the node now in the table, nullptr on a key clash
 
-        MCTS_MAP_BASE::clear();
-        MCTSNodeCount = 0;
-    }
+    // Before a search, with no thread in the tree: sets the memory the tree may use
+    // and, when more than half is taken, frees what the new root does not reach
+    void new_search(const Position& rootPos, size_t megabytes);
+
+    bool   full() const { return bytes.load(std::memory_order_relaxed) >= budget; }
+    size_t node_count() const { return count.load(std::memory_order_relaxed); }
+
+   private:
+    static constexpr size_t ShardCount = 4096;
+
+    struct alignas(64) Shard {
+        MctsSpinLock                       lock;
+        std::unordered_map<Key, MctsNode*> map;
+    };
+
+    Shard& shard_of(Key key) { return shards[key >> 52]; }
+
+    Shard               shards[ShardCount];
+    std::atomic<size_t> bytes{0};
+    std::atomic<size_t> count{0};
+    size_t              budget     = size_t(64) << 20;
+    uint32_t            generation = 0;
 };
-extern MCTSHashTable MCTS;
-extern MCTSHashTable MCTS;
-const size_t         MCTSMaxNodes = 100000;
+
+extern MctsTree MCTS;
 
 ///////////////////////////////////////////////////////////////////////////////////////
-// Main MCTS search class
+/// MonteCarlo: the search of one thread in the shared tree
 ///////////////////////////////////////////////////////////////////////////////////////
 class MonteCarlo {
-    friend class AutoSpinLock;
-
    public:
-    // Constructors
-    MonteCarlo(Position& p, Search::Worker* worker, TranspositionTable& transpositionTable);
+    MonteCarlo(Position& p, Search::Worker* w, ThreadPool& pool);
 
-    //Prevent copying of this class type
     MonteCarlo(const MonteCarlo&)            = delete;
     MonteCarlo& operator=(const MonteCarlo&) = delete;
 
-    // The main function of the class
-    void search(ShashChess::ThreadPool&        threads,
-                ShashChess::Search::LimitsType limits,
-                bool                           isMainThread,
-                Search::Worker*                worker);
+    // Searches until stopped. Returns false, having searched nothing, when the
+    // root could not be built before the stop: the caller falls back on alpha-beta.
+    bool search(const Search::LimitsType& limits, bool isMainThread);
 
-    // The high-level description of the Monte-Carlo algorithm
-    void          create_root(Search::Worker* worker);
-    bool          computational_budget(ShashChess::ThreadPool&        threads,
-                                       ShashChess::Search::LimitsType limits);
-    mctsNodeInfo* tree_policy(ShashChess::ThreadPool&        threads,
-                              ShashChess::Search::LimitsType limits);
-    Reward        playout_policy(mctsNodeInfo* node);
-    Value         backup(Reward r, bool AB_Mode);
-    Edge*         best_child(mctsNodeInfo* node, EdgeStatistic statistic) const;
+    // "info string" lines with the statistics of the root moves
+    void print_children();
 
-    // The UCB formula
-    double ucb(const Edge* edge, long fatherVisits, bool priorMode) const;
-
-    // Nodes and moves
-    bool is_root(const mctsNodeInfo* node) const;
-    bool is_terminal(mctsNodeInfo* node) const;
-    void do_move(Move m);
-    void undo_move();
-    void generate_moves(mctsNodeInfo* node);
-
-    // Evaluations of nodes in the tree
-    [[nodiscard]] Reward value_to_reward(Value v) const;
-    [[nodiscard]] Value  reward_to_value(Reward r) const;
-    [[nodiscard]] Value  evaluate_with_minimax(Depth d) const;
-    Value                evaluate_with_minimax(mctsNodeInfo* node, Depth d) const;
-    [[nodiscard]] Reward evaluate_terminal(mctsNodeInfo* node) const;
-    Reward               calculate_prior(Move m);
-    void                 add_prior_to_node(mctsNodeInfo* node, Move m, Reward prior) const;
-
-    // Tweaking the exploration algorithm
-    void                 default_parameters();
-    void                 set_exploration_constant(double c);
-    [[nodiscard]] double exploration_constant() const;
-
-    // Output of results
-    [[nodiscard]] bool should_emit_pv(bool isMainThread) const;
-    void               emit_pv(Search::Worker* worker, ShashChess::ThreadPool& threads);
-    void               print_children();
+    // Values and rewards
+    static Reward value_to_reward(Value v);
+    static Value  reward_to_value(Reward r);
 
    private:
-    Position&                   pos;  // The current position of the tree
-    ShashChess::Search::Worker* thisThread;
-    TranspositionTable&         tt;
-    mctsNodeInfo*               root{};  // A pointer to the root
+    struct Step {
+        MctsNode* node;
+        int       edge;
+    };
 
-    // Counters and statistics
-    int       ply{};
-    int       maximumPly{};
-    TimePoint startTime{};
-    TimePoint lastOutputTime{};
+    struct RootChoice {
+        int    edge        = -1;  // the move to play
+        int    mostVisited = -1;
+        int    bestValued  = -1;
+        Move   move        = Move::none();
+        Reward reward      = REWARD_DRAW;
+        Value  score       = VALUE_ZERO;
+        bool   proven      = false;  // the move to play is proven
+        bool   rootProven  = false;  // nothing left to search
+    };
 
-    [[maybe_unused]] double max_epsilon = 0.99;
-    [[maybe_unused]] double min_epsilon = 0.00;
-    [[maybe_unused]] double decay_rate  = 0.8;
-    bool                    AB_Rollout{};
+    enum Select {
+        ALL_PROVEN = -1,
+        ALL_BUSY   = -2
+    };
 
-    // Flags and limits to tweak the algorithm
-    double BACKUP_MINIMAX{};
-    double UCB_UNEXPANDED_NODE{};
-    double UCB_EXPLORATION_CONSTANT{};
-    double UCB_LOSSES_AVOIDANCE{};
-    double UCB_LOG_TERM_FACTOR{};
-    bool   UCB_USE_FATHER_VISITS{};
-    int    PRIOR_FAST_EVAL_DEPTH{};
-    int    PRIOR_SLOW_EVAL_DEPTH{};
+    // The tree
+    bool      create_root();
+    void      iteration();
+    int       select(const MctsNode* node, bool isRoot) const;
+    void      leaf_work(Step leaf, const MctsEdge& snapshot);
+    MctsNode* build_node(Depth wantedDepth, bool& terminal);
+    bool      deepen(Depth depth, Value center, Value& result);
+    void      backup(int last, bool drawOnPath);
+    void      abandon(int last, bool leafBusy = false);
+    void      update_node(MctsNode* node, bool isRoot) const;
+    Reward    edge_reward(const MctsEdge& e) const;
+    Reward    edge_minimax(const MctsEdge& e) const;
+    bool      root_allowed(int edge) const { return rootAllowed.empty() || rootAllowed[edge]; }
 
-    // Some stacks to do/undo the moves: for compatibility with the alpha-beta search
-    // implementation, we want to be able to reference from stack[-4] to stack[MAX_PLY+2].
-    mctsNodeInfo *nodesBuffer[MAX_PLY + 10]{}, **nodes  = nodesBuffer + 7;
-    Edge *        edgesBuffer[MAX_PLY + 10]{}, **edges  = edgesBuffer + 7;
-    Search::Stack stackBuffer[MAX_PLY + 17]{}, *stack   = stackBuffer + 7;
-    StateInfo     statesBuffer[MAX_PLY + 10]{}, *states = statesBuffer + 7;
+    // Moves on the board of the thread
+    void do_move(Move m, int moveCount);
+    void undo_move();
+
+    // The main thread: time, limits and output
+    RootChoice root_choice() const;
+    bool       main_thread_stop(const Search::LimitsType& limits);
+    bool       should_emit_pv() const;
+    void       emit_pv();
+    int        reported_depth() const;
+
+    Position&       pos;
+    Search::Worker* worker;
+    ThreadPool&     threads;
+    MctsNode*       root = nullptr;
+
+    std::vector<bool> rootAllowed;  // "go searchmoves", tablebase root filtering
+
+    int  ply           = 0;
+    int  maxPly        = 0;
+    bool idle          = false;  // the last iteration found nothing to search
+    int  rollsToExpand = 0;      // deepening searches of a leaf before it is expanded
+    int  rootMinVisits = 1;
+
+    // Statistics of this thread, for the depth sent to the GUI
+    uint64_t iterations = 0;
+    uint64_t depthSum   = 0;
+
+    // Time management of the main thread
+    TimePoint startTime      = 0;
+    TimePoint lastOutputTime = 0;
+    TimePoint lastChangeTime = 0;
+    Move      lastBestMove   = Move::none();
+    bool      pvChanged      = false;
+
+    // For compatibility with the alpha-beta search we need stack[-7 .. MAX_PLY + 2]
+    Step          path[MAX_PLY + 1]{};
+    Search::Stack stackBuffer[MAX_PLY + 17]{}, *stack = stackBuffer + 7;
+    StateInfo     states[MAX_PLY + 1]{};
 };
-}
+
+}  // namespace ShashChess
+
 #endif  // #ifndef MONTECARLO_H_INCLUDED
