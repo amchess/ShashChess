@@ -830,8 +830,44 @@ bool Search::Worker::iterative_deepening() {
         const bool mctsWorker =
           mainThread ? mctsThreads >= threads.size() : threadIdx <= usize(mctsThreads);
 
-        if (mctsWorker && multiPV == 1 && !maybeDraw && (possibleMCTSByValue || mctsExplore)
-            && (rootPos.count<ALL_PIECES>() > 7) && !is_game_decided(rootPos, rootPosValue))
+        // [SC:mcts] The choice is made once per search: tell the user what was decided and
+        // why (one line per search, from the first thread asked to search with MCTS).
+        // MultiPV no longer excludes MCTS: the tree gives a line for every root move
+        // (MonteCarlo::emit_pv). Only the hidden MultiPV of the strength handicap does.
+        const char* mctsReason = nullptr;
+        if (skill.enabled())
+            mctsReason = "strength handicap (Skill Level / UCI_LimitStrength)";
+        else if (maybeDraw)
+            mctsReason = "a draw by rule 50 or repetition is near";
+        else if (rootPos.count<ALL_PIECES>() <= 7)
+            mctsReason = "7 pieces or less";
+        else if (is_game_decided(rootPos, rootPosValue))
+            mctsReason = "game already decided";
+        else if (!possibleMCTSByValue && !mctsExplore)
+            mctsReason = options["MCTS Explore"]
+                         ? "the root zone suits neither MCTS by value nor MCTS Explore"
+                         : "the root is not in a middle-to-high Petrosian zone";
+
+        const bool mctsSpeaker =
+          mainThread ? mctsWorker : threadIdx == 1 && mctsThreads < threads.size();
+
+        if (mctsSpeaker)
+        {
+            if (mctsReason)
+                sync_cout << "info string MCTS not started: " << mctsReason << sync_endl;
+            else if (mainThread)
+                sync_cout << "info string MCTS started: pure MCTS, " << threads.size()
+                          << " thread(s) (" << (possibleMCTSByValue ? "Petrosian zone" : "MCTS Explore")
+                          << ")" << sync_endl;
+            else
+                sync_cout << "info string MCTS started: "
+                          << std::min(usize(mctsThreads), threads.size() - 1)
+                          << " helper thread(s), main thread alpha-beta ("
+                          << (possibleMCTSByValue ? "Petrosian zone" : "MCTS Explore") << ")"
+                          << sync_endl;
+        }
+
+        if (mctsWorker && !mctsReason)
         {
             auto monteCarlo = std::make_unique<MonteCarlo>(rootPos, this, threads);
 

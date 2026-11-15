@@ -1046,34 +1046,54 @@ void MonteCarlo::emit_pv() {
                            [&](const Search::RootMove& rm) { return rm == choice.move; });
     std::stable_sort(rootMoves.begin() + 1, rootMoves.end());
 
-    // The principal variation follows the most visited moves of the tree
-    Search::RootMove& bestMove = rootMoves[0];
-    bestMove.pv.resize(1);
+    // The principal variation follows the most visited moves of the tree. With MultiPV
+    // every printed line gets its own, from the son of its root move.
+    const usize multiPV = std::min(usize(worker->options["MultiPV"]), rootMoves.size());
 
-    MctsNode* node = root->edges()[choice.edge].child;
-
-    while (node && int(bestMove.pv.size()) <= maxPly)
+    for (usize line = 0; line < std::max(multiPV, usize(1)); ++line)
     {
-        std::lock_guard<MctsSpinLock> guard(node->lock);
+        Search::RootMove& rm = rootMoves[line];
+        rm.pv.resize(1);
 
-        const MctsEdge* next    = nullptr;
-        double          nextKey = 0.0;
+        MctsNode* node = nullptr;
 
-        for (int i = 0; i < node->sons; ++i)
+        if (line == 0)
+            node = root->edges()[choice.edge].child;
+        else
         {
-            const MctsEdge& e   = node->edges()[i];
-            const bool      win = (e.flags & MctsEdge::PROVEN) && is_win(e.score);
-            const double    key = win ? 1e12 + e.score : double(e.visits);
+            std::lock_guard<MctsSpinLock> guard(root->lock);
 
-            if (key > nextKey)
-                nextKey = key, next = &e;
+            for (int i = 0; i < root->sons; ++i)
+                if (root->edges()[i].move == rm.pv[0])
+                {
+                    node = root->edges()[i].child;
+                    break;
+                }
         }
 
-        if (!next)
-            break;
+        while (node && int(rm.pv.size()) <= maxPly)
+        {
+            std::lock_guard<MctsSpinLock> guard(node->lock);
 
-        bestMove.pv.push_back(next->move);
-        node = next->child;
+            const MctsEdge* next    = nullptr;
+            double          nextKey = 0.0;
+
+            for (int i = 0; i < node->sons; ++i)
+            {
+                const MctsEdge& e   = node->edges()[i];
+                const bool      win = (e.flags & MctsEdge::PROVEN) && is_win(e.score);
+                const double    key = win ? 1e12 + e.score : double(e.visits);
+
+                if (key > nextKey)
+                    nextKey = key, next = &e;
+            }
+
+            if (!next)
+                break;
+
+            rm.pv.push_back(next->move);
+            node = next->child;
+        }
     }
 
     worker->rootDepth = worker->completedDepth = reported_depth();
