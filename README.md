@@ -171,6 +171,8 @@ When the conditions do not hold, every thread searches with alpha-beta as usual.
 
 At the start of every search an "info string" line tells whether MCTS was started ("MCTS started", with the mode and the number of MCTS threads) or not ("MCTS not started", with the reason).
 
+**Suggested settings.** In tests on positions of the Petrosian zone, from 5 to 30 seconds per position, the hybrid mode solved more positions than alpha-beta alone, also with MultiPV 3, and more than the previous MCTS, while pure MCTS on a single thread was not stronger than alpha-beta. So the hybrid mode is the suggested one, with more threads than MCTS threads: for instance Threads = 3 and MCTSThreads = 1. With the default values (Threads = 1, MCTSThreads = 1) the search is pure MCTS on a single thread. MCTS Explore was tested only with pure MCTS on a single thread, where it solved fewer positions. The test results are in the release notes of ShashChess 42.3.
+
 How the tree works:
 
 - a move of a node starts as a leaf, valued by a shallow alpha-beta search; the values of the moves of a node also give its policy (softmax);
