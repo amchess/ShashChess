@@ -169,6 +169,8 @@ Two modes are available, both under the Shashin conditions described below:
 
 When the conditions do not hold, every thread searches with alpha-beta as usual. With "MCTS by Shashin" off, nothing of this section is used and the search is the standard one.
 
+At the start of every search an "info string" line tells whether MCTS was started ("MCTS started", with the mode and the number of MCTS threads) or not ("MCTS not started", with the reason).
+
 How the tree works:
 
 - a move of a node starts as a leaf, valued by a shallow alpha-beta search; the values of the moves of a node also give its policy (softmax);
@@ -182,7 +184,8 @@ In pure MCTS mode the "depth" sent to the GUI is the mean, over the visits, of t
 #### MCTS by Shashin
 
 _Boolean, Default: False_ If activated, thanks to Shashin theory, the engine will use the MonteCarlo Tree Search for Petrosian high, high middle and middle positions (win probability of the side to move up to 15%), in the manner specified by the following parameters. The idea is to exploit Lc0 best results in those positions types, because Lc0 uses mcts in the search.
-MCTS is never used with MultiPV greater than 1 or a strength handicap, with 7 pieces or less, when a draw by repetition or by the fifty moves rule is near, or when the game is decided (an evaluation over five pawns, or after move 75).
+MCTS is never used with a strength handicap, with 7 pieces or less, when a draw by repetition or by the fifty moves rule is near, or when the game is decided (an evaluation over five pawns, or after move 75).
+With MultiPV greater than 1 only the hybrid mode is used, where the main thread searches the lines with alpha-beta: with pure MCTS settings the search is then the usual alpha-beta one, because the tree would only report the lines without searching them.
 
 #### MCTSThreads
 

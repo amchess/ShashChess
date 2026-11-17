@@ -832,11 +832,15 @@ bool Search::Worker::iterative_deepening() {
 
         // [SC:mcts] The choice is made once per search: tell the user what was decided and
         // why (one line per search, from the first thread asked to search with MCTS).
-        // MultiPV no longer excludes MCTS: the tree gives a line for every root move
-        // (MonteCarlo::emit_pv). Only the hidden MultiPV of the strength handicap does.
+        // With MultiPV > 1 only the hybrid mode is used: there the main thread searches the
+        // lines with alpha-beta, helped by the MCTS helpers through the shared tables. A pure
+        // MCTS tree would only report the lines without searching them, so the search stays
+        // alpha-beta (the hidden MultiPV of the strength handicap keeps MCTS off too).
         const char* mctsReason = nullptr;
         if (skill.enabled())
             mctsReason = "strength handicap (Skill Level / UCI_LimitStrength)";
+        else if (multiPV > 1 && mctsThreads >= threads.size())
+            mctsReason = "MultiPV > 1 with pure MCTS (MCTSThreads >= Threads)";
         else if (maybeDraw)
             mctsReason = "a draw by rule 50 or repetition is near";
         else if (rootPos.count<ALL_PIECES>() <= 7)
