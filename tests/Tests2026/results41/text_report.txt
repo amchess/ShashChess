@@ -1309,7 +1309,7 @@ Engine Results:
 Position: pos_141
 EPD: 8/1pn2pp1/5k1p/RBr5/P7/P6P/5PPK/8 b - - bm Na6; hmvc 0; c0 "Na6=5"; id "ENET-2026 047_Onlinegame Stockfish vs Lc0_Na6, 47";
 Classification: Capablanca (=)
-Volatility: 42.347
+Volatility: 43-dev47
 Engine Results:
   Stockfish18: Move=c7a6, Time=60.00s, Points=2.5, Solved=True
   ShashChess41: Move=c7a6, Time=60.00s, Points=2.5, Solved=True

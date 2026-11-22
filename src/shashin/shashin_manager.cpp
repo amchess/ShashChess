@@ -172,11 +172,12 @@ ShashinPosition ShashinManager::getResilientShashinRange(ShashinPosition range, 
         return (depthRatio <= 0.60) ? ShashinPosition::CAPABLANCA : ShashinPosition::LOW_PETROSIAN;
 
     case ShashinPosition::TAL_CAPABLANCA_PETROSIAN :
-        if (depthRatio <= 0.40)
-            return ShashinPosition::LOW_TAL;
-        if (depthRatio <= 0.80)
-            return ShashinPosition::CAPABLANCA;
-        return ShashinPosition::LOW_PETROSIAN;
+        // [SC 43] README table: "Chaos: Capablanca-Petrosian-Tal ... Total chaos: unclear
+        // position, dynamically balanced, with no clear advantage for either side". No style:
+        // the Stockfish search. In 43-dev the depth ratio computed above was >= 1 at the root from the
+        // second iteration on (it divides by the depth of the previous iteration), so this
+        // zone was always searched as Low Petrosian, i.e. as a defensive position.
+        return range;
 
     default :
         return range;
