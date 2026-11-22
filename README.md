@@ -171,7 +171,7 @@ When the conditions do not hold, every thread searches with alpha-beta as usual.
 
 At the start of every search an "info string" line tells whether MCTS was started ("MCTS started", with the mode and the number of MCTS threads) or not ("MCTS not started", with the reason).
 
-**Suggested settings.** In tests on positions of the Petrosian zone, from 5 to 30 seconds per position, the hybrid mode solved more positions than alpha-beta alone, also with MultiPV 3, and more than the previous MCTS, while pure MCTS on a single thread was not stronger than alpha-beta. So the hybrid mode is the suggested one, with more threads than MCTS threads: for instance Threads = 3 and MCTSThreads = 1. With the default values (Threads = 1, MCTSThreads = 1) the search is pure MCTS on a single thread. MCTS Explore was tested only with pure MCTS on a single thread, where it solved fewer positions. The test results are in the release notes of ShashChess 43-dev.
+**Suggested settings.** In tests on positions of the Petrosian zone, from 5 to 30 seconds per position, the hybrid mode solved more positions than alpha-beta alone, also with MultiPV 3, and more than the previous MCTS, while pure MCTS on a single thread was not stronger than alpha-beta. So the hybrid mode is the suggested one, with more threads than MCTS threads: for instance Threads = 3 and MCTSThreads = 1. With the default values (Threads = 1, MCTSThreads = 1) the search is pure MCTS on a single thread. MCTS Explore was tested only with pure MCTS on a single thread, where it solved fewer positions. The test results are in the release notes of ShashChess 42.3.
 
 How the tree works:
 
@@ -384,7 +384,7 @@ The engine will determine dynamically the position's type starting from a "Capab
 positions".
 If one or more (mixed algorithms/positions types at the boundaries) of the seven following options
 are settled, it will force the initial position/algorithm understanding
-If, in the wdl model, we define wdl_w=Win percentage, wdl_d=Drawn percentage and Win probability=(2*wdl_w+wdl_d)/10, 
+If, in the wdl model, we define wdl_w=Win percentage, wdl_d=Drawn percentage and Win probability=wdl_w+wdl_d/2 (integer percentages, integer division), 
 we have the following mapping:
 
 | **WDL Range (W, D, L)**       | **Shashin Position’s Type**          | **Win Probability Range** | **Informator Symbols**| **Description**                                             |
@@ -395,18 +395,22 @@ we have the following mapping:
 | [10, 12], [13, 16], [73, 79]  | Middle-Low Petrosian                 | [16, 20]                 | -/+ \ =/+              | Significant disadvantage: strong edge                   |
 | [13, 15], [17, 39], [66, 71]  | Low Petrosian                        | [21, 24]                 | =/+                    | Slight disadvantage with a positional edge, but no immediate threats.              |
 | [0, 30], [40, 99], [31, 64]  | Chaos: Capablanca-Petrosian          | [25, 49]                 | ↓                      | Opponent pressure and initiative: defensive position.        |
-| [0, 0], [100, 100], [0, 0]    | Capablanca                           | [50, 50]                 | =                      | Equal position. Both sides are evenly matched, with no evident advantage.           |
+| [1, 1], [99, 99], [0, 1]    | Capablanca                           | [50, 50], draw >= 99     | =                      | Equal position. Both sides are evenly matched, with no evident advantage: a dead draw.           |
 | [30, 64], [40, 99], [0, 30]  | Chaos: Capablanca-Tal                | [51, 75]                 | ↑                      | Initiative: playing dictation with active moves and forcing ideas.                     |
 | [65, 71], [17, 39], [13, 15]   | Low Tal                              | [76, 79]                 | +/=                    | Slight advantage: a minor positional edge, but it’s not significant.                    |
 | [72, 78], [13, 16], [10, 12]  | Middle-Low Tal                       | [80, 84]                 | +/= \ +/-              |  Slightly better, tending toward a clear advantage. The advantage is growing, but the position is still not decisive.            |
 | [79, 87], [9, 12], [7, 9]    | Middle Tal                           | [85, 89]                 | +/-                    | Clear advantage: a significant edge, but still with defensive chances.                          |
 | [88, 95], [5, 8], [4, 6]      | High-Middle Tal                      | [90, 94]                 | +/- \ +-               | Dominant position, almost decisive, not quite winning yet, but trending toward victory.                           |
 | [96, 100], [0, 4], [0, 3]    | High Tal                             | [95, 100]                | +-                     | Winning: a decisive advantage, with victory nearly assured.   |
-| In particular, [33, 33], [33, 33], [33, 33]                   | Chaos: Capablanca-Petrosian-Tal | (Unclassified)                   | ∞                      | Total chaos: unclear position, dynamically balanced, with no clear advantage for either side and no clear positional trends.                       |
+| [1, 3], [95, 98], [0, 2]    | Chaos: Capablanca-Petrosian-Tal | [50, 50], draw < 99      | ∞                      | Total chaos: unclear position, dynamically balanced, with no clear advantage for either side and no clear positional trends. In practice, a balanced position with most of the material on the board.                       |
 
 N.B.
-The wdl model also takes into account the history of the position at which a move has been calculated.
-So, it's more effective than the cp. 
+The wdl model is the Stockfish 19 one: it also takes into account the material on the board (pawn 1, knight and bishop 3, rook 5, queen 9; 78 in the initial position), so the same evaluation can fall in different zones with a different material.
+So, it's more effective than the cp.
+
+With this model the side behind never gets more than 2%: the WDL ranges of the table are indicative, and the point W = D = L = 33 (total chaos in Shashin's sense) is never reached. A win probability of 50 always means W and L of at most 3% and a draw probability of at least 95%; the two rows at 50 list the W/D/L triples that the model actually produces. Capablanca (dead draw) needs a draw probability of at least 99%; otherwise the position is Chaos: Capablanca-Petrosian-Tal, in practice an evaluation at most 0.25 pawns from 0.00 with a material of at least 60 (with less material, only a few thin bands near the dead draw).
+
+Because of the integer division, an evaluation of 0.00 gives a win probability of 49 (Chaos: Capablanca-Petrosian) with a material up to 34 (W/D/L 0/99/0) and from 72 to 74 (W/D/L 1/97/1).
 
 #### Tal
 
