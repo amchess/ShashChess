@@ -161,9 +161,12 @@ ShashinPosition ShashinManager::getResilientShashinRange(ShashinPosition range, 
     switch (range)
     {
     case ShashinPosition::CAPABLANCA_TAL :
-        if (complex && staticState.opponentKingExposed)
-            return (depthRatio <= 0.62) ? ShashinPosition::LOW_TAL : ShashinPosition::CAPABLANCA;
-        return (depthRatio <= 0.60) ? ShashinPosition::LOW_TAL : ShashinPosition::CAPABLANCA;
+        // [SC 43-dev-A] README table: "Chaos: Capablanca-Tal ... Initiative: playing dictation with
+        // active moves and forcing ideas". The zone keeps its own type, like the total chaos below:
+        // none of the Capablanca, Tal or Petrosian rules, i.e. the Stockfish search. In 42.3 the
+        // depth ratio computed above was >= 1 at the root from the second iteration on, so this
+        // zone was always searched as Capablanca (strategic rules for a quiescent, equal position).
+        return range;
 
     case ShashinPosition::CAPABLANCA_PETROSIAN :
         if (complex && staticState.stmKingExposed)
@@ -174,7 +177,7 @@ ShashinPosition ShashinManager::getResilientShashinRange(ShashinPosition range, 
     case ShashinPosition::TAL_CAPABLANCA_PETROSIAN :
         // [SC 43] README table: "Chaos: Capablanca-Petrosian-Tal ... Total chaos: unclear
         // position, dynamically balanced, with no clear advantage for either side". No style:
-        // the Stockfish search. In 43-dev the depth ratio computed above was >= 1 at the root from the
+        // the Stockfish search. In 42.3 the depth ratio computed above was >= 1 at the root from the
         // second iteration on (it divides by the depth of the previous iteration), so this
         // zone was always searched as Low Petrosian, i.e. as a defensive position.
         return range;
