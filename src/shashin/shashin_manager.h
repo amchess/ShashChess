@@ -63,6 +63,18 @@ class ShashinManager {
     void updateRootShashinState(Value score, const Position& rootPos, int depth, int rootDepth);
     ShashinPosition         getShashinRange(Value value, const Position& rootPos);
     const RootShashinState& getState() const { return state; }
+    // [SC 43-dev-C] Opponent view (see `mirrored`): the Worker keeps a second manager with
+    // mirrored = true, updated together with the first one.
+    void setMirrored(bool m) { mirrored = m; }
+    bool isMirrored() const { return mirrored; }
+    // Mirror image of a zone: Tal <-> Petrosian, Capablanca-Tal <-> Capablanca-Petrosian,
+    // Capablanca and total chaos unchanged.
+    static ShashinPosition mirrorRange(ShashinPosition p) {
+        return p == ShashinPosition::TAL_CAPABLANCA_PETROSIAN
+               ? p
+               : static_cast<ShashinPosition>(static_cast<int>(ShashinPosition::HIGH_TAL)
+                                              - static_cast<int>(p));
+    }
     void                    setDepth(int depth) { state.dynamicBase.currentDepth = depth; }
     int                     getDepth() const { return state.dynamicBase.currentDepth; }
 
@@ -102,9 +114,6 @@ class ShashinManager {
                               Position&            rootPos,
                               const ShashinConfig& config,
                               int                  rootDepth);
-
-    // [SC 43-dev-D] Root-influence horizon: see ShashinParams::rootInfluenceHorizon
-    bool inRootHorizon(int ply) const { return ply <= params.rootInfluenceHorizon; }
 
     // Feature flags
     bool useMoveGenCrystalLogic() const;
@@ -225,10 +234,6 @@ class ShashinManager {
    private:
     ShashinParams params;
 
-    // [SC 43-dev-D] Zone of the previous iteration, before getResilientShashinRange():
-    // the reference of the zone hysteresis in setDynamicBaseState()
-    ShashinPosition lastRawZone = ShashinPosition::CAPABLANCA;
-
     // --- FIX 1 (Parte Struct): Struttura aggiornata ---
     struct PositionCache {
         uint64_t posHash       = 0;
@@ -240,6 +245,19 @@ class ShashinManager {
 
     RootShashinState state;
     PositionCache    positionCache;
+
+    // [SC 43-dev-C] Shashin's styles belong to a side: the side that is better plays as Tal, the
+    // side that is worse as Petrosian. Up to 42.3 the zone of the root, computed for the side to
+    // move at the root, was applied to every node of the tree, also to the moves of its
+    // opponent. With mirrored = true this manager is the opponent's view of the same root: the
+    // mirror image of the zone (computed from the same root score, then mapped by
+    // getResilientShashinRange as for the root side) and the static flags with the two kings
+    // swapped (own king = the opponent of the side to move at the root). The search uses it at
+    // the nodes where that opponent is to move. The legal move count and the sacrifice flag
+    // stay those of the root position. Diagnostic build: with -DSC43C_OFF the search uses the
+    // root view everywhere and is that of 43-dev (bench 2666431); in 43-dev-E, that of 43-dev-A
+    // (bench 2932436).
+    bool mirrored = false;
 
     uint64_t computePositionHash(const Position& pos);
 

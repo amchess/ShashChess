@@ -149,41 +149,6 @@ bool ShashinManager::isComplexPosition() const {
         || staticState.pawnsNearPromotion;
 }
 
-// [SC 43-dev-D] Win probability band [lo, hi] of a zone, from the limits of shashin_types.h
-static std::pair<int, int> zone_band(ShashinPosition z) {
-    switch (z)
-    {
-    case ShashinPosition::HIGH_PETROSIAN :
-        return {0, HIGH_PETROSIAN_MAX};
-    case ShashinPosition::MIDDLE_HIGH_PETROSIAN :
-        return {HIGH_PETROSIAN_MAX + 1, MIDDLE_HIGH_PETROSIAN_MAX};
-    case ShashinPosition::MIDDLE_PETROSIAN :
-        return {MIDDLE_HIGH_PETROSIAN_MAX + 1, MIDDLE_PETROSIAN_MAX};
-    case ShashinPosition::MIDDLE_LOW_PETROSIAN :
-        return {MIDDLE_PETROSIAN_MAX + 1, MIDDLE_LOW_PETROSIAN_MAX};
-    case ShashinPosition::LOW_PETROSIAN :
-        return {MIDDLE_LOW_PETROSIAN_MAX + 1, LOW_PETROSIAN_MAX};
-    case ShashinPosition::CAPABLANCA_PETROSIAN :
-        return {LOW_PETROSIAN_MAX + 1, CAPABLANCA_PETROSIAN_MAX};
-    case ShashinPosition::CAPABLANCA :
-    case ShashinPosition::TAL_CAPABLANCA_PETROSIAN :
-        return {CAPABLANCA_MAX, CAPABLANCA_MAX};
-    case ShashinPosition::CAPABLANCA_TAL :
-        return {CAPABLANCA_MAX + 1, CAPABLANCA_TAL_MAX};
-    case ShashinPosition::LOW_TAL :
-        return {CAPABLANCA_TAL_MAX + 1, LOW_TAL_MAX};
-    case ShashinPosition::MIDDLE_LOW_TAL :
-        return {LOW_TAL_MAX + 1, MIDDLE_LOW_TAL_MAX};
-    case ShashinPosition::MIDDLE_TAL :
-        return {MIDDLE_LOW_TAL_MAX + 1, MIDDLE_TAL_MAX};
-    case ShashinPosition::MIDDLE_HIGH_TAL :
-        return {MIDDLE_TAL_MAX + 1, MIDDLE_HIGH_TAL_MAX};
-    case ShashinPosition::HIGH_TAL :
-        return {MIDDLE_HIGH_TAL_MAX + 1, HIGH_TAL_MAX};
-    }
-    return {0, HIGH_TAL_MAX};
-}
-
 ShashinPosition ShashinManager::getResilientShashinRange(ShashinPosition range, int depth) {
     int rootDepth = state.dynamicBase.rootDepth;
     if (rootDepth <= 0)
@@ -196,9 +161,12 @@ ShashinPosition ShashinManager::getResilientShashinRange(ShashinPosition range, 
     switch (range)
     {
     case ShashinPosition::CAPABLANCA_TAL :
-        if (complex && staticState.opponentKingExposed)
-            return (depthRatio <= 0.62) ? ShashinPosition::LOW_TAL : ShashinPosition::CAPABLANCA;
-        return (depthRatio <= 0.60) ? ShashinPosition::LOW_TAL : ShashinPosition::CAPABLANCA;
+        // [SC 43-dev-A] README table: "Chaos: Capablanca-Tal ... Initiative: playing dictation with
+        // active moves and forcing ideas". The zone keeps its own type, like the total chaos below:
+        // none of the Capablanca, Tal or Petrosian rules, i.e. the Stockfish search. In 42.3 the
+        // depth ratio computed above was >= 1 at the root from the second iteration on, so this
+        // zone was always searched as Capablanca (strategic rules for a quiescent, equal position).
+        return range;
 
     case ShashinPosition::CAPABLANCA_PETROSIAN :
         if (complex && staticState.stmKingExposed)
@@ -209,7 +177,7 @@ ShashinPosition ShashinManager::getResilientShashinRange(ShashinPosition range, 
     case ShashinPosition::TAL_CAPABLANCA_PETROSIAN :
         // [SC 43] README table: "Chaos: Capablanca-Petrosian-Tal ... Total chaos: unclear
         // position, dynamically balanced, with no clear advantage for either side". No style:
-        // the Stockfish search. In 43-dev the depth ratio computed above was >= 1 at the root from the
+        // the Stockfish search. In 42.3 the depth ratio computed above was >= 1 at the root from the
         // second iteration on (it divides by the depth of the previous iteration), so this
         // zone was always searched as Low Petrosian, i.e. as a defensive position.
         return range;
@@ -264,36 +232,18 @@ void ShashinManager::initDynamicBaseState(Value                currentValue,
     state.dynamicBase.currentDepth = 0;
     state.dynamicBase.rootDepth    = rootDepth;
     ShashinPosition currentRange   = getInitialShashinRange(rootPos, currentValue, config);
+    if (mirrored)
+        currentRange = mirrorRange(currentRange);  // [SC 43-dev-C] opponent view
     state.dynamicBase.currentRange = getResilientShashinRange(currentRange, 0);
-    lastRawZone                    = currentRange;  // [SC 43-dev-D] reference of the hysteresis
 }
 
 void ShashinManager::setDynamicBaseState(Value           score,
                                          const Position& rootPos,
                                          int             depth,
                                          int             rootDepth) {
-    ShashinPosition range = getShashinRange(score, rootPos);
-
-    // [SC 43-dev-D] Zone hysteresis. Every completed iteration reclassifies the root, and a
-    // score that wobbles a few centipawns across a boundary (75/76 between Capablanca-Tal and
-    // Low Tal lies in the middle of the nugget band) switched the style of the whole next
-    // iteration. The root keeps the zone of the previous iteration while the win probability
-    // stays within zoneHysteresis points of its band. Capablanca and Total Chaos share the
-    // win probability 50 and differ by the draw probability: no hysteresis between them.
-    if (range != lastRawZone)
-    {
-        const auto [lo, hi]   = zone_band(lastRawZone);
-        const auto [nlo, nhi] = zone_band(range);
-        const bool both50     = lo == CAPABLANCA_MAX && hi == CAPABLANCA_MAX
-                         && nlo == CAPABLANCA_MAX && nhi == CAPABLANCA_MAX;
-        const WDLModel::WDL wdl  = WDLModel::get_wdl(score, rootPos);
-        const int           prob = wdl.win + (wdl.draw / 2);
-
-        if (!both50 && prob >= lo - params.zoneHysteresis && prob <= hi + params.zoneHysteresis)
-            range = lastRawZone;
-    }
-    lastRawZone = range;
-
+    ShashinPosition range          = getShashinRange(score, rootPos);
+    if (mirrored)
+        range = mirrorRange(range);  // [SC 43-dev-C] opponent view
     state.dynamicBase.currentRange = getResilientShashinRange(range, depth);
     state.dynamicBase.currentDepth = depth;
     state.dynamicBase.rootDepth    = rootDepth;
@@ -310,10 +260,14 @@ void ShashinManager::initDynamicRootShashinState(const Eval::NNUE::Network&     
     initDynamicBaseState(static_value(networks, accumulators, refreshTable, rootPos, ss, optimism),
                          rootPos, config, rootDepth);
     setDynamicDerivedState();
-    MoveConfig::useMoveShashinLogic = state.dynamicDerived.useMoveGenCrystalLogic;
-    MoveConfig::isStrategical       = isStrategical();
-    MoveConfig::isAggressive        = state.dynamicDerived.isAggressive;
-    MoveConfig::isTactical          = isTactical();
+    // [SC 43-dev-C] Flags of the move picker for each side: [0] side to move at the root,
+    // [1] its opponent (opponent view)
+    const int view                        = mirrored;
+    MoveConfig::rootSide                  = int(rootPos.side_to_move());
+    MoveConfig::useMoveShashinLogic[view] = state.dynamicDerived.useMoveGenCrystalLogic;
+    MoveConfig::isStrategical[view]       = isStrategical();
+    MoveConfig::isAggressive[view]        = state.dynamicDerived.isAggressive;
+    MoveConfig::isTactical[view]          = isTactical();
 }
 
 void ShashinManager::updateRootShashinState(Value           score,
@@ -324,24 +278,20 @@ void ShashinManager::updateRootShashinState(Value           score,
         return;
 
     ShashinPosition newRange = getShashinRange(score, rootPos);
+    if (mirrored)
+        newRange = mirrorRange(newRange);  // [SC 43-dev-C] opponent view
     if (newRange == state.dynamicBase.currentRange && depth == state.dynamicBase.currentDepth)
         return;
 
     setDynamicBaseState(score, rootPos, depth, rootDepth);
     setDynamicDerivedState();
 
-    const bool newUseLogic    = useMoveGenCrystalLogic();
-    const bool newStrategical = state.dynamicDerived.isStrategical;
-    const bool newAggressive  = state.dynamicDerived.isAggressive;
-
-    if (newUseLogic != MoveConfig::useMoveShashinLogic
-        || newStrategical != MoveConfig::isStrategical || newAggressive != MoveConfig::isAggressive)
-    {
-        MoveConfig::useMoveShashinLogic = newUseLogic;
-        MoveConfig::isStrategical       = newStrategical;
-        MoveConfig::isAggressive        = newAggressive;
-    }
-    MoveConfig::isTactical = isTactical();
+    // [SC 43-dev-C] [0] side to move at the root, [1] its opponent (opponent view)
+    const int view                        = mirrored;
+    MoveConfig::useMoveShashinLogic[view] = useMoveGenCrystalLogic();
+    MoveConfig::isStrategical[view]       = state.dynamicDerived.isStrategical;
+    MoveConfig::isAggressive[view]        = state.dynamicDerived.isAggressive;
+    MoveConfig::isTactical[view]          = isTactical();
 }
 
 void ShashinManager::setDynamicDerivedState() {
@@ -376,13 +326,15 @@ void ShashinManager::setStaticState(const Position& rootPos) {
     int nonPawnMaterial      = rootPos.non_pawn_material(WHITE) + rootPos.non_pawn_material(BLACK);
     staticState.highMaterial = (nonPawnMaterial > 2400);
 
+    // [SC 43-dev-C] Own side: the side to move at the root, or its opponent in the opponent view
+    const Color own            = mirrored ? ~rootPos.side_to_move() : rootPos.side_to_move();
     staticState.kingDanger     = king_danger(rootPos, WHITE) || king_danger(rootPos, BLACK);
-    staticState.stmKingDanger  = king_danger(rootPos, rootPos.side_to_move());
+    staticState.stmKingDanger  = king_danger(rootPos, own);
     staticState.allPiecesCount = rootPos.count<ALL_PIECES>();
 
     // 4. Calcolo punteggi per booleani "Exposed"
-    staticState.stmKingSafetyScore      = king_safety_score(rootPos, rootPos.side_to_move());
-    staticState.opponentKingSafetyScore = king_safety_score(rootPos, ~rootPos.side_to_move());
+    staticState.stmKingSafetyScore      = king_safety_score(rootPos, own);
+    staticState.opponentKingSafetyScore = king_safety_score(rootPos, ~own);
     staticState.stmKingExposed          = isStmKingExposed();
     staticState.opponentKingExposed     = isOpponentKingExposed();
 }

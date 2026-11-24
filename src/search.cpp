@@ -484,12 +484,15 @@ Search::Worker::Worker(SharedState&                    sharedState,
     network(sharedState.network),
     refreshTable(network[token]),
     shashinManager(std::make_unique<ShashinManager>()),
+    shashinManagerOpp(std::make_unique<ShashinManager>()),
     shConfig(sharedState.shashinConfig) {
+    shashinManagerOpp->setMirrored(true);  // [SC 43-dev-C]
     clear();
 }
 
 Search::Worker::~Worker() = default;
 ShashinManager& Worker::getShashinManager() { return *shashinManager; }
+ShashinManager& Worker::getShashinManagerOpp() { return *shashinManagerOpp; }  // [SC 43-dev-C]
 
 void Search::Worker::ensure_network_replicated() {
     // Access once to force lazy initialization, avoiding initialization during search
@@ -518,9 +521,15 @@ void Search::Worker::start_searching() {
     shashinRootAnalysis = threadIdx == rootAnalyst;
 
     if (shashinRootAnalysis)
+    {
         shashinManager->setStaticState(rootPos);
+        shashinManagerOpp->setStaticState(rootPos);  // [SC 43-dev-C]
+    }
     else
+    {
         shashinManager->setNeutralStaticState();
+        shashinManagerOpp->setNeutralStaticState();  // [SC 43-dev-C]
+    }
 
     // Non-main threads go directly to iterative_deepening()
     if (!is_mainthread())
@@ -776,6 +785,9 @@ bool Search::Worker::iterative_deepening() {
     localShashinManager.initDynamicRootShashinState(network[numaAccessToken], accumulatorStack,
                                                     refreshTable, rootPos, ss, VALUE_ZERO, shConfig,
                                                     rootDepth);
+    shashinManagerOpp->initDynamicRootShashinState(network[numaAccessToken], accumulatorStack,
+                                                   refreshTable, rootPos, ss, VALUE_ZERO, shConfig,
+                                                   rootDepth);  // [SC 43-dev-C]
 
     const RootShashinState& rootShashinState = localShashinManager.getState();
     const auto&             dynamicDerived   = rootShashinState.dynamicDerived;
@@ -1087,6 +1099,8 @@ bool Search::Worker::iterative_deepening() {
             {
                 localShashinManager.updateRootShashinState(rootMoves[0].uciScore, rootPos,
                                                            rootDepth, rootDepth);
+                shashinManagerOpp->updateRootShashinState(rootMoves[0].uciScore, rootPos,
+                                                          rootDepth, rootDepth);  // [SC 43-dev-C]
                 lastShashinUpdatedDepth = rootDepth;
             }
 
@@ -1306,9 +1320,16 @@ Value Search::Worker::search(
     const bool     allNode  = !(PvNode || cutNode);
     const bool     seekMate = rootDepth >= 16 && std::abs(rootMoves[pvIdx].score) >= 2000;
 
-    auto&                   localShashinManager = *this->shashinManager;
-    const RootShashinState& rootShashinState    = localShashinManager.getState();
-    bool                    isFortressNode      = localShashinManager.isFortress(rootPos);
+    // [SC 43-dev-C] Shashin's styles belong to a side: at the nodes where the opponent of the
+    // side to move at the root is to move (odd plies, null moves included) the search uses the
+    // opponent view of the root, with the mirror image of the zone (Tal <-> Petrosian).
+#ifdef SC43C_OFF
+    auto& localShashinManager = *this->shashinManager;
+#else
+    auto& localShashinManager = (ss->ply & 1) ? *this->shashinManagerOpp : *this->shashinManager;
+#endif
+    const RootShashinState& rootShashinState = localShashinManager.getState();
+    bool                    isFortressNode   = localShashinManager.isFortress(rootPos);
 
     // Dive into quiescence search when the depth reaches zero
     if (depth <= 0)
@@ -1398,15 +1419,6 @@ Value Search::Worker::search(
     bool        isComplex           = localShashinManager.isComplexPosition();
     uint8_t     legalMoveCount      = staticState.legalMoveCount;
     (void) legalMoveCount;
-
-    // [SC 43-dev-D] Root-influence horizon (ShashinParams::rootInfluenceHorizon). The Shashin
-    // analysis above describes the root position, so its effects on pruning and reductions are
-    // kept within this neighbourhood of the root; beyond it the search follows the Stockfish 19
-    // rules. Before, these root flags shaped every node of the tree: a root with a pawn on its
-    // 6th/7th rank, a sacrifice or a king in danger skipped the null move everywhere (6-9 plies
-    // less than Stockfish 19 at 60 s in the test suites), a strategical root skipped ProbCut
-    // everywhere. Move ordering, histories, extensions and qsearch are not affected.
-    const bool shashinNearRoot = localShashinManager.inRootHorizon(ss->ply);
 
     if (!rootNode)
     {
@@ -1739,18 +1751,14 @@ Value Search::Worker::search(
     {
         Value razorThreshold = alpha - 482 * depth * depth;
 
-        // [SC 43-dev-D] root offsets only near the root
-        if (shashinNearRoot)
-        {
-            if (isAggressive)
-                razorThreshold -= 50;
+        if (isAggressive)
+            razorThreshold -= 50;
 
-            if (isFortressNode)
-                razorThreshold -= 60;
+        if (isFortressNode)
+            razorThreshold -= 60;
 
-            if (legalMoveCount > 30 && !isStrategical)
-                razorThreshold -= 20;
-        }
+        if (legalMoveCount > 30 && !isStrategical)
+            razorThreshold -= 20;
 
         if (eval < razorThreshold)
             return qsearch<NonPV>(pos, ss, alpha, beta);
@@ -1764,21 +1772,17 @@ Value Search::Worker::search(
         // most 85%, fortress 60%, otherwise the Stockfish 19 margin. The previous 130%
         // whenever pawnsNearPromotion or isSacrificial held (true in most game positions)
         // removed most of the child-node futility pruning of the main thread.
-        // [SC 43-dev-D] root multipliers only near the root
-        if (shashinNearRoot)
-        {
-            if (isAggressive)
-                marginMultiplier = 90;
+        if (isAggressive)
+            marginMultiplier = 90;
 
-            if (staticState.kingDanger)
-                marginMultiplier = std::min(marginMultiplier, 85);
+        if (staticState.kingDanger)
+            marginMultiplier = std::min(marginMultiplier, 85);
 
-            if (isFortressNode)
-                marginMultiplier = 60;
+        if (isFortressNode)
+            marginMultiplier = 60;
 
-            if (isStrategical && legalMoveCount > 30)
-                marginMultiplier = std::min(marginMultiplier + 5, 115);
-        }
+        if (isStrategical && legalMoveCount > 30)
+            marginMultiplier = std::min(marginMultiplier + 5, 115);
 
         auto futility_margin = [&](Depth d) {
             Value futilityMult = std::min(45 + depth * 4, 85);
@@ -1803,20 +1807,12 @@ Value Search::Worker::search(
         && !excludedMove && pos.non_pawn_material(us) && ss->ply >= nmpMinPly && beta >= -2000)
     {
         bool skipNullMove = false;
-        // [SC 43-dev-D] The root flags skip the null move only near the root. The zugzwang risk
-        // of a pawn near promotion is a property of the node: it is tested on the node itself
-        // (two bitboard tests), so it still holds at any depth where such a pawn exists.
-        const bool pawnNearPromotionHere = (pos.pieces(WHITE, PAWN) & (Rank6BB | Rank7BB))
-                                        || (pos.pieces(BLACK, PAWN) & (Rank3BB | Rank2BB));
-        bool       nodeHot =
-          pawnNearPromotionHere
-          || (shashinNearRoot
-              && (staticState.kingDanger || staticState.pawnsNearPromotion || isSacrificial));
+        bool nodeHot = staticState.kingDanger || staticState.pawnsNearPromotion || isSacrificial;
 
-        if (nodeHot || (shashinNearRoot && isAggressive && staticState.kingDanger && depth < 10))
+        if (nodeHot || (isAggressive && staticState.kingDanger && depth < 10))
             skipNullMove = true;
 
-        if (shashinNearRoot && isPetrosian && staticState.stmKingDanger)
+        if (isPetrosian && staticState.stmKingDanger)
             skipNullMove = true;
 
         if (!skipNullMove)
@@ -1868,10 +1864,7 @@ Value Search::Worker::search(
     if (depth >= 3 && !disableNMAndPC && !ss->inCheck && !is_decisive(beta)
         && !(is_valid(ttData.value) && ttData.value < probCutBeta))
     {
-        // [SC 43-dev-D] root conditions only near the root (before: no ProbCut at all in the
-        // whole tree of a strategical root)
-        bool skipProbCut =
-          shashinNearRoot && (isFortressNode || (isStrategical && !staticState.kingDanger));
+        bool skipProbCut = isFortressNode || (isStrategical && !staticState.kingDanger);
 
         if (!skipProbCut)
         {
@@ -1882,9 +1875,9 @@ Value Search::Worker::search(
 
             // [SC] Shashin offsets on the Stockfish 19 depth, without the old SF18 clamp to
             // [0, depth]: SF19 handles probCutDepth <= 0 (qsearch only, TT depth + 1 >= -2)
-            if (shashinNearRoot && isAggressive)  // [SC 43-dev-D] only near the root
+            if (isAggressive)
                 probCutDepth++;
-            else if (shashinNearRoot && isStrategical)
+            else if (isStrategical)
                 probCutDepth--;
 
             while ((move = mp.next_move()) != Move::none())
@@ -1931,10 +1924,8 @@ moves_loop:  // When in check, search starts here
 
     if (commonProbcut)
     {
-        // [SC 43-dev-D] root conditions only near the root
-        bool tacticalRisk = shashinNearRoot
-                         && (staticState.kingDanger || staticState.pawnsNearPromotion
-                             || isSacrificial || stmKingExposed || opponentKingExposed);
+        bool tacticalRisk = staticState.kingDanger || staticState.pawnsNearPromotion
+                         || isSacrificial || stmKingExposed || opponentKingExposed;
 
         if (!tacticalRisk || ttData.depth >= depth - 2)
             return probCutBeta;
@@ -1988,7 +1979,7 @@ moves_loop:  // When in check, search starts here
         newDepth = depth - 1;
 
         int delta = beta - alpha;
-        int r     = reduction(improving, depth, moveCount, delta);
+        int r     = reduction(improving, depth, moveCount, delta, localShashinManager);
 
         // Increase reduction for ttPv nodes
         // (*Scaler) Larger values scale well.
@@ -2004,7 +1995,7 @@ moves_loop:  // When in check, search starts here
         {
             int moveCountThreshold = (3 + depth * depth) / (2 - improving);
 
-            if (depth > 8 && shashinNearRoot)  // [SC 43-dev-D] root offsets only near the root
+            if (depth > 8)
             {
                 if (isStrategical)
                 {
@@ -2177,7 +2168,7 @@ skipExtensionAndPruning:
             r -= 3023 + PvNode * 1004 + (ttData.value > alpha) * 885
                + (ttData.depth >= depth) * (816 + cutNode * 940);
 
-        if (!fullSearch && shashinNearRoot)  // [SC 43-dev-D] root offsets only near the root
+        if (!fullSearch)
         {
             if ((isTactical || isSacrificial) && depth > 8)
                 r -= 256;
@@ -2203,10 +2194,7 @@ skipExtensionAndPruning:
         {
             // [SC] Tactical positions keep the conservative ShashChess formula; all the
             // others (Capablanca and no Shashin style) use the Stockfish 19 one.
-            // [SC 43-dev-D] the conservative formula only near the root (before: in every node of a
-            // tactical root, about 144 less reduction than Stockfish 19)
-            if (shashinNearRoot
-                && (dynamicDerived.isHighTal || isTacticalReactive || staticState.isSacrificial))
+            if (dynamicDerived.isHighTal || isTacticalReactive || staticState.isSacrificial)
                 r += 120 + 1024 * ((ss + 1)->cutoffCnt > 2) + 100 * ((ss + 1)->cutoffCnt > 3)
                    + 1024 * allNode;
             else
@@ -2246,7 +2234,7 @@ skipExtensionAndPruning:
             };
             Depth d = lmrDepth(r);
 
-            if (depth > 5 && ss->ply > 1 && shashinNearRoot)  // [SC 43-dev-D] only near the root
+            if (depth > 5 && ss->ply > 1)
             {
                 if (isAggressive && (givesCheck || capture))
                     r -= 50;
@@ -2259,7 +2247,7 @@ skipExtensionAndPruning:
                     d = lmrDepth(r);
             }
 
-            if (shashinNearRoot && isFortressNode)  // [SC 43-dev-D] only near the root
+            if (isFortressNode)
                 d = std::max(1, d - 1);
 
             ss->reduction = newDepth - d;
@@ -2439,30 +2427,21 @@ skipExtensionAndPruning:
                     // Base Stockfish 19 (prima era 2)
                     int reduction = 3;
 
-                    // [SC 43-dev-D] The Shashin layer of this reduction only near the root;
-                    // beyond it, the base reduction. Near the root, no extra reduction for a
-                    // strategical root that is complex or tactically hot (king danger,
-                    // sacrifice, pawn near promotion): after the first score improvement, the
-                    // later moves can still hide the refutation.
-                    if (shashinNearRoot)
-                    {
-                        const bool criticalTactical =
-                          (opponentKingExposed && isTal) || (stmKingExposed && isPetrosian);
-                        const bool rootHot =
-                          staticState.kingDanger || staticState.pawnsNearPromotion || isSacrificial;
+                    const bool criticalTactical =
+                      (opponentKingExposed && isTal) || (stmKingExposed && isPetrosian);
 
-                        if (criticalTactical)
-                            reduction -= 1;
-                        else if (isStrategical && !stmKingExposed && !opponentKingExposed)
-                        {
-                            if (depth > 8 && !rootHot && !isComplex)
-                                reduction += 1;
-                            if (staticState.allPiecesCount > 20)
-                                reduction = std::min(reduction, 3);
-                        }
-                        else if (gameCycle)
-                            reduction += (pos.rule50_count() > 20) ? 1 : -1;
+                    // Shashin layern
+                    if (criticalTactical)
+                        reduction -= 1;
+                    else if (isStrategical && !stmKingExposed && !opponentKingExposed)
+                    {
+                        if (depth > 8)
+                            reduction += 1;
+                        if (staticState.allPiecesCount > 20)
+                            reduction = std::min(reduction, 3);
                     }
+                    else if (gameCycle)
+                        reduction += (pos.rule50_count() > 20) ? 1 : -1;
 
                     reduction = std::clamp(reduction, 1, depth - 1);
                     depth -= reduction;
@@ -2586,7 +2565,13 @@ template<NodeType nodeType>
 Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta) {
 
     static_assert(nodeType != Root);
+    // [SC 43-dev-C] Opponent view at odd plies, as in search()
+#ifdef SC43C_OFF
     const RootShashinState& rootShashinState = shashinManager->getState();
+#else
+    const RootShashinState& rootShashinState =
+      ((ss->ply & 1) ? shashinManagerOpp : shashinManager)->getState();
+#endif
     constexpr bool          PvNode           = nodeType == PV;
 
     assert(alpha >= -VALUE_INFINITE && alpha < beta && beta <= VALUE_INFINITE);
@@ -2941,13 +2926,14 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     return bestValue;
 }
 
-int Search::Worker::reduction(bool i, Depth d, int mn, int delta) const {
+// [SC 43-dev-C] sm: the Shashin view of the side to move at the node (see search())
+int Search::Worker::reduction(bool i, Depth d, int mn, int delta, const ShashinManager& sm) const {
     int reductionScale = reductions[d] * reductions[mn];
-    if (shashinManager->isAggressive())
+    if (sm.isAggressive())
         reductionScale = (reductionScale * 98) / 100;
-    else if (shashinManager->isStrategical())
+    else if (sm.isStrategical())
         reductionScale = (reductionScale * 104) / 100;
-    else if (shashinManager->isPetrosian())
+    else if (sm.isPetrosian())
         reductionScale = (reductionScale * 99) / 100;
 
     if (rootDelta != 0)
@@ -3379,6 +3365,8 @@ void SearchManager::output_pv(Search::Worker&           worker,
             && !rootMoves[i].is_inexact())
         {
             worker.getShashinManager().updateRootShashinState(v, pos, d, worker.rootDepth);
+            worker.getShashinManagerOpp().updateRootShashinState(v, pos, d,
+                                                                 worker.rootDepth);  // [SC 43-dev-C]
             worker.lastShashinUpdatedDepth = d;
         }
         // [SC:shashin] end
