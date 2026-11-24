@@ -149,6 +149,41 @@ bool ShashinManager::isComplexPosition() const {
         || staticState.pawnsNearPromotion;
 }
 
+// [SC 43-dev-D] Win probability band [lo, hi] of a zone, from the limits of shashin_types.h
+static std::pair<int, int> zone_band(ShashinPosition z) {
+    switch (z)
+    {
+    case ShashinPosition::HIGH_PETROSIAN :
+        return {0, HIGH_PETROSIAN_MAX};
+    case ShashinPosition::MIDDLE_HIGH_PETROSIAN :
+        return {HIGH_PETROSIAN_MAX + 1, MIDDLE_HIGH_PETROSIAN_MAX};
+    case ShashinPosition::MIDDLE_PETROSIAN :
+        return {MIDDLE_HIGH_PETROSIAN_MAX + 1, MIDDLE_PETROSIAN_MAX};
+    case ShashinPosition::MIDDLE_LOW_PETROSIAN :
+        return {MIDDLE_PETROSIAN_MAX + 1, MIDDLE_LOW_PETROSIAN_MAX};
+    case ShashinPosition::LOW_PETROSIAN :
+        return {MIDDLE_LOW_PETROSIAN_MAX + 1, LOW_PETROSIAN_MAX};
+    case ShashinPosition::CAPABLANCA_PETROSIAN :
+        return {LOW_PETROSIAN_MAX + 1, CAPABLANCA_PETROSIAN_MAX};
+    case ShashinPosition::CAPABLANCA :
+    case ShashinPosition::TAL_CAPABLANCA_PETROSIAN :
+        return {CAPABLANCA_MAX, CAPABLANCA_MAX};
+    case ShashinPosition::CAPABLANCA_TAL :
+        return {CAPABLANCA_MAX + 1, CAPABLANCA_TAL_MAX};
+    case ShashinPosition::LOW_TAL :
+        return {CAPABLANCA_TAL_MAX + 1, LOW_TAL_MAX};
+    case ShashinPosition::MIDDLE_LOW_TAL :
+        return {LOW_TAL_MAX + 1, MIDDLE_LOW_TAL_MAX};
+    case ShashinPosition::MIDDLE_TAL :
+        return {MIDDLE_LOW_TAL_MAX + 1, MIDDLE_TAL_MAX};
+    case ShashinPosition::MIDDLE_HIGH_TAL :
+        return {MIDDLE_TAL_MAX + 1, MIDDLE_HIGH_TAL_MAX};
+    case ShashinPosition::HIGH_TAL :
+        return {MIDDLE_HIGH_TAL_MAX + 1, HIGH_TAL_MAX};
+    }
+    return {0, HIGH_TAL_MAX};
+}
+
 ShashinPosition ShashinManager::getResilientShashinRange(ShashinPosition range, int depth) {
     int rootDepth = state.dynamicBase.rootDepth;
     if (rootDepth <= 0)
@@ -230,13 +265,35 @@ void ShashinManager::initDynamicBaseState(Value                currentValue,
     state.dynamicBase.rootDepth    = rootDepth;
     ShashinPosition currentRange   = getInitialShashinRange(rootPos, currentValue, config);
     state.dynamicBase.currentRange = getResilientShashinRange(currentRange, 0);
+    lastRawZone                    = currentRange;  // [SC 43-dev-D] reference of the hysteresis
 }
 
 void ShashinManager::setDynamicBaseState(Value           score,
                                          const Position& rootPos,
                                          int             depth,
                                          int             rootDepth) {
-    ShashinPosition range          = getShashinRange(score, rootPos);
+    ShashinPosition range = getShashinRange(score, rootPos);
+
+    // [SC 43-dev-D] Zone hysteresis. Every completed iteration reclassifies the root, and a
+    // score that wobbles a few centipawns across a boundary (75/76 between Capablanca-Tal and
+    // Low Tal lies in the middle of the nugget band) switched the style of the whole next
+    // iteration. The root keeps the zone of the previous iteration while the win probability
+    // stays within zoneHysteresis points of its band. Capablanca and Total Chaos share the
+    // win probability 50 and differ by the draw probability: no hysteresis between them.
+    if (range != lastRawZone)
+    {
+        const auto [lo, hi]   = zone_band(lastRawZone);
+        const auto [nlo, nhi] = zone_band(range);
+        const bool both50     = lo == CAPABLANCA_MAX && hi == CAPABLANCA_MAX
+                         && nlo == CAPABLANCA_MAX && nhi == CAPABLANCA_MAX;
+        const WDLModel::WDL wdl  = WDLModel::get_wdl(score, rootPos);
+        const int           prob = wdl.win + (wdl.draw / 2);
+
+        if (!both50 && prob >= lo - params.zoneHysteresis && prob <= hi + params.zoneHysteresis)
+            range = lastRawZone;
+    }
+    lastRawZone = range;
+
     state.dynamicBase.currentRange = getResilientShashinRange(range, depth);
     state.dynamicBase.currentDepth = depth;
     state.dynamicBase.rootDepth    = rootDepth;

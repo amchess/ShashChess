@@ -1399,6 +1399,15 @@ Value Search::Worker::search(
     uint8_t     legalMoveCount      = staticState.legalMoveCount;
     (void) legalMoveCount;
 
+    // [SC 43-dev-D] Root-influence horizon (ShashinParams::rootInfluenceHorizon). The Shashin
+    // analysis above describes the root position, so its effects on pruning and reductions are
+    // kept within this neighbourhood of the root; beyond it the search follows the Stockfish 19
+    // rules. Before, these root flags shaped every node of the tree: a root with a pawn on its
+    // 6th/7th rank, a sacrifice or a king in danger skipped the null move everywhere (6-9 plies
+    // less than Stockfish 19 at 60 s in the test suites), a strategical root skipped ProbCut
+    // everywhere. Move ordering, histories, extensions and qsearch are not affected.
+    const bool shashinNearRoot = localShashinManager.inRootHorizon(ss->ply);
+
     if (!rootNode)
     {
         bool allowCycleDetection =
@@ -1730,14 +1739,18 @@ Value Search::Worker::search(
     {
         Value razorThreshold = alpha - 482 * depth * depth;
 
-        if (isAggressive)
-            razorThreshold -= 50;
+        // [SC 43-dev-D] root offsets only near the root
+        if (shashinNearRoot)
+        {
+            if (isAggressive)
+                razorThreshold -= 50;
 
-        if (isFortressNode)
-            razorThreshold -= 60;
+            if (isFortressNode)
+                razorThreshold -= 60;
 
-        if (legalMoveCount > 30 && !isStrategical)
-            razorThreshold -= 20;
+            if (legalMoveCount > 30 && !isStrategical)
+                razorThreshold -= 20;
+        }
 
         if (eval < razorThreshold)
             return qsearch<NonPV>(pos, ss, alpha, beta);
@@ -1751,17 +1764,21 @@ Value Search::Worker::search(
         // most 85%, fortress 60%, otherwise the Stockfish 19 margin. The previous 130%
         // whenever pawnsNearPromotion or isSacrificial held (true in most game positions)
         // removed most of the child-node futility pruning of the main thread.
-        if (isAggressive)
-            marginMultiplier = 90;
+        // [SC 43-dev-D] root multipliers only near the root
+        if (shashinNearRoot)
+        {
+            if (isAggressive)
+                marginMultiplier = 90;
 
-        if (staticState.kingDanger)
-            marginMultiplier = std::min(marginMultiplier, 85);
+            if (staticState.kingDanger)
+                marginMultiplier = std::min(marginMultiplier, 85);
 
-        if (isFortressNode)
-            marginMultiplier = 60;
+            if (isFortressNode)
+                marginMultiplier = 60;
 
-        if (isStrategical && legalMoveCount > 30)
-            marginMultiplier = std::min(marginMultiplier + 5, 115);
+            if (isStrategical && legalMoveCount > 30)
+                marginMultiplier = std::min(marginMultiplier + 5, 115);
+        }
 
         auto futility_margin = [&](Depth d) {
             Value futilityMult = std::min(45 + depth * 4, 85);
@@ -1786,12 +1803,20 @@ Value Search::Worker::search(
         && !excludedMove && pos.non_pawn_material(us) && ss->ply >= nmpMinPly && beta >= -2000)
     {
         bool skipNullMove = false;
-        bool nodeHot = staticState.kingDanger || staticState.pawnsNearPromotion || isSacrificial;
+        // [SC 43-dev-D] The root flags skip the null move only near the root. The zugzwang risk
+        // of a pawn near promotion is a property of the node: it is tested on the node itself
+        // (two bitboard tests), so it still holds at any depth where such a pawn exists.
+        const bool pawnNearPromotionHere = (pos.pieces(WHITE, PAWN) & (Rank6BB | Rank7BB))
+                                        || (pos.pieces(BLACK, PAWN) & (Rank3BB | Rank2BB));
+        bool       nodeHot =
+          pawnNearPromotionHere
+          || (shashinNearRoot
+              && (staticState.kingDanger || staticState.pawnsNearPromotion || isSacrificial));
 
-        if (nodeHot || (isAggressive && staticState.kingDanger && depth < 10))
+        if (nodeHot || (shashinNearRoot && isAggressive && staticState.kingDanger && depth < 10))
             skipNullMove = true;
 
-        if (isPetrosian && staticState.stmKingDanger)
+        if (shashinNearRoot && isPetrosian && staticState.stmKingDanger)
             skipNullMove = true;
 
         if (!skipNullMove)
@@ -1843,7 +1868,10 @@ Value Search::Worker::search(
     if (depth >= 3 && !disableNMAndPC && !ss->inCheck && !is_decisive(beta)
         && !(is_valid(ttData.value) && ttData.value < probCutBeta))
     {
-        bool skipProbCut = isFortressNode || (isStrategical && !staticState.kingDanger);
+        // [SC 43-dev-D] root conditions only near the root (before: no ProbCut at all in the
+        // whole tree of a strategical root)
+        bool skipProbCut =
+          shashinNearRoot && (isFortressNode || (isStrategical && !staticState.kingDanger));
 
         if (!skipProbCut)
         {
@@ -1854,9 +1882,9 @@ Value Search::Worker::search(
 
             // [SC] Shashin offsets on the Stockfish 19 depth, without the old SF18 clamp to
             // [0, depth]: SF19 handles probCutDepth <= 0 (qsearch only, TT depth + 1 >= -2)
-            if (isAggressive)
+            if (shashinNearRoot && isAggressive)  // [SC 43-dev-D] only near the root
                 probCutDepth++;
-            else if (isStrategical)
+            else if (shashinNearRoot && isStrategical)
                 probCutDepth--;
 
             while ((move = mp.next_move()) != Move::none())
@@ -1903,8 +1931,10 @@ moves_loop:  // When in check, search starts here
 
     if (commonProbcut)
     {
-        bool tacticalRisk = staticState.kingDanger || staticState.pawnsNearPromotion
-                         || isSacrificial || stmKingExposed || opponentKingExposed;
+        // [SC 43-dev-D] root conditions only near the root
+        bool tacticalRisk = shashinNearRoot
+                         && (staticState.kingDanger || staticState.pawnsNearPromotion
+                             || isSacrificial || stmKingExposed || opponentKingExposed);
 
         if (!tacticalRisk || ttData.depth >= depth - 2)
             return probCutBeta;
@@ -1974,7 +2004,7 @@ moves_loop:  // When in check, search starts here
         {
             int moveCountThreshold = (3 + depth * depth) / (2 - improving);
 
-            if (depth > 8)
+            if (depth > 8 && shashinNearRoot)  // [SC 43-dev-D] root offsets only near the root
             {
                 if (isStrategical)
                 {
@@ -2147,7 +2177,7 @@ skipExtensionAndPruning:
             r -= 3023 + PvNode * 1004 + (ttData.value > alpha) * 885
                + (ttData.depth >= depth) * (816 + cutNode * 940);
 
-        if (!fullSearch)
+        if (!fullSearch && shashinNearRoot)  // [SC 43-dev-D] root offsets only near the root
         {
             if ((isTactical || isSacrificial) && depth > 8)
                 r -= 256;
@@ -2173,7 +2203,10 @@ skipExtensionAndPruning:
         {
             // [SC] Tactical positions keep the conservative ShashChess formula; all the
             // others (Capablanca and no Shashin style) use the Stockfish 19 one.
-            if (dynamicDerived.isHighTal || isTacticalReactive || staticState.isSacrificial)
+            // [SC 43-dev-D] the conservative formula only near the root (before: in every node of a
+            // tactical root, about 144 less reduction than Stockfish 19)
+            if (shashinNearRoot
+                && (dynamicDerived.isHighTal || isTacticalReactive || staticState.isSacrificial))
                 r += 120 + 1024 * ((ss + 1)->cutoffCnt > 2) + 100 * ((ss + 1)->cutoffCnt > 3)
                    + 1024 * allNode;
             else
@@ -2213,7 +2246,7 @@ skipExtensionAndPruning:
             };
             Depth d = lmrDepth(r);
 
-            if (depth > 5 && ss->ply > 1)
+            if (depth > 5 && ss->ply > 1 && shashinNearRoot)  // [SC 43-dev-D] only near the root
             {
                 if (isAggressive && (givesCheck || capture))
                     r -= 50;
@@ -2226,7 +2259,7 @@ skipExtensionAndPruning:
                     d = lmrDepth(r);
             }
 
-            if (isFortressNode)
+            if (shashinNearRoot && isFortressNode)  // [SC 43-dev-D] only near the root
                 d = std::max(1, d - 1);
 
             ss->reduction = newDepth - d;
@@ -2406,21 +2439,30 @@ skipExtensionAndPruning:
                     // Base Stockfish 19 (prima era 2)
                     int reduction = 3;
 
-                    const bool criticalTactical =
-                      (opponentKingExposed && isTal) || (stmKingExposed && isPetrosian);
-
-                    // Shashin layern
-                    if (criticalTactical)
-                        reduction -= 1;
-                    else if (isStrategical && !stmKingExposed && !opponentKingExposed)
+                    // [SC 43-dev-D] The Shashin layer of this reduction only near the root;
+                    // beyond it, the base reduction. Near the root, no extra reduction for a
+                    // strategical root that is complex or tactically hot (king danger,
+                    // sacrifice, pawn near promotion): after the first score improvement, the
+                    // later moves can still hide the refutation.
+                    if (shashinNearRoot)
                     {
-                        if (depth > 8)
-                            reduction += 1;
-                        if (staticState.allPiecesCount > 20)
-                            reduction = std::min(reduction, 3);
+                        const bool criticalTactical =
+                          (opponentKingExposed && isTal) || (stmKingExposed && isPetrosian);
+                        const bool rootHot =
+                          staticState.kingDanger || staticState.pawnsNearPromotion || isSacrificial;
+
+                        if (criticalTactical)
+                            reduction -= 1;
+                        else if (isStrategical && !stmKingExposed && !opponentKingExposed)
+                        {
+                            if (depth > 8 && !rootHot && !isComplex)
+                                reduction += 1;
+                            if (staticState.allPiecesCount > 20)
+                                reduction = std::min(reduction, 3);
+                        }
+                        else if (gameCycle)
+                            reduction += (pos.rule50_count() > 20) ? 1 : -1;
                     }
-                    else if (gameCycle)
-                        reduction += (pos.rule50_count() > 20) ? 1 : -1;
 
                     reduction = std::clamp(reduction, 1, depth - 1);
                     depth -= reduction;

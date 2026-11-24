@@ -41,6 +41,16 @@ struct ShashinParams {
     int shieldBonus                     = 15;
     int centerBonus                     = 8;
     int avoidStep10PassiveMoveThreshold = 20;
+
+    // [SC 43-dev-D] Root-influence horizon, in plies from the root: within it the Shashin
+    // analysis of the root shapes pruning and reductions as in 43-dev, beyond it the search
+    // follows the Stockfish 19 rules. A constant, not a UCI option.
+    int rootInfluenceHorizon = 8;
+
+    // [SC 43-dev-D] Zone hysteresis, in points of win probability (win + draw / 2): the root
+    // keeps the zone of the previous iteration while the win probability stays within this
+    // many points of that zone. Smaller than the narrowest zones (4-5 points).
+    int zoneHysteresis = 2;
 };
 
 }  // namespace ShashChess

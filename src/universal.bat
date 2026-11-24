@@ -2,7 +2,7 @@
 setlocal enableextensions enabledelayedexpansion
 
 REM ==========================================================================
-REM  universal.bat  -  ShashChess 43-dev  -  binario UNIVERSAL x86-64 (MinGW/MSYS2)
+REM  universal.bat  -  ShashChess 43-dev-D  -  binario UNIVERSAL x86-64 (MinGW/MSYS2)
 REM  Da lanciare DENTRO la cartella "src" del sorgente.
 REM
 REM  ARCH=x86-64-universal compila 8 slice
@@ -55,7 +55,7 @@ if not exist shashchess.exe goto :fallita
 strip shashchess.exe
 REM move /y invece di ren: ren fallisce se l'exe esiste gia' e il clean finale
 REM cancellerebbe quello nuovo, lasciando il binario della build precedente.
-move /y shashchess.exe ShashChess43-dev-universal.exe >nul
+move /y shashchess.exe ShashChess43-dev-D-universal.exe >nul
 if errorlevel 1 goto :fallita
 
 REM --- nome della rete di default, letto da evaluate.h ----------------------
@@ -74,11 +74,11 @@ REM --- verifiche in una cartella temporanea, senza toccare src ---------------
 set "CHECKDIR=%TEMP%\shashchess_netcheck"
 if exist "%CHECKDIR%" rmdir /s /q "%CHECKDIR%"
 mkdir "%CHECKDIR%"
-copy /y ShashChess43-dev-universal.exe "%CHECKDIR%\ShashChess43-dev-universal.exe" >nul
+copy /y ShashChess43-dev-D-universal.exe "%CHECKDIR%\ShashChess43-dev-D-universal.exe" >nul
 
 REM verifica 1: senza rete accanto all'exe il motore deve fermarsi
 pushd "%CHECKDIR%"
-ShashChess43-dev-universal.exe bench 16 1 1 >nul 2>&1
+ShashChess43-dev-D-universal.exe bench 16 1 1 >nul 2>&1
 set "RC=%errorlevel%"
 popd
 if "%RC%"=="0" (
@@ -91,7 +91,7 @@ echo [universal] OK: senza %NETFILE% il motore si ferma, la rete non e' incorpor
 REM verifica 2: con la rete accanto all'exe il bench deve funzionare
 copy /y "%NETFILE%" "%CHECKDIR%\%NETFILE%" >nul
 pushd "%CHECKDIR%"
-ShashChess43-dev-universal.exe bench 16 1 1 >nul 2>&1
+ShashChess43-dev-D-universal.exe bench 16 1 1 >nul 2>&1
 set "RC=%errorlevel%"
 popd
 rmdir /s /q "%CHECKDIR%"
@@ -102,12 +102,12 @@ if not "%RC%"=="0" (
 echo [universal] OK: rete caricata da file esterno
 
 REM --- verifica: stampa la slice selezionata sulla CPU corrente -------------
-ShashChess43-dev-universal.exe compiler
+ShashChess43-dev-D-universal.exe compiler
 
 mingw32-make clean
 echo.
-echo [universal] OK: ShashChess43-dev-universal.exe
-echo [universal] Da distribuire insieme: ShashChess43-dev-universal.exe + %NETFILE%
+echo [universal] OK: ShashChess43-dev-D-universal.exe
+echo [universal] Da distribuire insieme: ShashChess43-dev-D-universal.exe + %NETFILE%
 pause
 exit /b 0
 

@@ -103,6 +103,9 @@ class ShashinManager {
                               const ShashinConfig& config,
                               int                  rootDepth);
 
+    // [SC 43-dev-D] Root-influence horizon: see ShashinParams::rootInfluenceHorizon
+    bool inRootHorizon(int ply) const { return ply <= params.rootInfluenceHorizon; }
+
     // Feature flags
     bool useMoveGenCrystalLogic() const;
     bool useStep17CrystalLogic() const;
@@ -221,6 +224,10 @@ class ShashinManager {
 
    private:
     ShashinParams params;
+
+    // [SC 43-dev-D] Zone of the previous iteration, before getResilientShashinRange():
+    // the reference of the zone hysteresis in setDynamicBaseState()
+    ShashinPosition lastRawZone = ShashinPosition::CAPABLANCA;
 
     // --- FIX 1 (Parte Struct): Struttura aggiornata ---
     struct PositionCache {
