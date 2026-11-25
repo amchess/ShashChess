@@ -255,7 +255,7 @@ class ShashinManager {
     // swapped (own king = the opponent of the side to move at the root). The search uses it at
     // the nodes where that opponent is to move. The legal move count and the sacrifice flag
     // stay those of the root position. Diagnostic build: with -DSC43C_OFF the search uses the
-    // root view everywhere and is that of 43-dev (bench 2666431); in 43-dev-E, that of 43-dev-A
+    // root view everywhere and is that of 43-dev (bench 2666431); in 43-dev-G, that of 43-dev-A
     // (bench 2932436).
     bool mirrored = false;
 

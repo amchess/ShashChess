@@ -205,7 +205,10 @@ ExtMove* MovePicker::score(const MoveList<Type>& ml) {
     [[maybe_unused]] Bitboard threatByLesser[KING + 1];
     [[maybe_unused]] Bitboard enemyAttacks = 0;  // [SC] tutte le case attaccate dall'avversario
     // [SC] Shashin ordering bonus only in Capablanca (strategical) or tactical phases:
-    // with no Shashin style the quiet moves keep the Stockfish 19 ordering
+    // with no Shashin style the quiet moves keep the Stockfish 19 ordering.
+    // The bonus belongs to the legacy application of the framework (and to "MCTS by
+    // Shashin"): without a Shashin personality the flags are set, but they do not
+    // reach the ordering.
     // [SC 43-dev-C] Flags of the side to move at this node: [0] root side, [1] its opponent
 #ifdef SC43C_OFF
     [[maybe_unused]] const int shashinView = 0;
@@ -213,7 +216,7 @@ ExtMove* MovePicker::score(const MoveList<Type>& ml) {
     [[maybe_unused]] const int shashinView = int(us) != MoveConfig::rootSide;
 #endif
     [[maybe_unused]] const bool shashinOrdering =
-      depth > 6
+      depth > 6 && MoveConfig::appliedToSearch
       && (MoveConfig::isStrategical[shashinView] || MoveConfig::isTactical[shashinView]);
     if constexpr (Type == QUIETS)
     {

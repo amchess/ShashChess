@@ -503,22 +503,37 @@ void Search::Worker::start_searching() {
 
     accumulatorStack.reset();
 
-    // [SC] Shashin roles. One thread analyses the root (static state: sacrifices, pawns
-    // near promotion, king danger, fortress, mobility) and follows the WDL zone of its own
-    // search: the main thread when it is alone (hard positions, suite), otherwise the
-    // last helper, so that the main thread, which drives time management, keeps a search
-    // close to Stockfish 19. The other threads follow only the WDL zone of the root, as
-    // the helpers of ShashChess 41 (initDynamicRootShashinState in iterative_deepening).
-    // With the static flags on every thread, null move and futility of the whole pool
-    // were driven by the "hot" root flags, true in most game positions.
+    // [SC] Shashin roles. With a Shashin personality (High Tal ... High Petrosian, the
+    // existing UCI options) the application of the framework of ShashChess 42.3 is kept:
+    // one thread analyses the root (static state: sacrifices, pawns near promotion, king
+    // danger, fortress, mobility) and follows the WDL zone of its own search, the main
+    // thread when it is alone (hard positions, suite), otherwise the last helper, so that
+    // the main thread, which drives time management, keeps a search closer to Stockfish 19;
+    // the other threads follow only the WDL zone of the root (initDynamicRootShashinState
+    // in iterative_deepening), as the helpers of ShashChess 41. With the static flags on
+    // every thread, null move and futility of the whole pool were driven by the "hot" root
+    // flags, true in most game positions.
+    // Without a personality the static state does not change the search (every read is
+    // behind shashinLegacy), so every thread computes it: the whole pool classifies the
+    // root in the same way and reaches the same depth, and the best thread is chosen as in
+    // Stockfish 19 (get_best_thread()).
     // With "MCTS by Shashin" the helpers 1..MCTSThreads may run MCTS instead of alpha-beta
     // (and the main thread too, when MCTSThreads >= Threads): if the last helper is one
     // of them, the main thread analyses the root.
+    shashinLegacy = shConfig.highTal || shConfig.middleTal || shConfig.lowTal
+                 || shConfig.capablanca || shConfig.highPetrosian || shConfig.middlePetrosian
+                 || shConfig.lowPetrosian;
+
+    // [SC] The Shashin bonuses of the quiet move ordering (movepick.cpp) belong to the
+    // legacy application (and to the threads of "MCTS by Shashin", set below).
+    MoveConfig::appliedToSearch = shashinLegacySearch();
+
     usize rootAnalyst = threads.size() - 1;
     if (bool(options["MCTS by Shashin"]) && rootAnalyst <= usize(int(options["MCTSThreads"])))
         rootAnalyst = 0;
 
-    shashinRootAnalysis = threadIdx == rootAnalyst;
+    shashinRootAnalysis =
+      shashinLegacySearch() ? threadIdx == rootAnalyst : true;
 
     if (shashinRootAnalysis)
     {
@@ -885,6 +900,10 @@ bool Search::Worker::iterative_deepening() {
 
         if (mctsWorker && !mctsReason)
         {
+            // [SC] The MCTS tree keeps the Shashin ordering of the quiet moves with every
+            // application of the framework
+            MoveConfig::appliedToSearch = true;
+
             auto monteCarlo = std::make_unique<MonteCarlo>(rootPos, this, threads);
 
             // False: stopped before the root was built, nothing searched
@@ -950,9 +969,10 @@ bool Search::Worker::iterative_deepening() {
             delta = 5 + threadIdx % 8 + std::abs(rootMoves[pvIdx].meanSquaredScore) / 10193;
 
             // [SC] Only Tal widens the window (+12.5%), as in ShashChess 41; otherwise the
-            // Stockfish 19 window. The narrower window for Capablanca/fortress belonged to
-            // the Gold Digger build only, the cap at depth < 10 was not style dependent.
-            if (isAggressive || isHighTal)
+            // Stockfish 19 window. The narrower window for Capablanca/fortress belonged to the
+            // Gold Digger build only, the cap at depth < 10 was not style dependent.
+            // Without a Shashin personality the window is always the Stockfish 19 one.
+            if (shashinLegacySearch() && (isAggressive || isHighTal))
                 delta = (delta * 9) / 8;
 
             Value avg = rootMoves[pvIdx].averageScore;
@@ -1329,7 +1349,13 @@ Value Search::Worker::search(
     auto& localShashinManager = (ss->ply & 1) ? *this->shashinManagerOpp : *this->shashinManager;
 #endif
     const RootShashinState& rootShashinState = localShashinManager.getState();
-    bool                    isFortressNode   = localShashinManager.isFortress(rootPos);
+
+    // [SC] The static flags of the root modify the search of every node only when a Shashin
+    // personality is set (ShashChess 42.3, member shashinLegacy): without a personality they
+    // are not read at all in this function, so the tree is the Stockfish 19 one (the fortress
+    // is computed by every thread, but only for the classification of the root, it is cheap
+    // and cached).
+    bool isFortressNode = shashinLegacy && localShashinManager.isFortress(rootPos);
 
     // Dive into quiescence search when the depth reaches zero
     if (depth <= 0)
@@ -1405,30 +1431,34 @@ Value Search::Worker::search(
     if (PvNode && selDepth < ss->ply + 1)
         selDepth = ss->ply + 1;
 
+    // [SC] Shashin flags of the root: read only by the legacy application (a personality is
+    // set). Without one they are all false and no line of this function reads the state.
     const auto& dynamicDerived      = rootShashinState.dynamicDerived;
     const auto& staticState         = rootShashinState.staticState;
-    bool        isStrategical       = localShashinManager.isStrategical();
-    bool        isTacticalReactive  = dynamicDerived.isTacticalReactive;
-    bool        stmKingExposed      = staticState.stmKingExposed;
-    bool        opponentKingExposed = staticState.opponentKingExposed;
-    bool        isSacrificial       = staticState.isSacrificial;
-    bool        isTal               = localShashinManager.isTal();
-    bool        isPetrosian         = localShashinManager.isPetrosian();
-    bool        isAggressive        = localShashinManager.isAggressive();
-    bool        isTactical          = localShashinManager.isTactical();
-    bool        isComplex           = localShashinManager.isComplexPosition();
-    uint8_t     legalMoveCount      = staticState.legalMoveCount;
+    bool        isStrategical       = shashinLegacy && localShashinManager.isStrategical();
+    bool        isTacticalReactive  = shashinLegacy && dynamicDerived.isTacticalReactive;
+    bool        stmKingExposed      = shashinLegacy && staticState.stmKingExposed;
+    bool        opponentKingExposed = shashinLegacy && staticState.opponentKingExposed;
+    bool        isSacrificial       = shashinLegacy && staticState.isSacrificial;
+    bool        isTal               = shashinLegacy && localShashinManager.isTal();
+    bool        isPetrosian         = shashinLegacy && localShashinManager.isPetrosian();
+    bool        isAggressive        = shashinLegacy && localShashinManager.isAggressive();
+    bool        isTactical          = shashinLegacy && localShashinManager.isTactical();
+    bool        isComplex           = shashinLegacy && localShashinManager.isComplexPosition();
+    uint8_t     legalMoveCount      = shashinLegacy ? staticState.legalMoveCount : 0;
     (void) legalMoveCount;
 
     if (!rootNode)
     {
-        bool allowCycleDetection =
-          (isStrategical && isComplex)
-          || (localShashinManager.isTacticalDefensive() && localShashinManager.isLowActivity());
-
-        if (allowCycleDetection && !ss->excludedMove)
+        // [SC] Only the legacy application looks for a repetition two plies ahead (it feeds
+        // its extra reduction of Step 22): Stockfish 19 has no gameCycle.
+        if (shashinLegacy && !ss->excludedMove)
         {
-            if (pos.upcoming_repetition(ss->ply))
+            bool allowCycleDetection =
+              (isStrategical && isComplex)
+              || (localShashinManager.isTacticalDefensive() && localShashinManager.isLowActivity());
+
+            if (allowCycleDetection && pos.upcoming_repetition(ss->ply))
                 gameCycle = true;
         }
 
@@ -1751,14 +1781,18 @@ Value Search::Worker::search(
     {
         Value razorThreshold = alpha - 482 * depth * depth;
 
-        if (isAggressive)
-            razorThreshold -= 50;
+        // [SC] The Shashin offsets are applied only by the legacy application.
+        if (shashinLegacy)
+        {
+            if (isAggressive)
+                razorThreshold -= 50;
 
-        if (isFortressNode)
-            razorThreshold -= 60;
+            if (isFortressNode)
+                razorThreshold -= 60;
 
-        if (legalMoveCount > 30 && !isStrategical)
-            razorThreshold -= 20;
+            if (legalMoveCount > 30 && !isStrategical)
+                razorThreshold -= 20;
+        }
 
         if (eval < razorThreshold)
             return qsearch<NonPV>(pos, ss, alpha, beta);
@@ -1766,23 +1800,28 @@ Value Search::Worker::search(
 
     // Step 9. Futility pruning: child node
     {
+        // [SC] 100 leaves exactly the Stockfish 19 margin (integer arithmetic included).
         int marginMultiplier = 100;
 
         // [SC] As in ShashChess 41 (not the Gold Digger build): Tal 90%, king danger at
         // most 85%, fortress 60%, otherwise the Stockfish 19 margin. The previous 130%
         // whenever pawnsNearPromotion or isSacrificial held (true in most game positions)
         // removed most of the child-node futility pruning of the main thread.
-        if (isAggressive)
-            marginMultiplier = 90;
+        // Applied only by the legacy application.
+        if (shashinLegacy)
+        {
+            if (isAggressive)
+                marginMultiplier = 90;
 
-        if (staticState.kingDanger)
-            marginMultiplier = std::min(marginMultiplier, 85);
+            if (staticState.kingDanger)
+                marginMultiplier = std::min(marginMultiplier, 85);
 
-        if (isFortressNode)
-            marginMultiplier = 60;
+            if (isFortressNode)
+                marginMultiplier = 60;
 
-        if (isStrategical && legalMoveCount > 30)
-            marginMultiplier = std::min(marginMultiplier + 5, 115);
+            if (isStrategical && legalMoveCount > 30)
+                marginMultiplier = std::min(marginMultiplier + 5, 115);
+        }
 
         auto futility_margin = [&](Depth d) {
             Value futilityMult = std::min(45 + depth * 4, 85);
@@ -1807,13 +1846,23 @@ Value Search::Worker::search(
         && !excludedMove && pos.non_pawn_material(us) && ss->ply >= nmpMinPly && beta >= -2000)
     {
         bool skipNullMove = false;
-        bool nodeHot = staticState.kingDanger || staticState.pawnsNearPromotion || isSacrificial;
 
-        if (nodeHot || (isAggressive && staticState.kingDanger && depth < 10))
-            skipNullMove = true;
+        // [SC] With the legacy application the static flags of the root switch the null move
+        // off in the whole tree whenever the root is "hot" (its king or the opponent's king
+        // attacked, a pawn on the 6th or 7th rank, a sacrifice in progress): three flags that
+        // hold together in a large share of the positions of a game, and that say nothing
+        // on the node being searched (in Stockfish 19 the null move is switched off only by
+        // the conditions of the node: in check, no non-pawn material, verification in course).
+        if (shashinLegacy)
+        {
+            bool nodeHot = staticState.kingDanger || staticState.pawnsNearPromotion || isSacrificial;
 
-        if (isPetrosian && staticState.stmKingDanger)
-            skipNullMove = true;
+            if (nodeHot || (isAggressive && staticState.kingDanger && depth < 10))
+                skipNullMove = true;
+
+            if (isPetrosian && staticState.stmKingDanger)
+                skipNullMove = true;
+        }
 
         if (!skipNullMove)
         {
@@ -1861,55 +1910,59 @@ Value Search::Worker::search(
     // If we have a good enough capture (or queen promotion) and a reduced search
     // returns a value much above beta, we can (almost) safely prune the previous move.
     probCutBeta = beta + 241 - 64 * improving;
-    if (depth >= 3 && !disableNMAndPC && !ss->inCheck && !is_decisive(beta)
-        && !(is_valid(ttData.value) && ttData.value < probCutBeta))
+    // [SC] ShashChess 42.3 does not run ProbCut when in check, in fortress or
+    // "strategical" nodes without king danger, and when the experience of the position
+    // (learning) says that its move fails low (disableNMAndPC). All of that is the legacy
+    // application only; the learning keeps its condition on the null move (Step 10) as in
+    // 42.3. Without a personality the block is the Stockfish 19 one.
+    if (depth >= 3 && !(shashinLegacy && (disableNMAndPC || ss->inCheck))
+        && !is_decisive(beta) && !(is_valid(ttData.value) && ttData.value < probCutBeta)
+        && !(shashinLegacy && (isFortressNode || (isStrategical && !staticState.kingDanger))))
     {
-        bool skipProbCut = isFortressNode || (isStrategical && !staticState.kingDanger);
+        assert(probCutBeta < VALUE_INFINITE && probCutBeta > beta);
 
-        if (!skipProbCut)
+        MovePicker mp(pos, ttData.move, probCutBeta - ss->staticEval, &captureHistory);
+        Depth      probCutDepth = depth - (improving ? 5 : 3);
+
+        // [SC] Shashin offsets on the Stockfish 19 depth, without the old SF18 clamp to
+        // [0, depth]: SF19 handles probCutDepth <= 0 (qsearch only, TT depth + 1 >= -2)
+        if (shashinLegacy)
         {
-            assert(probCutBeta < VALUE_INFINITE && probCutBeta > beta);
-
-            MovePicker mp(pos, ttData.move, probCutBeta - ss->staticEval, &captureHistory);
-            Depth      probCutDepth = depth - (improving ? 5 : 3);
-
-            // [SC] Shashin offsets on the Stockfish 19 depth, without the old SF18 clamp to
-            // [0, depth]: SF19 handles probCutDepth <= 0 (qsearch only, TT depth + 1 >= -2)
             if (isAggressive)
                 probCutDepth++;
             else if (isStrategical)
                 probCutDepth--;
+        }
 
-            while ((move = mp.next_move()) != Move::none())
+        while ((move = mp.next_move()) != Move::none())
+        {
+            assert(move.is_ok());
+
+            if (move == excludedMove || !pos.legal(move))
+                continue;
+
+            assert(pos.capture_stage(move));
+
+            do_move(pos, move, st, ss);
+
+            // Perform a preliminary qsearch to verify that the move holds
+            value = -qsearch<NonPV>(pos, ss + 1, -probCutBeta, -probCutBeta + 1);
+
+            // If the qsearch held, perform the regular search
+            if (value >= probCutBeta && probCutDepth > 0)
+                value = -search<NonPV>(pos, ss + 1, -probCutBeta, -probCutBeta + 1,
+                                       probCutDepth, !cutNode);
+
+            undo_move(pos, move);
+
+            if (value >= probCutBeta)
             {
-                assert(move.is_ok());
+                // Save ProbCut data into transposition table
+                ttWriter.write(posKey, value_to_tt(value, ss->ply), ss->ttPv, BOUND_LOWER,
+                               probCutDepth + 1, move, unadjustedStaticEval, tt.generation());
 
-                if (move == excludedMove || !pos.legal(move))
-                    continue;
-
-                assert(pos.capture_stage(move));
-
-                do_move(pos, move, st, ss);
-
-                // Perform a preliminary qsearch to verify that the move holds
-                value = -qsearch<NonPV>(pos, ss + 1, -probCutBeta, -probCutBeta + 1);
-
-                // If the qsearch held, perform the regular search
-                if (value >= probCutBeta && probCutDepth > 0)
-                    value = -search<NonPV>(pos, ss + 1, -probCutBeta, -probCutBeta + 1,
-                                           probCutDepth, !cutNode);
-
-                undo_move(pos, move);
-
-                if (value >= probCutBeta)
-                {
-                    // Save ProbCut data into transposition table
-                    ttWriter.write(posKey, value_to_tt(value, ss->ply), ss->ttPv, BOUND_LOWER,
-                                   probCutDepth + 1, move, unadjustedStaticEval, tt.generation());
-
-                    if (!is_decisive(value))
-                        return value - (probCutBeta - beta);
-                }
+                if (!is_decisive(value))
+                    return value - (probCutBeta - beta);
             }
         }
     }
@@ -1924,8 +1977,12 @@ moves_loop:  // When in check, search starts here
 
     if (commonProbcut)
     {
-        bool tacticalRisk = staticState.kingDanger || staticState.pawnsNearPromotion
-                         || isSacrificial || stmKingExposed || opponentKingExposed;
+        // [SC] The refusal in "tactically risky" roots (the five flags are those of the
+        // root, not of the node) belongs to the legacy application only.
+        bool tacticalRisk =
+          shashinLegacy
+          && (staticState.kingDanger || staticState.pawnsNearPromotion || isSacrificial
+              || stmKingExposed || opponentKingExposed);
 
         if (!tacticalRisk || ttData.depth >= depth - 2)
             return probCutBeta;
@@ -1995,7 +2052,9 @@ moves_loop:  // When in check, search starts here
         {
             int moveCountThreshold = (3 + depth * depth) / (2 - improving);
 
-            if (depth > 8)
+            // [SC] The Shashin correction of the threshold (Capablanca: one quiet move less;
+            // Tal and Petrosian: one or two more) is the legacy application only.
+            if (shashinLegacy && depth > 8)
             {
                 if (isStrategical)
                 {
@@ -2095,7 +2154,9 @@ moves_loop:  // When in check, search starts here
             Value singularBeta  = ttData.value - (59 + 66 * (ss->ttPv && !PvNode)) * depth / 63;
             Depth singularDepth = newDepth / 2;
 
-            if ((isAggressive || isSacrificial) && staticState.kingDanger && depth > 8)
+            // [SC] A deeper excluded search in "hot" Tal roots: legacy application only.
+            if (shashinLegacy && (isAggressive || isSacrificial) && staticState.kingDanger
+                && depth > 8)
                 singularDepth += std::max(1, singularDepth / 4);
 
             ss->excludedMove = move;
@@ -2168,7 +2229,9 @@ skipExtensionAndPruning:
             r -= 3023 + PvNode * 1004 + (ttData.value > alpha) * 885
                + (ttData.depth >= depth) * (816 + cutNode * 940);
 
-        if (!fullSearch)
+        // [SC] Tal and Petrosian roots (or a sacrifice in progress): less reduction of
+        // every move of the tree; Capablanca roots without check: more. Legacy only.
+        if (shashinLegacy && !fullSearch)
         {
             if ((isTactical || isSacrificial) && depth > 8)
                 r -= 256;
@@ -2192,9 +2255,11 @@ skipExtensionAndPruning:
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 1)
         {
-            // [SC] Tactical positions keep the conservative ShashChess formula; all the
-            // others (Capablanca and no Shashin style) use the Stockfish 19 one.
-            if (dynamicDerived.isHighTal || isTacticalReactive || staticState.isSacrificial)
+            // [SC] Legacy application only: in high Tal, tactical-reactive or sacrificial
+            // roots the previous Stockfish formula is used (less reduction); in all the
+            // other cases, and always without a Shashin personality, the Stockfish 19 one.
+            if (shashinLegacy
+                && (dynamicDerived.isHighTal || isTacticalReactive || staticState.isSacrificial))
                 r += 120 + 1024 * ((ss + 1)->cutoffCnt > 2) + 100 * ((ss + 1)->cutoffCnt > 3)
                    + 1024 * allNode;
             else
@@ -2234,21 +2299,27 @@ skipExtensionAndPruning:
             };
             Depth d = lmrDepth(r);
 
-            if (depth > 5 && ss->ply > 1)
+            // [SC] The corrections of the reduction (Tal: checks and captures; Petrosian:
+            // quiet moves; Capablanca: quiet moves at depth > 8) and of the searched depth
+            // (fortress: one ply less searched) are the legacy application only.
+            if (shashinLegacy)
             {
-                if (isAggressive && (givesCheck || capture))
-                    r -= 50;
-                else if (isPetrosian && !capture && !givesCheck)
-                    r -= 50;
-                else if (isStrategical && !capture && !givesCheck && depth > 8)
-                    r += 45;
+                if (depth > 5 && ss->ply > 1)
+                {
+                    if (isAggressive && (givesCheck || capture))
+                        r -= 50;
+                    else if (isPetrosian && !capture && !givesCheck)
+                        r -= 50;
+                    else if (isStrategical && !capture && !givesCheck && depth > 8)
+                        r += 45;
 
-                if (r != original_r)
-                    d = lmrDepth(r);
+                    if (r != original_r)
+                        d = lmrDepth(r);
+                }
+
+                if (isFortressNode)
+                    d = std::max(1, d - 1);
             }
-
-            if (isFortressNode)
-                d = std::max(1, d - 1);
 
             ss->reduction = newDepth - d;
             value         = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, d, true);
@@ -2269,12 +2340,18 @@ skipExtensionAndPruning:
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
 
                 int bonus = 1334;
-                if (isAggressive)
-                    bonus += 25;
-                else if (isStrategical)
-                    bonus += 12;
-                if (isFortressNode)
-                    bonus += 30;
+
+                // [SC] Legacy application only: Tal +25, Capablanca +12, fortress +30.
+                if (shashinLegacy)
+                {
+                    if (isAggressive)
+                        bonus += 25;
+                    else if (isStrategical)
+                        bonus += 12;
+
+                    if (isFortressNode)
+                        bonus += 30;
+                }
 
                 // Post LMR continuation history updates
                 update_continuation_histories(ss, movedPiece, move.to_sq(), bonus);
@@ -2424,26 +2501,31 @@ skipExtensionAndPruning:
                 // Reduce other moves if we have found at least one score improvement
                 if (depth > 3 && depth < 12 && !is_decisive(value))
                 {
-                    // Base Stockfish 19 (prima era 2)
+                    // [SC] Stockfish 19: always three plies less. Only the legacy application
+                    // changes the reduction by Shashin style (critical: 2, Capablanca: 3 or 4,
+                    // repetitions: 2 or 4) and clamps it to the remaining depth.
                     int reduction = 3;
 
-                    const bool criticalTactical =
-                      (opponentKingExposed && isTal) || (stmKingExposed && isPetrosian);
-
-                    // Shashin layern
-                    if (criticalTactical)
-                        reduction -= 1;
-                    else if (isStrategical && !stmKingExposed && !opponentKingExposed)
+                    if (shashinLegacy)
                     {
-                        if (depth > 8)
-                            reduction += 1;
-                        if (staticState.allPiecesCount > 20)
-                            reduction = std::min(reduction, 3);
-                    }
-                    else if (gameCycle)
-                        reduction += (pos.rule50_count() > 20) ? 1 : -1;
+                        const bool criticalTactical =
+                          (opponentKingExposed && isTal) || (stmKingExposed && isPetrosian);
 
-                    reduction = std::clamp(reduction, 1, depth - 1);
+                        if (criticalTactical)
+                            reduction -= 1;
+                        else if (isStrategical && !stmKingExposed && !opponentKingExposed)
+                        {
+                            if (depth > 8)
+                                reduction += 1;
+                            if (staticState.allPiecesCount > 20)
+                                reduction = std::min(reduction, 3);
+                        }
+                        else if (gameCycle)
+                            reduction += (pos.rule50_count() > 20) ? 1 : -1;
+
+                        reduction = std::clamp(reduction, 1, depth - 1);
+                    }
+
                     depth -= reduction;
                 }
 
@@ -2634,12 +2716,15 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     ttData.value = ttHit ? value_from_tt(ttData.value, ss->ply, pos.rule50_count()) : VALUE_NONE;
     pvHit        = ttHit && ttData.is_pv;
 
-    const auto& staticState = rootShashinState.staticState;
-    // At non-PV nodes we check for an early TT cutoff
+    // [SC] The constants of the pruning below are the Stockfish 19 ones: the legacy
+    // application (member shashinLegacy) changes them by Shashin style and by the flags
+    // of the root, the only ones read here.
+    const auto& staticState    = rootShashinState.staticState;
     const auto& dynamicDerived = rootShashinState.dynamicDerived;
-    const bool  isStrategical  = dynamicDerived.isStrategical;
-    const bool  isAggressive   = dynamicDerived.isAggressive;
+    const bool  isStrategical  = shashinLegacy && dynamicDerived.isStrategical;
+    const bool  isAggressive   = shashinLegacy && dynamicDerived.isAggressive;
 
+    // At non-PV nodes we check for an early TT cutoff
     // [SC] identico a SF19: il ramo Shashin successivo era irraggiungibile
     if (!PvNode && ttData.depth >= DEPTH_QS && is_valid(ttData.value)
         && (ttData.bound & (ttData.value >= beta ? BOUND_LOWER : BOUND_UPPER)))
@@ -2724,10 +2809,15 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
             alpha = bestValue;
 
         futilityBase = ss->staticEval + 306;
-        if (dynamicDerived.isHighTal)
-            futilityBase += 30;
-        else if (isStrategical)
-            futilityBase -= 20;
+
+        // [SC] High Tal: +30, Capablanca: -20. Legacy application only.
+        if (shashinLegacy)
+        {
+            if (dynamicDerived.isHighTal)
+                futilityBase += 30;
+            else if (isStrategical)
+                futilityBase -= 20;
+        }
     }
 
     const PieceToHistory* contHist[] = {(ss - 1)->continuationHistory};
@@ -2741,26 +2831,34 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                   contHist, &sharedHistory, ss->ply);
 
     int moveCountThreshold = 2;
-    if (dynamicDerived.isHighTal)
-        moveCountThreshold += PvNode ? 1 : 0;
-    else if (isStrategical)
-        moveCountThreshold = 1;
-    if (staticState.kingDanger)
-        moveCountThreshold++;
-    if (MoveConfig::isFortress)
-        moveCountThreshold++;
+    int seeMargin          = -74;
 
-    // Base Stockfish 19
-    int seeMargin = -74;
-    if (isAggressive || dynamicDerived.isHighTal)
-        seeMargin = staticState.kingDanger ? -104 : -84;
-    else if (isStrategical)
-        seeMargin = -44;
-    else if (MoveConfig::isFortress)
-        seeMargin = -4;
+    // [SC] Legacy application only: by Shashin style and by the flags of the root, the
+    // moveCount pruning keeps from 1 to 4 moves (Stockfish 19: 2) and the SEE pruning of
+    // the captures goes from -104 to -4 (Stockfish 19: -74).
+    if (shashinLegacy)
+    {
+        if (dynamicDerived.isHighTal)
+            moveCountThreshold += PvNode ? 1 : 0;
+        else if (isStrategical)
+            moveCountThreshold = 1;
 
+        if (staticState.kingDanger)
+            moveCountThreshold++;
 
-    const bool extremelyVolatile = dynamicDerived.isHighTal && staticState.kingDanger;
+        if (MoveConfig::isFortress)
+            moveCountThreshold++;
+
+        if (isAggressive || dynamicDerived.isHighTal)
+            seeMargin = staticState.kingDanger ? -104 : -84;
+        else if (isStrategical)
+            seeMargin = -44;
+        else if (MoveConfig::isFortress)
+            seeMargin = -4;
+    }
+
+    const bool extremelyVolatile =
+      shashinLegacy && dynamicDerived.isHighTal && staticState.kingDanger;
 
     // Step 5. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -2802,13 +2900,12 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 // If static exchange evaluation is low enough, we can prune
                 if (!pos.see_ge(move, alpha - futilityBase))
                 {
-                    const bool useTacticalLogic = dynamicDerived.isHighTal
-                                               || dynamicDerived.isTacticalReactive
-                                               || (staticState.kingDanger && !isStrategical);
-
-                    // [SC fix] in modalità tattica non si accredita nulla alla mossa potata,
-                    // ma bestValue non deve mai scendere sotto un valore già ottenuto
-                    if (useTacticalLogic)
+                    // [SC] Legacy application only: in high Tal, tactical-reactive or
+                    // king-danger roots (not Capablanca) bestValue is assigned, not raised,
+                    // so it can drop below the value already reached in this node.
+                    if (shashinLegacy
+                        && (dynamicDerived.isHighTal || dynamicDerived.isTacticalReactive
+                            || (staticState.kingDanger && !isStrategical)))
                         bestValue = std::min(alpha, futilityBase);
                     else
                         bestValue = std::max(bestValue, std::min(alpha, futilityBase));
@@ -2819,6 +2916,8 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
             // Skip non-captures
             if (!capture)
             {
+                // [SC] Legacy application only: in an "extremely volatile" root a quiet move
+                // with a very good pawn history is searched anyway.
                 if (extremelyVolatile)
                 {
                     int historyScore =
@@ -2832,8 +2931,11 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 }
             }
 
+            // [SC] Legacy application only: in high Tal roots, or in Tal roots with a king
+            // in danger, a check with a not too bad SEE is searched anyway.
             bool forceCheckSearch = false;
-            if (givesCheck
+
+            if (shashinLegacy && givesCheck
                 && (dynamicDerived.isHighTal || (isAggressive && staticState.kingDanger)))
             {
                 if (pos.see_ge(move, -200))
@@ -2929,12 +3031,18 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
 // [SC 43-dev-C] sm: the Shashin view of the side to move at the node (see search())
 int Search::Worker::reduction(bool i, Depth d, int mn, int delta, const ShashinManager& sm) const {
     int reductionScale = reductions[d] * reductions[mn];
-    if (sm.isAggressive())
-        reductionScale = (reductionScale * 98) / 100;
-    else if (sm.isStrategical())
-        reductionScale = (reductionScale * 104) / 100;
-    else if (sm.isPetrosian())
-        reductionScale = (reductionScale * 99) / 100;
+    // [SC] Legacy application only: the reduction of every move of the tree is scaled by
+    // the Shashin style of the view of the side to move at the node (43-dev-C; Tal 98%,
+    // Petrosian 99%, Capablanca 104%).
+    if (shashinLegacySearch())
+    {
+        if (sm.isAggressive())
+            reductionScale = (reductionScale * 98) / 100;
+        else if (sm.isStrategical())
+            reductionScale = (reductionScale * 104) / 100;
+        else if (sm.isPetrosian())
+            reductionScale = (reductionScale * 99) / 100;
+    }
 
     if (rootDelta != 0)
         return reductionScale - delta * 577 / rootDelta + !i * reductionScale * 197 / 512 + 982;

@@ -384,6 +384,14 @@ class Worker {
     // [SC] True for the thread that runs the Shashin analysis of the root in the current
     // search (static state + WDL zone of its own search), see start_searching()
     bool shashinRootAnalysis = false;
+
+    // [SC] True when one of the Shashin personalities is set (High Tal ... High Petrosian, the
+    // existing UCI options). A personality is a statement on how the engine must play, so the
+    // framework keeps its application to the search of every node of ShashChess 42.3 (the
+    // "legacy application" of the comments in search.cpp). Without a personality the search
+    // is the Stockfish 19 one in every node (see start_searching()).
+    bool shashinLegacy = false;
+    bool shashinLegacySearch() const { return shashinLegacy; }
     // [SC:mcts] True when this thread searched the root with MCTS in the current search
     bool mctsRoot = false;
 

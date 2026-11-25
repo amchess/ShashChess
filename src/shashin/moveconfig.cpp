@@ -29,6 +29,7 @@ thread_local bool isAggressive[2]        = {false, false};
 thread_local bool isFortress             = false;
 thread_local bool isTactical[2]          = {false, false};
 thread_local int  rootSide               = 0;
+thread_local bool appliedToSearch        = false;
 
 }  // namespace MoveConfig
 }  // namespace ShashChess
