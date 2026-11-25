@@ -161,7 +161,7 @@ ShashinPosition ShashinManager::getResilientShashinRange(ShashinPosition range, 
     switch (range)
     {
     case ShashinPosition::CAPABLANCA_TAL :
-        // [SC 43-dev-A] README table: "Chaos: Capablanca-Tal ... Initiative: playing dictation with
+        // [SC 43-dev-F-A] README table: "Chaos: Capablanca-Tal ... Initiative: playing dictation with
         // active moves and forcing ideas". The zone keeps its own type, like the total chaos below:
         // none of the Capablanca, Tal or Petrosian rules, i.e. the Stockfish search. In 42.3 the
         // depth ratio computed above was >= 1 at the root from the second iteration on, so this
@@ -233,7 +233,7 @@ void ShashinManager::initDynamicBaseState(Value                currentValue,
     state.dynamicBase.rootDepth    = rootDepth;
     ShashinPosition currentRange   = getInitialShashinRange(rootPos, currentValue, config);
     if (mirrored)
-        currentRange = mirrorRange(currentRange);  // [SC 43-dev-C] opponent view
+        currentRange = mirrorRange(currentRange);  // [SC 43-dev-F-C] opponent view
     state.dynamicBase.currentRange = getResilientShashinRange(currentRange, 0);
 }
 
@@ -243,7 +243,7 @@ void ShashinManager::setDynamicBaseState(Value           score,
                                          int             rootDepth) {
     ShashinPosition range          = getShashinRange(score, rootPos);
     if (mirrored)
-        range = mirrorRange(range);  // [SC 43-dev-C] opponent view
+        range = mirrorRange(range);  // [SC 43-dev-F-C] opponent view
     state.dynamicBase.currentRange = getResilientShashinRange(range, depth);
     state.dynamicBase.currentDepth = depth;
     state.dynamicBase.rootDepth    = rootDepth;
@@ -260,7 +260,7 @@ void ShashinManager::initDynamicRootShashinState(const Eval::NNUE::Network&     
     initDynamicBaseState(static_value(networks, accumulators, refreshTable, rootPos, ss, optimism),
                          rootPos, config, rootDepth);
     setDynamicDerivedState();
-    // [SC 43-dev-C] Flags of the move picker for each side: [0] side to move at the root,
+    // [SC 43-dev-F-C] Flags of the move picker for each side: [0] side to move at the root,
     // [1] its opponent (opponent view)
     const int view                        = mirrored;
     MoveConfig::rootSide                  = int(rootPos.side_to_move());
@@ -279,14 +279,14 @@ void ShashinManager::updateRootShashinState(Value           score,
 
     ShashinPosition newRange = getShashinRange(score, rootPos);
     if (mirrored)
-        newRange = mirrorRange(newRange);  // [SC 43-dev-C] opponent view
+        newRange = mirrorRange(newRange);  // [SC 43-dev-F-C] opponent view
     if (newRange == state.dynamicBase.currentRange && depth == state.dynamicBase.currentDepth)
         return;
 
     setDynamicBaseState(score, rootPos, depth, rootDepth);
     setDynamicDerivedState();
 
-    // [SC 43-dev-C] [0] side to move at the root, [1] its opponent (opponent view)
+    // [SC 43-dev-F-C] [0] side to move at the root, [1] its opponent (opponent view)
     const int view                        = mirrored;
     MoveConfig::useMoveShashinLogic[view] = useMoveGenCrystalLogic();
     MoveConfig::isStrategical[view]       = state.dynamicDerived.isStrategical;
@@ -326,7 +326,7 @@ void ShashinManager::setStaticState(const Position& rootPos) {
     int nonPawnMaterial      = rootPos.non_pawn_material(WHITE) + rootPos.non_pawn_material(BLACK);
     staticState.highMaterial = (nonPawnMaterial > 2400);
 
-    // [SC 43-dev-C] Own side: the side to move at the root, or its opponent in the opponent view
+    // [SC 43-dev-F-C] Own side: the side to move at the root, or its opponent in the opponent view
     const Color own            = mirrored ? ~rootPos.side_to_move() : rootPos.side_to_move();
     staticState.kingDanger     = king_danger(rootPos, WHITE) || king_danger(rootPos, BLACK);
     staticState.stmKingDanger  = king_danger(rootPos, own);

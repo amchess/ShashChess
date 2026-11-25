@@ -1,5 +1,5 @@
 Set-ExecutionPolicy Bypass -Scope Process -Force
-$ENGINE = ".\ShashChess43-dev-universal.exe"
+$ENGINE = ".\ShashChess43-dev-F-universal.exe"
 $LOGFILE = "benchmark_log.txt"
 $ITERATIONS = 5
 $TEMP_OUTPUT_STDOUT = "temp_output_stdout.txt"

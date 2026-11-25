@@ -63,7 +63,7 @@ class ShashinManager {
     void updateRootShashinState(Value score, const Position& rootPos, int depth, int rootDepth);
     ShashinPosition         getShashinRange(Value value, const Position& rootPos);
     const RootShashinState& getState() const { return state; }
-    // [SC 43-dev-C] Opponent view (see `mirrored`): the Worker keeps a second manager with
+    // [SC 43-dev-F-C] Opponent view (see `mirrored`): the Worker keeps a second manager with
     // mirrored = true, updated together with the first one.
     void setMirrored(bool m) { mirrored = m; }
     bool isMirrored() const { return mirrored; }
@@ -246,7 +246,7 @@ class ShashinManager {
     RootShashinState state;
     PositionCache    positionCache;
 
-    // [SC 43-dev-C] Shashin's styles belong to a side: the side that is better plays as Tal, the
+    // [SC 43-dev-F-C] Shashin's styles belong to a side: the side that is better plays as Tal, the
     // side that is worse as Petrosian. Up to 42.3 the zone of the root, computed for the side to
     // move at the root, was applied to every node of the tree, also to the moves of its
     // opponent. With mirrored = true this manager is the opponent's view of the same root: the
@@ -255,7 +255,7 @@ class ShashinManager {
     // swapped (own king = the opponent of the side to move at the root). The search uses it at
     // the nodes where that opponent is to move. The legal move count and the sacrifice flag
     // stay those of the root position. Diagnostic build: with -DSC43C_OFF the search uses the
-    // root view everywhere and is that of 43-dev (bench 2666431); in 43-dev-E, that of 43-dev-A
+    // root view everywhere and is that of 43-dev-F (bench 2666431); in 43-dev-F, that of 43-dev-F-A
     // (bench 2932436).
     bool mirrored = false;
 

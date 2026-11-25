@@ -379,11 +379,19 @@ class Worker {
 
     Depth           completedDepth;
     ShashinManager& getShashinManager();
-    ShashinManager& getShashinManagerOpp();  // [SC 43-dev-C]
+    ShashinManager& getShashinManagerOpp();  // [SC 43-dev-F-C]
     int             lastShashinUpdatedDepth = 0;
     // [SC] True for the thread that runs the Shashin analysis of the root in the current
     // search (static state + WDL zone of its own search), see start_searching()
     bool shashinRootAnalysis = false;
+
+    // [SC] True when one of the Shashin personalities is set (High Tal ... High Petrosian, the
+    // existing UCI options). A personality is a statement on how the engine must play, so the
+    // framework keeps its application to the search of every node of ShashChess 42.3 (the
+    // "legacy application" of the comments in search.cpp). Without a personality the search
+    // is the Stockfish 19 one in every node (see start_searching()).
+    bool shashinLegacy = false;
+    bool shashinLegacySearch() const { return shashinLegacy; }
     // [SC:mcts] True when this thread searched the root with MCTS in the current search
     bool mctsRoot = false;
 
@@ -459,7 +467,7 @@ class Worker {
     Eval::NNUE::AccumulatorCaches refreshTable;
 
     std::unique_ptr<ShashinManager> shashinManager;
-    // [SC 43-dev-C] Opponent view of the root (ShashinManager::mirrored), used at the nodes
+    // [SC 43-dev-F-C] Opponent view of the root (ShashinManager::mirrored), used at the nodes
     // where the opponent of the side to move at the root is to move
     std::unique_ptr<ShashinManager> shashinManagerOpp;
     const ShashChess::ShashinConfig shConfig;

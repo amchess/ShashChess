@@ -381,9 +381,15 @@ Thread* ThreadPool::get_best_thread() const {
     // [SC] Vote according to score and completed depth (as Stockfish did up to version 18
     // and ShashChess 41): the thread that analyses the root with the static Shashin flags
     // does not reach the depth of the others, so the votes must not be depth-blind.
+    // This is kept only when a Shashin personality is set (ShashChess 42.3). Without one
+    // every thread searches as Stockfish 19 does, so the votes are its depth-blind ones.
+    const bool legacyVotes = bestThread->worker->shashinLegacySearch();
+
     for (auto&& th : threads)
         votes[th->worker->rootMoves[0].pv[0]] +=
-          i64(th->worker->rootMoves[0].score - minScore + 14) * th->worker->completedDepth;
+          legacyVotes
+            ? i64(th->worker->rootMoves[0].score - minScore + 14) * th->worker->completedDepth
+            : i64(th->worker->rootMoves[0].score - minScore + 14);
 
     for (auto&& th : threads)
     {

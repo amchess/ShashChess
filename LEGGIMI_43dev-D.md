@@ -1,12 +1,12 @@
-# ShashChess 43-dev-D: la radice decide vicino alla radice
+# ShashChess 43-dev-F-D: la radice decide vicino alla radice
 
-Variante di **43-dev** (commit `510dec5`): i file di questa cartella sostituiscono gli omonimi di 43-dev.
-Non aggiunge opzioni UCI. Il motore si chiama `ShashChess 43-dev-D`; il bench (16 MB, 1 thread)
-è **2421575** nodi (43-dev: 2666431).
+Variante di **43-dev-F** (commit `510dec5`): i file di questa cartella sostituiscono gli omonimi di 43-dev-F.
+Non aggiunge opzioni UCI. Il motore si chiama `ShashChess 43-dev-F-D`; il bench (16 MB, 1 thread)
+è **2421575** nodi (43-dev-F: 2666431).
 
 ## Il problema, misurato
 
-In 42.3 e in 43-dev l'analisi Shashin della radice (zona WDL, re in pericolo, sacrificio possibile,
+In 42.3 e in 43-dev-F l'analisi Shashin della radice (zona WDL, re in pericolo, sacrificio possibile,
 fortezza, pedone in 6ª/7ª) vale in **tutti i nodi** dell'albero: `search()` legge lo `staticState` della
 radice. Se la radice ha un pedone in 6ª/7ª, un sacrificio o un re in pericolo, la null move salta in
 tutto l'albero; se la radice è strategica, il ProbCut salta in tutto l'albero; e così via per razoring,
@@ -28,7 +28,7 @@ In partita (match C, 1040 partite a 25'+10") ShashChess arriva in media a 1,3 se
 ## Le modifiche
 
 1. **Orizzonte d'influenza della radice** (`ShashinParams::rootInfluenceHorizon = 8`, costante).
-   Entro 8 semimosse dalla radice tutto resta come in 43-dev; oltre, le condizioni che dipendono
+   Entro 8 semimosse dalla radice tutto resta come in 43-dev-F; oltre, le condizioni che dipendono
    dalla radice non toccano più potature e riduzioni, e la ricerca segue le regole di Stockfish 19:
    razoring, futility sul figlio, salti della null move, ProbCut (salto e profondità), ProbCut piccolo,
    soglie del movecount, offset LMR, formula del cutoffCnt, offset sulle mosse tranquille, fortezza
@@ -62,7 +62,7 @@ Restano invariati: classificatore delle zone, valutazione, ordinamento delle mos
 - **Terzo parere** (GuardedSearch): la cautela sulla riduzione dopo un miglioramento nelle radici
   calde. Non adottato il tetto di 1 semimossa solo alla terza mossa: si allontana da Stockfish 19
   nella direzione opposta e toglierebbe altra profondità a un motore che già cerca meno a fondo di
-  Stockfish. Il suo applicatore non si applica a 42.3 né a 43-dev (il blocco è diverso).
+  Stockfish. Il suo applicatore non si applica a 42.3 né a 43-dev-F (il blocco è diverso).
 - **Primo parere** (Framework 2.0): nessuna modifica. Il tempo di riflessione nel match C è identico
   per i due motori (32,1 s per mossa in media, mediana 22 s; mosse da 400 s o più: Stockfish 169,
   ShashChess 135), quindi la parte sulla gestione del tempo non trova riscontro.
@@ -75,14 +75,14 @@ Restano invariati: classificatore delle zone, valutazione, ordinamento delle mos
 | `src/shashin/shashin_params.h` | `rootInfluenceHorizon = 8`, `zoneHysteresis = 2` |
 | `src/shashin/shashin_manager.h` | `inRootHorizon()`, `lastRawZone` |
 | `src/shashin/shashin_manager.cpp` | fasce delle zone e isteresi in `setDynamicBaseState()` |
-| `src/misc.cpp` | nome `43-dev-D` |
-| `src/universal.sh`, `src/universal.bat` | eseguibile `ShashChess43-dev-D-universal` |
+| `src/misc.cpp` | nome `43-dev-F-D` |
+| `src/universal.sh`, `src/universal.bat` | eseguibile `ShashChess43-dev-F-D-universal` |
 
 ## Prove locali (1 thread, 64 MB, una macchina a 2 core)
 
-- **Compila** senza avvisi; stesse opzioni UCI di 43-dev; bench 2421575.
+- **Compila** senza avvisi; stesse opzioni UCI di 43-dev-F; bench 2421575.
 - **Posizioni in cui 42.3 era molto meno profondo di Stockfish** (almeno 8 semimosse in meno a 60 s),
-  a 10 s: senza pedoni avanzati, D arriva a 42,8 semimosse contro 36,7 di 43-dev (mediana +6); con
+  a 10 s: senza pedoni avanzati, D arriva a 42,8 semimosse contro 36,7 di 43-dev-F (mediana +6); con
   pedoni avanzati 59,4 contro 58,1 (mediana +2), perché lì la null move resta spenta per scelta.
 - **Suite 325 a 2 s:** stesse posizioni risolte (104 su 325 per entrambe, 20 scambi per parte),
   profondità +0,6 in media.
@@ -93,10 +93,10 @@ Sono controlli di funzionamento, non di forza: la forza si misura con le suite a
 
 ## Come provarla
 
-1. Branch `D` da `43-dev`, con questi file.
-2. Suite a 60 s, 5 passate (325 e le 193 di Peter), contro le passate già fatte di 42.3 e 43-dev:
+1. Branch `D` da `43-dev-F`, con questi file.
+2. Suite a 60 s, 5 passate (325 e le 193 di Peter), contro le passate già fatte di 42.3 e 43-dev-F:
    ci si aspetta più profondità; da controllare le posizioni con pedoni avanzati della 325.
 3. Se regge, match contro 42.3 a 25'+10" sul pool dei nugget, come quello di C.
 
 Per isolare l'orizzonte basta ricompilare con `rootInfluenceHorizon = 64` in `shashin_params.h`:
-si ottiene 43-dev con le sole modifiche 2, 3 e 4.
+si ottiene 43-dev-F con le sole modifiche 2, 3 e 4.
