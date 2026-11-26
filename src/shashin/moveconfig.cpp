@@ -23,11 +23,12 @@ namespace ShashChess {
 namespace MoveConfig {
 
 // Definizione delle variabili thread-local
-thread_local bool useMoveShashinLogic = false;
-thread_local bool isStrategical       = false;
-thread_local bool isAggressive        = false;
-thread_local bool isFortress          = false;
-thread_local bool isTactical          = false;
+thread_local bool useMoveShashinLogic[2] = {false, false};
+thread_local bool isStrategical[2]       = {false, false};
+thread_local bool isAggressive[2]        = {false, false};
+thread_local bool isFortress             = false;
+thread_local bool isTactical[2]          = {false, false};
+thread_local int  rootSide               = 0;
 
 }  // namespace MoveConfig
 }  // namespace ShashChess

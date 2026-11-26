@@ -484,12 +484,15 @@ Search::Worker::Worker(SharedState&                    sharedState,
     network(sharedState.network),
     refreshTable(network[token]),
     shashinManager(std::make_unique<ShashinManager>()),
+    shashinManagerOpp(std::make_unique<ShashinManager>()),
     shConfig(sharedState.shashinConfig) {
+    shashinManagerOpp->setMirrored(true);  // [SC 43-dev-C]
     clear();
 }
 
 Search::Worker::~Worker() = default;
 ShashinManager& Worker::getShashinManager() { return *shashinManager; }
+ShashinManager& Worker::getShashinManagerOpp() { return *shashinManagerOpp; }  // [SC 43-dev-C]
 
 void Search::Worker::ensure_network_replicated() {
     // Access once to force lazy initialization, avoiding initialization during search
@@ -518,9 +521,15 @@ void Search::Worker::start_searching() {
     shashinRootAnalysis = threadIdx == rootAnalyst;
 
     if (shashinRootAnalysis)
+    {
         shashinManager->setStaticState(rootPos);
+        shashinManagerOpp->setStaticState(rootPos);  // [SC 43-dev-C]
+    }
     else
+    {
         shashinManager->setNeutralStaticState();
+        shashinManagerOpp->setNeutralStaticState();  // [SC 43-dev-C]
+    }
 
     // Non-main threads go directly to iterative_deepening()
     if (!is_mainthread())
@@ -776,6 +785,9 @@ bool Search::Worker::iterative_deepening() {
     localShashinManager.initDynamicRootShashinState(network[numaAccessToken], accumulatorStack,
                                                     refreshTable, rootPos, ss, VALUE_ZERO, shConfig,
                                                     rootDepth);
+    shashinManagerOpp->initDynamicRootShashinState(network[numaAccessToken], accumulatorStack,
+                                                   refreshTable, rootPos, ss, VALUE_ZERO, shConfig,
+                                                   rootDepth);  // [SC 43-dev-C]
 
     const RootShashinState& rootShashinState = localShashinManager.getState();
     const auto&             dynamicDerived   = rootShashinState.dynamicDerived;
@@ -1087,6 +1099,8 @@ bool Search::Worker::iterative_deepening() {
             {
                 localShashinManager.updateRootShashinState(rootMoves[0].uciScore, rootPos,
                                                            rootDepth, rootDepth);
+                shashinManagerOpp->updateRootShashinState(rootMoves[0].uciScore, rootPos,
+                                                          rootDepth, rootDepth);  // [SC 43-dev-C]
                 lastShashinUpdatedDepth = rootDepth;
             }
 
@@ -1306,9 +1320,16 @@ Value Search::Worker::search(
     const bool     allNode  = !(PvNode || cutNode);
     const bool     seekMate = rootDepth >= 16 && std::abs(rootMoves[pvIdx].score) >= 2000;
 
-    auto&                   localShashinManager = *this->shashinManager;
-    const RootShashinState& rootShashinState    = localShashinManager.getState();
-    bool                    isFortressNode      = localShashinManager.isFortress(rootPos);
+    // [SC 43-dev-C] Shashin's styles belong to a side: at the nodes where the opponent of the
+    // side to move at the root is to move (odd plies, null moves included) the search uses the
+    // opponent view of the root, with the mirror image of the zone (Tal <-> Petrosian).
+#ifdef SC43C_OFF
+    auto& localShashinManager = *this->shashinManager;
+#else
+    auto& localShashinManager = (ss->ply & 1) ? *this->shashinManagerOpp : *this->shashinManager;
+#endif
+    const RootShashinState& rootShashinState = localShashinManager.getState();
+    bool                    isFortressNode   = localShashinManager.isFortress(rootPos);
 
     // Dive into quiescence search when the depth reaches zero
     if (depth <= 0)
@@ -1958,7 +1979,7 @@ moves_loop:  // When in check, search starts here
         newDepth = depth - 1;
 
         int delta = beta - alpha;
-        int r     = reduction(improving, depth, moveCount, delta);
+        int r     = reduction(improving, depth, moveCount, delta, localShashinManager);
 
         // Increase reduction for ttPv nodes
         // (*Scaler) Larger values scale well.
@@ -2544,7 +2565,13 @@ template<NodeType nodeType>
 Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta) {
 
     static_assert(nodeType != Root);
+    // [SC 43-dev-C] Opponent view at odd plies, as in search()
+#ifdef SC43C_OFF
     const RootShashinState& rootShashinState = shashinManager->getState();
+#else
+    const RootShashinState& rootShashinState =
+      ((ss->ply & 1) ? shashinManagerOpp : shashinManager)->getState();
+#endif
     constexpr bool          PvNode           = nodeType == PV;
 
     assert(alpha >= -VALUE_INFINITE && alpha < beta && beta <= VALUE_INFINITE);
@@ -2775,15 +2802,17 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 // If static exchange evaluation is low enough, we can prune
                 if (!pos.see_ge(move, alpha - futilityBase))
                 {
+                    // [SC 43-dev-I] Fail-soft correctness: a SEE-pruned move is an upper bound;
+                    // it must never lower bestValue below a value already found in this node
+                    // (the old tactical assignment did, corrupting the returned bound and the TT).
+#ifdef SC43I_QS_ASSIGN
                     const bool useTacticalLogic = dynamicDerived.isHighTal
                                                || dynamicDerived.isTacticalReactive
                                                || (staticState.kingDanger && !isStrategical);
-
-                    // [SC fix] in modalità tattica non si accredita nulla alla mossa potata,
-                    // ma bestValue non deve mai scendere sotto un valore già ottenuto
                     if (useTacticalLogic)
                         bestValue = std::min(alpha, futilityBase);
                     else
+#endif
                         bestValue = std::max(bestValue, std::min(alpha, futilityBase));
                     continue;
                 }
@@ -2899,13 +2928,14 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     return bestValue;
 }
 
-int Search::Worker::reduction(bool i, Depth d, int mn, int delta) const {
+// [SC 43-dev-C] sm: the Shashin view of the side to move at the node (see search())
+int Search::Worker::reduction(bool i, Depth d, int mn, int delta, const ShashinManager& sm) const {
     int reductionScale = reductions[d] * reductions[mn];
-    if (shashinManager->isAggressive())
+    if (sm.isAggressive())
         reductionScale = (reductionScale * 98) / 100;
-    else if (shashinManager->isStrategical())
+    else if (sm.isStrategical())
         reductionScale = (reductionScale * 104) / 100;
-    else if (shashinManager->isPetrosian())
+    else if (sm.isPetrosian())
         reductionScale = (reductionScale * 99) / 100;
 
     if (rootDelta != 0)
@@ -3337,6 +3367,8 @@ void SearchManager::output_pv(Search::Worker&           worker,
             && !rootMoves[i].is_inexact())
         {
             worker.getShashinManager().updateRootShashinState(v, pos, d, worker.rootDepth);
+            worker.getShashinManagerOpp().updateRootShashinState(v, pos, d,
+                                                                 worker.rootDepth);  // [SC 43-dev-C]
             worker.lastShashinUpdatedDepth = d;
         }
         // [SC:shashin] end

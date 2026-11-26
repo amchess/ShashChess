@@ -946,7 +946,7 @@ Score of Stockfish19 vs ShashChess42: 50 - 52 - 158  [0.496] 260
 ...      Stockfish19 playing White: 50 - 0 - 80  [0.692] 130
 ...      Stockfish19 playing Black: 0 - 52 - 78  [0.300] 130
 ...      White vs Black: 102 - 0 - 158  [0.696] 260
-Elo difference: -2.7 +/- 26.5, LOS: 42.3 %, DrawRatio: 60.8 %
+Elo difference: -2.7 +/- 26.5, LOS: 43-dev-I %, DrawRatio: 60.8 %
 SPRT: llr 0 (0.0%), lbound -inf, ubound inf
 Finished game 271 (Stockfish19 vs ShashChess42): 1-0 {White wins by adjudication}
 Score of Stockfish19 vs ShashChess42: 51 - 52 - 158  [0.498] 261

@@ -161,9 +161,12 @@ ShashinPosition ShashinManager::getResilientShashinRange(ShashinPosition range, 
     switch (range)
     {
     case ShashinPosition::CAPABLANCA_TAL :
-        if (complex && staticState.opponentKingExposed)
-            return (depthRatio <= 0.62) ? ShashinPosition::LOW_TAL : ShashinPosition::CAPABLANCA;
-        return (depthRatio <= 0.60) ? ShashinPosition::LOW_TAL : ShashinPosition::CAPABLANCA;
+        // [SC 43-dev-A] README table: "Chaos: Capablanca-Tal ... Initiative: playing dictation with
+        // active moves and forcing ideas". The zone keeps its own type, like the total chaos below:
+        // none of the Capablanca, Tal or Petrosian rules, i.e. the Stockfish search. In 42.3 the
+        // depth ratio computed above was >= 1 at the root from the second iteration on, so this
+        // zone was always searched as Capablanca (strategic rules for a quiescent, equal position).
+        return range;
 
     case ShashinPosition::CAPABLANCA_PETROSIAN :
         if (complex && staticState.stmKingExposed)
@@ -172,11 +175,12 @@ ShashinPosition ShashinManager::getResilientShashinRange(ShashinPosition range, 
         return (depthRatio <= 0.60) ? ShashinPosition::CAPABLANCA : ShashinPosition::LOW_PETROSIAN;
 
     case ShashinPosition::TAL_CAPABLANCA_PETROSIAN :
-        if (depthRatio <= 0.40)
-            return ShashinPosition::LOW_TAL;
-        if (depthRatio <= 0.80)
-            return ShashinPosition::CAPABLANCA;
-        return ShashinPosition::LOW_PETROSIAN;
+        // [SC 43] README table: "Chaos: Capablanca-Petrosian-Tal ... Total chaos: unclear
+        // position, dynamically balanced, with no clear advantage for either side". No style:
+        // the Stockfish search. In 42.3 the depth ratio computed above was >= 1 at the root from the
+        // second iteration on (it divides by the depth of the previous iteration), so this
+        // zone was always searched as Low Petrosian, i.e. as a defensive position.
+        return range;
 
     default :
         return range;
@@ -228,6 +232,8 @@ void ShashinManager::initDynamicBaseState(Value                currentValue,
     state.dynamicBase.currentDepth = 0;
     state.dynamicBase.rootDepth    = rootDepth;
     ShashinPosition currentRange   = getInitialShashinRange(rootPos, currentValue, config);
+    if (mirrored)
+        currentRange = mirrorRange(currentRange);  // [SC 43-dev-C] opponent view
     state.dynamicBase.currentRange = getResilientShashinRange(currentRange, 0);
 }
 
@@ -236,6 +242,8 @@ void ShashinManager::setDynamicBaseState(Value           score,
                                          int             depth,
                                          int             rootDepth) {
     ShashinPosition range          = getShashinRange(score, rootPos);
+    if (mirrored)
+        range = mirrorRange(range);  // [SC 43-dev-C] opponent view
     state.dynamicBase.currentRange = getResilientShashinRange(range, depth);
     state.dynamicBase.currentDepth = depth;
     state.dynamicBase.rootDepth    = rootDepth;
@@ -252,10 +260,14 @@ void ShashinManager::initDynamicRootShashinState(const Eval::NNUE::Network&     
     initDynamicBaseState(static_value(networks, accumulators, refreshTable, rootPos, ss, optimism),
                          rootPos, config, rootDepth);
     setDynamicDerivedState();
-    MoveConfig::useMoveShashinLogic = state.dynamicDerived.useMoveGenCrystalLogic;
-    MoveConfig::isStrategical       = isStrategical();
-    MoveConfig::isAggressive        = state.dynamicDerived.isAggressive;
-    MoveConfig::isTactical          = isTactical();
+    // [SC 43-dev-C] Flags of the move picker for each side: [0] side to move at the root,
+    // [1] its opponent (opponent view)
+    const int view                        = mirrored;
+    MoveConfig::rootSide                  = int(rootPos.side_to_move());
+    MoveConfig::useMoveShashinLogic[view] = state.dynamicDerived.useMoveGenCrystalLogic;
+    MoveConfig::isStrategical[view]       = isStrategical();
+    MoveConfig::isAggressive[view]        = state.dynamicDerived.isAggressive;
+    MoveConfig::isTactical[view]          = isTactical();
 }
 
 void ShashinManager::updateRootShashinState(Value           score,
@@ -266,24 +278,20 @@ void ShashinManager::updateRootShashinState(Value           score,
         return;
 
     ShashinPosition newRange = getShashinRange(score, rootPos);
+    if (mirrored)
+        newRange = mirrorRange(newRange);  // [SC 43-dev-C] opponent view
     if (newRange == state.dynamicBase.currentRange && depth == state.dynamicBase.currentDepth)
         return;
 
     setDynamicBaseState(score, rootPos, depth, rootDepth);
     setDynamicDerivedState();
 
-    const bool newUseLogic    = useMoveGenCrystalLogic();
-    const bool newStrategical = state.dynamicDerived.isStrategical;
-    const bool newAggressive  = state.dynamicDerived.isAggressive;
-
-    if (newUseLogic != MoveConfig::useMoveShashinLogic
-        || newStrategical != MoveConfig::isStrategical || newAggressive != MoveConfig::isAggressive)
-    {
-        MoveConfig::useMoveShashinLogic = newUseLogic;
-        MoveConfig::isStrategical       = newStrategical;
-        MoveConfig::isAggressive        = newAggressive;
-    }
-    MoveConfig::isTactical = isTactical();
+    // [SC 43-dev-C] [0] side to move at the root, [1] its opponent (opponent view)
+    const int view                        = mirrored;
+    MoveConfig::useMoveShashinLogic[view] = useMoveGenCrystalLogic();
+    MoveConfig::isStrategical[view]       = state.dynamicDerived.isStrategical;
+    MoveConfig::isAggressive[view]        = state.dynamicDerived.isAggressive;
+    MoveConfig::isTactical[view]          = isTactical();
 }
 
 void ShashinManager::setDynamicDerivedState() {
@@ -318,13 +326,15 @@ void ShashinManager::setStaticState(const Position& rootPos) {
     int nonPawnMaterial      = rootPos.non_pawn_material(WHITE) + rootPos.non_pawn_material(BLACK);
     staticState.highMaterial = (nonPawnMaterial > 2400);
 
+    // [SC 43-dev-C] Own side: the side to move at the root, or its opponent in the opponent view
+    const Color own            = mirrored ? ~rootPos.side_to_move() : rootPos.side_to_move();
     staticState.kingDanger     = king_danger(rootPos, WHITE) || king_danger(rootPos, BLACK);
-    staticState.stmKingDanger  = king_danger(rootPos, rootPos.side_to_move());
+    staticState.stmKingDanger  = king_danger(rootPos, own);
     staticState.allPiecesCount = rootPos.count<ALL_PIECES>();
 
     // 4. Calcolo punteggi per booleani "Exposed"
-    staticState.stmKingSafetyScore      = king_safety_score(rootPos, rootPos.side_to_move());
-    staticState.opponentKingSafetyScore = king_safety_score(rootPos, ~rootPos.side_to_move());
+    staticState.stmKingSafetyScore      = king_safety_score(rootPos, own);
+    staticState.opponentKingSafetyScore = king_safety_score(rootPos, ~own);
     staticState.stmKingExposed          = isStmKingExposed();
     staticState.opponentKingExposed     = isOpponentKingExposed();
 }

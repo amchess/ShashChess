@@ -1,15 +1,15 @@
-# ShashChess 42.3
+# ShashChess 43-dev-I
 
 ## New Monte-Carlo Tree Search
 
-ShashChess 42.3 replaces the previous MCTS with a new one. It is used only with "MCTS by Shashin" on (off by default), in the Petrosian positions where the side to move has a win probability up to 15% (MCTS Explore extends it to other kinds of positions). Everything else is as in 42.3.
+ShashChess 43-dev-I replaces the previous MCTS with a new one. It is used only with "MCTS by Shashin" on (off by default), in the Petrosian positions where the side to move has a win probability up to 15% (MCTS Explore extends it to other kinds of positions). Everything else is as in 43-dev-I.
 
-- **Hybrid and pure modes.** With MCTSThreads < Threads the main thread searches with alpha-beta and the first MCTSThreads helpers search the tree, cooperating through the shared transposition table and histories. With MCTSThreads >= Threads every thread, the main one included, searches the tree and the move played comes from the tree. In 42.3 the main thread always searched with alpha-beta, so with a single thread MCTS never ran.
+- **Hybrid and pure modes.** With MCTSThreads < Threads the main thread searches with alpha-beta and the first MCTSThreads helpers search the tree, cooperating through the shared transposition table and histories. With MCTSThreads >= Threads every thread, the main one included, searches the tree and the move played comes from the tree. In 43-dev-I the main thread always searched with alpha-beta, so with a single thread MCTS never ran.
 - **A new tree.** Moves are selected with the PUCT formula, with priors from shallow alpha-beta searches. A visited leaf is first searched deeper by alpha-beta, one ply per visit, and then expanded. Mates, tablebase results and stalemates are proven and propagated up the tree (MCTS-Solver). The tree is kept from one move to the next and may use as much memory as the Hash option (64 MB at least), besides the hash table.
 - **MCTS Multi Strategy and MCTS Multi MinVisits** keep their names and defaults but have a new meaning: the percentage of expansions among the visits of a leaf, and the minimum number of visits of every root move. Both now apply with any number of MCTS threads (see the README).
 - **Info line.** At the start of every search an "info string" line tells whether MCTS was started, with the mode and the number of MCTS threads, or not, with the reason.
 - **MultiPV.** The hybrid mode now works with MultiPV greater than 1 too (before, MCTS was off with MultiPV > 1). Pure MCTS stays off with MultiPV > 1, because the tree would only report the lines without searching them: the search is then the usual alpha-beta one.
-- **Unchanged without MCTS.** With "MCTS by Shashin" off the search is the same as in 42.3: same bench, 2443546 nodes.
+- **Unchanged without MCTS.** With "MCTS by Shashin" off the search is the same as in 43-dev-I: same bench, 2443546 nodes.
 
 ## Test results
 
@@ -18,8 +18,8 @@ Peter M. tested the new MCTS with his test-suite rater, mostly on the 55 positio
 | 55 Petrosian positions, solved with full points (mean of 10 runs) | New MCTS | Compared with | p |
 |---|---|---|---|
 | 5 s, Threads 3, against MCTS off | 37.0 | 34.6 | < 0.001 |
-| 5 s, Threads 3, against the previous MCTS (42.3) | 35.9 | 33.0 | 0.001 |
-| 5 s, Threads 3, MultiPV 3, against MCTS off | 42.3 | 41.0 | 0.03 |
+| 5 s, Threads 3, against the previous MCTS (43-dev-I) | 35.9 | 33.0 | 0.001 |
+| 5 s, Threads 3, MultiPV 3, against MCTS off | 43-dev-I | 41.0 | 0.03 |
 | 5 s, Threads 2, against MCTS off (*) | 35.4 | 33.0 | 0.003 |
 | 30 s, Threads 2, against MCTS off (*) | 42.1 | 39.1 | < 0.001 |
 

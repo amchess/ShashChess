@@ -379,6 +379,7 @@ class Worker {
 
     Depth           completedDepth;
     ShashinManager& getShashinManager();
+    ShashinManager& getShashinManagerOpp();  // [SC 43-dev-C]
     int             lastShashinUpdatedDepth = 0;
     // [SC] True for the thread that runs the Shashin analysis of the root in the current
     // search (static state + WDL zone of its own search), see start_searching()
@@ -405,7 +406,7 @@ class Worker {
     template<NodeType nodeType>
     Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta);
 
-    int reduction(bool i, Depth d, int mn, int delta) const;
+    int reduction(bool i, Depth d, int mn, int delta, const ShashinManager& sm) const;
 
     // Pointer to the search manager, only allowed to be called by the main thread
     SearchManager* main_manager() const {
@@ -458,6 +459,9 @@ class Worker {
     Eval::NNUE::AccumulatorCaches refreshTable;
 
     std::unique_ptr<ShashinManager> shashinManager;
+    // [SC 43-dev-C] Opponent view of the root (ShashinManager::mirrored), used at the nodes
+    // where the opponent of the side to move at the root is to move
+    std::unique_ptr<ShashinManager> shashinManagerOpp;
     const ShashChess::ShashinConfig shConfig;
 
     friend class ShashChess::ThreadPool;

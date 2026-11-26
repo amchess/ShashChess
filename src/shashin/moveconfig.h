@@ -24,12 +24,15 @@ namespace ShashChess {
 namespace MoveConfig {
 
 // Dichiarazione come variabili thread-local
-extern thread_local bool useMoveShashinLogic;
-extern thread_local bool isStrategical;
-extern thread_local bool isAggressive;
+// [SC 43-dev-C] One flag per side: [0] side to move at the root, [1] its opponent
+extern thread_local bool useMoveShashinLogic[2];
+extern thread_local bool isStrategical[2];
+extern thread_local bool isAggressive[2];
 extern thread_local bool isFortress;
 // [SC] Tal, Petrosian or king danger: enables the "tactical phase" ordering bonus
-extern thread_local bool isTactical;
+extern thread_local bool isTactical[2];
+// [SC 43-dev-C] Colour (0 white, 1 black) of the side to move at the root
+extern thread_local int rootSide;
 
 }  // namespace MoveConfig
 }  // namespace ShashChess

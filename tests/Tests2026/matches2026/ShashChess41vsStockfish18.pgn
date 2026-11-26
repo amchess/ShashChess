@@ -16237,7 +16237,7 @@ Rc6 {0.00/58 8.8s} 81. Rb1 {0.00/40 30s} Rc4 {0.00/46 8.6s}
 [Result "1-0"]
 [ECO "C16"]
 [GameDuration "01:12:33"]
-[GameEndTime "2026-03-01T08:07:42.350 UTC"]
+[GameEndTime "2026-03-01T08:07:43-dev-I50 UTC"]
 [GameStartTime "2026-03-01T06:55:09.196 UTC"]
 [Opening "French"]
 [PlyCount "150"]
